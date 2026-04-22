@@ -16,6 +16,7 @@ docs/05_development_standards/47_Git_Workflow_Build_Test_PR_Merge_Guide.md
 docs/05_development_standards/48_Definition_Of_Ready_Done_And_Task_Workflow.md
 docs/05_development_standards/49_Testing_Strategy_And_Quality_Gates.md
 docs/05_development_standards/50_API_Response_Error_Logging_Standard.md
+docs/05_development_standards/54_Multi_Agent_Task_Board_Conflict_Workflow.md
 docs/04_architecture_deep_dive/37_Go_Backend_Architecture_And_Module_Boundaries.md
 docs/04_architecture_deep_dive/45_Architecture_Decision_Records_ADR.md
 ```
@@ -84,17 +85,19 @@ If any high-risk behavior is unclear, stop and ask for clarification before codi
 
 ## Shared Task Board
 
-Use `TASKS.md` as the shared coordination board.
+Use `TASKS.md` as the shared task index, and use one file per task under `tasks/active/` as the mutable status record.
 
 Rules:
 
 - Read `TASKS.md` before starting work.
-- Claim a `TODO` task by changing its status to `IN_PROGRESS`, filling `Owner`, and filling `Branch`.
-- Do not claim a task already marked `IN_PROGRESS` unless the owner says it is abandoned.
-- Change status to `REVIEW` when the PR is open.
-- Change status to `DONE` only after the PR is merged into `main`.
-- Add follow-up tasks to `TASKS.md` instead of hiding them in PR comments.
-- Keep task board edits small to reduce conflicts between agents.
+- Open the linked file under `tasks/active/` before claiming.
+- Claim a `TODO` task by editing only that task file: set `Status: IN_PROGRESS`, `Owner`, `Branch`, and an `Agent Log` entry.
+- Do not edit `TASKS.md` just to claim, review, block, or finish an existing task.
+- Do not claim a task already marked `IN_PROGRESS` or `REVIEW` unless the owner says it is abandoned.
+- Change status to `REVIEW` in the task file when the PR is open.
+- Change status to `DONE` in the task file only after the PR is merged into `main`.
+- Add follow-up tasks by creating a new `tasks/active/Txxx_*.md` file and adding one row to `TASKS.md`.
+- If `TASKS.md` conflicts, keep all unrelated task rows and preserve task-file status.
 
 ## Repository Structure Rules
 
