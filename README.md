@@ -49,3 +49,4 @@ Development standards:
 - [API response, error code, and logging standard](docs/05_development_standards/50_API_Response_Error_Logging_Standard.md)
 - [Environment, config, and secrets guide](docs/05_development_standards/51_Environment_Config_Secrets_Guide.md)
 - [Database migration, seed, and data safety workflow](docs/05_development_standards/52_Database_Migration_Seed_Data_Workflow.md)
+- [Frontend app shell and UI implementation standard](docs/05_development_standards/53_Frontend_App_Shell_And_UI_Implementation_Standard.md)

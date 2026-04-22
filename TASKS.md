@@ -48,6 +48,7 @@ Example:
 | T006 | TODO | - | feat/outbox-job-skeleton | - | worker/migration | Add outbox/jobs table model and worker claim interface after DB skeleton exists. |
 | T007 | TODO | - | feat/provider-adapter-interface | - | provider/credential | Add provider adapter interface, normalized provider error types, and fake adapter tests. |
 | T008 | TODO | - | docs/local-dev-runbook | - | docs | Add local development runbook after DB and migration commands exist. |
+| T009 | TODO | - | feat/frontend-app-shell | - | frontend | Build a runnable frontend app shell with package scripts, working navigation, screen registry, mock data, and build validation. Static HTML alone is not accepted. |
 
 ## Completed Tasks
 
@@ -69,7 +70,7 @@ Move blocked tasks here only when they cannot continue without a decision.
 Use this when adding a new task:
 
 ```text
-| T009 | TODO | - | type/scope-short-name | - | risk area | Clear task summary. |
+| T010 | TODO | - | type/scope-short-name | - | risk area | Clear task summary. |
 ```
 
 ## Done Checklist

@@ -66,6 +66,7 @@ If the task touches frontend or API contract, also read:
 docs/02_technical_handoff/16_API_Contract_And_Permission_Spec.md
 docs/02_technical_handoff/20_UI_Wireflow_And_Screen_Spec.md
 docs/05_development_standards/50_API_Response_Error_Logging_Standard.md
+docs/05_development_standards/53_Frontend_App_Shell_And_UI_Implementation_Standard.md
 ```
 
 ## Start-of-Task Checklist
@@ -157,6 +158,15 @@ Rules:
 - Test money flows for idempotency and double-debit prevention.
 - Test tenant/RBAC flows for allowed and denied access.
 - Test provider/provisioning flows for success, fail, timeout, partial success, retry, and manual review where relevant.
+
+## Frontend Rules
+
+- Do not submit only a static HTML file for frontend app-shell tasks.
+- Frontend work must follow `docs/05_development_standards/53_Frontend_App_Shell_And_UI_Implementation_Standard.md`.
+- A frontend app shell must have `frontend/package.json` with `dev`, `build`, and `preview` scripts.
+- It must have working navigation, screen registry, layout shell, mock data layer, and build validation.
+- Do not wire production backend routes during app-shell phase unless the task explicitly asks for it.
+- Run the frontend build command and include the result in the PR.
 
 ## Git Workflow
 

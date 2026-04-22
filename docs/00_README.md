@@ -1,4 +1,4 @@
-# Bộ tài liệu dự án nền tảng VPS/Proxy hybrid multi-tenant - v1.7 Pre-Dev Guardrails
+# Bộ tài liệu dự án nền tảng VPS/Proxy hybrid multi-tenant - v1.8 Frontend App Shell Standard
 
 ## Mô tả
 Gói này là bản mở rộng technical handoff cho dự án web thuê/bán VPS/Proxy theo mô hình:
@@ -22,6 +22,8 @@ Bản v1.5 bổ sung chuẩn coding, cấu trúc module/component, rule tách sh
 Bản v1.6 bổ sung workflow Git chuẩn cho tạo branch, dev, build, test, commit, pull request, review, merge, release và hotfix.
 
 Bản v1.7 bổ sung bộ guardrail trước dev: Definition of Ready/Done, testing strategy, API/error/logging standard, environment/config/secrets guide và database migration workflow.
+
+Bản v1.8 bổ sung chuẩn frontend app shell: frontend phải là app chạy được với package scripts, navigation thật, screen registry, mock data layer và build validation; chỉ làm HTML tĩnh không được xem là hoàn thành.
 
 ## Nguyên tắc chung
 - Chưa code.
@@ -93,6 +95,7 @@ Bản v1.7 bổ sung bộ guardrail trước dev: Definition of Ready/Done, test
 - `05_development_standards/50_API_Response_Error_Logging_Standard.md`
 - `05_development_standards/51_Environment_Config_Secrets_Guide.md`
 - `05_development_standards/52_Database_Migration_Seed_Data_Workflow.md`
+- `05_development_standards/53_Frontend_App_Shell_And_UI_Implementation_Standard.md`
 
 ### Tài liệu tổng hợp và ghi chú
 - `VPS_Proxy_Project_Master_Document.md`
@@ -140,6 +143,7 @@ Bản v1.7 bổ sung bộ guardrail trước dev: Definition of Ready/Done, test
 7. `05_development_standards/46_Coding_Standards_Module_Component_Guide.md`
 8. `05_development_standards/47_Git_Workflow_Build_Test_PR_Merge_Guide.md`
 9. `05_development_standards/50_API_Response_Error_Logging_Standard.md`
+10. `05_development_standards/53_Frontend_App_Shell_And_UI_Implementation_Standard.md`
 
 ### Cho QA
 1. `01_product_foundation/12_API_Data_Model_Acceptance_Criteria.md`
@@ -178,7 +182,7 @@ Bản v1.7 bổ sung bộ guardrail trước dev: Definition of Ready/Done, test
 9. Không cho client reseller provision nếu reseller wallet không đủ reseller cost.
 10. Không dùng giá/policy hiện tại để xử lý tranh chấp order cũ; dùng snapshot lúc mua.
 
-## Mục tiêu sau bản v1.7
+## Mục tiêu sau bản v1.8
 Sau khi đọc xong gói này, team dev phải trả lời được:
 - Cần tạo bảng nào và bảng nào bắt buộc có tenant_id.
 - API nào cần build và role nào được gọi.
@@ -204,6 +208,8 @@ Sau khi đọc xong gói này, team dev phải trả lời được:
 - API success/error/validation/pagination/logging phải theo format nào.
 - Config và secret phải được đặt, validate và rotate thế nào.
 - Migration, seed, backfill và rollback database phải đi theo quy trình nào.
+- Frontend app shell tối thiểu phải có package scripts, entrypoint app, navigation, screen registry, mock data layer và build validation nào.
+- Khi nào một task frontend chỉ tạo HTML tĩnh sẽ bị từ chối.
 
 
 ---
@@ -303,3 +309,18 @@ This package adds the pre-development guardrail layer `48–52`:
 ```
 
 The v1.7 layer defines task readiness, done criteria, testing gates, API/error/logging format, config/secret handling, database migration rules, seed data safety, and rollback expectations before production code starts.
+
+
+---
+
+## v1.8 Update — Frontend App Shell Standard
+
+**Date:** 2026-04-22
+
+This package adds the frontend delivery standard layer `53`:
+
+```text
+05_development_standards/53_Frontend_App_Shell_And_UI_Implementation_Standard.md
+```
+
+The v1.8 layer defines the minimum frontend app-shell deliverable before backend route wiring: runnable package scripts, app entrypoint, navigation, screen registry, mock data layer, shared layout/component structure, build validation, and PR checklist. Static HTML alone is not accepted for frontend app-shell tasks.

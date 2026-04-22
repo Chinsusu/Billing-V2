@@ -1,4 +1,4 @@
-# MANIFEST — VPS Proxy Project Docs v1.7 FULL
+# MANIFEST — VPS Proxy Project Docs v1.8 FULL
 
 docs/00_README.md
 docs/01_product_foundation/01_Product_Scope_Business_Model.md
@@ -53,6 +53,7 @@ docs/05_development_standards/49_Testing_Strategy_And_Quality_Gates.md
 docs/05_development_standards/50_API_Response_Error_Logging_Standard.md
 docs/05_development_standards/51_Environment_Config_Secrets_Guide.md
 docs/05_development_standards/52_Database_Migration_Seed_Data_Workflow.md
+docs/05_development_standards/53_Frontend_App_Shell_And_UI_Implementation_Standard.md
 docs/changelogs/CHANGELOG_ARCHITECTURE_DEEP_DIVE_v1_4.md
 docs/changelogs/CHANGELOG_EXECUTION_OPERATIONS_LAUNCH_v1_3.md
 docs/changelogs/CHANGELOG_FIXES.md
