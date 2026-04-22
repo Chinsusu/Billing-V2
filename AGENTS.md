@@ -81,6 +81,20 @@ Before editing files, summarize for yourself:
 
 If any high-risk behavior is unclear, stop and ask for clarification before coding.
 
+## Shared Task Board
+
+Use `TASKS.md` as the shared coordination board.
+
+Rules:
+
+- Read `TASKS.md` before starting work.
+- Claim a `TODO` task by changing its status to `IN_PROGRESS`, filling `Owner`, and filling `Branch`.
+- Do not claim a task already marked `IN_PROGRESS` unless the owner says it is abandoned.
+- Change status to `REVIEW` when the PR is open.
+- Change status to `DONE` only after the PR is merged into `main`.
+- Add follow-up tasks to `TASKS.md` instead of hiding them in PR comments.
+- Keep task board edits small to reduce conflicts between agents.
+
 ## Repository Structure Rules
 
 Use the existing layout:
