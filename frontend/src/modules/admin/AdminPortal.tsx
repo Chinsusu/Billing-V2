@@ -1,0 +1,103 @@
+"use client";
+
+import { useState } from "react";
+import { AppShell } from "@/components/layout/AppShell";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { AdminOverview } from "./screens/AdminOverview";
+import { AdminTenants } from "./screens/AdminTenants";
+import { AdminProvisioning } from "./screens/AdminProvisioning";
+import { AdminTopups } from "./screens/AdminTopups";
+import { AdminProviders } from "./screens/AdminProviders";
+import { AdminCustomers } from "./screens/AdminCustomers";
+import { AdminServices } from "./screens/AdminServices";
+import { AdminInvoices } from "./screens/AdminInvoices";
+import { AdminTransactions } from "./screens/AdminTransactions";
+import { AdminProducts } from "./screens/AdminProducts";
+import { AdminTickets } from "./screens/AdminTickets";
+import { AdminSettings } from "./screens/AdminSettings";
+
+interface ScreenConfig {
+  title: string;
+  breadcrumbs: string[];
+  meta?: React.ReactNode;
+  component: React.ReactNode;
+}
+
+const SCREENS: Record<string, ScreenConfig> = {
+  "admin-overview": {
+    title: "Overview", breadcrumbs: ["HANetwork", "Overview"],
+    meta: <StatusBadge status="active" dot />,
+    component: <AdminOverview />,
+  },
+  "admin-tenants": {
+    title: "Tenants", breadcrumbs: ["HANetwork", "Platform", "Tenants"],
+    meta: <span className="text-[11px] text-gray-400">5 tenants · 4 resellers</span>,
+    component: <AdminTenants />,
+  },
+  "admin-provisioning": {
+    title: "Provisioning queue", breadcrumbs: ["HANetwork", "Platform", "Provisioning"],
+    meta: <StatusBadge status="manual_review" dot />,
+    component: <AdminProvisioning />,
+  },
+  "admin-topups": {
+    title: "Top-up verification", breadcrumbs: ["HANetwork", "Platform", "Top-ups"],
+    meta: <span className="text-[11px] text-amber-600 font-medium">3 pending</span>,
+    component: <AdminTopups />,
+  },
+  "admin-providers": {
+    title: "Providers / Sources", breadcrumbs: ["HANetwork", "Platform", "Providers"],
+    meta: <span className="text-[11px] text-amber-600 font-medium">1 degraded</span>,
+    component: <AdminProviders />,
+  },
+  "admin-customers": {
+    title: "Customers", breadcrumbs: ["HANetwork", "Customers"],
+    component: <AdminCustomers />,
+  },
+  "admin-tickets": {
+    title: "Support tickets", breadcrumbs: ["HANetwork", "Support", "Tickets"],
+    component: <AdminTickets />,
+  },
+  "admin-services": {
+    title: "Services", breadcrumbs: ["HANetwork", "Services"],
+    component: <AdminServices />,
+  },
+  "admin-invoices": {
+    title: "Invoices", breadcrumbs: ["HANetwork", "Billing", "Invoices"],
+    component: <AdminInvoices />,
+  },
+  "admin-transactions": {
+    title: "Transactions", breadcrumbs: ["HANetwork", "Billing", "Transactions"],
+    component: <AdminTransactions />,
+  },
+  "admin-products": {
+    title: "Products & Pricing", breadcrumbs: ["HANetwork", "Billing", "Products"],
+    component: <AdminProducts />,
+  },
+  "admin-settings": {
+    title: "Settings", breadcrumbs: ["HANetwork", "Settings"],
+    component: <AdminSettings />,
+  },
+};
+
+export function AdminPortal() {
+  const [screen, setScreen] = useState("admin-overview");
+  const cur = SCREENS[screen] ?? SCREENS["admin-overview"];
+
+  return (
+    <AppShell
+      portal="admin"
+      activeScreen={screen}
+      onSelectScreen={setScreen}
+      title={cur.title}
+      breadcrumbs={cur.breadcrumbs}
+      meta={cur.meta}
+      actions={
+        <button className="h-7 px-3 text-[12px] font-medium border border-gray-300 rounded-[3px] bg-white hover:bg-gray-50 cursor-pointer">
+          + New
+        </button>
+      }
+    >
+      {cur.component}
+    </AppShell>
+  );
+}

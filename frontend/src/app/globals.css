@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+:root {
+  --accent: #D50C2D;
+  --accent-hover: #B3082A;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+input, button, select {
+  font-family: inherit;
+}
+
+/* Hide scrollbars globally for inner panes */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
