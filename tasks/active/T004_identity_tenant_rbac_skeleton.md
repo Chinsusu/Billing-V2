@@ -1,7 +1,7 @@
 # T004 - Identity Tenant RBAC Skeleton
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: feat/identity-tenant-rbac-skeleton
 PR: -
 Risk: tenant/RBAC
@@ -35,3 +35,4 @@ Add skeleton interfaces/types for identity, tenant context, and RBAC checks with
 ## Agent Log
 
 - 2026-04-22: Task file created from `TASKS.md`.
+- 2026-04-22: Codex claimed task on `feat/identity-tenant-rbac-skeleton`.
