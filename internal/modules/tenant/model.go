@@ -52,6 +52,7 @@ func (status Status) Valid() bool {
 
 type Tenant struct {
 	ID               ID
+	DisplayID        int64
 	ParentID         ID
 	Type             Type
 	Name             string
@@ -172,6 +173,7 @@ func (status TLSStatus) Valid() bool {
 
 type Domain struct {
 	ID                    string
+	DisplayID             int64
 	TenantID              ID
 	Domain                string
 	Type                  DomainType

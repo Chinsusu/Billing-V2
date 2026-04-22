@@ -115,6 +115,7 @@ func (status OutboxStatus) Terminal() bool {
 
 type OutboxEvent struct {
 	ID                       OutboxEventID
+	DisplayID                int64
 	TenantID                 tenant.ID
 	AggregateType            string
 	AggregateID              string
@@ -136,6 +137,7 @@ type OutboxEvent struct {
 
 type Job struct {
 	ID                       ID
+	DisplayID                int64
 	TenantID                 tenant.ID
 	Type                     Type
 	ReferenceType            ReferenceType
@@ -223,6 +225,7 @@ func (result AttemptResult) Valid() bool {
 
 type Attempt struct {
 	ID                   AttemptID
+	DisplayID            int64
 	JobID                ID
 	WorkerID             WorkerID
 	AttemptNumber        int

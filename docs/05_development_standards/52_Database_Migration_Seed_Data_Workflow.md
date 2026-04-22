@@ -94,6 +94,18 @@ unique(tenant_id, external_code)
 index(tenant_id, created_at)
 ```
 
+## Display ID rule
+
+Bảng được hiển thị như record chính trên FE/admin/support phải có `display_id BIGINT` dạng số tăng dần để dễ đọc và dễ đối soát.
+
+Rule:
+
+- UUID vẫn là primary key, foreign key target, idempotency key, và định danh nội bộ.
+- `display_id` chỉ dùng cho hiển thị, tìm kiếm, support, và trao đổi với người dùng.
+- `display_id` nên bắt đầu từ 10000 theo từng bảng, trừ khi task ghi rõ khác đi.
+- Lookup bằng `display_id` vẫn phải kiểm tra tenant/context phù hợp trước khi trả dữ liệu.
+- Bảng join hoặc bảng permission tĩnh không cần `display_id` nếu không xuất hiện như một record riêng trên UI.
+
 ## Money và ledger rule
 
 Bảng tiền/ledger phải ưu tiên tính đúng hơn tiện sửa.

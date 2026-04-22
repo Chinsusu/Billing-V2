@@ -21,7 +21,7 @@ func NewPostgresStore(executor platformdb.Executor) *PostgresStore {
 	return &PostgresStore{executor: executor}
 }
 
-const auditColumns = `audit_id, tenant_id, actor_id, actor_type, action, target_type, target_id, before_snapshot_redacted, after_snapshot_redacted, metadata_redacted, ip_address, user_agent, correlation_id, created_at`
+const auditColumns = `audit_id, display_id, tenant_id, actor_id, actor_type, action, target_type, target_id, before_snapshot_redacted, after_snapshot_redacted, metadata_redacted, ip_address, user_agent, correlation_id, created_at`
 
 func (store *PostgresStore) Append(ctx context.Context, input AppendInput) (Log, error) {
 	if err := store.ready(); err != nil {
@@ -60,7 +60,7 @@ func scanLog(row logScanner) (Log, error) {
 	var beforeSnapshot, afterSnapshot, metadata []byte
 
 	if err := row.Scan(
-		&id, &tenantNull, &actorNull, &actorType, &record.Action, &record.TargetType, &targetID,
+		&id, &record.DisplayID, &tenantNull, &actorNull, &actorType, &record.Action, &record.TargetType, &targetID,
 		&beforeSnapshot, &afterSnapshot, &metadata, &ipNull, &userAgentNull, &correlationID, &record.CreatedAt,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

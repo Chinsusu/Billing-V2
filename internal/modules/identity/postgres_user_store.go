@@ -22,7 +22,7 @@ func NewPostgresUserStore(executor platformdb.Executor) *PostgresUserStore {
 	return &PostgresUserStore{executor: executor}
 }
 
-const userColumns = `user_id, tenant_id, email, email_verified_at, password_hash, full_name, user_type, status, two_factor_status, last_login_at, failed_login_count, created_at, updated_at`
+const userColumns = `user_id, display_id, tenant_id, email, email_verified_at, password_hash, full_name, user_type, status, two_factor_status, last_login_at, failed_login_count, created_at, updated_at`
 
 func (store *PostgresUserStore) CreateUser(ctx context.Context, input CreateUserInput) (User, error) {
 	if err := store.ready(); err != nil {
@@ -89,7 +89,7 @@ func scanUser(row userScanner) (User, error) {
 	var fullName sql.NullString
 
 	if err := row.Scan(
-		&userID, &tenantID, &record.Email, &emailVerifiedAt, &record.PasswordHash, &fullName, &userType,
+		&userID, &record.DisplayID, &tenantID, &record.Email, &emailVerifiedAt, &record.PasswordHash, &fullName, &userType,
 		&status, &twoFactorStatus, &lastLoginAt, &record.FailedLoginCount, &record.CreatedAt, &record.UpdatedAt,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
