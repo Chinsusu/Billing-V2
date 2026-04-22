@@ -14,7 +14,7 @@ Add initial migration files for tenants, users, roles, permissions, and audit sh
 
 ## Scope
 
-- [x] Verify migrations work core identity/tenant/RBAC/audit shell tables.
+- Add forward migrations for core identity/tenant/RBAC/audit shell tables.
 - Add safe rollback/down migrations where practical.
 - Keep schema aligned with existing docs.
 - Do not add seed data unless explicitly scoped.
