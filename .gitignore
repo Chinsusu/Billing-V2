@@ -33,6 +33,11 @@ Thumbs.db
 .idea/
 .vscode/
 
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local
+
 # Local Codex marker/temp files
 .codex
 .codex-*
