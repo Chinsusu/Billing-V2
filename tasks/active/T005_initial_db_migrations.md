@@ -1,7 +1,7 @@
 # T005 - Initial Database Migrations
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: chore/initial-db-migrations
 PR: -
 Risk: migration/tenant
@@ -35,3 +35,4 @@ Add initial migration files for tenants, users, roles, permissions, and audit sh
 ## Agent Log
 
 - 2026-04-22: Task file created from `TASKS.md`.
+- 2026-04-22: Claimed by Codex. Adding tenant, identity/RBAC, audit migrations with manual rollback artifact.
