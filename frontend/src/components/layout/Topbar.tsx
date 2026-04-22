@@ -1,5 +1,7 @@
 "use client";
 
+import { Bell, ChevronDown } from "lucide-react";
+
 interface TopbarProps {
   title: string;
   breadcrumbs: string[];
@@ -38,9 +40,14 @@ export function Topbar({ title, breadcrumbs, meta, actions }: TopbarProps) {
 
       <div className="flex items-center gap-1">
         {actions}
-        <button className="h-7 w-7 grid place-items-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-[3px] transition-colors border-0 bg-transparent cursor-pointer relative">
-          🔔
-          <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[#D50C2D]" />
+        <button className="h-8 flex items-center justify-center gap-1 text-gray-500 hover:text-gray-900 rounded-[3px] transition-colors border-0 bg-transparent cursor-pointer px-1 relative">
+          <div className="relative flex items-center justify-center w-8 h-8 hover:bg-gray-100 rounded-full transition-colors">
+            <Bell size={18} />
+            <span className="absolute top-0 right-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#D50C2D] px-1 text-[10px] font-medium text-white border-2 border-white shadow-sm">
+              25
+            </span>
+          </div>
+          <ChevronDown size={14} className="text-gray-400" />
         </button>
       </div>
     </header>
