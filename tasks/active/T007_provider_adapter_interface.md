@@ -1,9 +1,9 @@
 # T007 - Provider Adapter Interface
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: feat/provider-adapter-interface
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/28
 Risk: provider/credential
 Created: 2026-04-22
 Updated: 2026-04-22
@@ -36,3 +36,5 @@ Add provider adapter interface, normalized provider error types, and fake adapte
 
 - 2026-04-22: Task file created from `TASKS.md`.
 - 2026-04-22: PR #22 was closed and branch `feat/provider-adapter-interface` was deleted per owner request because CI failed and the task file was not updated. Task remains TODO for a clean restart.
+- 2026-04-22: Claimed by Codex. Rebuilding provider adapter interface, error taxonomy, and fake adapter tests from latest origin/main.
+- 2026-04-22: Opened PR https://github.com/Chinsusu/Billing-V2/pull/28. Validation passed: gofmt, make fmt, make test, make build, make migrate-validate.
