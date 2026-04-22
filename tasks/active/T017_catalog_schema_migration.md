@@ -1,6 +1,6 @@
 # T017 - Catalog schema migration
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/catalog-schema-migration
 PR: https://github.com/Chinsusu/Billing-V2/pull/43
@@ -37,3 +37,4 @@ Add PostgreSQL schema for catalog records after T016 introduced the catalog doma
 
 - 2026-04-23: Task created and claimed from latest `origin/main` in `/tmp/Billing-T016`.
 - 2026-04-23: Opened PR #43. Validation passed: `make fmt`, `make test`, `make build`, `make migrate-validate`.
+- 2026-04-23: PR #43 merged into `main`.
