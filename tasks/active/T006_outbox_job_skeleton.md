@@ -1,9 +1,9 @@
 # T006 - Outbox Job Skeleton
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: feat/outbox-job-skeleton
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/27
 Risk: worker/migration
 Created: 2026-04-22
 Updated: 2026-04-22
@@ -36,3 +36,4 @@ Add outbox/jobs table model and worker claim interface after the DB skeleton exi
 
 - 2026-04-22: Task file created from `TASKS.md`.
 - 2026-04-22: Claimed by Codex. Adding outbox/jobs migration, job data shapes, and atomic claim interface skeleton.
+- 2026-04-22: Opened PR https://github.com/Chinsusu/Billing-V2/pull/27. Validation passed: gofmt, make fmt, make test, make build, make migrate-validate.
