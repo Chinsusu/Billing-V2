@@ -1,6 +1,6 @@
 # T008 - Local Development Runbook
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: docs/local-dev-runbook
 PR: https://github.com/Chinsusu/Billing-V2/pull/18
@@ -38,3 +38,4 @@ Add local development runbook after DB and migration commands exist.
 - 2026-04-22: Added `docs/05_development_standards/55_Local_Development_Runbook.md` and linked it from README, docs index, and manifest.
 - 2026-04-22: Validation passed: `make fmt`, `make test`, `make build`, `make migrate-validate`, `git diff --check`.
 - 2026-04-22: Opened PR https://github.com/Chinsusu/Billing-V2/pull/18 and moved task to REVIEW.
+- 2026-04-22: PR #18 merged into `main`; task completed.
