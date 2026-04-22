@@ -57,6 +57,7 @@ DONE         PR merged into main
 | T014 | [tasks/active/T014_api_contracts.md](tasks/active/T014_api_contracts.md) | feat/api-contracts | API | Add shared API response, validation error, and cursor pagination helpers. |
 | T015 | [tasks/active/T015_display_ids.md](tasks/active/T015_display_ids.md) | feat/display-ids | migration/API/UI | Add numeric display IDs for FE-visible records while keeping UUID primary keys. |
 | T016 | [tasks/active/T016_catalog_domain_skeleton.md](tasks/active/T016_catalog_domain_skeleton.md) | feat/catalog-domain-skeleton | catalog/pricing | Add catalog domain models, validation, and store contracts before migrations/API. |
+| T017 | [tasks/active/T017_catalog_schema_migration.md](tasks/active/T017_catalog_schema_migration.md) | feat/catalog-schema-migration | migration/catalog | Add catalog PostgreSQL tables for products, plans, provider sources, and tenant catalog clones. |
 
 ## Completed Tasks
 
