@@ -1,6 +1,6 @@
 # T013 - Provider Registry
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/provider-registry
 PR: https://github.com/Chinsusu/Billing-V2/pull/34
@@ -36,3 +36,4 @@ Add a provider adapter registry and fake registry wiring so provisioning code ca
 
 - 2026-04-23: Codex claimed task from `origin/main` using isolated worktree `/tmp/Billing-T013`.
 - 2026-04-23: Opened PR #34 after `make fmt`, `make test`, `make build`, and `make migrate-validate` passed.
+- 2026-04-23: PR #34 merged; T013 marked DONE.
