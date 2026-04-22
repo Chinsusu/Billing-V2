@@ -55,6 +55,9 @@ DONE         PR merged into main
 | T012 | [tasks/active/T012_outbox_store_runner.md](tasks/active/T012_outbox_store_runner.md) | feat/outbox-store-runner | worker/outbox/retry | Add PostgreSQL job/outbox store implementations and worker runner skeleton. |
 | T013 | [tasks/active/T013_provider_registry.md](tasks/active/T013_provider_registry.md) | feat/provider-registry | provider | Add provider adapter registry and fake registry wiring for dev/test. |
 | T014 | [tasks/active/T014_api_contracts.md](tasks/active/T014_api_contracts.md) | feat/api-contracts | API | Add shared API response, validation error, and cursor pagination helpers. |
+| T015 | [tasks/active/T015_display_ids.md](tasks/active/T015_display_ids.md) | feat/display-ids | migration/API/UI | Add numeric display IDs for FE-visible records while keeping UUID primary keys. |
+| T015 | [tasks/active/T015_display_ids.md](tasks/active/T015_display_ids.md) | feat/display-ids | migration/API/UI | Add numeric display IDs for FE-visible records while keeping UUID primary keys. |
+| T015 | [tasks/active/T015_display_ids.md](tasks/active/T015_display_ids.md) | feat/display-ids | migration/API/UI | Add numeric display IDs for FE-visible records while keeping UUID primary keys. |
 
 ## Completed Tasks
 

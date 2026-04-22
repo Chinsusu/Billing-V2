@@ -22,8 +22,8 @@ func NewPostgresStore(executor platformdb.Executor) *PostgresStore {
 	return &PostgresStore{executor: executor}
 }
 
-const jobColumns = `job_id, tenant_id, job_type, reference_type, reference_id, source_id, payload_json, status, priority, idempotency_key, attempt_count, max_attempts, next_attempt_at, locked_by, locked_until, last_error_code, last_error_message_redacted, manual_review_reason, correlation_id, created_at, updated_at, finished_at`
-const outboxColumns = `outbox_event_id, tenant_id, aggregate_type, aggregate_id, event_type, payload_json, status, dedupe_key, attempt_count, max_attempts, next_attempt_at, locked_by, locked_until, last_error_code, last_error_message_redacted, correlation_id, created_at, published_at`
+const jobColumns = `job_id, display_id, tenant_id, job_type, reference_type, reference_id, source_id, payload_json, status, priority, idempotency_key, attempt_count, max_attempts, next_attempt_at, locked_by, locked_until, last_error_code, last_error_message_redacted, manual_review_reason, correlation_id, created_at, updated_at, finished_at`
+const outboxColumns = `outbox_event_id, display_id, tenant_id, aggregate_type, aggregate_id, event_type, payload_json, status, dedupe_key, attempt_count, max_attempts, next_attempt_at, locked_by, locked_until, last_error_code, last_error_message_redacted, correlation_id, created_at, published_at`
 
 func (store *PostgresStore) Claim(ctx context.Context, request ClaimRequest) ([]Job, error) {
 	if err := store.ready(); err != nil {
@@ -225,7 +225,7 @@ func scanJob(row rowScanner) (Job, error) {
 	var lockedUntil, finishedAt sql.NullTime
 	var payload []byte
 	if err := row.Scan(
-		&id, &tenantID, &jobType, &referenceType, &referenceID, &sourceID, &payload, &status, &job.Priority,
+		&id, &job.DisplayID, &tenantID, &jobType, &referenceType, &referenceID, &sourceID, &payload, &status, &job.Priority,
 		&job.IdempotencyKey, &job.AttemptCount, &job.MaxAttempts, &job.NextAttemptAt, &lockedBy, &lockedUntil,
 		&lastErrorCode, &lastErrorMessage, &manualReviewReason, &correlationID, &job.CreatedAt, &job.UpdatedAt, &finishedAt,
 	); err != nil {
@@ -259,7 +259,7 @@ func scanOutboxEvent(row rowScanner) (OutboxEvent, error) {
 	var lockedUntil, publishedAt sql.NullTime
 	var payload []byte
 	if err := row.Scan(
-		&id, &tenantID, &event.AggregateType, &aggregateID, &event.EventType, &payload, &status,
+		&id, &event.DisplayID, &tenantID, &event.AggregateType, &aggregateID, &event.EventType, &payload, &status,
 		&event.DedupeKey, &event.AttemptCount, &event.MaxAttempts, &event.NextAttemptAt, &lockedBy,
 		&lockedUntil, &lastErrorCode, &lastErrorMessage, &correlationID, &event.CreatedAt, &publishedAt,
 	); err != nil {

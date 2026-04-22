@@ -73,6 +73,7 @@ func (status TwoFactorStatus) Valid() bool {
 
 type User struct {
 	ID               UserID
+	DisplayID        int64
 	TenantID         tenant.ID
 	Email            string
 	EmailVerifiedAt  time.Time

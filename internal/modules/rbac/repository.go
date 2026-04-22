@@ -13,6 +13,7 @@ var ErrRoleIDMissing = errors.New("role id missing")
 
 type Role struct {
 	ID        identity.RoleID
+	DisplayID int64
 	TenantID  tenant.ID
 	Key       string
 	Name      string

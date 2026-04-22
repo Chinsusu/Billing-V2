@@ -46,6 +46,7 @@ func (actorType ActorType) Valid() bool {
 
 type Log struct {
 	ID                     ID
+	DisplayID              int64
 	TenantID               tenant.ID
 	ActorID                ActorID
 	ActorType              ActorType

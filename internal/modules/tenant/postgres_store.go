@@ -19,8 +19,8 @@ func NewPostgresStore(executor platformdb.Executor) *PostgresStore {
 	return &PostgresStore{executor: executor}
 }
 
-const tenantColumns = `tenant_id, parent_tenant_id, tenant_type, name, slug, status, default_currency, timezone, owner_user_id, branding_settings, billing_settings, risk_settings, created_at, updated_at`
-const domainColumns = `domain_id, tenant_id, domain, domain_type, verification_status, verification_token_hash, tls_status, is_primary, created_at, updated_at`
+const tenantColumns = `tenant_id, display_id, parent_tenant_id, tenant_type, name, slug, status, default_currency, timezone, owner_user_id, branding_settings, billing_settings, risk_settings, created_at, updated_at`
+const domainColumns = `domain_id, display_id, tenant_id, domain, domain_type, verification_status, verification_token_hash, tls_status, is_primary, created_at, updated_at`
 
 func (store *PostgresStore) Create(ctx context.Context, input CreateTenantInput) (Tenant, error) {
 	if err := store.ready(); err != nil {
@@ -89,7 +89,7 @@ func (store *PostgresStore) FindActiveDomain(ctx context.Context, domain string)
 		return Domain{}, ErrDomainMissing
 	}
 	row := store.executor.QueryRowContext(ctx, `
-SELECT d.domain_id, d.tenant_id, d.domain, d.domain_type, d.verification_status, d.verification_token_hash, d.tls_status, d.is_primary, d.created_at, d.updated_at
+SELECT d.domain_id, d.display_id, d.tenant_id, d.domain, d.domain_type, d.verification_status, d.verification_token_hash, d.tls_status, d.is_primary, d.created_at, d.updated_at
 FROM tenant_domains d
 JOIN tenants t ON t.tenant_id = d.tenant_id
 WHERE d.domain = $1
@@ -117,7 +117,7 @@ func scanTenant(row scanner) (Tenant, error) {
 	var brandingSettings, billingSettings, riskSettings []byte
 
 	if err := row.Scan(
-		&id, &parentID, &tenantType, &record.Name, &record.Slug, &status, &record.DefaultCurrency, &record.Timezone,
+		&id, &record.DisplayID, &parentID, &tenantType, &record.Name, &record.Slug, &status, &record.DefaultCurrency, &record.Timezone,
 		&ownerUserID, &brandingSettings, &billingSettings, &riskSettings, &record.CreatedAt, &record.UpdatedAt,
 	); err != nil {
 		return Tenant{}, mapTenantNotFound(err)
@@ -138,7 +138,7 @@ func scanDomain(row scanner) (Domain, error) {
 	var tenantID, domainType, verificationStatus, tlsStatus string
 	var verificationTokenHash sql.NullString
 	if err := row.Scan(
-		&record.ID, &tenantID, &record.Domain, &domainType, &verificationStatus, &verificationTokenHash,
+		&record.ID, &record.DisplayID, &tenantID, &record.Domain, &domainType, &verificationStatus, &verificationTokenHash,
 		&tlsStatus, &record.IsPrimary, &record.CreatedAt, &record.UpdatedAt,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
