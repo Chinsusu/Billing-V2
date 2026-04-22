@@ -16,7 +16,9 @@ import { AdminTickets } from "./screens/AdminTickets";
 import { AdminSettings } from "./screens/AdminSettings";
 import { AdminAlerts } from "./screens/AdminAlerts";
 import { AdminLogs } from "./screens/AdminLogs";
-import { AdminServices } from "./screens/AdminServices";
+import { AdminServicesProxies } from "./screens/AdminServicesProxies";
+import { AdminServicesVPS } from "./screens/AdminServicesVPS";
+import { AdminServicesBandwidth } from "./screens/AdminServicesBandwidth";
 
 interface ScreenConfig {
   title: string;
@@ -59,9 +61,17 @@ const SCREENS: Record<string, ScreenConfig> = {
     title: "Support tickets", breadcrumbs: ["HANetwork", "Support", "Tickets"],
     component: <AdminTickets />,
   },
-  "admin-services": {
-    title: "Services", breadcrumbs: ["HANetwork", "Services"],
-    component: <AdminServices />,
+  "admin-services-proxies": {
+    title: "Proxies", breadcrumbs: ["HANetwork", "Services", "Proxies"],
+    component: <AdminServicesProxies />,
+  },
+  "admin-services-vps": {
+    title: "VPS", breadcrumbs: ["HANetwork", "Services", "VPS"],
+    component: <AdminServicesVPS />,
+  },
+  "admin-services-bandwidth": {
+    title: "Bandwidth", breadcrumbs: ["HANetwork", "Services", "Bandwidth"],
+    component: <AdminServicesBandwidth />,
   },
   "admin-invoices": {
     title: "Invoices", breadcrumbs: ["HANetwork", "Billing", "Invoices"],

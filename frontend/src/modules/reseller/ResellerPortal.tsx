@@ -32,8 +32,16 @@ const SCREENS: Record<string, ScreenConfig> = {
     meta: <span className="text-[11px] text-amber-600 font-medium">1 margin warning</span>,
     component: <ResellerCatalog />,
   },
-  "reseller-services": {
-    title: "Services", breadcrumbs: ["ProxyVN", "Services"],
+  "reseller-services-proxies": {
+    title: "Proxies", breadcrumbs: ["ProxyVN", "Services", "Proxies"],
+    component: <ResellerClients />,
+  },
+  "reseller-services-vps": {
+    title: "VPS", breadcrumbs: ["ProxyVN", "Services", "VPS"],
+    component: <ResellerClients />,
+  },
+  "reseller-services-bandwidth": {
+    title: "Bandwidth", breadcrumbs: ["ProxyVN", "Services", "Bandwidth"],
     component: <ResellerClients />,
   },
   "reseller-orders": {

@@ -19,7 +19,9 @@ export const ADMIN_NAV: NavItem[] = [
 
   { id: "admin-tickets", label: "Support tickets", portal: "admin", section: "Customers", badge: "danger", count: 23 },
 
-  { id: "admin-services", label: "Services", portal: "admin", section: "Services" },
+  { id: "admin-services-proxies", label: "Proxies", portal: "admin", section: "Services", count: 10 },
+  { id: "admin-services-vps", label: "VPS", portal: "admin", section: "Services", count: 7 },
+  { id: "admin-services-bandwidth", label: "Bandwidth", portal: "admin", section: "Services", count: 7 },
 
   { id: "admin-invoices", label: "Invoices", portal: "admin", section: "Billing" },
   { id: "admin-transactions", label: "Transactions", portal: "admin", section: "Billing" },
@@ -36,7 +38,9 @@ export const RESELLER_NAV: NavItem[] = [
 
   { id: "reseller-clients", label: "Accounts", portal: "reseller", section: "Customers", count: 312 },
 
-  { id: "reseller-services", label: "Services", portal: "reseller", section: "Services" },
+  { id: "reseller-services-proxies", label: "Proxies", portal: "reseller", section: "Services" },
+  { id: "reseller-services-vps", label: "VPS", portal: "reseller", section: "Services" },
+  { id: "reseller-services-bandwidth", label: "Bandwidth", portal: "reseller", section: "Services" },
 
   { id: "reseller-catalog", label: "Catalog & Pricing", portal: "reseller", section: "Billing" },
   { id: "reseller-orders", label: "Orders", portal: "reseller", section: "Billing" },
@@ -49,7 +53,9 @@ export const RESELLER_NAV: NavItem[] = [
 export const CLIENT_NAV: NavItem[] = [
   { id: "client-overview", label: "Overview", portal: "client" },
 
-  { id: "client-services", label: "My services", portal: "client", section: "Services", count: 5 },
+  { id: "client-services-proxies", label: "Proxies", portal: "client", section: "Services", count: 5 },
+  { id: "client-services-vps", label: "VPS", portal: "client", section: "Services" },
+  { id: "client-services-bandwidth", label: "Bandwidth", portal: "client", section: "Services" },
 
   { id: "client-shop", label: "Shop", portal: "client", section: "Billing" },
   { id: "client-wallet", label: "Wallet", portal: "client", section: "Billing" },

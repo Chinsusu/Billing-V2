@@ -24,8 +24,16 @@ const SCREENS: Record<string, ScreenConfig> = {
     title: "Shop", breadcrumbs: ["ProxyVN", "Shop"],
     component: <ClientShop />,
   },
-  "client-services": {
-    title: "My services", breadcrumbs: ["ProxyVN", "Services"],
+  "client-services-proxies": {
+    title: "Proxies", breadcrumbs: ["ProxyVN", "Services", "Proxies"],
+    component: <ClientDashboard />,
+  },
+  "client-services-vps": {
+    title: "VPS", breadcrumbs: ["ProxyVN", "Services", "VPS"],
+    component: <ClientDashboard />,
+  },
+  "client-services-bandwidth": {
+    title: "Bandwidth", breadcrumbs: ["ProxyVN", "Services", "Bandwidth"],
     component: <ClientDashboard />,
   },
   "client-wallet": {
