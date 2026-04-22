@@ -1,6 +1,6 @@
 # T003 - HTTP Middleware Base
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/http-middleware-base
 PR: https://github.com/Chinsusu/Billing-V2/pull/8
@@ -36,3 +36,4 @@ Add recover middleware, request logging middleware, method guard helper, and tes
 
 - 2026-04-22: Task file created from `TASKS.md`.
 - 2026-04-22: PR #8 opened for review; resolved task-board conflict by moving mutable status into this task file.
+- 2026-04-22: PR #8 merged into `main`; task completed.
