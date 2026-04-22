@@ -31,6 +31,9 @@ DONE         PR merged into main
 - Never update multiple unrelated task files in one PR.
 - Do not edit another agent's task file unless they ask you to take over.
 - Before claiming a task, pull latest `main` and check that the task file still says `TODO`.
+- Create the work branch from latest `origin/main`, not from the current branch.
+- Do not create a branch from another agent's feature/task branch.
+- If a branch was created from the wrong base, recreate it from `origin/main` and cherry-pick only the intended commits.
 - To claim a task, edit only that task file: set `Status`, `Owner`, `Branch`, and add a short log entry.
 - To open review, edit only that task file: set `Status: REVIEW`, add the PR link, and add validation notes.
 - To mark done, edit only that task file after the PR is merged: set `Status: DONE`, add the merged PR and date.
