@@ -1,4 +1,4 @@
-# Bộ tài liệu dự án nền tảng VPS/Proxy hybrid multi-tenant - v1.6 Git Workflow
+# Bộ tài liệu dự án nền tảng VPS/Proxy hybrid multi-tenant - v1.7 Pre-Dev Guardrails
 
 ## Mô tả
 Gói này là bản mở rộng technical handoff cho dự án web thuê/bán VPS/Proxy theo mô hình:
@@ -20,6 +20,8 @@ Bản v1.4 bổ sung lớp architecture deep dive `37–45` để khóa hướng
 Bản v1.5 bổ sung chuẩn coding, cấu trúc module/component, rule tách shared component, giới hạn dòng mỗi file và chuẩn đặt tên dễ hiểu.
 
 Bản v1.6 bổ sung workflow Git chuẩn cho tạo branch, dev, build, test, commit, pull request, review, merge, release và hotfix.
+
+Bản v1.7 bổ sung bộ guardrail trước dev: Definition of Ready/Done, testing strategy, API/error/logging standard, environment/config/secrets guide và database migration workflow.
 
 ## Nguyên tắc chung
 - Chưa code.
@@ -86,6 +88,11 @@ Bản v1.6 bổ sung workflow Git chuẩn cho tạo branch, dev, build, test, co
 ### Tài liệu development standards thêm ở bản v1.5
 - `05_development_standards/46_Coding_Standards_Module_Component_Guide.md`
 - `05_development_standards/47_Git_Workflow_Build_Test_PR_Merge_Guide.md`
+- `05_development_standards/48_Definition_Of_Ready_Done_And_Task_Workflow.md`
+- `05_development_standards/49_Testing_Strategy_And_Quality_Gates.md`
+- `05_development_standards/50_API_Response_Error_Logging_Standard.md`
+- `05_development_standards/51_Environment_Config_Secrets_Guide.md`
+- `05_development_standards/52_Database_Migration_Seed_Data_Workflow.md`
 
 ### Tài liệu tổng hợp và ghi chú
 - `VPS_Proxy_Project_Master_Document.md`
@@ -117,6 +124,11 @@ Bản v1.6 bổ sung workflow Git chuẩn cho tạo branch, dev, build, test, co
 10. `02_technical_handoff/17_RBAC_Permission_Matrix.md`
 11. `05_development_standards/46_Coding_Standards_Module_Component_Guide.md`
 12. `05_development_standards/47_Git_Workflow_Build_Test_PR_Merge_Guide.md`
+13. `05_development_standards/48_Definition_Of_Ready_Done_And_Task_Workflow.md`
+14. `05_development_standards/49_Testing_Strategy_And_Quality_Gates.md`
+15. `05_development_standards/50_API_Response_Error_Logging_Standard.md`
+16. `05_development_standards/51_Environment_Config_Secrets_Guide.md`
+17. `05_development_standards/52_Database_Migration_Seed_Data_Workflow.md`
 
 ### Cho frontend
 1. `02_technical_handoff/16_API_Contract_And_Permission_Spec.md`
@@ -127,6 +139,7 @@ Bản v1.6 bổ sung workflow Git chuẩn cho tạo branch, dev, build, test, co
 6. `02_technical_handoff/23_Notification_Email_Telegram_Template_Spec.md`
 7. `05_development_standards/46_Coding_Standards_Module_Component_Guide.md`
 8. `05_development_standards/47_Git_Workflow_Build_Test_PR_Merge_Guide.md`
+9. `05_development_standards/50_API_Response_Error_Logging_Standard.md`
 
 ### Cho QA
 1. `01_product_foundation/12_API_Data_Model_Acceptance_Criteria.md`
@@ -137,6 +150,8 @@ Bản v1.6 bổ sung workflow Git chuẩn cho tạo branch, dev, build, test, co
 6. `04_architecture_deep_dive/42_Secrets_Credential_Encryption_And_Audit_Architecture.md`
 7. `02_technical_handoff/21_QA_Test_Cases_And_Acceptance_Plan.md`
 8. `05_development_standards/47_Git_Workflow_Build_Test_PR_Merge_Guide.md`
+9. `05_development_standards/48_Definition_Of_Ready_Done_And_Task_Workflow.md`
+10. `05_development_standards/49_Testing_Strategy_And_Quality_Gates.md`
 
 ### Cho DevOps/Ops
 1. `02_technical_handoff/14_System_Architecture_Blueprint.md`
@@ -148,6 +163,8 @@ Bản v1.6 bổ sung workflow Git chuẩn cho tạo branch, dev, build, test, co
 7. `02_technical_handoff/22_Deployment_DevOps_And_Environment_Runbook.md`
 8. `02_technical_handoff/23_Notification_Email_Telegram_Template_Spec.md`
 9. `05_development_standards/47_Git_Workflow_Build_Test_PR_Merge_Guide.md`
+10. `05_development_standards/51_Environment_Config_Secrets_Guide.md`
+11. `05_development_standards/52_Database_Migration_Seed_Data_Workflow.md`
 
 ## 10 luật nền phải giữ
 1. Không provision nếu tiền chưa được debit/lock hợp lệ.
@@ -161,7 +178,7 @@ Bản v1.6 bổ sung workflow Git chuẩn cho tạo branch, dev, build, test, co
 9. Không cho client reseller provision nếu reseller wallet không đủ reseller cost.
 10. Không dùng giá/policy hiện tại để xử lý tranh chấp order cũ; dùng snapshot lúc mua.
 
-## Mục tiêu sau bản v1.6
+## Mục tiêu sau bản v1.7
 Sau khi đọc xong gói này, team dev phải trả lời được:
 - Cần tạo bảng nào và bảng nào bắt buộc có tenant_id.
 - API nào cần build và role nào được gọi.
@@ -182,6 +199,11 @@ Sau khi đọc xong gói này, team dev phải trả lời được:
 - Branch mới phải tạo từ đâu và đặt tên thế nào.
 - Trước khi commit, mở PR và merge cần chạy build/test gì.
 - Khi nào được merge, revert, hotfix hoặc tag release.
+- Khi nào task đủ ready để bắt đầu dev và khi nào được coi là done.
+- Test nào bắt buộc cho từng loại thay đổi.
+- API success/error/validation/pagination/logging phải theo format nào.
+- Config và secret phải được đặt, validate và rotate thế nào.
+- Migration, seed, backfill và rollback database phải đi theo quy trình nào.
 
 
 ---
@@ -262,3 +284,22 @@ This package adds the team delivery workflow layer `47`:
 ```
 
 The v1.6 layer defines branch naming, local development flow, build/test gates, commit style, pull request checklist, review rules, merge policy, revert, hotfix, release tagging, CI expectations, and secret handling in Git.
+
+
+---
+
+## v1.7 Update — Pre-Dev Guardrails
+
+**Date:** 2026-04-22
+
+This package adds the pre-development guardrail layer `48–52`:
+
+```text
+05_development_standards/48_Definition_Of_Ready_Done_And_Task_Workflow.md
+05_development_standards/49_Testing_Strategy_And_Quality_Gates.md
+05_development_standards/50_API_Response_Error_Logging_Standard.md
+05_development_standards/51_Environment_Config_Secrets_Guide.md
+05_development_standards/52_Database_Migration_Seed_Data_Workflow.md
+```
+
+The v1.7 layer defines task readiness, done criteria, testing gates, API/error/logging format, config/secret handling, database migration rules, seed data safety, and rollback expectations before production code starts.

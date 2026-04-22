@@ -44,3 +44,8 @@ Development standards:
 
 - [Coding standards, module structure, and component reuse](docs/05_development_standards/46_Coding_Standards_Module_Component_Guide.md)
 - [Git workflow, build, test, PR, and merge guide](docs/05_development_standards/47_Git_Workflow_Build_Test_PR_Merge_Guide.md)
+- [Definition of Ready, Definition of Done, and task workflow](docs/05_development_standards/48_Definition_Of_Ready_Done_And_Task_Workflow.md)
+- [Testing strategy and quality gates](docs/05_development_standards/49_Testing_Strategy_And_Quality_Gates.md)
+- [API response, error code, and logging standard](docs/05_development_standards/50_API_Response_Error_Logging_Standard.md)
+- [Environment, config, and secrets guide](docs/05_development_standards/51_Environment_Config_Secrets_Guide.md)
+- [Database migration, seed, and data safety workflow](docs/05_development_standards/52_Database_Migration_Seed_Data_Workflow.md)
