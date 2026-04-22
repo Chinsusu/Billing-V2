@@ -19,9 +19,7 @@ export const ADMIN_NAV: NavItem[] = [
 
   { id: "admin-tickets", label: "Support tickets", portal: "admin", section: "Customers", badge: "danger", count: 23 },
 
-  { id: "admin-services-proxies", label: "Proxies", portal: "admin", section: "Services", count: 10 },
-  { id: "admin-services-vps", label: "VPS", portal: "admin", section: "Services", count: 7 },
-  { id: "admin-services-bandwidth", label: "Bandwidth", portal: "admin", section: "Services", count: 7 },
+  { id: "admin-services", label: "Services", portal: "admin", section: "Services" },
 
   { id: "admin-invoices", label: "Invoices", portal: "admin", section: "Billing" },
   { id: "admin-transactions", label: "Transactions", portal: "admin", section: "Billing" },
@@ -36,7 +34,7 @@ export const ADMIN_NAV: NavItem[] = [
 export const RESELLER_NAV: NavItem[] = [
   { id: "reseller-overview", label: "Overview", portal: "reseller" },
 
-  { id: "reseller-clients", label: "Clients", portal: "reseller", section: "Customers", count: 312 },
+  { id: "reseller-clients", label: "Accounts", portal: "reseller", section: "Customers", count: 312 },
 
   { id: "reseller-services", label: "Services", portal: "reseller", section: "Services" },
 
