@@ -54,6 +54,7 @@ DONE         PR merged into main
 | T011 | [tasks/active/T011_persistence_repositories.md](tasks/active/T011_persistence_repositories.md) | feat/persistence-repositories | tenant/RBAC/audit/DB | Add PostgreSQL repository layer for tenant, identity, RBAC, and audit foundation. |
 | T012 | [tasks/active/T012_outbox_store_runner.md](tasks/active/T012_outbox_store_runner.md) | feat/outbox-store-runner | worker/outbox/retry | Add PostgreSQL job/outbox store implementations and worker runner skeleton. |
 | T013 | [tasks/active/T013_provider_registry.md](tasks/active/T013_provider_registry.md) | feat/provider-registry | provider | Add provider adapter registry and fake registry wiring for dev/test. |
+| T014 | [tasks/active/T014_api_contracts.md](tasks/active/T014_api_contracts.md) | feat/api-contracts | API | Add shared API response, validation error, and cursor pagination helpers. |
 
 ## Completed Tasks
 
