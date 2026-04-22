@@ -1,9 +1,9 @@
 # T015 - Numeric display IDs
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: feat/display-ids
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/38
 Risk: migration/API/UI
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -38,3 +38,4 @@ Add short numeric IDs for FE-visible records while keeping UUIDs as the internal
 ## Agent Log
 
 - 2026-04-23: Task claimed from latest `origin/main` in `/tmp/Billing-T015`.
+- 2026-04-23: Opened PR #38. Validation passed: `make fmt`, `make test`, `make build`, `make migrate-validate`.
