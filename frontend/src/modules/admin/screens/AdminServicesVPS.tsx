@@ -14,34 +14,51 @@ export function AdminServicesVPS() {
         <table className="w-full text-[13px] border-collapse">
           <thead>
             <tr className="bg-gray-50">
-              {["ID", "OS", "Label", "Customer", "Tenant", "Region", "Spec", "IP", "Provider", "Price/mo", "Status", "Date", "Expire", "Action"].map((h) => (
-                <th key={h} className="text-left text-[11px] font-medium uppercase tracking-wide text-gray-400 p-4 p-4 border-b border-gray-200">
-                  {h}
+              {
+              [
+                { label: "ID", align: "left" },
+                { label: "OS", align: "left" },
+                { label: "Label", align: "left" },
+                { label: "Customer", align: "left" },
+                { label: "Tenant", align: "left" },
+                { label: "Region", align: "left" },
+                { label: "Spec", align: "left" },
+                { label: "IP", align: "left" },
+                { label: "Provider", align: "left" },
+                { label: "Price/mo", align: "right" },
+                { label: "Status", align: "center" },
+                { label: "Date", align: "left" },
+                { label: "Expire", align: "center" },
+                { label: "Action", align: "center" }
+              ].map((h) => (
+                <th key={h.label} className={`text-${h.align} text-[11px] font-medium uppercase tracking-wide text-gray-400 p-4 border-b border-gray-200`}>
+                  {h.label}
                 </th>
-              ))}
+              ))
+            }
             </tr>
           </thead>
           <tbody>
             {VPS_SERVICES.map((s) => (
               <tr key={s.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
-                <td className="p-4 p-4 text-[11px] text-[#D50C2D]">{s.id}</td>
-                <td className="p-4 p-4">
+                <td className="p-4 text-[11px] text-[#D50C2D]">{s.id}</td>
+                <td className="p-4">
                   <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${s.os === "linux" ? "bg-orange-50 text-orange-700" : "bg-blue-50 text-blue-700"}`}>
                     {s.os === "linux" ? "Linux" : "Windows"}
                   </span>
                 </td>
-                <td className="p-4 p-4 text-gray-800 max-w-[160px] truncate">{s.label}</td>
-                <td className="p-4 p-4 text-gray-500">{s.customer}</td>
-                <td className="p-4 p-4 text-gray-400 text-[11px]">{s.tenant}</td>
-                <td className="p-4 p-4 text-[11px] text-gray-400">{s.region}</td>
-                <td className="p-4 p-4 text-gray-500 text-[11px] whitespace-nowrap">
+                <td className="p-4 text-gray-800 max-w-[160px] truncate">{s.label}</td>
+                <td className="p-4 text-gray-500">{s.customer}</td>
+                <td className="p-4 text-gray-400 text-[11px]">{s.tenant}</td>
+                <td className="p-4 text-[11px] text-gray-400">{s.region}</td>
+                <td className="p-4 text-gray-500 text-[11px] whitespace-nowrap">
                   {s.cpu}C / {s.ram}G / {s.disk}G
                 </td>
-                <td className="p-4 p-4 text-[11px] text-gray-400">{s.ip}</td>
-                <td className="p-4 p-4 text-gray-400 text-[11px]">{s.provider}</td>
-                <td className="p-4 p-4 tabular-nums text-right font-medium">{fmtMoney(s.price)}</td>
-                <td className="p-4 p-4 w-[110px]"><StatusBadge status={s.status} dot /></td>
-                <td className="p-4 p-4 tabular-nums text-[11px] text-gray-500 whitespace-nowrap leading-relaxed">
+                <td className="p-4 text-[11px] text-gray-400">{s.ip}</td>
+                <td className="p-4 text-gray-400 text-[11px]">{s.provider}</td>
+                <td className="p-4 tabular-nums text-right font-medium">{fmtMoney(s.price)}</td>
+                <td className="p-4 w-[110px] text-center"><StatusBadge status={s.status} dot /></td>
+                <td className="p-4 tabular-nums text-[11px] text-gray-500 whitespace-nowrap leading-relaxed">
                   {(() => {
                     const now = new Date();
                     const exp = new Date(now.getTime() + s.renewsIn * 24 * 3600 * 1000);
@@ -51,13 +68,13 @@ export function AdminServicesVPS() {
                     return <><div className="mb-0.5 text-gray-800">{f(ord)}</div><div>{f(exp)}</div></>;
                   })()}
                 </td>
-                <td className="p-4 p-4 tabular-nums whitespace-nowrap">
+                <td className="p-4 tabular-nums whitespace-nowrap text-center">
                   <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-medium 
                     ${s.renewsIn < 0 ? "bg-[#D50C2D] text-white" : "bg-[#D50C2D] text-white"}`}>
                     {s.renewsIn < 0 ? `quá hạn ${Math.abs(s.renewsIn)} ngày` : `còn ${s.renewsIn} ngày`}
                   </span>
                 </td>
-                <td className="p-4 p-4 w-[60px] text-center">
+                <td className="p-4 w-[60px] text-center">
                   <button className="text-gray-400 hover:text-gray-600 p-1 rounded transition-colors cursor-pointer bg-transparent border-0 inline-flex items-center justify-center">
                     <Settings size={14} />
                   </button>
