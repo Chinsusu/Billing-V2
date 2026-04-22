@@ -1,9 +1,9 @@
 # T005 - Initial Database Migrations
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: chore/initial-db-migrations
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/26
 Risk: migration/tenant
 Created: 2026-04-22
 Updated: 2026-04-22
@@ -36,3 +36,4 @@ Add initial migration files for tenants, users, roles, permissions, and audit sh
 
 - 2026-04-22: Task file created from `TASKS.md`.
 - 2026-04-22: Claimed by Codex. Adding tenant, identity/RBAC, audit migrations with manual rollback artifact.
+- 2026-04-22: Opened PR https://github.com/Chinsusu/Billing-V2/pull/26. Validation passed: make fmt, make test, make build, make migrate-validate.
