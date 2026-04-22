@@ -49,7 +49,7 @@ Example:
 | T006 | TODO | - | feat/outbox-job-skeleton | - | worker/migration | Add outbox/jobs table model and worker claim interface after DB skeleton exists. |
 | T007 | TODO | - | feat/provider-adapter-interface | - | provider/credential | Add provider adapter interface, normalized provider error types, and fake adapter tests. |
 | T008 | TODO | - | docs/local-dev-runbook | - | docs | Add local development runbook after DB and migration commands exist. |
-| T009 | REVIEW | Sonnet4.6 | feat/frontend-ui-billing-admin | - | frontend | Add HANetwork Billing frontend UI (Admin, Reseller, Client portals) from design file. |
+| T009 | REVIEW | Sonnet4.6 | feat/frontend-ui-billing-admin | [#13](https://github.com/Chinsusu/Billing-V2/pull/13) | frontend | Add HANetwork Billing frontend UI (Admin, Reseller, Client portals) from design file. |
 
 ## Completed Tasks
 
