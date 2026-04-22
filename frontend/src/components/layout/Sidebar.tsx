@@ -124,42 +124,52 @@ export function Sidebar({ portal, activeScreen, onSelect, collapsed, onToggle }:
 }
 
 const NAV_ICONS: Record<string, React.ReactNode> = {
+  // Overview
   "admin-overview": <LayoutDashboard size={14} />,
   "reseller-overview": <LayoutDashboard size={14} />,
   "client-overview": <LayoutDashboard size={14} />,
-  "admin-tenants": <Users size={14} />,
+
+  // Customers
+  "admin-accounts": <Users size={14} />,
+  "reseller-accounts": <Users size={14} />,
+  "admin-tickets": <Headphones size={14} />,
+  "reseller-tickets": <Headphones size={14} />,
+  "client-tickets": <Headphones size={14} />,
+
+  // Services
+  "admin-services-proxies": <Globe size={14} />,
+  "reseller-services-proxies": <Globe size={14} />,
+  "client-services-proxies": <Globe size={14} />,
+  "admin-services-vps": <Server size={14} />,
+  "reseller-services-vps": <Server size={14} />,
+  "client-services-vps": <Server size={14} />,
+  "admin-services-bandwidth": <Gauge size={14} />,
+  "reseller-services-bandwidth": <Gauge size={14} />,
+  "client-services-bandwidth": <Gauge size={14} />,
+
+  // Billing
+  "admin-invoices": <Receipt size={14} />,
+  "reseller-invoices": <Receipt size={14} />,
+  "client-invoices": <Receipt size={14} />,
+  "admin-transactions": <ArrowLeftRight size={14} />,
+  "reseller-transactions": <ArrowLeftRight size={14} />,
+  "client-transactions": <ArrowLeftRight size={14} />,
+  "admin-products": <Package size={14} />,
+  "reseller-products": <Package size={14} />,
+  "admin-reports": <BarChart2 size={14} />,
+  "reseller-reports": <BarChart2 size={14} />,
+
+  // System
   "admin-provisioning": <Wrench size={14} />,
   "admin-topups": <ArrowDownCircle size={14} />,
   "admin-providers": <Plug size={14} />,
-  "admin-customers": <UserCheck size={14} />,
-  "reseller-clients": <UserCheck size={14} />,
-  "admin-tickets": <Headphones size={14} />,
-  "client-support": <Headphones size={14} />,
-  "admin-services-proxies": <Globe size={14} />,
-  "admin-services-vps": <Server size={14} />,
-  "admin-services-bandwidth": <Gauge size={14} />,
-  "reseller-services-proxies": <Globe size={14} />,
-  "reseller-services-vps": <Server size={14} />,
-  "reseller-services-bandwidth": <Gauge size={14} />,
-  "client-services-proxies": <Globe size={14} />,
-  "client-services-vps": <Server size={14} />,
-  "client-services-bandwidth": <Gauge size={14} />,
-  "admin-invoices": <Receipt size={14} />,
-  "reseller-orders": <Receipt size={14} />,
-  "admin-transactions": <ArrowLeftRight size={14} />,
-  "reseller-wallet": <Wallet size={14} />,
-  "client-wallet": <Wallet size={14} />,
-  "admin-products": <Package size={14} />,
-  "reseller-catalog": <Package size={14} />,
-  "client-shop": <ShoppingBag size={14} />,
-  "admin-reports": <BarChart2 size={14} />,
   "admin-alerts": <Bell size={14} />,
   "admin-logs": <ScrollText size={14} />,
+
+  // Settings
   "admin-settings": <Settings size={14} />,
   "reseller-settings": <Settings size={14} />,
   "client-settings": <Settings size={14} />,
-  "reseller-reports": <BarChart2 size={14} />,
-  "client-usage": <BarChart2 size={14} />,
 };
 
 function NavIcon({ id }: { id: string }) {
