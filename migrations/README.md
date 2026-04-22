@@ -17,3 +17,9 @@ Rules:
 - Do not edit migrations after they have run in a shared environment.
 - Add a new migration to fix a previous migration.
 - Explain rollback/data impact in the PR.
+
+## Rollback Artifacts
+
+The migration runner only applies top-level forward `*.sql` files. Manual rollback scripts live under `migrations/rollback/` and are not executed by `make migrate-validate` or `cmd/migrate up`.
+
+Rollback scripts that drop tables or types are for clean/dev environments only unless an owner approves data loss and backup/restore steps.
