@@ -35,3 +35,4 @@ Add provider adapter interface, normalized provider error types, and fake adapte
 ## Agent Log
 
 - 2026-04-22: Task file created from `TASKS.md`.
+- 2026-04-22: PR #22 was closed and branch `feat/provider-adapter-interface` was deleted per owner request because CI failed and the task file was not updated. Task remains TODO for a clean restart.
