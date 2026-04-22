@@ -1,6 +1,6 @@
 # Multi-Agent Task Board Conflict Workflow
 
-**Version:** v1.9
+**Version:** v1.10
 **Date:** 2026-04-22
 **Scope:** Multi-agent task coordination, task claiming, PR status updates, conflict reduction, and task completion.
 
@@ -65,6 +65,28 @@ Agent Log
 
 Keep the field names stable so agents can scan files quickly.
 
+## Branch Base Rule
+
+Every task branch must start from latest `origin/main`.
+
+Do not create child branches from another agent's feature/task branch. In multi-agent work, a child branch makes the PR include parent-branch commits, stale task-file status, and unrelated files.
+
+Safe branch creation:
+
+```bash
+git fetch origin --prune
+git switch -c <type>/<scope>-<short-name> origin/main
+```
+
+Safer for parallel agents:
+
+```bash
+git fetch origin --prune
+git worktree add -b <type>/<scope>-<short-name> /tmp/Billing-<task-id> origin/main
+```
+
+If a branch was created from another task branch, do not keep building on it. Recreate from `origin/main` and cherry-pick only the commits for the current task.
+
 ## Claim Flow
 
 Before claiming:
@@ -74,6 +96,7 @@ Before claiming:
 3. Open the linked task file.
 4. Confirm `Status: TODO`.
 5. Check GitHub PRs or remote branches if the branch name already exists.
+6. Confirm the work branch was created from latest `origin/main`, not from another task branch.
 
 To claim:
 
@@ -141,6 +164,7 @@ If `TASKS.md` conflicts:
 - Do not overwrite a task file status based on the old table.
 - Sort active rows by task ID.
 - Keep completed historical rows unless the PR intentionally changes them.
+- If the PR includes task rows or files from another branch, recreate the branch from `origin/main` before resolving task-board conflicts.
 
 If a task file conflicts:
 
@@ -177,6 +201,7 @@ Do not:
 - update another agent's task file without handoff
 - mark a task done before merge
 - resolve a conflict by deleting unrelated task rows
+- create a task branch from another task branch
 - hide follow-up tasks in PR comments only
 
 ## Definition Of Done
@@ -188,3 +213,4 @@ This workflow is followed when:
 - `TASKS.md` stays mostly stable
 - new tasks are added with both an index row and a task file
 - rebase conflicts preserve unrelated task rows and task-file status
+- task branches start from latest `origin/main`, not from another agent's feature/task branch

@@ -91,6 +91,9 @@ Rules:
 
 - Read `TASKS.md` before starting work.
 - Open the linked file under `tasks/active/` before claiming.
+- Fetch `origin/main` and create the task branch from `origin/main`; never branch from another agent's task branch.
+- If you are already on a feature/task branch, create a separate worktree or switch to `main` before creating a new branch.
+- If a branch was created from the wrong base, stop and recreate it from `origin/main`, then cherry-pick only the intended commits.
 - Claim a `TODO` task by editing only that task file: set `Status: IN_PROGRESS`, `Owner`, `Branch`, and an `Agent Log` entry.
 - Do not edit `TASKS.md` just to claim, review, block, or finish an existing task.
 - Do not claim a task already marked `IN_PROGRESS` or `REVIEW` unless the owner says it is abandoned.
@@ -176,13 +179,28 @@ Rules:
 
 ## Git Workflow
 
-Use short-lived branches from `main`:
+Use short-lived branches from latest `origin/main`. Do not create a new task branch while sitting on another task branch.
 
 ```bash
-git switch main
-git pull --ff-only origin main
-git switch -c <type>/<scope>-<short-name>
+git fetch origin --prune
+git switch -c <type>/<scope>-<short-name> origin/main
 ```
+
+For parallel agents, prefer isolated worktrees:
+
+```bash
+git fetch origin --prune
+git worktree add -b <type>/<scope>-<short-name> /tmp/Billing-<task-id> origin/main
+```
+
+Before opening PR, update from `main` without pulling another task branch into your branch:
+
+```bash
+git fetch origin --prune
+git rebase origin/main
+```
+
+If the PR diff contains commits or files from another task, close/recreate the branch from `origin/main` instead of trying to merge it as-is.
 
 Use commit messages like:
 

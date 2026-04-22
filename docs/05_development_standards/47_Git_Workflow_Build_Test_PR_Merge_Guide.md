@@ -1,6 +1,6 @@
 # Git Workflow, Build, Test, PR, and Merge Guide
 
-**Version:** v1.6  
+**Version:** v1.7
 **Date:** 2026-04-22  
 **Scope:** Branching, local development, build, test, commit, pull request, review, merge, release, and hotfix workflow.
 
@@ -15,18 +15,19 @@ Quy trình khuyến nghị: `main` được bảo vệ, mọi thay đổi đi qu
 1. Không commit trực tiếp vào `main`.
 2. Mọi thay đổi code phải đi qua pull request.
 3. Một branch chỉ xử lý một mục tiêu rõ.
-4. Một PR nên nhỏ, dễ review và có phạm vi rõ.
-5. Build và test liên quan phải pass trước khi merge.
-6. Không merge khi còn conflict, CI fail hoặc review chưa xử lý.
-7. Không commit secret, password, private key, token, file `.env` thật hoặc dữ liệu khách hàng.
-8. Không sửa lịch sử Git của branch người khác nếu chưa thống nhất.
-9. Không dùng commit message mơ hồ như `fix`, `update`, `wip`, `change`, `done`.
-10. Không bypass quy trình với flow tiền, tenant, quyền, credential, provider, provisioning hoặc audit.
+4. Create task branches from latest `origin/main`; do not create them from another agent feature/task branch.
+5. Một PR nên nhỏ, dễ review và có phạm vi rõ.
+6. Build và test liên quan phải pass trước khi merge.
+7. Không merge khi còn conflict, CI fail hoặc review chưa xử lý.
+8. Không commit secret, password, private key, token, file `.env` thật hoặc dữ liệu khách hàng.
+9. Không sửa lịch sử Git của branch người khác nếu chưa thống nhất.
+10. Không dùng commit message mơ hồ như `fix`, `update`, `wip`, `change`, `done`.
+11. Không bypass quy trình với flow tiền, tenant, quyền, credential, provider, provisioning hoặc audit.
 
 ## Workflow tổng thể
 
 ```text
-main mới nhất
+origin/main mới nhất
   -> tạo branch ngắn hạn
   -> code và test local
   -> commit rõ nghĩa
@@ -71,15 +72,36 @@ Tên branch viết thường, dùng dấu `-`, không dùng dấu cách, không 
 
 ## Tạo branch
 
-Luôn bắt đầu từ `main` mới nhất:
+Always start from latest `origin/main`, not from the current branch:
 
 ```bash
-git switch main
-git pull --ff-only origin main
-git switch -c feat/wallet-topup-api
+git fetch origin --prune
+git switch -c feat/wallet-topup-api origin/main
 ```
 
-Không tạo branch từ branch cũ nếu không cần. Branch chồng branch làm review và merge khó hơn.
+For parallel agents, prefer an isolated worktree so the branch cannot inherit another task branch by accident:
+
+```bash
+git fetch origin --prune
+git worktree add -b feat/wallet-topup-api /tmp/Billing-T011 origin/main
+```
+
+Do not create a new branch while currently on another agent feature/task branch. Stacked task branches make PRs include unrelated commits/files, create conflicts, and can merge an unreviewed task by accident.
+
+If the branch base is wrong:
+
+1. Stop coding on that branch.
+2. Create a clean branch from `origin/main`.
+3. Cherry-pick only commits that belong to your task.
+4. Do not merge or rebase the old task branch into the clean branch.
+
+Example:
+
+```bash
+git fetch origin --prune
+git switch -c feat/wallet-topup-api-clean origin/main
+git cherry-pick <your-task-commit>
+```
 
 ## Dev local
 
@@ -339,6 +361,7 @@ Chỉ merge khi:
 - Comment blocking đã xử lý.
 - Branch cập nhật với `main`.
 - PR scope đúng và không lẫn thay đổi ngoài ý định.
+- PR does not contain commits or files from another task branch.
 
 Chiến lược khuyến nghị:
 

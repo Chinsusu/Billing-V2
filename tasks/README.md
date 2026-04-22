@@ -7,14 +7,17 @@ Task files reduce merge conflicts between coding agents.
 ## Claim Flow
 
 1. Pull latest `main`.
-2. Open `TASKS.md` and pick a task.
-3. Open the linked task file.
-4. Claim only if `Status: TODO`.
-5. Edit only that task file:
+2. Create the task branch from latest `origin/main`, not from the current branch.
+3. Open `TASKS.md` and pick a task.
+4. Open the linked task file.
+5. Claim only if `Status: TODO`.
+6. Edit only that task file:
    - set `Status: IN_PROGRESS`
    - set `Owner`
    - set `Branch`
    - add a short log entry
+
+If the branch was accidentally created from another task branch, stop and recreate it from `origin/main`; cherry-pick only the commits for this task.
 
 ## Review Flow
 
@@ -38,6 +41,8 @@ Do not mark a task `DONE` before its PR is merged.
 ## Conflict Rules
 
 - Do not edit another agent's task file.
+- Do not create child branches from another agent's feature/task branch.
+- Do not merge or rebase another task branch into your task branch unless the task owner asks for that handoff.
 - Do not edit `TASKS.md` for normal claim/review/done updates.
 - If a rebase conflicts in `TASKS.md`, preserve all unrelated new task rows.
 - If a rebase conflicts in your own task file, re-read the latest file and apply only your current status update.
