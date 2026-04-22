@@ -1,0 +1,25 @@
+# Default owner for all changes.
+* @Chinsusu
+
+# Documentation and standards.
+/README.md @Chinsusu
+/docs/ @Chinsusu
+
+# Database safety.
+/migrations/ @Chinsusu
+
+# Backend entrypoints and shared infrastructure.
+/cmd/ @Chinsusu
+/internal/app/ @Chinsusu
+/internal/platform/ @Chinsusu
+
+# High-risk business modules.
+/internal/modules/wallet/ @Chinsusu
+/internal/modules/ledger/ @Chinsusu
+/internal/modules/order/ @Chinsusu
+/internal/modules/settlement/ @Chinsusu
+/internal/modules/tenant/ @Chinsusu
+/internal/modules/rbac/ @Chinsusu
+/internal/modules/provider/ @Chinsusu
+/internal/modules/provisioning/ @Chinsusu
+/internal/modules/audit/ @Chinsusu
