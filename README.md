@@ -20,6 +20,7 @@ internal/
 migrations/    PostgreSQL migrations
 scripts/       local/dev/ops scripts
 docs/          project documentation package
+tasks/         per-task coordination files for multi-agent work
 ```
 
 ## Documentation
@@ -27,6 +28,8 @@ docs/          project documentation package
 Start with [docs/00_README.md](docs/00_README.md).
 
 The full documentation manifest is in [docs/MANIFEST.txt](docs/MANIFEST.txt).
+
+Task coordination starts with [TASKS.md](TASKS.md) and [tasks/README.md](tasks/README.md).
 
 Architecture implementation baseline:
 
@@ -50,3 +53,4 @@ Development standards:
 - [Environment, config, and secrets guide](docs/05_development_standards/51_Environment_Config_Secrets_Guide.md)
 - [Database migration, seed, and data safety workflow](docs/05_development_standards/52_Database_Migration_Seed_Data_Workflow.md)
 - [Frontend app shell and UI implementation standard](docs/05_development_standards/53_Frontend_App_Shell_And_UI_Implementation_Standard.md)
+- [Multi-agent task board conflict workflow](docs/05_development_standards/54_Multi_Agent_Task_Board_Conflict_Workflow.md)
