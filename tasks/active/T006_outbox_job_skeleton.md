@@ -1,7 +1,7 @@
 # T006 - Outbox Job Skeleton
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: feat/outbox-job-skeleton
 PR: -
 Risk: worker/migration
@@ -35,3 +35,4 @@ Add outbox/jobs table model and worker claim interface after the DB skeleton exi
 ## Agent Log
 
 - 2026-04-22: Task file created from `TASKS.md`.
+- 2026-04-22: Claimed by Codex. Adding outbox/jobs migration, job data shapes, and atomic claim interface skeleton.
