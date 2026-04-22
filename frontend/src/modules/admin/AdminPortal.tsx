@@ -33,8 +33,8 @@ const SCREENS: Record<string, ScreenConfig> = {
     meta: <StatusBadge status="active" dot />,
     component: <AdminOverview />,
   },
-  "admin-tenants": {
-    title: "Accounts", breadcrumbs: ["HANetwork", "Platform", "Accounts"],
+  "admin-accounts": {
+    title: "Accounts", breadcrumbs: ["HANetwork", "Customers", "Accounts"],
     meta: <span className="text-[11px] text-gray-400">2,852 accounts · 4 resellers</span>,
     component: <AdminTenants />,
   },

@@ -12,11 +12,7 @@ export interface NavItem {
 export const ADMIN_NAV: NavItem[] = [
   { id: "admin-overview", label: "Overview", portal: "admin" },
 
-  { id: "admin-tenants", label: "Accounts", portal: "admin", section: "Platform", count: 2852 },
-  { id: "admin-provisioning", label: "Provisioning queue", portal: "admin", section: "Platform", badge: "danger", count: 6 },
-  { id: "admin-topups", label: "Top-up verification", portal: "admin", section: "Platform", badge: "danger", count: 3 },
-  { id: "admin-providers", label: "Providers / Sources", portal: "admin", section: "Platform" },
-
+  { id: "admin-accounts", label: "Accounts", portal: "admin", section: "Customers", count: 2852 },
   { id: "admin-tickets", label: "Support tickets", portal: "admin", section: "Customers", badge: "danger", count: 23 },
 
   { id: "admin-services-proxies", label: "Proxies", portal: "admin", section: "Services", count: 10 },
@@ -28,6 +24,9 @@ export const ADMIN_NAV: NavItem[] = [
   { id: "admin-products", label: "Products & Pricing", portal: "admin", section: "Billing" },
   { id: "admin-reports", label: "Reports", portal: "admin", section: "Billing" },
 
+  { id: "admin-provisioning", label: "Provisioning queue", portal: "admin", section: "System", badge: "danger", count: 6 },
+  { id: "admin-topups", label: "Top-up verification", portal: "admin", section: "System", badge: "danger", count: 3 },
+  { id: "admin-providers", label: "Providers / Sources", portal: "admin", section: "System" },
   { id: "admin-alerts", label: "Alerts", portal: "admin", section: "System", badge: "danger", count: 5 },
   { id: "admin-logs", label: "Audit logs", portal: "admin", section: "System" },
 
@@ -37,32 +36,33 @@ export const ADMIN_NAV: NavItem[] = [
 export const RESELLER_NAV: NavItem[] = [
   { id: "reseller-overview", label: "Overview", portal: "reseller" },
 
-  { id: "reseller-clients", label: "Accounts", portal: "reseller", section: "Customers", count: 312 },
+  { id: "reseller-accounts", label: "Accounts", portal: "reseller", section: "Customers", count: 312 },
+  { id: "reseller-tickets", label: "Support tickets", portal: "reseller", section: "Customers", count: 5 },
 
   { id: "reseller-services-proxies", label: "Proxies", portal: "reseller", section: "Services" },
   { id: "reseller-services-vps", label: "VPS", portal: "reseller", section: "Services" },
   { id: "reseller-services-bandwidth", label: "Bandwidth", portal: "reseller", section: "Services" },
 
-  { id: "reseller-catalog", label: "Catalog & Pricing", portal: "reseller", section: "Billing" },
-  { id: "reseller-orders", label: "Orders", portal: "reseller", section: "Billing" },
-  { id: "reseller-wallet", label: "Wallet & Top-up", portal: "reseller", section: "Billing" },
+  { id: "reseller-invoices", label: "Invoices", portal: "reseller", section: "Billing" },
+  { id: "reseller-transactions", label: "Transactions", portal: "reseller", section: "Billing" },
+  { id: "reseller-products", label: "Products & Pricing", portal: "reseller", section: "Billing" },
   { id: "reseller-reports", label: "Reports", portal: "reseller", section: "Billing" },
 
-  { id: "reseller-settings", label: "Branding & Settings", portal: "reseller", section: "Settings" },
+  { id: "reseller-settings", label: "Settings", portal: "reseller", section: "Settings" },
 ];
 
 export const CLIENT_NAV: NavItem[] = [
   { id: "client-overview", label: "Overview", portal: "client" },
 
+  { id: "client-tickets", label: "Support tickets", portal: "client", section: "Customers" },
+
   { id: "client-services-proxies", label: "Proxies", portal: "client", section: "Services", count: 5 },
   { id: "client-services-vps", label: "VPS", portal: "client", section: "Services" },
   { id: "client-services-bandwidth", label: "Bandwidth", portal: "client", section: "Services" },
 
-  { id: "client-shop", label: "Shop", portal: "client", section: "Billing" },
-  { id: "client-wallet", label: "Wallet", portal: "client", section: "Billing" },
-  { id: "client-usage", label: "Usage", portal: "client", section: "Billing" },
+  { id: "client-invoices", label: "Invoices", portal: "client", section: "Billing" },
+  { id: "client-transactions", label: "Transactions", portal: "client", section: "Billing" },
 
-  { id: "client-support", label: "Support tickets", portal: "client", section: "Settings" },
   { id: "client-settings", label: "Settings", portal: "client", section: "Settings" },
 ];
 

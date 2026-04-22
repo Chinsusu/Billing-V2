@@ -18,19 +18,18 @@ interface ScreenConfig {
 
 const SCREENS: Record<string, ScreenConfig> = {
   "reseller-overview": {
-    title: "Dashboard", breadcrumbs: ["ProxyVN", "Dashboard"],
+    title: "Overview", breadcrumbs: ["ProxyVN", "Overview"],
     meta: <StatusBadge status="active" dot />,
     component: <ResellerDashboard />,
   },
-  "reseller-clients": {
-    title: "Clients", breadcrumbs: ["ProxyVN", "Clients"],
-    meta: <span className="text-[11px] text-gray-400">312 clients</span>,
+  "reseller-accounts": {
+    title: "Accounts", breadcrumbs: ["ProxyVN", "Customers", "Accounts"],
+    meta: <span className="text-[11px] text-gray-400">312 accounts</span>,
     component: <ResellerClients />,
   },
-  "reseller-catalog": {
-    title: "Catalog / Pricing", breadcrumbs: ["ProxyVN", "Catalog"],
-    meta: <span className="text-[11px] text-amber-600 font-medium">1 margin warning</span>,
-    component: <ResellerCatalog />,
+  "reseller-tickets": {
+    title: "Support tickets", breadcrumbs: ["ProxyVN", "Customers", "Tickets"],
+    component: <ResellerClients />,
   },
   "reseller-services-proxies": {
     title: "Proxies", breadcrumbs: ["ProxyVN", "Services", "Proxies"],
@@ -44,21 +43,24 @@ const SCREENS: Record<string, ScreenConfig> = {
     title: "Bandwidth", breadcrumbs: ["ProxyVN", "Services", "Bandwidth"],
     component: <ResellerClients />,
   },
-  "reseller-orders": {
-    title: "Orders", breadcrumbs: ["ProxyVN", "Orders"],
-    component: <ResellerClients />,
-  },
-  "reseller-wallet": {
-    title: "Wallet & Top-up", breadcrumbs: ["ProxyVN", "Finance", "Wallet"],
-    meta: <StatusBadge status="active" dot />,
+  "reseller-invoices": {
+    title: "Invoices", breadcrumbs: ["ProxyVN", "Billing", "Invoices"],
     component: <ResellerWallet />,
   },
+  "reseller-transactions": {
+    title: "Transactions", breadcrumbs: ["ProxyVN", "Billing", "Transactions"],
+    component: <ResellerWallet />,
+  },
+  "reseller-products": {
+    title: "Products & Pricing", breadcrumbs: ["ProxyVN", "Billing", "Products"],
+    component: <ResellerCatalog />,
+  },
   "reseller-reports": {
-    title: "Reports", breadcrumbs: ["ProxyVN", "Reports"],
+    title: "Reports", breadcrumbs: ["ProxyVN", "Billing", "Reports"],
     component: <ResellerDashboard />,
   },
   "reseller-settings": {
-    title: "Branding & Settings", breadcrumbs: ["ProxyVN", "Settings"],
+    title: "Settings", breadcrumbs: ["ProxyVN", "Settings"],
     component: <ResellerSettings />,
   },
 };
