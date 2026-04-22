@@ -9,6 +9,7 @@ import (
 	"github.com/Chinsusu/Billing-V2/internal/platform/config"
 	"github.com/Chinsusu/Billing-V2/internal/platform/httpserver"
 	"github.com/Chinsusu/Billing-V2/internal/platform/logger"
+	"github.com/Chinsusu/Billing-V2/internal/platform/middleware"
 )
 
 type API struct {
@@ -36,9 +37,15 @@ func NewAPI(cfg config.Config, log *logger.Logger) (*API, error) {
 		cfg: cfg,
 		log: log,
 	}
-	mux.HandleFunc("/healthz", api.handleHealth)
-	mux.HandleFunc("/readyz", api.handleReady)
-	api.handler = httpserver.WithRequestID(mux)
+	mux.HandleFunc("/healthz", middleware.RequireMethod(http.MethodGet, api.handleHealth))
+	mux.HandleFunc("/readyz", middleware.RequireMethod(http.MethodGet, api.handleReady))
+	api.handler = httpserver.WithRequestID(
+		middleware.Chain(
+			mux,
+			middleware.Recover(api.log),
+			middleware.RequestLogger(api.log),
+		),
+	)
 	return api, nil
 }
 
@@ -66,11 +73,6 @@ func (api *API) Run(ctx context.Context) error {
 }
 
 func (api *API) handleHealth(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		httpserver.WriteError(w, r, http.StatusMethodNotAllowed, "request.method_not_allowed", "Method is not allowed.")
-		return
-	}
-
 	httpserver.WriteSuccess(w, r, http.StatusOK, HealthResponse{
 		Status:      "ok",
 		Service:     api.cfg.AppName,
@@ -79,11 +81,6 @@ func (api *API) handleHealth(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *API) handleReady(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		httpserver.WriteError(w, r, http.StatusMethodNotAllowed, "request.method_not_allowed", "Method is not allowed.")
-		return
-	}
-
 	httpserver.WriteSuccess(w, r, http.StatusOK, HealthResponse{
 		Status:      "ready",
 		Service:     api.cfg.AppName,
