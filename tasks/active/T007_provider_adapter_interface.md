@@ -1,7 +1,7 @@
 # T007 - Provider Adapter Interface
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: feat/provider-adapter-interface
 PR: -
 Risk: provider/credential
@@ -36,3 +36,4 @@ Add provider adapter interface, normalized provider error types, and fake adapte
 
 - 2026-04-22: Task file created from `TASKS.md`.
 - 2026-04-22: PR #22 was closed and branch `feat/provider-adapter-interface` was deleted per owner request because CI failed and the task file was not updated. Task remains TODO for a clean restart.
+- 2026-04-22: Claimed by Codex. Rebuilding provider adapter interface, error taxonomy, and fake adapter tests from latest origin/main.
