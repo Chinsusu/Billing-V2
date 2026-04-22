@@ -42,10 +42,6 @@ Example:
 
 | ID | Status | Owner | Branch | PR | Risk | Task |
 | --- | --- | --- | --- | --- | --- | --- |
-<<<<<<< Updated upstream
-| T001 | TODO | - | chore/ci-workflow | - | CI | Add GitHub Actions workflow for `make fmt`, `make test`, `make build`, and basic secret scan. |
-=======
->>>>>>> Stashed changes
 | T002 | TODO | - | chore/db-migration-skeleton | - | migration | Add `internal/platform/db` skeleton and migration runner entrypoint without domain tables yet. |
 | T003 | TODO | - | feat/http-middleware-base | - | API/logging | Add recover middleware, request logging middleware, method guard helper, and tests. |
 | T004 | TODO | - | feat/identity-tenant-rbac-skeleton | - | tenant/RBAC | Add skeleton interfaces/types for identity, tenant context, and RBAC checks without persistence. |
@@ -53,6 +49,7 @@ Example:
 | T006 | TODO | - | feat/outbox-job-skeleton | - | worker/migration | Add outbox/jobs table model and worker claim interface after DB skeleton exists. |
 | T007 | TODO | - | feat/provider-adapter-interface | - | provider/credential | Add provider adapter interface, normalized provider error types, and fake adapter tests. |
 | T008 | TODO | - | docs/local-dev-runbook | - | docs | Add local development runbook after DB and migration commands exist. |
+| T009 | IN_PROGRESS | Chinsusu | feat/frontend-ui-billing-admin | - | frontend | Add HANetwork Billing frontend UI (Admin, Reseller, Client portals) from design file. |
 
 ## Completed Tasks
 

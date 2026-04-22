@@ -36,3 +36,4 @@ Thumbs.db
 # Local Codex marker/temp files
 .codex
 .codex-*
+frontend/.design-canvas.state.json

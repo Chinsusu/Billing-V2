@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HANetwork · Billing Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lib/tokens.css">
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<style>
+  html, body, #root { height: 100%; }
+  body { overflow: hidden; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="lib/icons.jsx"></script>
+<script type="text/babel" src="lib/data.jsx"></script>
+<script type="text/babel" src="lib/billing-data.jsx"></script>
+<script type="text/babel" src="lib/shell.jsx"></script>
+<script type="text/babel" src="screens/overview.jsx"></script>
+<script type="text/babel" src="screens/overview-v2.jsx"></script>
+<script type="text/babel" src="screens/overview-v3.jsx"></script>
+<script type="text/babel" src="screens/customers.jsx"></script>
+<script type="text/babel" src="screens/services.jsx"></script>
+<script type="text/babel" src="screens/billing.jsx"></script>
+<script type="text/babel" src="screens/other.jsx"></script>
+<script type="text/babel" src="screens/customer.jsx"></script>
+<script type="text/babel" src="screens/admin-billing.jsx"></script>
+<script type="text/babel" src="screens/reseller.jsx"></script>
+<script type="text/babel" src="screens/reseller-branding.jsx"></script>
+<script type="text/babel" src="screens/client.jsx"></script>
+<script type="text/babel" src="screens/client-detail.jsx"></script>
+<script type="text/babel" src="lib/app.jsx"></script>
+<script type="text/babel" src="lib/design-canvas.jsx"></script>
+
+<script type="text/babel">
+  // Tweaks config
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "accent": "#D50C2D",
+    "font": "Inter",
+    "density": "compact",
+    "sidebar": "expanded"
+  }/*EDITMODE-END*/;
+
+  const ACCENT_PRESETS = {
+    "#D50C2D": { soft: "#FDECEF", border: "#F5C6CE", hover: "#B3082A" },
+    "#1a1a1a": { soft: "#F2F2F2", border: "#D4D4D4", hover: "#000000" },
+    "#2563eb": { soft: "#E8EFFD", border: "#BFD1F5", hover: "#1E4FD1" },
+    "#059669": { soft: "#E4F5EE", border: "#B8DFC9", hover: "#047857" },
+    "#ea580c": { soft: "#FEEDE0", border: "#F9CEB1", hover: "#C44807" },
+    "#7c3aed": { soft: "#EFE8FE", border: "#D2C2F9", hover: "#6A2EC7" },
+  };
+
+  function applyTweaks(t) {
+    const r = document.documentElement;
+    const a = ACCENT_PRESETS[t.accent] || ACCENT_PRESETS["#D50C2D"];
+    r.style.setProperty('--accent', t.accent);
+    r.style.setProperty('--accent-soft', a.soft);
+    r.style.setProperty('--accent-bg', a.soft);
+    r.style.setProperty('--accent-border', a.border);
+    r.style.setProperty('--accent-hover', a.hover);
+    const fontMap = {
+      'Inter': '"Inter var", "Inter", -apple-system, system-ui, sans-serif',
+      'IBM Plex': '"IBM Plex Sans", -apple-system, system-ui, sans-serif',
+      'Geist': '"Geist", -apple-system, system-ui, sans-serif',
+      'System': '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif',
+    };
+    r.style.setProperty('--font-sans', fontMap[t.font] || fontMap.Inter);
+  }
+
+  const Root = () => {
+    const [tweaks, setTweaks] = React.useState(TWEAK_DEFAULTS);
+    const [editMode, setEditMode] = React.useState(false);
+    React.useEffect(() => applyTweaks(tweaks), [tweaks]);
+
+    React.useEffect(() => {
+      const onMsg = (e) => {
+        if (e.data?.type === '__activate_edit_mode') setEditMode(true);
+        if (e.data?.type === '__deactivate_edit_mode') setEditMode(false);
+      };
+      window.addEventListener('message', onMsg);
+      window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+      return () => window.removeEventListener('message', onMsg);
+    }, []);
+
+    const updateTweak = (k, v) => {
+      setTweaks(t => ({ ...t, [k]: v }));
+      window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [k]: v } }, '*');
+    };
+
+    const density = tweaks.density;
+    const collapsed = tweaks.sidebar === 'collapsed';
+
+    return (
+      <>
+        <DesignCanvas>
+          <DCSection id="admin" title="Admin · HANetwork" subtitle="Central platform operator. Sees all tenants (resellers + retail), provisioning queue across providers, and wallet settlement for the two-tier model described in the Billing-V2 spec.">
+            <DCArtboard id="a-overview" label="Admin · Overview" width={1360} height={820}>
+              <div data-screen-label="Admin · Overview">
+                <AdminApp initialScreen="overview" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="a-tenants" label="Tenants (resellers + retail)" width={1360} height={820}>
+              <div data-screen-label="Admin · Tenants">
+                <AdminApp initialScreen="tenants" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="a-prov" label="Provisioning queue · manual_review aware" width={1360} height={820}>
+              <div data-screen-label="Admin · Provisioning">
+                <AdminApp initialScreen="provisioning" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="a-topups" label="Top-up verification (wallet settlement)" width={1360} height={820}>
+              <div data-screen-label="Admin · Top-ups">
+                <AdminApp initialScreen="topups" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="a-providers" label="Providers / Sources health" width={1360} height={820}>
+              <div data-screen-label="Admin · Providers">
+                <AdminApp initialScreen="providers" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="a-customers" label="Retail customers (Admin tenant)" width={1360} height={820}>
+              <div data-screen-label="Admin · Customers">
+                <AdminApp initialScreen="customers" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="a-services" label="Services inventory" width={1360} height={820}>
+              <div data-screen-label="Admin · Services">
+                <AdminApp initialScreen="proxies" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="a-invoices" label="Invoices" width={1360} height={820}>
+              <div data-screen-label="Admin · Invoices">
+                <AdminApp initialScreen="invoices" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="a-transactions" label="Transactions / ledger" width={1360} height={820}>
+              <div data-screen-label="Admin · Transactions">
+                <AdminApp initialScreen="transactions" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="a-products" label="Products &amp; Pricing (admin catalog)" width={1360} height={820}>
+              <div data-screen-label="Admin · Products">
+                <AdminApp initialScreen="products" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="a-tickets" label="Support tickets" width={1360} height={820}>
+              <div data-screen-label="Admin · Tickets">
+                <AdminApp initialScreen="tickets" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="a-settings" label="Settings" width={1360} height={820}>
+              <div data-screen-label="Admin · Settings">
+                <AdminApp initialScreen="settings" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="reseller" title="Reseller portal · ProxyVN" subtitle="White-label tenant POV. Manages own clients, clones admin catalog with their own margin, operates on a reseller_wallet that settles with Admin on every purchase/renewal.">
+            <DCArtboard id="r-dashboard" label="Reseller · Dashboard (wallet hero)" width={1360} height={820}>
+              <div data-screen-label="Reseller · Dashboard">
+                <ResellerApp initialScreen="r-overview" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="r-clients" label="Reseller · Clients" width={1360} height={820}>
+              <div data-screen-label="Reseller · Clients">
+                <ResellerApp initialScreen="r-clients" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="r-catalog" label="Reseller · Catalog &amp; margin" width={1360} height={820}>
+              <div data-screen-label="Reseller · Catalog">
+                <ResellerApp initialScreen="r-catalog" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="r-wallet" label="Reseller · Wallet &amp; Top-up" width={1360} height={820}>
+              <div data-screen-label="Reseller · Wallet">
+                <ResellerApp initialScreen="r-wallet" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="r-settings" label="Reseller · Branding (domain, theme, team)" width={1360} height={920}>
+              <div data-screen-label="Reseller · Branding">
+                <ResellerApp initialScreen="r-settings" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="client" title="Client portal · via ProxyVN" subtitle="End-user POV (a reseller's client). Sees white-labeled shop, client_wallet, services, and a checkout flow that pays from wallet.">
+            <DCArtboard id="c-dashboard" label="Client · Dashboard (grace period alert)" width={1240} height={820}>
+              <div data-screen-label="Client · Dashboard">
+                <CustomerApp initialScreen="c-overview" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="c-shop" label="Client · Shop (VPS + proxies)" width={1240} height={820}>
+              <div data-screen-label="Client · Shop">
+                <CustomerApp initialScreen="c-shop" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="c-checkout" label="Client · Checkout (pay from wallet)" width={1240} height={900}>
+              <div data-screen-label="Client · Checkout">
+                <CustomerApp initialScreen="c-checkout" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="c-wallet" label="Client · Wallet &amp; ledger" width={1240} height={820}>
+              <div data-screen-label="Client · Wallet">
+                <CustomerApp initialScreen="c-wallet" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="c-vps" label="Client · VPS detail (console + creds)" width={1240} height={980}>
+              <div data-screen-label="Client · VPS detail">
+                <CustomerApp initialScreen="c-vps-detail" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="c-proxy" label="Client · Proxy detail (credentials + generator)" width={1240} height={900}>
+              <div data-screen-label="Client · Proxy detail">
+                <CustomerApp initialScreen="c-proxy-detail" density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="variations" title="Dashboard · 3 visual directions" subtitle="Three design languages for the Admin Overview screen — pick one to commit the platform's visual tone.">
+            <DCArtboard id="v1" label="A · Classic Hetzner (dense, tabular)" width={1360} height={820}>
+              <div data-screen-label="Variation · Classic">
+                <OverviewInShell Screen={OverviewScreen} density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="v2" label="B · Modern minimal (more whitespace)" width={1360} height={820}>
+              <div data-screen-label="Variation · Modern">
+                <OverviewInShell Screen={OverviewV2} density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+            <DCArtboard id="v3" label="C · Data-dense Stripe-like" width={1360} height={820}>
+              <div data-screen-label="Variation · Stripe-like">
+                <OverviewInShell Screen={OverviewV3} density={density} collapsed={collapsed}/>
+              </div>
+            </DCArtboard>
+          </DCSection>
+        </DesignCanvas>
+
+        {editMode && (
+          <div style={{
+            position: 'fixed', bottom: 20, right: 20,
+            width: 260, background: '#fff',
+            border: '1px solid var(--line)', borderRadius: 6,
+            boxShadow: '0 12px 40px rgba(0,0,0,.16)',
+            padding: 14, zIndex: 1000,
+            fontFamily: 'var(--font-sans)', fontSize: 12,
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <div style={{ fontWeight: 600, fontSize: 13 }}>Tweaks</div>
+              <span style={{ fontSize: 10, color: 'var(--ink-3)' }}>Live</span>
+            </div>
+
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 11, color: 'var(--ink-3)', marginBottom: 6 }}>Accent color</div>
+              <div style={{ display: 'flex', gap: 6 }}>
+                {Object.keys(ACCENT_PRESETS).map(c => (
+                  <button key={c} onClick={() => updateTweak('accent', c)} style={{
+                    width: 24, height: 24, borderRadius: 3, background: c,
+                    border: tweaks.accent === c ? '2px solid var(--ink-0)' : '1px solid var(--line)',
+                    cursor: 'pointer', padding: 0,
+                  }}/>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 11, color: 'var(--ink-3)', marginBottom: 6 }}>Font</div>
+              <select className="select" value={tweaks.font} onChange={e => updateTweak('font', e.target.value)}>
+                <option>Inter</option>
+                <option>IBM Plex</option>
+                <option>Geist</option>
+                <option>System</option>
+              </select>
+            </div>
+
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 11, color: 'var(--ink-3)', marginBottom: 6 }}>Density</div>
+              <div style={{ display: 'flex', gap: 4, background: 'var(--bg-alt)', padding: 2, borderRadius: 3 }}>
+                {['compact','comfortable'].map(d => (
+                  <button key={d} onClick={() => updateTweak('density', d)} style={{
+                    flex: 1, padding: '4px 8px',
+                    background: tweaks.density === d ? '#fff' : 'transparent',
+                    border: 'none', borderRadius: 2, fontSize: 11,
+                    fontWeight: tweaks.density === d ? 500 : 400,
+                    color: tweaks.density === d ? 'var(--ink-0)' : 'var(--ink-3)',
+                    cursor: 'pointer', textTransform: 'capitalize', fontFamily: 'inherit',
+                  }}>{d}</button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <div style={{ fontSize: 11, color: 'var(--ink-3)', marginBottom: 6 }}>Sidebar</div>
+              <div style={{ display: 'flex', gap: 4, background: 'var(--bg-alt)', padding: 2, borderRadius: 3 }}>
+                {[['expanded','Expanded'],['collapsed','Icon only']].map(([v,l]) => (
+                  <button key={v} onClick={() => updateTweak('sidebar', v)} style={{
+                    flex: 1, padding: '4px 8px',
+                    background: tweaks.sidebar === v ? '#fff' : 'transparent',
+                    border: 'none', borderRadius: 2, fontSize: 11,
+                    fontWeight: tweaks.sidebar === v ? 500 : 400,
+                    color: tweaks.sidebar === v ? 'var(--ink-0)' : 'var(--ink-3)',
+                    cursor: 'pointer', fontFamily: 'inherit',
+                  }}>{l}</button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </>
+    );
+  };
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<Root/>);
+</script>
+</body>
+</html>
