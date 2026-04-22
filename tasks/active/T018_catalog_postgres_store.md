@@ -1,6 +1,6 @@
 # T018 - Catalog PostgreSQL store
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/catalog-postgres-store
 PR: https://github.com/Chinsusu/Billing-V2/pull/45
@@ -37,3 +37,4 @@ Implement the PostgreSQL store for catalog domain records after T016 contracts a
 
 - 2026-04-23: Task created and claimed from latest `origin/main` in `/tmp/Billing-T016`.
 - 2026-04-23: Opened PR #45. Validation passed: `go test ./internal/modules/catalog`, `make fmt`, `make test`, `make build`, `make migrate-validate`.
+- 2026-04-23: PR #45 merged into `main`.
