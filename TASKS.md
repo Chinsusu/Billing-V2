@@ -51,6 +51,7 @@ DONE         PR merged into main
 | T007 | [tasks/active/T007_provider_adapter_interface.md](tasks/active/T007_provider_adapter_interface.md) | feat/provider-adapter-interface | provider/credential | Add provider adapter interface, normalized provider error types, and fake adapter tests. |
 | T008 | [tasks/active/T008_local_dev_runbook.md](tasks/active/T008_local_dev_runbook.md) | docs/local-dev-runbook | docs | Add local development runbook after DB and migration commands exist. |
 | T009 | [tasks/active/T009_frontend_app_shell.md](tasks/active/T009_frontend_app_shell.md) | feat/frontend-app-shell | frontend | Build a runnable Next.js/React/TypeScript frontend app shell with package scripts, working navigation, screen registry, mock data, and build validation. |
+| T011 | [tasks/active/T011_persistence_repositories.md](tasks/active/T011_persistence_repositories.md) | feat/persistence-repositories | tenant/RBAC/audit/DB | Add PostgreSQL repository layer for tenant, identity, RBAC, and audit foundation. |
 
 ## Completed Tasks
 
