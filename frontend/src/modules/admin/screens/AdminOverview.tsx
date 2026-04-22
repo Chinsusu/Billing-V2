@@ -1,7 +1,7 @@
 import { CreditCard, User, Server, Headphones, XCircle, Wallet } from "lucide-react";
 import { KpiCard } from "@/components/ui/KpiCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { INVOICES, ACTIVITY_FEED, PLATFORM_ALERTS, ActivityEvent } from "@/mocks/billingData";
+import { INVOICES, ACTIVITY_FEED, ActivityEvent } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
 
 const ACTIVITY_ICONS: Record<ActivityEvent["icon"], React.ReactNode> = {
@@ -16,18 +16,6 @@ const ACTIVITY_ICONS: Record<ActivityEvent["icon"], React.ReactNode> = {
 export function AdminOverview() {
   return (
     <div className="p-5 flex flex-col gap-4">
-      {/* Alerts */}
-      {PLATFORM_ALERTS.map((a, i) => (
-        <div
-          key={i}
-          className={`flex items-center gap-3 px-4 py-2.5 rounded text-[12px] border
-            ${a.type === "danger" ? "bg-red-50 border-red-200 text-red-700" : "bg-amber-50 border-amber-200 text-amber-700"}`}
-        >
-          <span>{a.type === "danger" ? "⚠" : "!"}</span>
-          <span className="flex-1">{a.text}</span>
-        </div>
-      ))}
-
       {/* KPIs */}
       <div className="grid grid-cols-4 gap-3">
         <KpiCard label="MRR" value="$118.2k" delta={8.4} sub="vs last month" />

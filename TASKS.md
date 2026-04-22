@@ -83,5 +83,5 @@ When adding a task:
 Example row:
 
 ```text
-| T010 | [tasks/active/T010_short_name.md](tasks/active/T010_short_name.md) | type/scope-short-name | risk area | Clear task summary. |
+| T010 | [tasks/active/T010_frontend_ui_polish.md](tasks/active/T010_frontend_ui_polish.md) | feat/frontend-ui-polish | frontend | Fix and polish frontend UI across all three portals. |
 ```
