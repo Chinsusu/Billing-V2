@@ -1,0 +1,37 @@
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Secrets and keys
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+
+# Logs and temp files
+*.log
+tmp/
+temp/
+.cache/
+
+# Build outputs
+bin/
+dist/
+build/
+coverage.out
+
+# Go workspace artifacts
+vendor/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local Codex marker/temp files
+.codex
+.codex-*
