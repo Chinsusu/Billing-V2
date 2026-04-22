@@ -1,6 +1,6 @@
 # T014 - API Contracts
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/api-contracts
 PR: https://github.com/Chinsusu/Billing-V2/pull/36
@@ -35,3 +35,4 @@ Add shared API response helpers for success lists, error details, validation fie
 
 - 2026-04-23: Codex claimed task from `origin/main` using isolated worktree `/tmp/Billing-T014`.
 - 2026-04-23: Opened PR #36 after `make fmt`, `make test`, `make build`, and `make migrate-validate` passed.
+- 2026-04-23: PR #36 merged; T014 marked DONE.
