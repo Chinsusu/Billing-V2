@@ -42,7 +42,7 @@ Example:
 
 | ID | Status | Owner | Branch | PR | Risk | Task |
 | --- | --- | --- | --- | --- | --- | --- |
-| T002 | TODO | - | chore/db-migration-skeleton | - | migration | Add `internal/platform/db` skeleton and migration runner entrypoint without domain tables yet. |
+| T002 | REVIEW | Codex | chore/db-migration-skeleton | - | migration | Add `internal/platform/db` skeleton and migration runner entrypoint without domain tables yet. |
 | T003 | TODO | - | feat/http-middleware-base | - | API/logging | Add recover middleware, request logging middleware, method guard helper, and tests. |
 | T004 | TODO | - | feat/identity-tenant-rbac-skeleton | - | tenant/RBAC | Add skeleton interfaces/types for identity, tenant context, and RBAC checks without persistence. |
 | T005 | TODO | - | chore/initial-db-migrations | - | migration/tenant | Add initial migration files for tenants, users, roles, permissions, and audit shell after DB skeleton exists. |
