@@ -163,6 +163,9 @@ Rules:
 
 - Do not submit only a static HTML file for frontend app-shell tasks.
 - Frontend work must follow `docs/05_development_standards/53_Frontend_App_Shell_And_UI_Implementation_Standard.md`.
+- Default frontend stack is Next.js App Router, React, TypeScript, and Tailwind CSS.
+- Node.js is only the frontend runtime/toolchain for install, dev, build, and preview/start.
+- Do not create a Node.js backend, Express/Nest/Fastify service, Next API route, or Next Server Action for Billing business logic.
 - A frontend app shell must have `frontend/package.json` with `dev`, `build`, and `preview` scripts.
 - It must have working navigation, screen registry, layout shell, mock data layer, and build validation.
 - Do not wire production backend routes during app-shell phase unless the task explicitly asks for it.
