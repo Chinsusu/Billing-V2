@@ -1,6 +1,6 @@
 # T016 - Catalog domain skeleton
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/catalog-domain-skeleton
 PR: https://github.com/Chinsusu/Billing-V2/pull/41
@@ -38,3 +38,4 @@ Add the first backend catalog domain skeleton for master products, master plans,
 
 - 2026-04-23: Task created and claimed from latest `origin/main` in `/tmp/Billing-T016`.
 - 2026-04-23: Opened PR #41. Validation passed: `go test ./internal/modules/catalog`, `make fmt`, `make test`, `make build`, `make migrate-validate`.
+- 2026-04-23: PR #41 merged into `main`.
