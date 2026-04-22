@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HANetwork · Billing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lib/tokens.css">
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<style>
+  html, body, #root { height: 100%; margin: 0; padding: 0; }
+  body { overflow: hidden; }
+
+  /* Portal switcher bar */
+  #portal-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 32px;
+    background: #0E1116;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 0 12px;
+    z-index: 9999;
+    font-family: var(--font-sans);
+    font-size: 12px;
+  }
+  #portal-bar .pb-label {
+    color: #6B7280;
+    font-size: 11px;
+    margin-right: 8px;
+    letter-spacing: 0.3px;
+  }
+  #portal-bar button {
+    height: 22px;
+    padding: 0 10px;
+    border: none;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    color: #9CA3AF;
+    background: transparent;
+    transition: background .1s, color .1s;
+  }
+  #portal-bar button:hover { background: #1F2937; color: #E5E7EB; }
+  #portal-bar button.active { background: #D50C2D; color: #fff; }
+  #portal-bar .pb-sep { width: 1px; height: 14px; background: #1F2937; margin: 0 4px; }
+  #portal-bar .pb-hint {
+    margin-left: auto;
+    color: #4B5563;
+    font-size: 10px;
+  }
+
+  /* Push app content below the portal bar */
+  #app-root {
+    position: absolute;
+    top: 32px; left: 0; right: 0; bottom: 0;
+    overflow: hidden;
+  }
+</style>
+</head>
+<body>
+
+<!-- Portal switcher -->
+<div id="portal-bar">
+  <span class="pb-label">Portal</span>
+  <button id="btn-admin" class="active" onclick="switchPortal('admin')">Admin · HANetwork</button>
+  <button id="btn-reseller" onclick="switchPortal('reseller')">Reseller · ProxyVN</button>
+  <button id="btn-client" onclick="switchPortal('client')">Client · Linh Tran</button>
+  <span class="pb-sep"></span>
+  <span class="pb-hint">Demo — switch portal above</span>
+</div>
+
+<div id="app-root"></div>
+
+<!-- Shared lib (order matters) -->
+<script type="text/babel" src="lib/icons.jsx"></script>
+<script type="text/babel" src="lib/data.jsx"></script>
+<script type="text/babel" src="lib/billing-data.jsx"></script>
+<script type="text/babel" src="lib/shell.jsx"></script>
+
+<!-- Screens -->
+<script type="text/babel" src="screens/overview.jsx"></script>
+<script type="text/babel" src="screens/overview-v2.jsx"></script>
+<script type="text/babel" src="screens/overview-v3.jsx"></script>
+<script type="text/babel" src="screens/customers.jsx"></script>
+<script type="text/babel" src="screens/services.jsx"></script>
+<script type="text/babel" src="screens/billing.jsx"></script>
+<script type="text/babel" src="screens/other.jsx"></script>
+<script type="text/babel" src="screens/customer.jsx"></script>
+<script type="text/babel" src="screens/admin-billing.jsx"></script>
+<script type="text/babel" src="screens/reseller.jsx"></script>
+<script type="text/babel" src="screens/reseller-branding.jsx"></script>
+<script type="text/babel" src="screens/client.jsx"></script>
+<script type="text/babel" src="screens/client-detail.jsx"></script>
+
+<!-- App wiring -->
+<script type="text/babel" src="lib/app.jsx"></script>
+
+<script type="text/babel">
+  let currentPortal = 'admin';
+  let root = null;
+
+  const PORTAL_APPS = {
+    admin:    () => <AdminApp    initialScreen="overview"   density="compact"/>,
+    reseller: () => <ResellerApp initialScreen="r-overview" density="compact"/>,
+    client:   () => <CustomerApp initialScreen="c-overview" density="compact"/>,
+  };
+
+  function renderPortal(portal) {
+    const el = PORTAL_APPS[portal]?.();
+    if (!el) return;
+    if (!root) {
+      root = ReactDOM.createRoot(document.getElementById('app-root'));
+    }
+    root.render(el);
+  }
+
+  window.switchPortal = function(portal) {
+    currentPortal = portal;
+    ['admin','reseller','client'].forEach(p => {
+      document.getElementById('btn-' + p).classList.toggle('active', p === portal);
+    });
+    renderPortal(portal);
+  };
+
+  // Boot
+  renderPortal('admin');
+</script>
+</body>
+</html>
