@@ -42,7 +42,6 @@ Example:
 
 | ID | Status | Owner | Branch | PR | Risk | Task |
 | --- | --- | --- | --- | --- | --- | --- |
-| T002 | REVIEW | Codex | chore/db-migration-skeleton | - | migration | Add `internal/platform/db` skeleton and migration runner entrypoint without domain tables yet. |
 | T003 | TODO | - | feat/http-middleware-base | - | API/logging | Add recover middleware, request logging middleware, method guard helper, and tests. |
 | T004 | TODO | - | feat/identity-tenant-rbac-skeleton | - | tenant/RBAC | Add skeleton interfaces/types for identity, tenant context, and RBAC checks without persistence. |
 | T005 | TODO | - | chore/initial-db-migrations | - | migration/tenant | Add initial migration files for tenants, users, roles, permissions, and audit shell after DB skeleton exists. |
@@ -55,6 +54,7 @@ Example:
 | ID | Status | Owner | Branch | PR | Risk | Task |
 | --- | --- | --- | --- | --- | --- | --- |
 | T001 | DONE | Codex | chore/ci-workflow | [#5](https://github.com/Chinsusu/Billing-V2/pull/5) | CI | Add GitHub Actions workflow for `make fmt`, `make test`, `make build`, and basic secret scan. |
+| T002 | DONE | Codex | chore/db-migration-skeleton | [#7](https://github.com/Chinsusu/Billing-V2/pull/7) | migration | Add `internal/platform/db` skeleton and migration runner entrypoint without domain tables yet. |
 | T000 | DONE | Codex | chore/bootstrap-go-app | [#3](https://github.com/Chinsusu/Billing-V2/pull/3) | API/config/logging | Bootstrap Go API foundation with config, logger, HTTP helpers, health endpoints, Makefile, and tests. |
 
 ## Blocked Tasks
