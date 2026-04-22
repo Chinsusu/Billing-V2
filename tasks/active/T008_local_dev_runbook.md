@@ -1,7 +1,7 @@
 # T008 - Local Development Runbook
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: docs/local-dev-runbook
 PR: -
 Risk: docs
@@ -34,3 +34,6 @@ Add local development runbook after DB and migration commands exist.
 ## Agent Log
 
 - 2026-04-22: Task file created from `TASKS.md`.
+- 2026-04-22: Claimed by Codex on `docs/local-dev-runbook`; starting local backend runbook.
+- 2026-04-22: Added `docs/05_development_standards/55_Local_Development_Runbook.md` and linked it from README, docs index, and manifest.
+- 2026-04-22: Validation passed: `make fmt`, `make test`, `make build`, `make migrate-validate`, `git diff --check`.

@@ -1,0 +1,246 @@
+# Local Development Runbook
+
+**Version:** v1.10  
+**Date:** 2026-04-22  
+**Scope:** Local backend setup, environment loading, API run commands, migration runner usage, and local validation gates.
+
+## Mục tiêu
+
+Tài liệu này mô tả cách chạy backend Go trên máy local bằng các script hiện có trong repo. Mục tiêu là developer mới có thể boot API, kiểm tra health/readiness, validate migration và chạy quality gate mà không cần secret thật hoặc môi trường production.
+
+## Luật bắt buộc
+
+1. Không commit `.env` thật.
+2. Không dùng production database, production provider credential hoặc production webhook khi chạy local.
+3. Local chỉ dùng secret giả, provider fake/sandbox và database local.
+4. Khi thêm env mới, cập nhật `.env.example` và tài liệu config liên quan trong cùng PR.
+5. Trước khi mở PR backend phải chạy `make test` và `make build`.
+6. Nếu thay đổi migration, phải chạy thêm `make migrate-validate`.
+
+## Yêu cầu máy local
+
+Cần có:
+
+```text
+Go 1.18 hoặc tương thích với go.mod
+make
+Git
+PostgreSQL local nếu muốn chạy migrate plan/up với database thật
+```
+
+Không cần PostgreSQL để chạy unit test hiện tại, build binary hoặc validate format migration.
+
+## Chuẩn bị workspace
+
+Luôn bắt đầu từ `main` mới nhất và tạo branch riêng theo task:
+
+```bash
+git switch main
+git pull --ff-only origin main
+git switch -c <type>/<short-task-name>
+```
+
+Ví dụ:
+
+```bash
+git switch -c feat/identity-tenant-rbac-skeleton
+```
+
+Nếu dùng nhiều agent hoặc nhiều task song song, ưu tiên dùng `git worktree` để mỗi task có workspace riêng, tránh sửa cùng file không liên quan.
+
+## Tạo file env local
+
+Tạo `.env` từ file mẫu:
+
+```bash
+cp .env.example .env
+```
+
+Giữ giá trị local an toàn. Ví dụ mặc định hợp lệ:
+
+```text
+APP_ENV=local
+APP_NAME=billing-v2
+APP_HTTP_ADDR=:8080
+LOG_LEVEL=debug
+DB_DSN=postgres://billing:billing@localhost:5432/billing?sslmode=disable
+JWT_SECRET=change-me-local-only
+ENCRYPTION_KEY=change-me-32-byte-local-only
+PROVIDER_DEFAULT_MODE=fake
+```
+
+Không thay placeholder bằng secret thật trong repo. Nếu cần dùng credential sandbox, lưu trong `.env` local hoặc secret manager được duyệt, không paste vào log, task, issue hoặc PR.
+
+## Load env cho shell
+
+Ứng dụng đọc config từ environment variable. Trong terminal local có thể load `.env` bằng:
+
+```bash
+set -a
+. ./.env
+set +a
+```
+
+Sau khi load, kiểm tra nhanh:
+
+```bash
+printenv APP_ENV
+printenv APP_HTTP_ADDR
+```
+
+Không in các biến secret như `JWT_SECRET`, `ENCRYPTION_KEY`, token provider, SMTP password hoặc database password vào log chia sẻ.
+
+## Chạy API local
+
+Chạy API:
+
+```bash
+make run-api
+```
+
+API mặc định listen theo `APP_HTTP_ADDR`; với `.env.example` là `:8080`.
+
+Kiểm tra health:
+
+```bash
+curl -i http://localhost:8080/healthz
+```
+
+Kiểm tra readiness:
+
+```bash
+curl -i http://localhost:8080/readyz
+```
+
+Response success dùng envelope chuẩn của `internal/platform/httpserver`. Nếu port `8080` đã bận, đổi `APP_HTTP_ADDR` trong `.env`, load lại env rồi chạy lại API.
+
+## Migration runner
+
+Migration runner nằm ở `cmd/migrate` và đọc migration từ thư mục `migrations` theo mặc định.
+
+Validate migration file mà không cần database:
+
+```bash
+make migrate-validate
+```
+
+Lệnh tương đương:
+
+```bash
+go run ./cmd/migrate validate
+```
+
+Xem plan không cần database:
+
+```bash
+go run ./cmd/migrate plan
+```
+
+Khi `DB_DSN` rỗng, `plan` chỉ in danh sách migration có trong repo. Ở trạng thái skeleton hiện tại, repo có thể chưa có file `.sql` nên kết quả hợp lệ có thể là `0 migration(s)`.
+
+## Chạy migration với PostgreSQL local
+
+Chỉ dùng database local hoặc sandbox được duyệt. Nếu muốn dùng đúng DSN trong `.env.example`, tạo role và database local tương ứng:
+
+```bash
+psql -d postgres -c "CREATE ROLE billing WITH LOGIN PASSWORD 'billing';"
+psql -d postgres -c "CREATE DATABASE billing OWNER billing;"
+```
+
+Nếu máy local đã có user/database khác, cập nhật `DB_DSN` trong `.env` theo user/database đó.
+
+Set DSN local cho terminal hiện tại:
+
+```bash
+export DB_DSN='postgres://billing:billing@localhost:5432/billing?sslmode=disable'
+```
+
+Xem pending migration trên database:
+
+```bash
+go run ./cmd/migrate plan
+```
+
+Apply migration:
+
+```bash
+go run ./cmd/migrate up
+```
+
+`up` bắt buộc có `DB_DSN` hoặc flag `-dsn`. Nếu cần override thư mục hoặc timeout:
+
+```bash
+go run ./cmd/migrate -dir migrations -timeout 30s plan
+go run ./cmd/migrate -dsn "$DB_DSN" up
+```
+
+Không chạy `up` vào staging/production từ máy local nếu không có quy trình vận hành và approval rõ.
+
+## Quality gate trước PR
+
+Chạy format:
+
+```bash
+make fmt
+```
+
+Chạy test:
+
+```bash
+make test
+```
+
+Build binary API và migration runner:
+
+```bash
+make build
+```
+
+Validate migration:
+
+```bash
+make migrate-validate
+```
+
+Với PR chỉ sửa docs, vẫn nên chạy tối thiểu `make test` và `make build` nếu acceptance criteria của task yêu cầu backend còn build được.
+
+## Lỗi thường gặp
+
+`APP_HTTP_ADDR is required` hoặc `APP_HTTP_ADDR is invalid`:
+
+- Kiểm tra `.env`.
+- Load lại env bằng `set -a; . ./.env; set +a`.
+- Dùng format hợp lệ như `:8080` hoặc `127.0.0.1:8080`.
+
+Port đã bận:
+
+- Đổi `APP_HTTP_ADDR`, ví dụ `:8081`.
+- Load lại env rồi chạy lại `make run-api`.
+
+`DB_DSN or -dsn is required for up`:
+
+- Set `DB_DSN` local.
+- Hoặc truyền `-dsn` trực tiếp cho `go run ./cmd/migrate`.
+
+Migration validate fail:
+
+- Kiểm tra tên file theo chuẩn `0001_descriptive_name.sql`.
+- Không sửa migration đã chạy ở shared environment.
+- Thêm migration mới để sửa migration cũ.
+
+Không kết nối được PostgreSQL:
+
+- Kiểm tra PostgreSQL đang chạy.
+- Kiểm tra database/user/password trong `DB_DSN`.
+- Chỉ dùng database local hoặc sandbox.
+
+## Checklist trước khi mở PR
+
+- Branch tạo từ `main` mới nhất.
+- `.env` không bị commit.
+- Không có secret thật trong diff, log, task file hoặc PR description.
+- `make fmt` đã chạy nếu có đổi Go code.
+- `make test` pass.
+- `make build` pass.
+- `make migrate-validate` pass nếu có đổi migration hoặc runner.
+- Task file trong `tasks/active/` có Agent Log và trạng thái đúng theo workflow nhiều agent.

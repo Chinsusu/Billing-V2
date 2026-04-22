@@ -1,4 +1,4 @@
-# Bộ tài liệu dự án nền tảng VPS/Proxy hybrid multi-tenant - v1.9 Multi-Agent Task Workflow
+# Bộ tài liệu dự án nền tảng VPS/Proxy hybrid multi-tenant - v1.10 Local Development Runbook
 
 ## Mô tả
 Gói này là bản mở rộng technical handoff cho dự án web thuê/bán VPS/Proxy theo mô hình:
@@ -26,6 +26,8 @@ Bản v1.7 bổ sung bộ guardrail trước dev: Definition of Ready/Done, test
 Bản v1.8 bổ sung chuẩn frontend app shell: frontend phải là app chạy được với package scripts, navigation thật, screen registry, mock data layer và build validation; chỉ làm HTML tĩnh không được xem là hoàn thành.
 
 Bản v1.9 bổ sung workflow task board cho nhiều agent: `TASKS.md` chỉ là index, mỗi task active có file riêng trong `tasks/active/` để giảm conflict khi claim, review, done hoặc block task.
+
+Bản v1.10 bổ sung local development runbook để dev mới có thể setup env, chạy API, kiểm tra health/readiness, dùng migration runner và chạy quality gate local theo script trong repo.
 
 ## Nguyên tắc chung
 - Chưa code.
@@ -99,6 +101,7 @@ Bản v1.9 bổ sung workflow task board cho nhiều agent: `TASKS.md` chỉ là
 - `05_development_standards/52_Database_Migration_Seed_Data_Workflow.md`
 - `05_development_standards/53_Frontend_App_Shell_And_UI_Implementation_Standard.md`
 - `05_development_standards/54_Multi_Agent_Task_Board_Conflict_Workflow.md`
+- `05_development_standards/55_Local_Development_Runbook.md`
 
 ### Tài liệu tổng hợp và ghi chú
 - `VPS_Proxy_Project_Master_Document.md`
@@ -136,6 +139,7 @@ Bản v1.9 bổ sung workflow task board cho nhiều agent: `TASKS.md` chỉ là
 16. `05_development_standards/51_Environment_Config_Secrets_Guide.md`
 17. `05_development_standards/52_Database_Migration_Seed_Data_Workflow.md`
 18. `05_development_standards/54_Multi_Agent_Task_Board_Conflict_Workflow.md`
+19. `05_development_standards/55_Local_Development_Runbook.md`
 
 ### Cho frontend
 1. `02_technical_handoff/16_API_Contract_And_Permission_Spec.md`
@@ -149,6 +153,7 @@ Bản v1.9 bổ sung workflow task board cho nhiều agent: `TASKS.md` chỉ là
 9. `05_development_standards/50_API_Response_Error_Logging_Standard.md`
 10. `05_development_standards/53_Frontend_App_Shell_And_UI_Implementation_Standard.md`
 11. `05_development_standards/54_Multi_Agent_Task_Board_Conflict_Workflow.md`
+12. `05_development_standards/55_Local_Development_Runbook.md`
 
 ### Cho QA
 1. `01_product_foundation/12_API_Data_Model_Acceptance_Criteria.md`
@@ -162,6 +167,7 @@ Bản v1.9 bổ sung workflow task board cho nhiều agent: `TASKS.md` chỉ là
 9. `05_development_standards/48_Definition_Of_Ready_Done_And_Task_Workflow.md`
 10. `05_development_standards/49_Testing_Strategy_And_Quality_Gates.md`
 11. `05_development_standards/54_Multi_Agent_Task_Board_Conflict_Workflow.md`
+12. `05_development_standards/55_Local_Development_Runbook.md`
 
 ### Cho DevOps/Ops
 1. `02_technical_handoff/14_System_Architecture_Blueprint.md`
@@ -176,6 +182,7 @@ Bản v1.9 bổ sung workflow task board cho nhiều agent: `TASKS.md` chỉ là
 10. `05_development_standards/51_Environment_Config_Secrets_Guide.md`
 11. `05_development_standards/52_Database_Migration_Seed_Data_Workflow.md`
 12. `05_development_standards/54_Multi_Agent_Task_Board_Conflict_Workflow.md`
+13. `05_development_standards/55_Local_Development_Runbook.md`
 
 ## 10 luật nền phải giữ
 1. Không provision nếu tiền chưa được debit/lock hợp lệ.
@@ -189,7 +196,7 @@ Bản v1.9 bổ sung workflow task board cho nhiều agent: `TASKS.md` chỉ là
 9. Không cho client reseller provision nếu reseller wallet không đủ reseller cost.
 10. Không dùng giá/policy hiện tại để xử lý tranh chấp order cũ; dùng snapshot lúc mua.
 
-## Mục tiêu sau bản v1.9
+## Mục tiêu sau bản v1.10
 Sau khi đọc xong gói này, team dev phải trả lời được:
 - Cần tạo bảng nào và bảng nào bắt buộc có tenant_id.
 - API nào cần build và role nào được gọi.
@@ -218,6 +225,7 @@ Sau khi đọc xong gói này, team dev phải trả lời được:
 - Frontend app shell tối thiểu phải có package scripts, entrypoint app, navigation, screen registry, mock data layer và build validation nào.
 - Khi nào một task frontend chỉ tạo HTML tĩnh sẽ bị từ chối.
 - Nhiều agent claim/review/done task thế nào mà không cùng sửa một bảng task trung tâm.
+- Dev mới setup env local, chạy API, kiểm tra health/readiness, dùng migration runner và chạy quality gate nào trước PR.
 - Khi conflict `TASKS.md` xảy ra thì giữ task row và task-file status thế nào.
 
 
@@ -348,3 +356,18 @@ This package adds the multi-agent coordination layer `54`:
 ```
 
 The v1.9 layer defines `TASKS.md` as a stable task index and moves mutable active task status into one file per task under `tasks/active/`. Agents claim, review, block, and mark done by editing only their task file, reducing merge conflicts between unrelated coding work.
+
+
+---
+
+## v1.10 Update — Local Development Runbook
+
+**Date:** 2026-04-22
+
+This package adds the local development runbook layer `55`:
+
+```text
+05_development_standards/55_Local_Development_Runbook.md
+```
+
+The v1.10 layer defines local backend setup, safe `.env` handling, API run commands, health/readiness checks, migration runner usage, PostgreSQL local notes, and PR validation gates.
