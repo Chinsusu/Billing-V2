@@ -7,17 +7,27 @@ export function AdminTenants() {
     <div className="p-5">
       <div className="bg-white border border-gray-200 rounded">
         <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-          <h3 className="text-[13px] font-semibold text-gray-900 m-0">Tenants</h3>
+          <h3 className="text-[13px] font-semibold text-gray-900 m-0">Accounts</h3>
           <button className="h-7 px-3 text-[12px] font-medium border border-gray-300 rounded-[3px] bg-white hover:bg-gray-50 cursor-pointer">
-            + New tenant
+            + New account
           </button>
         </div>
         <table className="w-full text-[13px] border-collapse">
           <thead>
             <tr className="bg-gray-50">
-              {["ID", "Name", "Type", "Domain", "Clients", "Services", "Wallet", "Status", "Since"].map((h) => (
-                <th key={h} className="text-left text-[11px] font-medium uppercase tracking-wide text-gray-400 px-3 py-2 border-b border-gray-200">
-                  {h}
+              {[
+                { label: "ID", align: "left" },
+                { label: "Name", align: "left" },
+                { label: "Type", align: "left" },
+                { label: "Domain", align: "left" },
+                { label: "Clients", align: "right" },
+                { label: "Services", align: "right" },
+                { label: "Wallet", align: "right" },
+                { label: "Status", align: "left" },
+                { label: "Since", align: "left" }
+              ].map((h) => (
+                <th key={h.label} className={`${h.align === 'right' ? 'text-right' : 'text-left'} text-[11px] font-medium uppercase tracking-wide text-gray-400 px-3 py-2 border-b border-gray-200`}>
+                  {h.label}
                 </th>
               ))}
             </tr>

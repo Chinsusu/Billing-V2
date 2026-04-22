@@ -12,16 +12,15 @@ export interface NavItem {
 export const ADMIN_NAV: NavItem[] = [
   { id: "admin-overview", label: "Overview", portal: "admin" },
 
-  { id: "admin-tenants", label: "Tenants", portal: "admin", section: "Platform", count: 5 },
+  { id: "admin-tenants", label: "Accounts", portal: "admin", section: "Platform", count: 2852 },
   { id: "admin-provisioning", label: "Provisioning queue", portal: "admin", section: "Platform", badge: "danger", count: 6 },
   { id: "admin-topups", label: "Top-up verification", portal: "admin", section: "Platform", badge: "danger", count: 3 },
   { id: "admin-providers", label: "Providers / Sources", portal: "admin", section: "Platform" },
 
-  { id: "admin-customers", label: "Customers", portal: "admin", section: "Customers", count: 2847 },
   { id: "admin-tickets", label: "Support tickets", portal: "admin", section: "Customers", badge: "danger", count: 23 },
 
-  { id: "admin-services-proxies",   label: "Proxies",   portal: "admin", section: "Services", count: 10 },
-  { id: "admin-services-vps",       label: "VPS",       portal: "admin", section: "Services", count: 7 },
+  { id: "admin-services-proxies", label: "Proxies", portal: "admin", section: "Services", count: 10 },
+  { id: "admin-services-vps", label: "VPS", portal: "admin", section: "Services", count: 7 },
   { id: "admin-services-bandwidth", label: "Bandwidth", portal: "admin", section: "Services", count: 7 },
 
   { id: "admin-invoices", label: "Invoices", portal: "admin", section: "Billing" },

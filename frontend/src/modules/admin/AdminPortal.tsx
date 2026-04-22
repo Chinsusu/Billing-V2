@@ -34,8 +34,8 @@ const SCREENS: Record<string, ScreenConfig> = {
     component: <AdminOverview />,
   },
   "admin-tenants": {
-    title: "Tenants", breadcrumbs: ["HANetwork", "Platform", "Tenants"],
-    meta: <span className="text-[11px] text-gray-400">5 tenants · 4 resellers</span>,
+    title: "Accounts", breadcrumbs: ["HANetwork", "Platform", "Accounts"],
+    meta: <span className="text-[11px] text-gray-400">2,852 accounts · 4 resellers</span>,
     component: <AdminTenants />,
   },
   "admin-provisioning": {
