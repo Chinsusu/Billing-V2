@@ -1,6 +1,6 @@
 # T012 - Outbox Store And Worker Runner
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/outbox-store-runner
 PR: https://github.com/Chinsusu/Billing-V2/pull/32
@@ -35,3 +35,4 @@ Implement PostgreSQL job/outbox claim stores and a small worker runner that can 
 
 - 2026-04-23: Codex claimed task from `origin/main` using isolated worktree `/tmp/Billing-T012`.
 - 2026-04-23: Opened PR #32 after `make fmt`, `make test`, `make build`, and `make migrate-validate` passed.
+- 2026-04-23: PR #32 merged; T012 marked DONE.
