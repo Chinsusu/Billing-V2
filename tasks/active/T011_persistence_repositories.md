@@ -1,9 +1,9 @@
 # T011 - Persistence Repositories
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: feat/persistence-repositories
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/30
 Risk: tenant/RBAC/audit/DB
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -36,3 +36,4 @@ Add the first PostgreSQL repository layer for tenant, identity, RBAC, and audit 
 ## Agent Log
 
 - 2026-04-23: Codex claimed task from `origin/main` using isolated worktree `/tmp/Billing-T011`.
+- 2026-04-23: Opened PR #30 after `make fmt`, `make test`, `make build`, and `make migrate-validate` passed.
