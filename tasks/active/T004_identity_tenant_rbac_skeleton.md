@@ -1,9 +1,9 @@
 # T004 - Identity Tenant RBAC Skeleton
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: feat/identity-tenant-rbac-skeleton
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/16
 Risk: tenant/RBAC
 Created: 2026-04-22
 Updated: 2026-04-22
@@ -36,3 +36,4 @@ Add skeleton interfaces/types for identity, tenant context, and RBAC checks with
 
 - 2026-04-22: Task file created from `TASKS.md`.
 - 2026-04-22: Codex claimed task on `feat/identity-tenant-rbac-skeleton`.
+- 2026-04-22: PR #16 opened for identity, tenant context, and RBAC skeleton review.
