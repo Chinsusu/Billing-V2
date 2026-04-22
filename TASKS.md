@@ -42,7 +42,7 @@ Example:
 
 | ID | Status | Owner | Branch | PR | Risk | Task |
 | --- | --- | --- | --- | --- | --- | --- |
-| T001 | TODO | - | chore/ci-workflow | - | CI | Add GitHub Actions workflow for `make fmt`, `make test`, `make build`, and basic secret scan. |
+| T001 | REVIEW | Codex | chore/ci-workflow | - | CI | Add GitHub Actions workflow for `make fmt`, `make test`, `make build`, and basic secret scan. |
 | T002 | TODO | - | chore/db-migration-skeleton | - | migration | Add `internal/platform/db` skeleton and migration runner entrypoint without domain tables yet. |
 | T003 | TODO | - | feat/http-middleware-base | - | API/logging | Add recover middleware, request logging middleware, method guard helper, and tests. |
 | T004 | TODO | - | feat/identity-tenant-rbac-skeleton | - | tenant/RBAC | Add skeleton interfaces/types for identity, tenant context, and RBAC checks without persistence. |

@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test and build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Format check
+        run: |
+          make fmt
+          if ! git diff --exit-code; then
+            echo "gofmt changed files. Run make fmt and commit the result."
+            exit 1
+          fi
+
+      - name: Test
+        run: make test
+
+      - name: Build
+        run: make build
+
+  secret-scan:
+    name: Basic secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Reject sensitive tracked file names
+        run: |
+          blocked_files=$(git ls-files \
+            | grep -E '(^|/)(\.env($|\.)|id_rsa$|id_ed25519$|.*\.(pem|p12|pfx|key|dump|sql\.gz)$)' \
+            | grep -v -E '(^|/)\.env\.example$' || true)
+          if [ -n "$blocked_files" ]; then
+            echo "Sensitive file names are tracked:"
+            echo "$blocked_files"
+            exit 1
+          fi
+
+      - name: Scan for likely hardcoded secrets
+        run: |
+          matches=$(git grep -nIE \
+            -e "(password|passwd|pwd|token|api[_-]?key|secret|private[_-]?key)[[:space:]]*[:=][[:space:]]*[\"']?[A-Za-z0-9_./+=:@-]{20,}" \
+            -- \
+            ':!docs/**' \
+            ':!AGENTS.md' \
+            ':!TASKS.md' \
+            ':!.env.example' \
+            ':!.github/workflows/ci.yml' || true)
+
+          if [ -n "$matches" ]; then
+            echo "Potential hardcoded secrets found:"
+            echo "$matches"
+            exit 1
+          fi
