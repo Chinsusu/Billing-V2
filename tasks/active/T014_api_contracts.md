@@ -1,9 +1,9 @@
 # T014 - API Contracts
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: feat/api-contracts
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/36
 Risk: API
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -34,3 +34,4 @@ Add shared API response helpers for success lists, error details, validation fie
 ## Agent Log
 
 - 2026-04-23: Codex claimed task from `origin/main` using isolated worktree `/tmp/Billing-T014`.
+- 2026-04-23: Opened PR #36 after `make fmt`, `make test`, `make build`, and `make migrate-validate` passed.
