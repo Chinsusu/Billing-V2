@@ -38,7 +38,7 @@ export function Sidebar({ portal, activeScreen, onSelect, collapsed, onToggle }:
     >
       {/* Logo */}
       <div
-        className="flex items-center gap-4 border-b border-gray-200 shrink-0"
+        className="flex items-center gap-3 border-b border-gray-200 shrink-0"
         style={{ height: 48, padding: collapsed ? "0" : "0 14px", justifyContent: collapsed ? "center" : "flex-start" }}
       >
         <div className="w-[22px] h-[22px] grid place-items-center bg-[#D50C2D] text-white text-sm font-medium rounded-sm shrink-0">
@@ -67,7 +67,7 @@ export function Sidebar({ portal, activeScreen, onSelect, collapsed, onToggle }:
                   key={item.id}
                   onClick={() => onSelect(item.id)}
                   title={collapsed ? item.label : undefined}
-                  className={`flex items-center gap-4.5 w-full h-7 rounded-[3px] text-[13px] cursor-pointer border-0 transition-colors
+                  className={`flex items-center gap-3 w-full h-7 rounded-[3px] text-[13px] cursor-pointer border-0 transition-colors
                     ${collapsed ? "justify-center px-0" : "p-4"}
                     ${active
                       ? "bg-red-50 text-[#D50C2D] font-medium"
@@ -97,11 +97,11 @@ export function Sidebar({ portal, activeScreen, onSelect, collapsed, onToggle }:
 
       {/* User + toggle */}
       <div
-        className="border-t border-gray-200 flex items-center gap-4.5"
+        className="border-t border-gray-200 flex items-center gap-3"
         style={{ padding: collapsed ? 6 : "10px 12px", justifyContent: collapsed ? "center" : "space-between" }}
       >
         {!collapsed && (
-          <div className="flex items-center gap-4 min-w-0">
+          <div className="flex items-center gap-3 min-w-0">
             <div className="w-[26px] h-[26px] rounded-full bg-gray-800 text-white grid place-items-center text-[11px] font-medium shrink-0">
               {meta.user.slice(0, 2).toUpperCase()}
             </div>
@@ -124,37 +124,37 @@ export function Sidebar({ portal, activeScreen, onSelect, collapsed, onToggle }:
 }
 
 const NAV_ICONS: Record<string, React.ReactNode> = {
-  "admin-overview":     <LayoutDashboard size={14} />,
-  "reseller-overview":  <LayoutDashboard size={14} />,
-  "client-overview":    <LayoutDashboard size={14} />,
-  "admin-tenants":      <Users size={14} />,
+  "admin-overview": <LayoutDashboard size={14} />,
+  "reseller-overview": <LayoutDashboard size={14} />,
+  "client-overview": <LayoutDashboard size={14} />,
+  "admin-tenants": <Users size={14} />,
   "admin-provisioning": <Wrench size={14} />,
-  "admin-topups":       <ArrowDownCircle size={14} />,
-  "admin-providers":    <Plug size={14} />,
-  "admin-customers":    <UserCheck size={14} />,
-  "reseller-clients":   <UserCheck size={14} />,
-  "admin-tickets":      <Headphones size={14} />,
-  "client-support":     <Headphones size={14} />,
-  "admin-services-proxies":   <Globe size={14} />,
-  "admin-services-vps":       <Server size={14} />,
+  "admin-topups": <ArrowDownCircle size={14} />,
+  "admin-providers": <Plug size={14} />,
+  "admin-customers": <UserCheck size={14} />,
+  "reseller-clients": <UserCheck size={14} />,
+  "admin-tickets": <Headphones size={14} />,
+  "client-support": <Headphones size={14} />,
+  "admin-services-proxies": <Globe size={14} />,
+  "admin-services-vps": <Server size={14} />,
   "admin-services-bandwidth": <Gauge size={14} />,
-  "reseller-services":  <Server size={14} />,
-  "client-services":    <Server size={14} />,
-  "admin-invoices":     <Receipt size={14} />,
-  "reseller-orders":    <Receipt size={14} />,
+  "reseller-services": <Server size={14} />,
+  "client-services": <Server size={14} />,
+  "admin-invoices": <Receipt size={14} />,
+  "reseller-orders": <Receipt size={14} />,
   "admin-transactions": <ArrowLeftRight size={14} />,
-  "reseller-wallet":    <Wallet size={14} />,
-  "client-wallet":      <Wallet size={14} />,
-  "admin-products":     <Package size={14} />,
-  "reseller-catalog":   <Package size={14} />,
-  "client-shop":        <ShoppingBag size={14} />,
-  "admin-alerts":       <Bell size={14} />,
-  "admin-logs":         <ScrollText size={14} />,
-  "admin-settings":     <Settings size={14} />,
-  "reseller-settings":  <Settings size={14} />,
-  "client-settings":    <Settings size={14} />,
-  "reseller-reports":   <BarChart2 size={14} />,
-  "client-usage":       <BarChart2 size={14} />,
+  "reseller-wallet": <Wallet size={14} />,
+  "client-wallet": <Wallet size={14} />,
+  "admin-products": <Package size={14} />,
+  "reseller-catalog": <Package size={14} />,
+  "client-shop": <ShoppingBag size={14} />,
+  "admin-alerts": <Bell size={14} />,
+  "admin-logs": <ScrollText size={14} />,
+  "admin-settings": <Settings size={14} />,
+  "reseller-settings": <Settings size={14} />,
+  "client-settings": <Settings size={14} />,
+  "reseller-reports": <BarChart2 size={14} />,
+  "client-usage": <BarChart2 size={14} />,
 };
 
 function NavIcon({ id }: { id: string }) {
