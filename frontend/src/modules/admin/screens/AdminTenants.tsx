@@ -8,7 +8,7 @@ export function AdminTenants() {
       <div className="bg-white border border-gray-200 rounded">
         <div className="p-4 p-4 border-b border-gray-100 flex items-center justify-between">
           <h3 className="text-[13px] font-medium text-gray-900 m-0">Accounts</h3>
-          <button className="h-7 p-4 text-[12px] font-medium border border-gray-300 rounded-[3px] bg-white hover:bg-gray-50 cursor-pointer">
+          <button className="inline-flex items-center justify-center gap-2 px-4 h-9 text-[13px] font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded-md cursor-pointer transition-colors shadow-sm">
             + New account
           </button>
         </div>

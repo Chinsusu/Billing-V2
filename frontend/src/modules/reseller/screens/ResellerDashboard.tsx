@@ -14,10 +14,10 @@ export function ResellerDashboard() {
           <div className="text-[12px] text-gray-400 mt-1">Available balance · ProxyVN</div>
         </div>
         <div className="flex gap-4">
-          <button className="h-8 p-4 text-[13px] font-medium border border-gray-300 rounded-[3px] bg-white hover:bg-gray-50 cursor-pointer">
+          <button className="inline-flex items-center justify-center gap-2 px-4 h-9 text-[13px] font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded-md cursor-pointer transition-colors shadow-sm">
             Ledger history
           </button>
-          <button className="h-8 p-4 text-[13px] font-medium bg-[#D50C2D] text-white rounded-[3px] hover:bg-[#B3082A] cursor-pointer border-0">
+          <button className="inline-flex items-center justify-center gap-2 px-4 h-9 text-[13px] font-medium bg-[#D50C2D] hover:bg-[#B3082A] text-white rounded-md border-0 cursor-pointer transition-colors shadow-sm">
             + Top up
           </button>
         </div>

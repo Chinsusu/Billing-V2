@@ -11,7 +11,7 @@ export function ClientDashboard() {
         <div key={s.id} className="bg-amber-50 border border-amber-200 text-amber-700 text-[12px] p-4 p-4.5 rounded flex items-center gap-4">
           <span>⚠</span>
           <span><strong>{s.label}</strong> is suspended. {s.note} Renew to restore access.</span>
-          <button className="ml-auto h-6 p-4 text-[11px] font-medium bg-amber-600 text-white rounded-sm border-0 cursor-pointer hover:bg-amber-700">
+          <button className="ml-auto inline-flex items-center justify-center gap-2 px-4 h-9 text-[13px] font-medium bg-amber-600 hover:bg-amber-700 text-white rounded-md border-0 cursor-pointer transition-colors shadow-sm">
             Renew now
           </button>
         </div>
@@ -23,7 +23,7 @@ export function ClientDashboard() {
           <div className="text-[11px] text-gray-400 uppercase tracking-wide mb-1">Wallet balance</div>
           <div className="text-lg font-medium tabular-nums text-gray-900">$128.40</div>
         </div>
-        <button className="h-8 p-4 text-[13px] font-medium bg-[#D50C2D] text-white rounded-[3px] border-0 hover:bg-[#B3082A] cursor-pointer">
+        <button className="inline-flex items-center justify-center gap-2 px-4 h-9 text-[13px] font-medium bg-[#D50C2D] hover:bg-[#B3082A] text-white rounded-md border-0 cursor-pointer transition-colors shadow-sm">
           + Top up
         </button>
       </div>

@@ -18,7 +18,7 @@ export function ResellerWallet() {
             <div className="text-3xl font-medium tabular-nums text-gray-900">$4,820.50</div>
             <div className="text-[12px] text-gray-400 mt-1">ProxyVN · T-0042</div>
           </div>
-          <button className="h-8 p-4 text-[13px] font-medium bg-[#D50C2D] text-white rounded-[3px] border-0 hover:bg-[#B3082A] cursor-pointer">
+          <button className="inline-flex items-center justify-center gap-2 px-4 h-9 text-[13px] font-medium bg-[#D50C2D] hover:bg-[#B3082A] text-white rounded-md border-0 cursor-pointer transition-colors shadow-sm">
             + Request top-up
           </button>
         </div>

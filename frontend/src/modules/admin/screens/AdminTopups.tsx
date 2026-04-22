@@ -39,10 +39,10 @@ export function AdminTopups() {
                 <td className="p-4 p-4">
                   {req.status === "pending_verification" && (
                     <div className="flex gap-1.5">
-                      <button className="h-6 p-4 text-[11px] font-medium bg-green-600 text-white rounded-sm hover:bg-green-700 cursor-pointer border-0">
+                      <button className="inline-flex items-center justify-center gap-2 px-4 h-9 text-[13px] font-medium bg-emerald-600 hover:bg-emerald-700 text-white rounded-md border-0 cursor-pointer transition-colors shadow-sm">
                         Approve
                       </button>
-                      <button className="h-6 p-4 text-[11px] font-medium border border-red-200 text-red-600 rounded-sm hover:bg-red-50 cursor-pointer bg-white">
+                      <button className="inline-flex items-center justify-center gap-2 px-4 h-9 text-[13px] font-medium bg-white hover:bg-red-50 text-red-600 border border-red-200 rounded-md cursor-pointer transition-colors shadow-sm">
                         Reject
                       </button>
                     </div>

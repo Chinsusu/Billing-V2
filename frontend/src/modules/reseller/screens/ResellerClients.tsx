@@ -8,7 +8,7 @@ export function ResellerClients() {
       <div className="bg-white border border-gray-200 rounded">
         <div className="p-4 p-4 border-b border-gray-100 flex items-center justify-between">
           <h3 className="text-[13px] font-medium text-gray-900 m-0">Clients</h3>
-          <button className="h-7 p-4 text-[12px] font-medium bg-[#D50C2D] text-white rounded-[3px] border-0 hover:bg-[#B3082A] cursor-pointer">
+          <button className="inline-flex items-center justify-center gap-2 px-4 h-9 text-[13px] font-medium bg-[#D50C2D] hover:bg-[#B3082A] text-white rounded-md border-0 cursor-pointer transition-colors shadow-sm">
             + Add client
           </button>
         </div>

@@ -113,7 +113,7 @@ export function AdminPortal() {
       breadcrumbs={cur.breadcrumbs}
       meta={cur.meta}
       actions={
-        <button className="h-7 p-4 text-[12px] font-medium border border-gray-300 rounded-[3px] bg-white hover:bg-gray-50 cursor-pointer">
+        <button className="inline-flex items-center justify-center gap-2 px-4 h-9 text-[13px] font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded-md cursor-pointer transition-colors shadow-sm">
           + New
         </button>
       }
