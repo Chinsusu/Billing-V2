@@ -29,34 +29,36 @@ export const ADMIN_NAV: NavItem[] = [
 
   { id: "admin-alerts", label: "Alerts", portal: "admin", section: "System", badge: "danger", count: 5 },
   { id: "admin-logs", label: "Audit logs", portal: "admin", section: "System" },
-  { id: "admin-settings", label: "Settings", portal: "admin", section: "System" },
+
+  { id: "admin-settings", label: "Settings", portal: "admin", section: "Settings" },
 ];
 
 export const RESELLER_NAV: NavItem[] = [
-  { id: "reseller-overview", label: "Dashboard", portal: "reseller" },
+  { id: "reseller-overview", label: "Overview", portal: "reseller" },
 
-  { id: "reseller-clients", label: "Clients", portal: "reseller", section: "My business", count: 312 },
-  { id: "reseller-catalog", label: "Catalog / Pricing", portal: "reseller", section: "My business" },
-  { id: "reseller-services", label: "Services", portal: "reseller", section: "My business" },
-  { id: "reseller-orders", label: "Orders", portal: "reseller", section: "My business" },
+  { id: "reseller-clients", label: "Clients", portal: "reseller", section: "Customers", count: 312 },
 
-  { id: "reseller-wallet", label: "Wallet & Top-up", portal: "reseller", section: "Finance" },
-  { id: "reseller-reports", label: "Reports", portal: "reseller", section: "Finance" },
+  { id: "reseller-services", label: "Services", portal: "reseller", section: "Services" },
 
-  { id: "reseller-settings", label: "Branding & Settings", portal: "reseller", section: "Account" },
+  { id: "reseller-catalog", label: "Catalog & Pricing", portal: "reseller", section: "Billing" },
+  { id: "reseller-orders", label: "Orders", portal: "reseller", section: "Billing" },
+  { id: "reseller-wallet", label: "Wallet & Top-up", portal: "reseller", section: "Billing" },
+  { id: "reseller-reports", label: "Reports", portal: "reseller", section: "Billing" },
+
+  { id: "reseller-settings", label: "Branding & Settings", portal: "reseller", section: "Settings" },
 ];
 
 export const CLIENT_NAV: NavItem[] = [
-  { id: "client-overview", label: "Dashboard", portal: "client" },
-  { id: "client-shop", label: "Shop", portal: "client" },
+  { id: "client-overview", label: "Overview", portal: "client" },
 
   { id: "client-services", label: "My services", portal: "client", section: "Services", count: 5 },
 
+  { id: "client-shop", label: "Shop", portal: "client", section: "Billing" },
   { id: "client-wallet", label: "Wallet", portal: "client", section: "Billing" },
   { id: "client-usage", label: "Usage", portal: "client", section: "Billing" },
 
-  { id: "client-settings", label: "Settings", portal: "client", section: "Account" },
-  { id: "client-support", label: "Support", portal: "client", section: "Account" },
+  { id: "client-support", label: "Support tickets", portal: "client", section: "Settings" },
+  { id: "client-settings", label: "Settings", portal: "client", section: "Settings" },
 ];
 
 export const NAV_BY_PORTAL: Record<Portal, NavItem[]> = {
