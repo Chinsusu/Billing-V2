@@ -4,7 +4,8 @@ import React from "react";
 import {
   LayoutDashboard, Users, Server, ArrowDownCircle, Plug, Headphones,
   Receipt, ArrowLeftRight, Package, Settings, BarChart2, ShoppingBag,
-  Wallet, Wrench, UserCheck, ChevronLeft, ChevronRight,
+  Wallet, Wrench, UserCheck, ChevronLeft, ChevronRight, Bell, ScrollText,
+  Globe, Gauge,
 } from "lucide-react";
 import { NAV_BY_PORTAL, PORTAL_META, Portal, NavItem } from "@/lib/navigation/screens";
 
@@ -134,7 +135,9 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   "reseller-clients":   <UserCheck size={14} />,
   "admin-tickets":      <Headphones size={14} />,
   "client-support":     <Headphones size={14} />,
-  "admin-services":     <Server size={14} />,
+  "admin-services-proxies":   <Globe size={14} />,
+  "admin-services-vps":       <Server size={14} />,
+  "admin-services-bandwidth": <Gauge size={14} />,
   "reseller-services":  <Server size={14} />,
   "client-services":    <Server size={14} />,
   "admin-invoices":     <Receipt size={14} />,
@@ -145,6 +148,8 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   "admin-products":     <Package size={14} />,
   "reseller-catalog":   <Package size={14} />,
   "client-shop":        <ShoppingBag size={14} />,
+  "admin-alerts":       <Bell size={14} />,
+  "admin-logs":         <ScrollText size={14} />,
   "admin-settings":     <Settings size={14} />,
   "reseller-settings":  <Settings size={14} />,
   "client-settings":    <Settings size={14} />,

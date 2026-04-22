@@ -20,12 +20,16 @@ export const ADMIN_NAV: NavItem[] = [
   { id: "admin-customers", label: "Customers", portal: "admin", section: "Customers", count: 2847 },
   { id: "admin-tickets", label: "Support tickets", portal: "admin", section: "Customers", badge: "danger", count: 23 },
 
-  { id: "admin-services", label: "Services", portal: "admin", section: "Services", count: 15604 },
+  { id: "admin-services-proxies",   label: "Proxies",   portal: "admin", section: "Services", count: 10 },
+  { id: "admin-services-vps",       label: "VPS",       portal: "admin", section: "Services", count: 7 },
+  { id: "admin-services-bandwidth", label: "Bandwidth", portal: "admin", section: "Services", count: 7 },
 
   { id: "admin-invoices", label: "Invoices", portal: "admin", section: "Billing" },
   { id: "admin-transactions", label: "Transactions", portal: "admin", section: "Billing" },
   { id: "admin-products", label: "Products & Pricing", portal: "admin", section: "Billing" },
 
+  { id: "admin-alerts", label: "Alerts", portal: "admin", section: "System", badge: "danger", count: 5 },
+  { id: "admin-logs", label: "Audit logs", portal: "admin", section: "System" },
   { id: "admin-settings", label: "Settings", portal: "admin", section: "System" },
 ];
 

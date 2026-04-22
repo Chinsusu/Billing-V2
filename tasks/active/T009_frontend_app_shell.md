@@ -43,5 +43,4 @@ Build a runnable Next.js/React/TypeScript frontend app shell with package script
 - 2026-04-22: PR #13 reviewed and closed as reference-only because it used static HTML/React UMD with no frontend toolchain or build.
 - 2026-04-22: Claimed by Sonnet4.6. Starting Next.js/React/TypeScript/Tailwind app shell build on feat/frontend-app-shell.
 - 2026-04-22: Implementation complete. npm run build passes. Go make build + make test pass. Opening PR.
-- 2026-04-22: PR #19 merged into `main`; checks passed.
-- 2026-04-22: Task completed.
+- 2026-04-22: PR #19 merged into main. Fixed broken Unicode nav icons → lucide-react SVG. Task DONE.

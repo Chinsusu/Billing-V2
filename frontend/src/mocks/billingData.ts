@@ -71,6 +71,56 @@ export interface Customer {
   country: string;
 }
 
+export type ProxyType = "residential" | "datacenter" | "mobile" | "isp";
+export type VpsOS = "linux" | "windows";
+
+export interface ProxyService {
+  id: string;
+  proxyType: ProxyType;
+  label: string;
+  customer: string;
+  tenant: string;
+  region: string;
+  ipCount: number;
+  protocol: "http" | "socks5" | "both";
+  usedGB: number;
+  totalGB: number;
+  price: number;
+  status: ServiceStatus;
+  renewsIn: number;
+}
+
+export interface VpsService {
+  id: string;
+  os: VpsOS;
+  label: string;
+  customer: string;
+  tenant: string;
+  region: string;
+  cpu: number;
+  ram: number;
+  disk: number;
+  ip: string;
+  provider: string;
+  price: number;
+  status: ServiceStatus;
+  renewsIn: number;
+}
+
+export interface BandwidthService {
+  id: string;
+  label: string;
+  customer: string;
+  tenant: string;
+  region: string;
+  usedGB: number;
+  totalGB: number;
+  usedPct: number;
+  price: number;
+  status: ServiceStatus;
+  renewsIn: number;
+}
+
 export interface Service {
   id: string;
   type: string;
@@ -237,6 +287,39 @@ export const SERVICES: Service[] = [
   { id: "prx-7b34", type: "residential", label: "APAC Residential", customer: "Alex Rodriguez", region: "APAC-SIN", bandwidth: "184 GB", price: 118, status: "suspended", renewsIn: -7 },
 ];
 
+export const PROXY_SERVICES: ProxyService[] = [
+  { id: "prx-9a12", proxyType: "residential", label: "US Residential Pool",       customer: "Acme Proxy Co.",  tenant: "ProxyVN",      region: "US-EAST",   ipCount: 0,    protocol: "http",   usedGB: 2400, totalGB: 5000, price: 380, status: "active",       renewsIn: 12 },
+  { id: "prx-4e21", proxyType: "datacenter",  label: "DC Pool Alpha · 500 IPs",   customer: "Scrapers Ltd",    tenant: "HANetwork",    region: "US-WEST",   ipCount: 500,  protocol: "both",   usedGB: 1100, totalGB: 3000, price: 240, status: "active",       renewsIn: 22 },
+  { id: "prx-8b67", proxyType: "mobile",      label: "Mobile 4G · 20 ports",      customer: "CloudHarvest",    tenant: "ProxyVN",      region: "US-EAST",   ipCount: 20,   protocol: "socks5", usedGB: 842,  totalGB: 2000, price: 620, status: "active",       renewsIn: 5  },
+  { id: "prx-2f01", proxyType: "isp",         label: "ISP Static · 100 IPs",      customer: "Marie Dubois",    tenant: "ProxyVN",      region: "EU-FRA",    ipCount: 100,  protocol: "http",   usedGB: 680,  totalGB: 2000, price: 180, status: "active",       renewsIn: 18 },
+  { id: "prx-5c23", proxyType: "residential", label: "EU Residential · Premium",  customer: "Linh Tran",       tenant: "ProxyVN",      region: "EU-MULTI",  ipCount: 0,    protocol: "http",   usedGB: 128,  totalGB: 500,  price: 62,  status: "active",       renewsIn: 14 },
+  { id: "prx-1a88", proxyType: "datacenter",  label: "DC Pool Beta · 1000 IPs",   customer: "Acme Proxy Co.",  tenant: "HANetwork",    region: "GLOBAL",    ipCount: 1000, protocol: "both",   usedGB: 3200, totalGB: 8000, price: 440, status: "active",       renewsIn: 9  },
+  { id: "prx-7b34", proxyType: "residential", label: "APAC Residential",          customer: "Alex Rodriguez",  tenant: "ProxyVN",      region: "APAC-SIN",  ipCount: 0,    protocol: "http",   usedGB: 184,  totalGB: 500,  price: 118, status: "suspended",    renewsIn: -7 },
+  { id: "prx-3c90", proxyType: "isp",         label: "ISP UK · 50 IPs",           customer: "Scrapers Ltd",    tenant: "HANetwork",    region: "EU-LON",    ipCount: 50,   protocol: "both",   usedGB: 310,  totalGB: 1000, price: 95,  status: "active",       renewsIn: 3  },
+  { id: "prx-6d14", proxyType: "mobile",      label: "Mobile VN · 10 ports",      customer: "Nguyễn Tuấn",     tenant: "ProxyVN",      region: "VN-HCM",    ipCount: 10,   protocol: "socks5", usedGB: 55,   totalGB: 200,  price: 48,  status: "active",       renewsIn: 21 },
+  { id: "prx-0e55", proxyType: "datacenter",  label: "DC APAC · 200 IPs",         customer: "DataMine Inc.",   tenant: "HANetwork",    region: "APAC-SIN",  ipCount: 200,  protocol: "http",   usedGB: 890,  totalGB: 2000, price: 160, status: "provisioning", renewsIn: 30 },
+];
+
+export const VPS_SERVICES: VpsService[] = [
+  { id: "vps-7c8f", os: "linux",   label: "vps-prod-01",      customer: "DataMine Inc.",   tenant: "HANetwork",  region: "EU-HEL",   cpu: 8,  ram: 32,  disk: 320,  ip: "95.216.x.x",   provider: "Hetzner",  price: 89,  status: "active",       renewsIn: 8  },
+  { id: "vps-3d9a", os: "windows", label: "win-rdp-gamma",    customer: "Kenji Watanabe",  tenant: "ProxyVN",    region: "APAC-TYO", cpu: 4,  ram: 16,  disk: 160,  ip: "45.77.x.x",    provider: "OVH",      price: 64,  status: "overdue",      renewsIn: -3 },
+  { id: "vps-6a11", os: "linux",   label: "vps-scrape-02",    customer: "Proxy Garden",    tenant: "ProxyVN",    region: "EU-HEL",   cpu: 2,  ram: 4,   disk: 40,   ip: "—",            provider: "Proxmox",  price: 19,  status: "provisioning", renewsIn: 30 },
+  { id: "vps-2b33", os: "linux",   label: "vps-api-gateway",  customer: "Acme Proxy Co.",  tenant: "HANetwork",  region: "US-EAST",  cpu: 4,  ram: 8,   disk: 80,   ip: "104.21.x.x",   provider: "Hetzner",  price: 34,  status: "active",       renewsIn: 15 },
+  { id: "vps-5f42", os: "linux",   label: "vps-db-replica",   customer: "CloudHarvest",    tenant: "HANetwork",  region: "US-WEST",  cpu: 8,  ram: 32,  disk: 640,  ip: "34.102.x.x",   provider: "OVH",      price: 102, status: "active",       renewsIn: 6  },
+  { id: "vps-9e01", os: "windows", label: "win-dev-01",       customer: "Marie Dubois",    tenant: "ProxyVN",    region: "EU-FRA",   cpu: 2,  ram: 8,   disk: 80,   ip: "51.75.x.x",    provider: "OVH",      price: 44,  status: "suspended",    renewsIn: -1 },
+  { id: "vps-1c77", os: "linux",   label: "vps-worker-03",    customer: "Scrapers Ltd",    tenant: "HANetwork",  region: "EU-HEL",   cpu: 16, ram: 64,  disk: 960,  ip: "65.108.x.x",   provider: "Hetzner",  price: 188, status: "active",       renewsIn: 19 },
+];
+
+export const BANDWIDTH_SERVICES: BandwidthService[] = [
+  { id: "bw-4a12", label: "Residential US 5TB",    customer: "Acme Proxy Co.",  tenant: "ProxyVN",    region: "US-EAST",  usedGB: 2400, totalGB: 5120,  usedPct: 47, price: 380, status: "active",  renewsIn: 12 },
+  { id: "bw-7c34", label: "DC Pool Global 8TB",    customer: "DataMine Inc.",   tenant: "HANetwork",  region: "GLOBAL",   usedGB: 5800, totalGB: 8192,  usedPct: 71, price: 620, status: "active",  renewsIn: 9  },
+  { id: "bw-2b88", label: "Mobile US 2TB",         customer: "CloudHarvest",    tenant: "ProxyVN",    region: "US-EAST",  usedGB: 842,  totalGB: 2048,  usedPct: 41, price: 210, status: "active",  renewsIn: 5  },
+  { id: "bw-9e55", label: "ISP EU 2TB",            customer: "Marie Dubois",    tenant: "ProxyVN",    region: "EU-MULTI", usedGB: 680,  totalGB: 2048,  usedPct: 33, price: 180, status: "active",  renewsIn: 18 },
+  { id: "bw-5f01", label: "EU Residential 500GB",  customer: "Linh Tran",       tenant: "ProxyVN",    region: "EU-MULTI", usedGB: 128,  totalGB: 512,   usedPct: 25, price: 62,  status: "active",  renewsIn: 14 },
+  { id: "bw-3d67", label: "APAC Residential 500GB",customer: "Alex Rodriguez",  tenant: "ProxyVN",    region: "APAC-SIN", usedGB: 501,  totalGB: 512,   usedPct: 98, price: 118, status: "overdue", renewsIn: -7 },
+  { id: "bw-6a90", label: "ISP UK 1TB",            customer: "Scrapers Ltd",    tenant: "HANetwork",  region: "EU-LON",   usedGB: 310,  totalGB: 1024,  usedPct: 30, price: 95,  status: "active",  renewsIn: 3  },
+];
+
 export const INVOICES: Invoice[] = [
   { id: "INV-2026-04218", customer: "Acme Proxy Co.", issued: "2026-04-20", due: "2026-05-04", amount: 4280.00, status: "open" },
   { id: "INV-2026-04217", customer: "DataMine Inc.", issued: "2026-04-20", due: "2026-05-04", amount: 8420.00, status: "paid" },
@@ -329,4 +412,64 @@ export const PLATFORM_ALERTS = [
   { text: "3 provisioning jobs in manual_review > 1h", type: "danger" as const, screen: "admin-provisioning" },
   { text: "2 reseller tenants below wallet threshold", type: "warn" as const, screen: "admin-topups" },
   { text: "OVH API degraded — 2.8% fail rate", type: "warn" as const, screen: "admin-providers" },
+];
+
+export type AlertSeverity = "danger" | "warn" | "info";
+export type AlertCategory = "provisioning" | "provider" | "billing" | "security" | "system";
+
+export interface PlatformAlert {
+  id: string;
+  severity: AlertSeverity;
+  category: AlertCategory;
+  title: string;
+  detail: string;
+  screen: string;
+  ts: string;
+  resolved: boolean;
+}
+
+export const ALERTS: PlatformAlert[] = [
+  { id: "ALT-001", severity: "danger", category: "provisioning", title: "3 jobs stuck in manual_review > 1h", detail: "Jobs JOB-3301, JOB-3298, JOB-3291 have not progressed. Provider timeout on OVH.", screen: "admin-provisioning", ts: "2026-04-22 14:05", resolved: false },
+  { id: "ALT-002", severity: "danger", category: "billing",      title: "Charge failed: Kenji Watanabe", detail: "Visa •• 0914 declined. Invoice INV-8821 overdue $82.00. Auto-suspend in 24h.", screen: "admin-invoices", ts: "2026-04-22 12:32", resolved: false },
+  { id: "ALT-003", severity: "warn",   category: "provider",     title: "OVH API degraded — 2.8% fail rate", detail: "Error rate above threshold over last 30 min. Provisioning continues but monitored.", screen: "admin-providers", ts: "2026-04-22 11:50", resolved: false },
+  { id: "ALT-004", severity: "warn",   category: "billing",      title: "2 reseller tenants below wallet threshold", detail: "DataMine Inc. ($41.20) and Proxy Garden ($18.80) are below $50 floor.", screen: "admin-tenants", ts: "2026-04-22 10:15", resolved: false },
+  { id: "ALT-005", severity: "warn",   category: "provisioning", title: "Proxmox node pve-node-03 at 91% memory", detail: "High memory utilisation. New VPS provisioning on this node may fail.", screen: "admin-providers", ts: "2026-04-22 09:44", resolved: false },
+  { id: "ALT-006", severity: "info",   category: "system",       title: "DB migration 0003 applied successfully", detail: "Migration ran in 1.2s. No rollback needed.", screen: "admin-settings", ts: "2026-04-21 22:01", resolved: true },
+  { id: "ALT-007", severity: "info",   category: "security",     title: "New admin login from new IP", detail: "User Minh Nguyen logged in from 103.21.x.x — Vietnam. Session flagged for review.", screen: "admin-settings", ts: "2026-04-21 18:30", resolved: true },
+  { id: "ALT-008", severity: "danger", category: "security",     title: "API key rotation overdue — Hetzner", detail: "Provider account hetzner-main-01 key has not been rotated in 90 days.", screen: "admin-providers", ts: "2026-04-20 08:00", resolved: false },
+];
+
+export type AuditLogLevel = "info" | "warn" | "error";
+export type AuditActor = "system" | "admin" | "reseller" | "client";
+
+export interface AuditLog {
+  id: string;
+  ts: string;
+  level: AuditLogLevel;
+  actor: AuditActor;
+  actorName: string;
+  action: string;
+  target: string;
+  detail: string;
+  requestId: string;
+  tenantId: string;
+}
+
+export const AUDIT_LOGS: AuditLog[] = [
+  { id: "LOG-0091", ts: "2026-04-22 14:22", level: "info",  actor: "client",   actorName: "Linh Tran",       action: "wallet.topup.submitted",       target: "TUP-9115",    detail: "Amount $200 via VietQR",                    requestId: "req-4412", tenantId: "T-0042" },
+  { id: "LOG-0090", ts: "2026-04-22 14:11", level: "info",  actor: "system",   actorName: "billing-worker",  action: "invoice.auto_charged",         target: "INV-8820",    detail: "Charged $8,420.00 from DataMine Inc.",      requestId: "req-4410", tenantId: "T-0018" },
+  { id: "LOG-0089", ts: "2026-04-22 14:05", level: "error", actor: "system",   actorName: "prov-worker",     action: "provisioning.job.stuck",       target: "JOB-3301",    detail: "manual_review threshold exceeded",          requestId: "req-4409", tenantId: "T-0031" },
+  { id: "LOG-0088", ts: "2026-04-22 13:58", level: "info",  actor: "admin",    actorName: "Minh Nguyen",     action: "tenant.topup.approved",        target: "TUP-9110",    detail: "Approved $500 for ProxyVN (T-0042)",        requestId: "req-4408", tenantId: "T-0001" },
+  { id: "LOG-0087", ts: "2026-04-22 13:44", level: "info",  actor: "reseller", actorName: "ProxyVN",         action: "service.renewed",              target: "svc-p-8821",  detail: "Proxy bundle renewed 30d",                  requestId: "req-4407", tenantId: "T-0042" },
+  { id: "LOG-0086", ts: "2026-04-22 13:17", level: "warn",  actor: "client",   actorName: "Acme Proxy Co.", action: "ticket.opened",                target: "T-8124",      detail: "Priority: high. Subject: IP blocked",       requestId: "req-4406", tenantId: "T-0031" },
+  { id: "LOG-0085", ts: "2026-04-22 12:32", level: "error", actor: "system",   actorName: "billing-worker",  action: "invoice.charge.failed",        target: "INV-8821",    detail: "Visa •• 0914 declined for Kenji Watanabe",  requestId: "req-4405", tenantId: "T-0042" },
+  { id: "LOG-0084", ts: "2026-04-22 12:01", level: "info",  actor: "admin",    actorName: "Minh Nguyen",     action: "product.price.updated",        target: "VPS-SMALL",   detail: "$12→$14/mo, effective next renewal",        requestId: "req-4404", tenantId: "T-0001" },
+  { id: "LOG-0083", ts: "2026-04-22 11:50", level: "warn",  actor: "system",   actorName: "health-worker",   action: "provider.health.degraded",     target: "ovh-main-01", detail: "Error rate 2.8% over 30min window",         requestId: "req-4403", tenantId: "T-0001" },
+  { id: "LOG-0082", ts: "2026-04-22 11:17", level: "info",  actor: "client",   actorName: "Linh Tran",       action: "wallet.topup.approved",        target: "TUP-9088",    detail: "Credited $500 to client wallet",             requestId: "req-4402", tenantId: "T-0042" },
+  { id: "LOG-0081", ts: "2026-04-22 10:44", level: "info",  actor: "system",   actorName: "prov-worker",     action: "service.provisioned",          target: "svc-v-5512",  detail: "VPS vps-scrape-02 active on OVH",           requestId: "req-4401", tenantId: "T-0031" },
+  { id: "LOG-0080", ts: "2026-04-22 10:15", level: "warn",  actor: "system",   actorName: "billing-worker",  action: "tenant.wallet.low_balance",    target: "T-0018",      detail: "DataMine Inc. balance $41.20 below floor",  requestId: "req-4400", tenantId: "T-0001" },
+  { id: "LOG-0079", ts: "2026-04-22 09:44", level: "warn",  actor: "system",   actorName: "health-worker",   action: "provider.node.high_memory",    target: "pve-node-03", detail: "91% memory utilisation on Proxmox node",    requestId: "req-4399", tenantId: "T-0001" },
+  { id: "LOG-0078", ts: "2026-04-22 09:01", level: "info",  actor: "reseller", actorName: "ProxyVN",         action: "catalog.price.updated",        target: "RES-PROX-4G", detail: "Markup adjusted from 35%→40%",              requestId: "req-4398", tenantId: "T-0042" },
+  { id: "LOG-0077", ts: "2026-04-21 22:01", level: "info",  actor: "system",   actorName: "migrator",        action: "db.migration.applied",         target: "0003",        detail: "Migration 0003_rbac ran in 1.2s",           requestId: "req-4397", tenantId: "T-0001" },
+  { id: "LOG-0076", ts: "2026-04-21 18:30", level: "warn",  actor: "admin",    actorName: "Minh Nguyen",     action: "auth.login.new_ip",            target: "session-991", detail: "Login from 103.21.x.x (Vietnam, new IP)",   requestId: "req-4396", tenantId: "T-0001" },
 ];
