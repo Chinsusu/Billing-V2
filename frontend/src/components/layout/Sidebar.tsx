@@ -152,6 +152,7 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   "admin-products": <Package size={14} />,
   "reseller-catalog": <Package size={14} />,
   "client-shop": <ShoppingBag size={14} />,
+  "admin-reports": <BarChart2 size={14} />,
   "admin-alerts": <Bell size={14} />,
   "admin-logs": <ScrollText size={14} />,
   "admin-settings": <Settings size={14} />,

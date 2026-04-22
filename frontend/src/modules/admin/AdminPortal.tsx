@@ -85,6 +85,10 @@ const SCREENS: Record<string, ScreenConfig> = {
     title: "Products & Pricing", breadcrumbs: ["HANetwork", "Billing", "Products"],
     component: <AdminProducts />,
   },
+  "admin-reports": {
+    title: "Reports", breadcrumbs: ["HANetwork", "Billing", "Reports"],
+    component: <AdminOverview />,
+  },
   "admin-alerts": {
     title: "Alerts", breadcrumbs: ["HANetwork", "System", "Alerts"],
     meta: <span className="text-[11px] text-red-600 font-medium">5 open</span>,

@@ -26,6 +26,7 @@ export const ADMIN_NAV: NavItem[] = [
   { id: "admin-invoices", label: "Invoices", portal: "admin", section: "Billing" },
   { id: "admin-transactions", label: "Transactions", portal: "admin", section: "Billing" },
   { id: "admin-products", label: "Products & Pricing", portal: "admin", section: "Billing" },
+  { id: "admin-reports", label: "Reports", portal: "admin", section: "Billing" },
 
   { id: "admin-alerts", label: "Alerts", portal: "admin", section: "System", badge: "danger", count: 5 },
   { id: "admin-logs", label: "Audit logs", portal: "admin", section: "System" },
