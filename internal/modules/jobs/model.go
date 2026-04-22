@@ -2,6 +2,7 @@ package jobs
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"time"
 
@@ -9,6 +10,7 @@ import (
 )
 
 var (
+	ErrJobNotFound           = errors.New("job not found")
 	ErrJobIDMissing          = errors.New("job id missing")
 	ErrJobTypeMissing        = errors.New("job type missing")
 	ErrReferenceMissing      = errors.New("job reference missing")
@@ -19,6 +21,11 @@ var (
 	ErrClaimLimitInvalid     = errors.New("claim limit invalid")
 	ErrLockDurationInvalid   = errors.New("lock duration invalid")
 	ErrMaxAttemptsInvalid    = errors.New("max attempts invalid")
+	ErrAttemptNumberInvalid  = errors.New("attempt number invalid")
+	ErrAttemptResultInvalid  = errors.New("attempt result invalid")
+	ErrOutboxEventNotFound   = errors.New("outbox event not found")
+	ErrOutboxEventIDMissing  = errors.New("outbox event id missing")
+	ErrOutboxStatusInvalid   = errors.New("outbox status invalid")
 )
 
 type ID string
@@ -88,12 +95,31 @@ const (
 	OutboxStatusDiscarded       OutboxStatus = "discarded"
 )
 
+func (status OutboxStatus) Valid() bool {
+	switch status {
+	case OutboxStatusPending,
+		OutboxStatusProcessing,
+		OutboxStatusPublished,
+		OutboxStatusFailedRetryable,
+		OutboxStatusFailedTerminal,
+		OutboxStatusDiscarded:
+		return true
+	default:
+		return false
+	}
+}
+
+func (status OutboxStatus) Terminal() bool {
+	return status == OutboxStatusPublished || status == OutboxStatusFailedTerminal || status == OutboxStatusDiscarded
+}
+
 type OutboxEvent struct {
 	ID                       OutboxEventID
 	TenantID                 tenant.ID
 	AggregateType            string
 	AggregateID              string
 	EventType                string
+	PayloadJSON              json.RawMessage
 	Status                   OutboxStatus
 	DedupeKey                string
 	AttemptCount             int
@@ -115,6 +141,7 @@ type Job struct {
 	ReferenceType            ReferenceType
 	ReferenceID              ReferenceID
 	SourceID                 SourceID
+	PayloadJSON              json.RawMessage
 	Status                   Status
 	Priority                 int
 	IdempotencyKey           string
@@ -181,6 +208,19 @@ const (
 	AttemptResultCancelled       AttemptResult = "cancelled"
 )
 
+func (result AttemptResult) Valid() bool {
+	switch result {
+	case AttemptResultSucceeded,
+		AttemptResultFailedRetryable,
+		AttemptResultFailedTerminal,
+		AttemptResultManualReview,
+		AttemptResultCancelled:
+		return true
+	default:
+		return false
+	}
+}
+
 type Attempt struct {
 	ID                   AttemptID
 	JobID                ID
@@ -226,11 +266,70 @@ type Completion struct {
 	FinishedAt               time.Time
 }
 
+func (completion Completion) Validate() error {
+	switch completion.Status {
+	case StatusSucceeded,
+		StatusFailedRetryable,
+		StatusFailedTerminal,
+		StatusManualReview,
+		StatusCancelled:
+		return nil
+	default:
+		return ErrStatusInvalid
+	}
+}
+
+type OutboxClaimRequest struct {
+	WorkerID WorkerID
+	Limit    int
+	LockFor  time.Duration
+	Now      time.Time
+}
+
+func (request OutboxClaimRequest) Validate() error {
+	if request.WorkerID == "" {
+		return ErrWorkerIDMissing
+	}
+	if request.Limit <= 0 {
+		return ErrClaimLimitInvalid
+	}
+	if request.LockFor <= 0 {
+		return ErrLockDurationInvalid
+	}
+	return nil
+}
+
+type OutboxCompletion struct {
+	Status                   OutboxStatus
+	NextAttemptAt            time.Time
+	LastErrorCode            string
+	LastErrorMessageRedacted string
+	PublishedAt              time.Time
+}
+
+func (completion OutboxCompletion) Validate() error {
+	switch completion.Status {
+	case OutboxStatusPublished,
+		OutboxStatusFailedRetryable,
+		OutboxStatusFailedTerminal,
+		OutboxStatusDiscarded:
+		return nil
+	default:
+		return ErrOutboxStatusInvalid
+	}
+}
+
 type Store interface {
 	// Claim must use a row lock such as SELECT FOR UPDATE SKIP LOCKED or an equivalent atomic claim.
 	Claim(ctx context.Context, request ClaimRequest) ([]Job, error)
 	RecordAttempt(ctx context.Context, attempt Attempt) error
 	Complete(ctx context.Context, jobID ID, completion Completion) error
+}
+
+type OutboxStore interface {
+	// ClaimOutbox must use a row lock such as SELECT FOR UPDATE SKIP LOCKED or an equivalent atomic claim.
+	ClaimOutbox(ctx context.Context, request OutboxClaimRequest) ([]OutboxEvent, error)
+	CompleteOutbox(ctx context.Context, eventID OutboxEventID, completion OutboxCompletion) error
 }
 
 type BackoffPolicy struct {
