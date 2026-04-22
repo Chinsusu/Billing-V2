@@ -1,7 +1,17 @@
+import { CreditCard, User, Server, Headphones, XCircle, Wallet } from "lucide-react";
 import { KpiCard } from "@/components/ui/KpiCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { INVOICES, ACTIVITY_FEED, PLATFORM_ALERTS } from "@/mocks/billingData";
+import { INVOICES, ACTIVITY_FEED, PLATFORM_ALERTS, ActivityEvent } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
+
+const ACTIVITY_ICONS: Record<ActivityEvent["icon"], React.ReactNode> = {
+  payment: <CreditCard size={11} />,
+  user:    <User size={11} />,
+  server:  <Server size={11} />,
+  ticket:  <Headphones size={11} />,
+  error:   <XCircle size={11} />,
+  wallet:  <Wallet size={11} />,
+};
 
 export function AdminOverview() {
   return (
@@ -78,7 +88,7 @@ export function AdminOverview() {
                     : a.type === "danger" ? "bg-red-50 text-red-700"
                     : "bg-gray-100 text-gray-500"}`}
                 >
-                  {a.icon}
+                  {ACTIVITY_ICONS[a.icon]}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-[12px] text-gray-700 leading-snug">{a.text}</div>

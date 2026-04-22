@@ -1,5 +1,11 @@
 "use client";
 
+import React from "react";
+import {
+  LayoutDashboard, Users, Server, ArrowDownCircle, Plug, Headphones,
+  Receipt, ArrowLeftRight, Package, Settings, BarChart2, ShoppingBag,
+  Wallet, Wrench, UserCheck, ChevronLeft, ChevronRight,
+} from "lucide-react";
 import { NAV_BY_PORTAL, PORTAL_META, Portal, NavItem } from "@/lib/navigation/screens";
 
 interface SidebarProps {
@@ -109,25 +115,47 @@ export function Sidebar({ portal, activeScreen, onSelect, collapsed, onToggle }:
           className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded p-1 transition-colors border-0 bg-transparent cursor-pointer"
           title="Toggle sidebar"
         >
-          {collapsed ? "→" : "←"}
+          {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </button>
       </div>
     </aside>
   );
 }
 
+const NAV_ICONS: Record<string, React.ReactNode> = {
+  "admin-overview":     <LayoutDashboard size={14} />,
+  "reseller-overview":  <LayoutDashboard size={14} />,
+  "client-overview":    <LayoutDashboard size={14} />,
+  "admin-tenants":      <Users size={14} />,
+  "admin-provisioning": <Wrench size={14} />,
+  "admin-topups":       <ArrowDownCircle size={14} />,
+  "admin-providers":    <Plug size={14} />,
+  "admin-customers":    <UserCheck size={14} />,
+  "reseller-clients":   <UserCheck size={14} />,
+  "admin-tickets":      <Headphones size={14} />,
+  "client-support":     <Headphones size={14} />,
+  "admin-services":     <Server size={14} />,
+  "reseller-services":  <Server size={14} />,
+  "client-services":    <Server size={14} />,
+  "admin-invoices":     <Receipt size={14} />,
+  "reseller-orders":    <Receipt size={14} />,
+  "admin-transactions": <ArrowLeftRight size={14} />,
+  "reseller-wallet":    <Wallet size={14} />,
+  "client-wallet":      <Wallet size={14} />,
+  "admin-products":     <Package size={14} />,
+  "reseller-catalog":   <Package size={14} />,
+  "client-shop":        <ShoppingBag size={14} />,
+  "admin-settings":     <Settings size={14} />,
+  "reseller-settings":  <Settings size={14} />,
+  "client-settings":    <Settings size={14} />,
+  "reseller-reports":   <BarChart2 size={14} />,
+  "client-usage":       <BarChart2 size={14} />,
+};
+
 function NavIcon({ id }: { id: string }) {
-  const icons: Record<string, string> = {
-    "admin-overview": "⊞", "reseller-overview": "⊞", "client-overview": "⊞",
-    "admin-tenants": "⊙", "admin-provisioning": "▣", "admin-topups": "◎", "admin-providers": "⊕",
-    "admin-customers": "⊚", "reseller-clients": "⊚", "admin-tickets": "◈",
-    "admin-services": "▦", "reseller-services": "▦", "client-services": "▦",
-    "admin-invoices": "◻", "reseller-orders": "◻",
-    "admin-transactions": "▤", "reseller-wallet": "◑", "client-wallet": "◑",
-    "admin-products": "◇", "reseller-catalog": "◇", "client-shop": "◇",
-    "admin-settings": "⊛", "reseller-settings": "⊛", "client-settings": "⊛",
-    "reseller-reports": "△", "client-usage": "△",
-    "client-support": "◫",
-  };
-  return <span className="text-[13px] shrink-0 leading-none">{icons[id] ?? "·"}</span>;
+  return (
+    <span className="shrink-0 flex items-center justify-center w-[14px]">
+      {NAV_ICONS[id] ?? <span className="w-1.5 h-1.5 rounded-full bg-current opacity-40" />}
+    </span>
+  );
 }
