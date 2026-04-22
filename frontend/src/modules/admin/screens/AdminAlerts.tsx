@@ -26,13 +26,13 @@ export function AdminAlerts() {
   const resolved = ALERTS.filter((a) => a.resolved);
 
   return (
-    <div className="p-5 flex flex-col gap-5">
+    <div className="p-4 flex flex-col gap-4">
       {/* Summary strip */}
-      <div className="flex gap-3">
+      <div className="flex gap-4">
         {(["danger", "warn", "info"] as const).map((sev) => {
           const count = open.filter((a) => a.severity === sev).length;
           return (
-            <div key={sev} className={`flex items-center gap-2 px-4 py-2.5 rounded border text-[12px] font-medium ${SEV_STYLE[sev]}`}>
+            <div key={sev} className={`flex items-center gap-4 p-4 p-4.5 rounded border text-[12px] font-medium ${SEV_STYLE[sev]}`}>
               {SEV_ICON[sev]}
               <span>{count} {sev === "danger" ? "critical" : sev === "warn" ? "warning" : "info"}</span>
             </div>
@@ -42,18 +42,18 @@ export function AdminAlerts() {
 
       {/* Open alerts */}
       <div className="bg-white border border-gray-200 rounded">
-        <div className="px-4 py-3 border-b border-gray-100">
-          <h3 className="text-[13px] font-semibold text-gray-900 m-0">Open alerts</h3>
+        <div className="p-4 p-4 border-b border-gray-100">
+          <h3 className="text-[13px] font-medium text-gray-900 m-0">Open alerts</h3>
         </div>
         <div className="divide-y divide-gray-100">
           {open.map((a) => (
-            <div key={a.id} className="flex items-start gap-3 px-4 py-3">
+            <div key={a.id} className="flex items-start gap-4 p-4 p-4">
               <div className={`mt-0.5 shrink-0 ${a.severity === "danger" ? "text-red-500" : a.severity === "warn" ? "text-amber-500" : "text-blue-500"}`}>
                 {SEV_ICON[a.severity]}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-[12px] font-semibold text-gray-900">{a.title}</span>
+                <div className="flex items-center gap-4 flex-wrap">
+                  <span className="text-[12px] font-medium text-gray-900">{a.title}</span>
                   <span className="text-[10px] font-medium uppercase tracking-wide px-1.5 py-0.5 rounded bg-gray-100 text-gray-500">
                     {CAT_LABEL[a.category]}
                   </span>
@@ -62,12 +62,12 @@ export function AdminAlerts() {
               </div>
               <div className="shrink-0 text-right">
                 <div className="text-[11px] text-gray-400">{a.ts}</div>
-                <div className="text-[11px] font-mono text-gray-300 mt-0.5">{a.id}</div>
+                <div className="text-[11px] text-gray-300 mt-0.5">{a.id}</div>
               </div>
             </div>
           ))}
           {open.length === 0 && (
-            <div className="px-4 py-6 text-center text-[12px] text-gray-400">No open alerts</div>
+            <div className="p-4 py-6 text-center text-[12px] text-gray-400">No open alerts</div>
           )}
         </div>
       </div>
@@ -75,16 +75,16 @@ export function AdminAlerts() {
       {/* Resolved alerts */}
       {resolved.length > 0 && (
         <div className="bg-white border border-gray-200 rounded">
-          <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
+          <div className="p-4 p-4 border-b border-gray-100 flex items-center gap-4">
             <CheckCircle size={13} className="text-green-500" />
-            <h3 className="text-[13px] font-semibold text-gray-900 m-0">Resolved</h3>
+            <h3 className="text-[13px] font-medium text-gray-900 m-0">Resolved</h3>
           </div>
           <div className="divide-y divide-gray-100">
             {resolved.map((a) => (
-              <div key={a.id} className="flex items-start gap-3 px-4 py-3 opacity-60">
+              <div key={a.id} className="flex items-start gap-4 p-4 p-4 opacity-60">
                 <div className="mt-0.5 shrink-0 text-green-500"><CheckCircle size={14} /></div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[12px] font-semibold text-gray-700 line-through">{a.title}</div>
+                  <div className="text-[12px] font-medium text-gray-700 line-through">{a.title}</div>
                   <div className="text-[12px] text-gray-400 mt-0.5">{a.detail}</div>
                 </div>
                 <div className="text-[11px] text-gray-400 shrink-0">{a.ts}</div>

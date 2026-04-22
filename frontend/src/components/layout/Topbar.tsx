@@ -21,19 +21,19 @@ export function Topbar({ title, breadcrumbs, meta, actions }: TopbarProps) {
             ))}
           </div>
         )}
-        <div className="flex items-center gap-2.5">
-          <h1 className="text-[15px] font-semibold tracking-tight text-gray-900 m-0">{title}</h1>
+        <div className="flex items-center gap-4.5">
+          <h1 className="text-[15px] font-medium tracking-tight text-gray-900 m-0">{title}</h1>
           {meta}
         </div>
       </div>
 
-      <div className="flex items-center gap-1.5 bg-gray-100 px-2 py-1 rounded-[3px] w-64 border border-transparent">
+      <div className="flex items-center gap-1.5 bg-gray-100 p-4 py-1 rounded-[3px] w-64 border border-transparent">
         <span className="text-gray-400 text-[12px]">⌕</span>
         <input
           placeholder="Search…"
           className="flex-1 bg-transparent border-0 outline-none text-[12px] text-gray-700 font-[inherit]"
         />
-        <span className="text-[10px] text-gray-400 font-mono border border-gray-300 rounded px-1">⌘K</span>
+        <span className="text-[10px] text-gray-400 border border-gray-300 rounded px-1">⌘K</span>
       </div>
 
       <div className="flex items-center gap-1">

@@ -68,7 +68,7 @@ export function ResellerPortal() {
       breadcrumbs={cur.breadcrumbs}
       meta={cur.meta}
       actions={
-        <button className="h-7 px-3 text-[12px] font-medium bg-[#D50C2D] text-white rounded-[3px] border-0 hover:bg-[#B3082A] cursor-pointer">
+        <button className="h-7 p-4 text-[12px] font-medium bg-[#D50C2D] text-white rounded-[3px] border-0 hover:bg-[#B3082A] cursor-pointer">
           + Top up
         </button>
       }
