@@ -53,6 +53,7 @@ DONE         PR merged into main
 | T009 | [tasks/active/T009_frontend_app_shell.md](tasks/active/T009_frontend_app_shell.md) | feat/frontend-app-shell | frontend | Build a runnable Next.js/React/TypeScript frontend app shell with package scripts, working navigation, screen registry, mock data, and build validation. |
 | T011 | [tasks/active/T011_persistence_repositories.md](tasks/active/T011_persistence_repositories.md) | feat/persistence-repositories | tenant/RBAC/audit/DB | Add PostgreSQL repository layer for tenant, identity, RBAC, and audit foundation. |
 | T012 | [tasks/active/T012_outbox_store_runner.md](tasks/active/T012_outbox_store_runner.md) | feat/outbox-store-runner | worker/outbox/retry | Add PostgreSQL job/outbox store implementations and worker runner skeleton. |
+| T013 | [tasks/active/T013_provider_registry.md](tasks/active/T013_provider_registry.md) | feat/provider-registry | provider | Add provider adapter registry and fake registry wiring for dev/test. |
 
 ## Completed Tasks
 

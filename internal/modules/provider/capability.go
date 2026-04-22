@@ -59,3 +59,79 @@ type ProxyCapabilities struct {
 	SupportsThreadLimit    bool
 	SupportsChangeExitIP   bool
 }
+
+func DefaultCapabilityProfile(providerType Type) CapabilityProfile {
+	switch providerType {
+	case TypeManual:
+		return CapabilityProfile{
+			SupportsHealthCheck:     true,
+			SupportsManualProvision: true,
+			SupportsStatusSync:      true,
+		}
+	case TypeProxyUpstream, TypePreloadedProxyPool:
+		return proxyCapabilityProfile()
+	default:
+		return vpsCapabilityProfile()
+	}
+}
+
+func vpsCapabilityProfile() CapabilityProfile {
+	return CapabilityProfile{
+		SupportsHealthCheck:        true,
+		SupportsLiveStockCheck:     true,
+		SupportsAutoProvision:      true,
+		SupportsStatusSync:         true,
+		SupportsSuspend:            true,
+		SupportsUnsuspend:          true,
+		SupportsTerminate:          true,
+		SupportsRenew:              true,
+		SupportsResetPassword:      true,
+		SupportsReinstall:          true,
+		SupportsChangeIP:           true,
+		SupportsBandwidthUsage:     true,
+		SupportsConsole:            true,
+		SupportsReverseDNS:         true,
+		SupportsSnapshot:           true,
+		SupportsBackup:             true,
+		SupportsCredentialFetch:    true,
+		SupportsCredentialRotation: true,
+		VPS: VPSCapabilities{
+			SupportsOSTemplateSelection: true,
+			SupportsCustomHostname:      true,
+			SupportsIPv6:                true,
+			SupportsPrivateNetwork:      true,
+			SupportsResize:              true,
+			SupportsRescueMode:          true,
+			SupportsVNCConsole:          true,
+			SupportsSSHKeyInjection:     true,
+		},
+	}
+}
+
+func proxyCapabilityProfile() CapabilityProfile {
+	return CapabilityProfile{
+		SupportsHealthCheck:        true,
+		SupportsLiveStockCheck:     true,
+		SupportsAutoProvision:      true,
+		SupportsStatusSync:         true,
+		SupportsSuspend:            true,
+		SupportsUnsuspend:          true,
+		SupportsTerminate:          true,
+		SupportsRenew:              true,
+		SupportsChangeIP:           true,
+		SupportsCredentialFetch:    true,
+		SupportsCredentialRotation: true,
+		Proxy: ProxyCapabilities{
+			SupportsHTTPProtocol:   true,
+			SupportsSOCKS5Protocol: true,
+			SupportsRotatingProxy:  true,
+			SupportsStaticProxy:    true,
+			SupportsGeoSelection:   true,
+			SupportsIPWhitelist:    true,
+			SupportsUserPassAuth:   true,
+			SupportsBandwidthQuota: true,
+			SupportsThreadLimit:    true,
+			SupportsChangeExitIP:   true,
+		},
+	}
+}

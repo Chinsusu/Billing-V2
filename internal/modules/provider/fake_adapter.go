@@ -34,20 +34,8 @@ type FakeAdapter struct {
 func NewFakeAdapter(providerType Type) *FakeAdapter {
 	now := time.Date(2026, 4, 22, 0, 0, 0, 0, time.UTC)
 	return &FakeAdapter{
-		Provider: providerType,
-		Capabilities: CapabilityProfile{
-			SupportsHealthCheck:     true,
-			SupportsLiveStockCheck:  true,
-			SupportsAutoProvision:   true,
-			SupportsStatusSync:      true,
-			SupportsSuspend:         true,
-			SupportsUnsuspend:       true,
-			SupportsTerminate:       true,
-			SupportsRenew:           true,
-			SupportsResetPassword:   true,
-			SupportsChangeIP:        true,
-			SupportsCredentialFetch: true,
-		},
+		Provider:     providerType,
+		Capabilities: DefaultCapabilityProfile(providerType),
 		Health: HealthResult{
 			HealthStatus: HealthStatusHealthy,
 			Result:       SuccessResult(now),
