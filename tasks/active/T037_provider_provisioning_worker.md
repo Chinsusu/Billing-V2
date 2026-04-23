@@ -1,7 +1,7 @@
 # T037 - Provider provisioning worker
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: feat/provider-provisioning-worker
 PR: -
 Risk: worker/provider
@@ -35,3 +35,4 @@ Add a worker that claims provisioning jobs, calls the provider adapter registry,
 ## Agent Log
 
 - 2026-04-23: Task created for the next backend batch.
+- 2026-04-23: Claimed by Codex from latest `origin/main` in `/tmp/Billing-T037`.
