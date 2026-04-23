@@ -1,6 +1,6 @@
 # T040 - Payment transaction API
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/payment-transaction-api
 PR: https://github.com/Chinsusu/Billing-V2/pull/92
@@ -38,3 +38,4 @@ Add payment transaction records and read APIs so account history can show charge
 - 2026-04-23: Claimed by Codex from latest `origin/main` in `/tmp/Billing-T040`.
 - 2026-04-23: Added payment transaction schema, store, tenant-scoped read APIs, and runtime wiring. Validation passed: `make fmt`, `make test`, `make build`, `make migrate-validate`.
 - 2026-04-23: Opened PR #92.
+- 2026-04-23: PR #92 merged into `main`.
