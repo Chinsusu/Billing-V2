@@ -1,9 +1,9 @@
 # T038 - Service instance store API
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: feat/service-instance-store-api
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/88
 Risk: service/API/DB
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -36,3 +36,4 @@ Add store methods and read APIs for provisioned service instances so customer an
 
 - 2026-04-23: Task created for the next backend batch.
 - 2026-04-23: Claimed by Codex from latest `origin/main` in `/tmp/Billing-T038`.
+- 2026-04-23: Opened PR #88. Validation passed: `go test ./internal/modules/order ./cmd/api`, `make fmt`, `make test`, `make build`, `make migrate-validate`.
