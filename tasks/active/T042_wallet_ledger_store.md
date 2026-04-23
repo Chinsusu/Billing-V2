@@ -3,7 +3,7 @@
 Status: REVIEW
 Owner: Codex
 Branch: feat/wallet-ledger-store
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/97
 Risk: wallet/ledger/DB
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -37,3 +37,4 @@ Add immutable wallet ledger models, schema, and store methods so balance movemen
 - 2026-04-23: Task created for the next backend wallet/invoice batch.
 - 2026-04-23: Claimed by Codex from latest `origin/main` in `/tmp/Billing-T042`.
 - 2026-04-23: Added wallet ledger domain models, schema, store methods, and scoped read query builders. Validation passed: `make fmt`, `make test`, `make build`, `make migrate-validate`.
+- 2026-04-23: Opened PR #97.
