@@ -11,6 +11,7 @@ import (
 	"github.com/Chinsusu/Billing-V2/internal/modules/invoice"
 	"github.com/Chinsusu/Billing-V2/internal/modules/order"
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
+	"github.com/Chinsusu/Billing-V2/internal/modules/wallet"
 )
 
 func TestHTTPHandlerListClientTransactionsUsesAccountScope(t *testing.T) {
@@ -54,6 +55,116 @@ func TestHTTPHandlerListClientTransactionsUsesAccountScope(t *testing.T) {
 	}
 	if !strings.Contains(response.Body.String(), `"display_id":60001`) {
 		t.Fatalf("expected transaction response, got %s", response.Body.String())
+	}
+}
+
+func TestHTTPHandlerCreateClientInvoiceWalletPaymentUsesActorTenantAndIdempotency(t *testing.T) {
+	service := &fakePaymentHTTPService{
+		paymentResult: WalletInvoicePayment{
+			Invoice: invoice.InvoiceDetail{Invoice: invoice.Invoice{
+				ID:          "invoice_1",
+				DisplayID:   44001,
+				TenantID:    "tenant_1",
+				BuyerUserID: "account_1",
+				Status:      invoice.StatusPaid,
+				Currency:    "USD",
+				TotalMinor:  2500,
+			}},
+			Transaction: Transaction{
+				ID:            "txn_1",
+				DisplayID:     51001,
+				TenantID:      "tenant_1",
+				AccountUserID: "account_1",
+				InvoiceID:     "invoice_1",
+				Type:          TransactionTypeCharge,
+				Status:        TransactionStatusPosted,
+				Currency:      "USD",
+				AmountMinor:   2500,
+			},
+			LedgerEntry: wallet.LedgerEntry{
+				ID:                "ledger_1",
+				DisplayID:         52001,
+				WalletID:          "wallet_1",
+				TenantID:          "tenant_1",
+				Direction:         wallet.DirectionDebit,
+				EntryType:         wallet.EntryTypePurchase,
+				Status:            wallet.LedgerStatusPosted,
+				Currency:          "USD",
+				AmountMinor:       2500,
+				BalanceAfterMinor: 7500,
+			},
+		},
+	}
+	handler := registerPaymentTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodPost, "/client/invoice-wallet-payments", strings.NewReader(`{"invoice_id":"invoice_1","wallet_id":"wallet_1"}`))
+	request.Header.Set(IdempotencyKeyHeader, " pay-key-1 ")
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("account_1", "tenant_1", identity.ActorTypeClient)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusCreated {
+		t.Fatalf("expected status 201, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.payCalls != 1 {
+		t.Fatalf("expected pay invoice once, got %d", service.payCalls)
+	}
+	if service.payInput.TenantID != tenant.ID("tenant_1") ||
+		service.payInput.ActorID != identity.UserID("account_1") ||
+		service.payInput.InvoiceID != invoice.InvoiceID("invoice_1") ||
+		service.payInput.WalletID != wallet.WalletID("wallet_1") ||
+		service.payInput.IdempotencyKey != IdempotencyKey("pay-key-1") {
+		t.Fatalf("unexpected wallet payment input: %+v", service.payInput)
+	}
+	body := response.Body.String()
+	for _, expected := range []string{`"display_id":44001`, `"display_id":51001`, `"display_id":52001`} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("expected %s in payment response, got %s", expected, body)
+		}
+	}
+}
+
+func TestHTTPHandlerCreateClientInvoiceWalletPaymentRequiresIdempotencyKey(t *testing.T) {
+	service := &fakePaymentHTTPService{}
+	handler := registerPaymentTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodPost, "/client/invoice-wallet-payments", strings.NewReader(`{"invoice_id":"invoice_1","wallet_id":"wallet_1"}`))
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("account_1", "tenant_1", identity.ActorTypeClient)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("expected status 400, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.payCalls != 0 {
+		t.Fatalf("expected no payment call, got %d", service.payCalls)
+	}
+	if !strings.Contains(response.Body.String(), "payment.idempotency_key_missing") {
+		t.Fatalf("expected idempotency validation response, got %s", response.Body.String())
+	}
+}
+
+func TestHTTPHandlerCreateClientInvoiceWalletPaymentMapsServiceConflict(t *testing.T) {
+	service := &fakePaymentHTTPService{payErr: ErrInvoiceNotPayable}
+	handler := registerPaymentTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodPost, "/client/invoice-wallet-payments", strings.NewReader(`{"invoice_id":"invoice_1","wallet_id":"wallet_1"}`))
+	request.Header.Set(IdempotencyKeyHeader, "pay-key-1")
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("account_1", "tenant_1", identity.ActorTypeClient)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusConflict {
+		t.Fatalf("expected status 409, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.payCalls != 1 {
+		t.Fatalf("expected one payment call, got %d", service.payCalls)
 	}
 }
 
@@ -183,10 +294,14 @@ type fakePaymentHTTPService struct {
 	lookup                  TransactionLookup
 	reconciliationFilter    ReconciliationFilter
 	reconciliationLookup    ReconciliationLookup
+	paymentResult           WalletInvoicePayment
+	payInput                PayInvoiceFromWalletInput
+	payErr                  error
 	listCalls               int
 	getCalls                int
 	reconciliationListCalls int
 	reconciliationGetCalls  int
+	payCalls                int
 }
 
 func (service *fakePaymentHTTPService) ListTransactions(ctx context.Context, filter TransactionFilter) ([]Transaction, error) {
@@ -199,6 +314,15 @@ func (service *fakePaymentHTTPService) GetTransaction(ctx context.Context, looku
 	service.getCalls++
 	service.lookup = lookup
 	return service.transaction, nil
+}
+
+func (service *fakePaymentHTTPService) PayInvoiceFromWallet(ctx context.Context, input PayInvoiceFromWalletInput) (WalletInvoicePayment, error) {
+	service.payCalls++
+	service.payInput = input
+	if service.payErr != nil {
+		return WalletInvoicePayment{}, service.payErr
+	}
+	return service.paymentResult, nil
 }
 
 func (service *fakePaymentHTTPService) ListPaymentReconciliations(ctx context.Context, filter ReconciliationFilter) ([]PaymentReconciliation, error) {

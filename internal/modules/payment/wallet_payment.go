@@ -59,6 +59,9 @@ func (input PayInvoiceFromWalletInput) Validate() error {
 	if input.WalletID.Empty() {
 		return wallet.ErrWalletIDMissing
 	}
+	if input.ActorID == "" {
+		return identity.ErrActorIDMissing
+	}
 	if input.IdempotencyKey == "" {
 		return ErrIdempotencyKeyMissing
 	}
