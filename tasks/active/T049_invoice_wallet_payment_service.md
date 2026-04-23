@@ -1,9 +1,9 @@
 # T049 - Invoice wallet payment service
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/invoice-wallet-payment-service
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/112
 Risk: invoice/wallet/payment/money
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -37,3 +37,4 @@ Add a service that pays invoices from wallet balance and records the related led
 
 - 2026-04-23: Task created after invoice generation and wallet posting foundation.
 - 2026-04-23: Added wallet invoice payment service, invoice paid transition, payment idempotency lookup, and service tests.
+- 2026-04-23: PR #112 merged after GitHub checks passed.
