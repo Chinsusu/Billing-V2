@@ -1,9 +1,9 @@
 # T054 - Billing API integration smoke
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: test/billing-api-integration-smoke
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/123
 Risk: API/billing
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -35,3 +35,4 @@ Add a repeatable HTTP smoke path that exercises seeded billing read APIs through
 
 - 2026-04-23: Task created for API-level validation after DB smoke.
 - 2026-04-23: Claimed by Codex; adding `smoke dev-api` coverage for seeded client/admin billing reads.
+- 2026-04-23: Opened PR #123. Validation passed: `make fmt`, `make test`, `make build`, `make migrate-validate`, plus real `make smoke-dev-db` and `make smoke-dev-api` against local PostgreSQL/API.
