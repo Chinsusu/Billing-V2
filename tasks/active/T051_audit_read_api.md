@@ -1,9 +1,9 @@
 # T051 - Audit read API
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/audit-read-api
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/116
 Risk: audit/API/admin
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -36,3 +36,4 @@ Add tenant-scoped audit log read endpoints for admin troubleshooting and complia
 
 - 2026-04-23: Task created for admin observability.
 - 2026-04-23: Added tenant-scoped admin audit read API with filters, RBAC runtime wiring, and tests.
+- 2026-04-23: PR #116 merged after GitHub checks passed.
