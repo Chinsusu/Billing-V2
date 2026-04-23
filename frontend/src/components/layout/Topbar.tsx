@@ -1,6 +1,8 @@
 "use client";
 
-import { Bell, ChevronDown } from "lucide-react";
+import { Bell, ChevronDown, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { logout } from "@/lib/auth/mockAuth";
 
 interface TopbarProps {
   title: string;
@@ -10,6 +12,9 @@ interface TopbarProps {
 }
 
 export function Topbar({ title, breadcrumbs, meta, actions }: TopbarProps) {
+  const router = useRouter();
+  const handleLogout = () => { logout(); router.replace("/login"); };
+
   return (
     <header className="h-12 px-5 bg-white border-b border-gray-200 flex items-center gap-4 shrink-0">
       <div className="flex-1 min-w-0">
@@ -48,6 +53,13 @@ export function Topbar({ title, breadcrumbs, meta, actions }: TopbarProps) {
             </span>
           </div>
           <ChevronDown size={14} className="text-gray-400" />
+        </button>
+        <button
+          onClick={handleLogout}
+          title="Sign out"
+          className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors border-0 bg-transparent cursor-pointer"
+        >
+          <LogOut size={15} />
         </button>
       </div>
     </header>

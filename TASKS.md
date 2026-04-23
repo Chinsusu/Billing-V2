@@ -81,6 +81,7 @@ DONE         PR merged into main
 | T038 | [tasks/active/T038_service_instance_store_api.md](tasks/active/T038_service_instance_store_api.md) | feat/service-instance-store-api | service/API/DB | Add service instance store and read APIs for client/admin portals. |
 | T039 | [tasks/active/T039_invoice_domain_schema.md](tasks/active/T039_invoice_domain_schema.md) | feat/invoice-domain-schema | invoice/migration | Add invoice and invoice item domain models with PostgreSQL schema. |
 | T040 | [tasks/active/T040_payment_transaction_api.md](tasks/active/T040_payment_transaction_api.md) | feat/payment-transaction-api | payment/API/DB | Add payment transaction records and read APIs for account history. |
+| T041 | [tasks/active/T041_frontend_ui_phase2.md](tasks/active/T041_frontend_ui_phase2.md) | feat/frontend-ui-phase2 | frontend/UI | Frontend UI Phase 2: Modal, Toast, URL routing, Login screen, and interactive action workflows for all portals. |
 
 ## Completed Tasks
 

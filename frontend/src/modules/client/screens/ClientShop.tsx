@@ -1,7 +1,21 @@
-import { PRODUCTS } from "@/mocks/billingData";
+"use client";
+
+import { useState } from "react";
+import { PRODUCTS, type ProductCatalog } from "@/mocks/billingData";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { useToast } from "@/lib/toast/ToastContext";
 import { fmtMoney } from "@/mocks/sampleData";
 
 export function ClientShop() {
+  const { toast } = useToast();
+  const [ordering, setOrdering] = useState<ProductCatalog | null>(null);
+
+  const handleOrder = () => {
+    if (!ordering) return;
+    toast(`Order placed for "${ordering.name}" — check My Services`, "success");
+    setOrdering(null);
+  };
+
   return (
     <div className="p-4 flex flex-col gap-4">
       <div className="grid grid-cols-3 gap-4">
@@ -18,12 +32,24 @@ export function ClientShop() {
             <div className="text-[11px] text-gray-400">
               {p.active.toLocaleString()} active subscriptions
             </div>
-            <button className="mt-auto w-full inline-flex items-center justify-center gap-2 px-4 h-9 text-[13px] font-medium bg-[#D50C2D] hover:bg-[#B3082A] text-white rounded-md border-0 cursor-pointer transition-colors shadow-sm">
+            <button
+              onClick={() => setOrdering(p)}
+              className="mt-auto w-full inline-flex items-center justify-center gap-2 px-4 h-9 text-[13px] font-medium bg-[#D50C2D] hover:bg-[#B3082A] text-white rounded-md border-0 cursor-pointer transition-colors shadow-sm"
+            >
               Order now
             </button>
           </div>
         ))}
       </div>
+
+      <ConfirmDialog
+        open={!!ordering}
+        onClose={() => setOrdering(null)}
+        onConfirm={handleOrder}
+        title="Confirm order"
+        description={ordering ? `Order "${ordering.name}" at ${fmtMoney(ordering.price)} ${ordering.unit}? The cost will be deducted from your wallet.` : ""}
+        confirmLabel="Place order"
+      />
     </div>
   );
 }
