@@ -1,9 +1,9 @@
 # T032 - Order read API
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: feat/order-read-api
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/74
 Risk: API/order/DB
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -36,3 +36,4 @@ Add tenant-scoped order list/detail read APIs for the client portal.
 ## Agent Log
 
 - 2026-04-23: Task created and claimed from latest `origin/main` in `/tmp/Billing-T032`.
+- 2026-04-23: Opened PR #74. Validation passed: `go test ./internal/modules/order ./cmd/api`, `make fmt`, `make test`, `make build`, `make migrate-validate`.
