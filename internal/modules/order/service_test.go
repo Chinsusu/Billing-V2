@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Chinsusu/Billing-V2/internal/modules/audit"
 	"github.com/Chinsusu/Billing-V2/internal/modules/catalog"
 	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
 	"github.com/Chinsusu/Billing-V2/internal/modules/provider"
@@ -56,7 +57,7 @@ func (store *fakeOrderStore) GetOrder(_ context.Context, lookup OrderLookup) (Or
 
 func (store *fakeOrderStore) TransitionOrderStatus(_ context.Context, input TransitionOrderStatusInput) (Order, error) {
 	store.transitionOrderStatusInput = input
-	return Order{ID: input.ID, TenantID: input.TenantID, OrderStatus: input.ToStatus, BillingStatus: input.BillingStatus}, nil
+	return Order{ID: input.ID, DisplayID: 30001, TenantID: input.TenantID, OrderStatus: input.ToStatus, BillingStatus: input.BillingStatus}, nil
 }
 
 func (store *fakeOrderStore) ListServiceInstances(_ context.Context, filter ServiceInstanceFilter) ([]ServiceInstance, error) {
@@ -180,6 +181,7 @@ func TestServiceTransitionOrderStatusDelegatesAllowedChange(t *testing.T) {
 	order, err := service.TransitionOrderStatus(context.Background(), TransitionOrderStatusInput{
 		ID:            " order-1 ",
 		TenantID:      tenant.ID(" tenant-1 "),
+		ActorID:       " admin-1 ",
 		FromStatus:    OrderStatusPendingPayment,
 		ToStatus:      OrderStatusPaid,
 		BillingStatus: BillingStatusPaid,
@@ -191,8 +193,33 @@ func TestServiceTransitionOrderStatusDelegatesAllowedChange(t *testing.T) {
 		t.Fatalf("unexpected order result: %+v", order)
 	}
 	if store.transitionOrderStatusInput.ID != OrderID("order-1") ||
-		store.transitionOrderStatusInput.TenantID != tenant.ID("tenant-1") {
+		store.transitionOrderStatusInput.TenantID != tenant.ID("tenant-1") ||
+		store.transitionOrderStatusInput.ActorID != identity.UserID("admin-1") {
 		t.Fatalf("expected normalized transition input, got %+v", store.transitionOrderStatusInput)
+	}
+}
+
+func TestServiceTransitionOrderStatusWritesAudit(t *testing.T) {
+	store := &fakeOrderStore{}
+	auditLog := &fakeOrderAuditAppender{}
+	service := NewServiceWithAudit(store, auditLog)
+
+	_, err := service.TransitionOrderStatus(context.Background(), TransitionOrderStatusInput{
+		ID:            "order-1",
+		TenantID:      tenant.ID("tenant-1"),
+		ActorID:       identity.UserID("admin-1"),
+		FromStatus:    OrderStatusPendingPayment,
+		ToStatus:      OrderStatusPaid,
+		BillingStatus: BillingStatusPaid,
+	})
+	if err != nil {
+		t.Fatalf("expected status transition: %v", err)
+	}
+	if auditLog.calls != 1 ||
+		auditLog.input.Action != orderAuditActionStatusChanged ||
+		auditLog.input.TargetID != audit.TargetID("order-1") ||
+		auditLog.input.ActorID != audit.ActorID("admin-1") {
+		t.Fatalf("unexpected audit input: %+v", auditLog.input)
 	}
 }
 
@@ -203,6 +230,7 @@ func TestServiceTransitionOrderStatusRejectsBadChangeBeforeStore(t *testing.T) {
 	_, err := service.TransitionOrderStatus(context.Background(), TransitionOrderStatusInput{
 		ID:            "order-1",
 		TenantID:      tenant.ID("tenant-1"),
+		ActorID:       "admin-1",
 		FromStatus:    OrderStatusPendingPayment,
 		ToStatus:      OrderStatusRefunded,
 		BillingStatus: BillingStatusRefunded,
@@ -213,6 +241,17 @@ func TestServiceTransitionOrderStatusRejectsBadChangeBeforeStore(t *testing.T) {
 	if store.transitionOrderStatusInput.ID != "" {
 		t.Fatalf("store should not be called, got %+v", store.transitionOrderStatusInput)
 	}
+}
+
+type fakeOrderAuditAppender struct {
+	input audit.AppendInput
+	calls int
+}
+
+func (appender *fakeOrderAuditAppender) Append(ctx context.Context, input audit.AppendInput) (audit.Log, error) {
+	appender.calls++
+	appender.input = input
+	return audit.Log{Action: input.Action}, nil
 }
 
 func TestServiceListServiceInstancesValidatesAndDelegates(t *testing.T) {

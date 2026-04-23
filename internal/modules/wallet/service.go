@@ -4,10 +4,15 @@ import "context"
 
 type Service struct {
 	store Store
+	audit AuditAppender
 }
 
 func NewService(store Store) *Service {
 	return &Service{store: store}
+}
+
+func NewServiceWithAudit(store Store, audit AuditAppender) *Service {
+	return &Service{store: store, audit: audit}
 }
 
 func (service *Service) ListWallets(ctx context.Context, filter WalletFilter) ([]Wallet, error) {
@@ -128,7 +133,14 @@ func (service *Service) ApproveTopupRequest(ctx context.Context, input ApproveTo
 	if err != nil {
 		return TopupRequest{}, err
 	}
-	return service.store.ApproveTopupRequest(ctx, input, entry.ID)
+	approved, err := service.store.ApproveTopupRequest(ctx, input, entry.ID)
+	if err != nil {
+		return TopupRequest{}, err
+	}
+	if err := service.appendTopupReviewAudit(ctx, topupAuditActionApproved, request, approved, input.ReviewedBy); err != nil {
+		return TopupRequest{}, err
+	}
+	return approved, nil
 }
 
 func (service *Service) RejectTopupRequest(ctx context.Context, input RejectTopupRequestInput) (TopupRequest, error) {
@@ -149,7 +161,14 @@ func (service *Service) RejectTopupRequest(ctx context.Context, input RejectTopu
 	if !reviewableTopupStatus(request.Status) {
 		return TopupRequest{}, ErrTopupStatusConflict
 	}
-	return service.store.RejectTopupRequest(ctx, input)
+	rejected, err := service.store.RejectTopupRequest(ctx, input)
+	if err != nil {
+		return TopupRequest{}, err
+	}
+	if err := service.appendTopupReviewAudit(ctx, topupAuditActionRejected, request, rejected, input.ReviewedBy); err != nil {
+		return TopupRequest{}, err
+	}
+	return rejected, nil
 }
 
 func (service *Service) ready() error {

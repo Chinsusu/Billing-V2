@@ -5,6 +5,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/Chinsusu/Billing-V2/internal/modules/audit"
 	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
 )
@@ -17,7 +18,8 @@ func TestServiceApproveTopupRequestCreditsWallet(t *testing.T) {
 		},
 		entry: LedgerEntry{ID: "entry-1"},
 	}
-	service := NewService(store)
+	auditLog := &fakeWalletAuditAppender{}
+	service := NewServiceWithAudit(store, auditLog)
 
 	request, err := service.ApproveTopupRequest(context.Background(), ApproveTopupRequestInput{
 		ID: "00000000-0000-0000-0000-000000000001", TenantID: tenant.ID("tenant-1"), ReviewedBy: identity.UserID("admin-1"),
@@ -35,6 +37,12 @@ func TestServiceApproveTopupRequestCreditsWallet(t *testing.T) {
 		store.postInput.Direction != DirectionCredit ||
 		store.postInput.AmountMinor != 1000 {
 		t.Fatalf("unexpected ledger post input: %+v", store.postInput)
+	}
+	if auditLog.calls != 1 ||
+		auditLog.input.Action != topupAuditActionApproved ||
+		auditLog.input.TenantID != tenant.ID("tenant-1") ||
+		auditLog.input.TargetID != audit.TargetID("00000000-0000-0000-0000-000000000001") {
+		t.Fatalf("unexpected audit input: %+v", auditLog.input)
 	}
 }
 
@@ -57,8 +65,9 @@ func TestServiceApproveTopupRequestReturnsExistingApproved(t *testing.T) {
 }
 
 func TestServiceRejectTopupRequestStoresReview(t *testing.T) {
-	store := &fakeTopupReviewStore{request: TopupRequest{ID: "topup-1", Status: TopupStatusUnderReview}}
-	service := NewService(store)
+	store := &fakeTopupReviewStore{request: TopupRequest{ID: "topup-1", TenantID: "tenant-1", Status: TopupStatusUnderReview}}
+	auditLog := &fakeWalletAuditAppender{}
+	service := NewServiceWithAudit(store, auditLog)
 
 	request, err := service.RejectTopupRequest(context.Background(), RejectTopupRequestInput{
 		ID: "topup-1", TenantID: tenant.ID("tenant-1"), ReviewedBy: identity.UserID("admin-1"), ReviewNote: "missing proof",
@@ -71,6 +80,28 @@ func TestServiceRejectTopupRequestStoresReview(t *testing.T) {
 	}
 	if store.postCalls != 0 || store.rejectCalls != 1 {
 		t.Fatalf("expected only reject update, got post=%d reject=%d", store.postCalls, store.rejectCalls)
+	}
+	if auditLog.calls != 1 || auditLog.input.Action != topupAuditActionRejected {
+		t.Fatalf("unexpected audit input: %+v", auditLog.input)
+	}
+}
+
+func TestServiceApproveTopupRequestReturnsAuditError(t *testing.T) {
+	store := &fakeTopupReviewStore{
+		request: TopupRequest{ID: "topup-1", TenantID: "tenant-1", WalletID: "wallet-1", AmountMinor: 1000, Currency: "USD", Status: TopupStatusSubmitted},
+		entry:   LedgerEntry{ID: "entry-1"},
+	}
+	auditLog := &fakeWalletAuditAppender{err: audit.ErrActionMissing}
+	service := NewServiceWithAudit(store, auditLog)
+
+	_, err := service.ApproveTopupRequest(context.Background(), ApproveTopupRequestInput{
+		ID: "topup-1", TenantID: tenant.ID("tenant-1"), ReviewedBy: identity.UserID("admin-1"),
+	})
+	if !errors.Is(err, audit.ErrActionMissing) {
+		t.Fatalf("expected audit error, got %v", err)
+	}
+	if store.approveCalls != 1 || auditLog.calls != 1 {
+		t.Fatalf("expected mutation and audit attempt, got approve=%d audit=%d", store.approveCalls, auditLog.calls)
 	}
 }
 
@@ -148,4 +179,19 @@ func (store *fakeTopupReviewStore) RejectTopupRequest(ctx context.Context, input
 	store.rejectInput = input
 	store.request.Status = TopupStatusRejected
 	return store.request, nil
+}
+
+type fakeWalletAuditAppender struct {
+	input audit.AppendInput
+	err   error
+	calls int
+}
+
+func (appender *fakeWalletAuditAppender) Append(ctx context.Context, input audit.AppendInput) (audit.Log, error) {
+	appender.calls++
+	appender.input = input
+	if appender.err != nil {
+		return audit.Log{}, appender.err
+	}
+	return audit.Log{Action: input.Action}, nil
 }

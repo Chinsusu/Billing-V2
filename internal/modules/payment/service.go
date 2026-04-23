@@ -7,6 +7,7 @@ type Service struct {
 	invoiceStore       InvoicePaymentStore
 	walletService      WalletPaymentService
 	walletPaymentStore WalletInvoicePaymentStore
+	audit              AuditAppender
 }
 
 func NewService(store Store) *Service {
@@ -21,6 +22,23 @@ func NewServiceWithBilling(store Store, invoiceStore InvoicePaymentStore, wallet
 	service := NewService(store)
 	service.invoiceStore = invoiceStore
 	service.walletService = walletService
+	return service
+}
+
+func NewServiceWithAudit(store Store, audit AuditAppender) *Service {
+	service := NewService(store)
+	service.audit = audit
+	return service
+}
+
+func NewServiceWithBillingAndAudit(
+	store Store,
+	invoiceStore InvoicePaymentStore,
+	walletService WalletPaymentService,
+	audit AuditAppender,
+) *Service {
+	service := NewServiceWithBilling(store, invoiceStore, walletService)
+	service.audit = audit
 	return service
 }
 
@@ -94,12 +112,26 @@ func (service *Service) PayInvoiceFromWallet(ctx context.Context, input PayInvoi
 		return WalletInvoicePayment{}, err
 	}
 	if service.walletPaymentStore != nil {
-		return service.walletPaymentStore.PayInvoiceFromWallet(ctx, input)
+		result, err := service.walletPaymentStore.PayInvoiceFromWallet(ctx, input)
+		if err != nil {
+			return WalletInvoicePayment{}, err
+		}
+		if err := service.appendWalletPaymentAudit(ctx, input, result); err != nil {
+			return WalletInvoicePayment{}, err
+		}
+		return result, nil
 	}
 	if service.invoiceStore == nil || service.walletService == nil {
 		return WalletInvoicePayment{}, ErrBillingDependencyMissing
 	}
-	return payInvoiceFromWallet(ctx, service.store, service.invoiceStore, service.walletService, input)
+	result, err := payInvoiceFromWallet(ctx, service.store, service.invoiceStore, service.walletService, input)
+	if err != nil {
+		return WalletInvoicePayment{}, err
+	}
+	if err := service.appendWalletPaymentAudit(ctx, input, result); err != nil {
+		return WalletInvoicePayment{}, err
+	}
+	return result, nil
 }
 
 func (service *Service) reconciliationStore() (ReconciliationStore, error) {

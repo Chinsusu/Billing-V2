@@ -12,6 +12,7 @@ func TestTransitionOrderStatusArgsNormalizeAndValidate(t *testing.T) {
 	args, err := transitionOrderStatusArgs(TransitionOrderStatusInput{
 		ID:            " order-1 ",
 		TenantID:      tenant.ID(" tenant-1 "),
+		ActorID:       " admin-1 ",
 		FromStatus:    OrderStatusPendingPayment,
 		ToStatus:      OrderStatusPaid,
 		BillingStatus: BillingStatusPaid,
@@ -31,6 +32,7 @@ func TestTransitionOrderStatusArgsRejectsBadTransition(t *testing.T) {
 	_, err := transitionOrderStatusArgs(TransitionOrderStatusInput{
 		ID:            "order-1",
 		TenantID:      tenant.ID("tenant-1"),
+		ActorID:       "admin-1",
 		FromStatus:    OrderStatusPendingPayment,
 		ToStatus:      OrderStatusRefunded,
 		BillingStatus: BillingStatusRefunded,
