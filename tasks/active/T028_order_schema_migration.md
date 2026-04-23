@@ -1,6 +1,6 @@
 # T028 - Order schema migration
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/order-schema-migration
 PR: https://github.com/Chinsusu/Billing-V2/pull/66
@@ -36,3 +36,4 @@ Add PostgreSQL tables for order, reservation, provisioning, and service lifecycl
 
 - 2026-04-23: Task created and claimed from latest `origin/main` in `/tmp/Billing-T028`.
 - 2026-04-23: Opened PR #66. Validation passed: `make fmt`, `make test`, `make build`, `make migrate-validate`.
+- 2026-04-23: PR #66 merged into `main`.
