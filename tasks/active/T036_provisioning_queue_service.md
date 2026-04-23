@@ -1,7 +1,7 @@
 # T036 - Provisioning queue service
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: feat/provisioning-queue-service
 PR: -
 Risk: order/provisioning
@@ -35,3 +35,4 @@ Add a service that decides when a paid order should be queued for provisioning a
 ## Agent Log
 
 - 2026-04-23: Task created for the next backend batch.
+- 2026-04-23: Claimed by Codex from latest `origin/main` in `/tmp/Billing-T036`.

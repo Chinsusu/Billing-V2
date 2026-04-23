@@ -18,12 +18,32 @@ type PostgresStore struct {
 	executor platformdb.Executor
 }
 
+var _ QueueStore = (*PostgresStore)(nil)
+
 func NewPostgresStore(executor platformdb.Executor) *PostgresStore {
 	return &PostgresStore{executor: executor}
 }
 
 const jobColumns = `job_id, display_id, tenant_id, job_type, reference_type, reference_id, source_id, payload_json, status, priority, idempotency_key, attempt_count, max_attempts, next_attempt_at, locked_by, locked_until, last_error_code, last_error_message_redacted, manual_review_reason, correlation_id, created_at, updated_at, finished_at`
 const outboxColumns = `outbox_event_id, display_id, tenant_id, aggregate_type, aggregate_id, event_type, payload_json, status, dedupe_key, attempt_count, max_attempts, next_attempt_at, locked_by, locked_until, last_error_code, last_error_message_redacted, correlation_id, created_at, published_at`
+
+const createJobSQL = `
+INSERT INTO jobs (tenant_id, job_type, reference_type, reference_id, source_id, payload_json, priority, idempotency_key, max_attempts, correlation_id)
+VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9, $10)
+ON CONFLICT (tenant_id, job_type, idempotency_key) WHERE tenant_id IS NOT NULL
+DO UPDATE SET updated_at = jobs.updated_at
+RETURNING ` + jobColumns
+
+func (store *PostgresStore) CreateJob(ctx context.Context, input CreateJobInput) (Job, error) {
+	if err := store.ready(); err != nil {
+		return Job{}, err
+	}
+	args, err := createJobArgs(input)
+	if err != nil {
+		return Job{}, err
+	}
+	return scanJob(store.executor.QueryRowContext(ctx, createJobSQL, args...))
+}
 
 func (store *PostgresStore) Claim(ctx context.Context, request ClaimRequest) ([]Job, error) {
 	if err := store.ready(); err != nil {
@@ -40,6 +60,17 @@ func (store *PostgresStore) Claim(ctx context.Context, request ClaimRequest) ([]
 	}
 	defer rows.Close()
 	return scanJobs(rows)
+}
+
+func createJobArgs(input CreateJobInput) ([]interface{}, error) {
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return nil, err
+	}
+	return []interface{}{
+		input.TenantID, input.Type, input.ReferenceType, input.ReferenceID, nullableString(string(input.SourceID)),
+		string(input.PayloadJSON), input.Priority, input.IdempotencyKey, input.MaxAttempts, input.CorrelationID,
+	}, nil
 }
 
 func (store *PostgresStore) RecordAttempt(ctx context.Context, attempt Attempt) error {

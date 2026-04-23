@@ -30,10 +30,12 @@ var (
 	ErrTermWindowInvalid          = errors.New("service term window invalid")
 	ErrStatusTransitionInvalid    = errors.New("status transition invalid")
 	ErrOrderStatusConflict        = errors.New("order status conflict")
+	ErrProvisioningQueueNotPaid   = errors.New("provisioning queue requires paid order")
 	ErrExternalResourceIDMissing  = errors.New("external resource id missing")
 	ErrProviderOperationIDMissing = errors.New("provider operation id missing")
 	ErrStoreExecutorMissing       = errors.New("order store executor missing")
 	ErrServiceStoreMissing        = errors.New("order service store missing")
+	ErrProvisioningQueueMissing   = errors.New("provisioning queue missing")
 	ErrOrderNotFound              = errors.New("order not found")
 )
 

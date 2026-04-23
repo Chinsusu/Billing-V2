@@ -1,10 +1,60 @@
 package jobs
 
 import (
+	"errors"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
 )
+
+func TestCreateJobArgsNormalizeAndValidate(t *testing.T) {
+	args, err := createJobArgs(CreateJobInput{
+		TenantID:       tenant.ID(" tenant-1 "),
+		Type:           Type(" provider.provision "),
+		ReferenceType:  ReferenceType(" order "),
+		ReferenceID:    ReferenceID(" order-1 "),
+		SourceID:       SourceID(" source-1 "),
+		IdempotencyKey: " provision-key-1 ",
+		CorrelationID:  CorrelationID(" correlation-1 "),
+	})
+	if err != nil {
+		t.Fatalf("expected create job args: %v", err)
+	}
+	if len(args) != 10 {
+		t.Fatalf("expected 10 args, got %d", len(args))
+	}
+	if args[0] != tenant.ID("tenant-1") || args[1] != Type("provider.provision") ||
+		args[6] != 100 || args[8] != 5 || args[5] != "{}" {
+		t.Fatalf("unexpected create job args: %#v", args)
+	}
+}
+
+func TestCreateJobArgsRejectsMissingTenant(t *testing.T) {
+	_, err := createJobArgs(CreateJobInput{
+		Type:           Type("provider.provision"),
+		ReferenceType:  ReferenceType("order"),
+		ReferenceID:    ReferenceID("order-1"),
+		IdempotencyKey: "provision-key-1",
+		CorrelationID:  CorrelationID("correlation-1"),
+	})
+	if !errors.Is(err, tenant.ErrTenantIDMissing) {
+		t.Fatalf("expected tenant error, got %v", err)
+	}
+}
+
+func TestCreateJobSQLIsIdempotentByTenantTypeAndKey(t *testing.T) {
+	for _, clause := range []string{
+		"INSERT INTO jobs",
+		"ON CONFLICT (tenant_id, job_type, idempotency_key) WHERE tenant_id IS NOT NULL",
+		"RETURNING",
+	} {
+		if !strings.Contains(createJobSQL, clause) {
+			t.Fatalf("expected %q in create job SQL: %s", clause, createJobSQL)
+		}
+	}
+}
 
 func TestClaimJobsQueryAddsTypeFilterOnlyWhenRequested(t *testing.T) {
 	request := ClaimRequest{

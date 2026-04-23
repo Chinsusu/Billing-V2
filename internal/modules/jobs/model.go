@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
@@ -21,6 +22,7 @@ var (
 	ErrClaimLimitInvalid     = errors.New("claim limit invalid")
 	ErrLockDurationInvalid   = errors.New("lock duration invalid")
 	ErrMaxAttemptsInvalid    = errors.New("max attempts invalid")
+	ErrPriorityInvalid       = errors.New("job priority invalid")
 	ErrAttemptNumberInvalid  = errors.New("attempt number invalid")
 	ErrAttemptResultInvalid  = errors.New("attempt result invalid")
 	ErrOutboxEventNotFound   = errors.New("outbox event not found")
@@ -159,6 +161,63 @@ type Job struct {
 	CreatedAt                time.Time
 	UpdatedAt                time.Time
 	FinishedAt               time.Time
+}
+
+type CreateJobInput struct {
+	TenantID       tenant.ID
+	Type           Type
+	ReferenceType  ReferenceType
+	ReferenceID    ReferenceID
+	SourceID       SourceID
+	PayloadJSON    json.RawMessage
+	Priority       int
+	IdempotencyKey string
+	MaxAttempts    int
+	CorrelationID  CorrelationID
+}
+
+func (input CreateJobInput) Normalize() CreateJobInput {
+	output := input
+	output.TenantID = tenant.ID(trimJobString(string(output.TenantID)))
+	output.Type = Type(trimJobString(string(output.Type)))
+	output.ReferenceType = ReferenceType(trimJobString(string(output.ReferenceType)))
+	output.ReferenceID = ReferenceID(trimJobString(string(output.ReferenceID)))
+	output.SourceID = SourceID(trimJobString(string(output.SourceID)))
+	output.IdempotencyKey = trimJobString(output.IdempotencyKey)
+	output.CorrelationID = CorrelationID(trimJobString(string(output.CorrelationID)))
+	output.PayloadJSON = defaultJobPayload(output.PayloadJSON)
+	if output.Priority == 0 {
+		output.Priority = 100
+	}
+	if output.MaxAttempts == 0 {
+		output.MaxAttempts = 5
+	}
+	return output
+}
+
+func (input CreateJobInput) Validate() error {
+	if input.TenantID.Empty() {
+		return tenant.ErrTenantIDMissing
+	}
+	if input.Type == "" {
+		return ErrJobTypeMissing
+	}
+	if input.ReferenceType == "" || input.ReferenceID == "" {
+		return ErrReferenceMissing
+	}
+	if input.IdempotencyKey == "" {
+		return ErrIdempotencyKeyMissing
+	}
+	if input.CorrelationID == "" {
+		return ErrCorrelationIDMissing
+	}
+	if input.Priority < 0 {
+		return ErrPriorityInvalid
+	}
+	if input.MaxAttempts <= 0 {
+		return ErrMaxAttemptsInvalid
+	}
+	return nil
 }
 
 func (job Job) Validate() error {
@@ -335,8 +394,23 @@ type OutboxStore interface {
 	CompleteOutbox(ctx context.Context, eventID OutboxEventID, completion OutboxCompletion) error
 }
 
+type QueueStore interface {
+	CreateJob(ctx context.Context, input CreateJobInput) (Job, error)
+}
+
 type BackoffPolicy struct {
 	Delays []time.Duration
+}
+
+func trimJobString(value string) string {
+	return strings.TrimSpace(value)
+}
+
+func defaultJobPayload(value json.RawMessage) json.RawMessage {
+	if len(value) == 0 {
+		return json.RawMessage(`{}`)
+	}
+	return append(json.RawMessage(nil), value...)
 }
 
 func DefaultBackoffPolicy() BackoffPolicy {
