@@ -14,6 +14,7 @@ import (
 const (
 	AggregateTypeInvoice  = "invoice"
 	EventInvoiceGenerated = "invoice.generated"
+	EventInvoicePaid      = "invoice.paid"
 )
 
 type OrderReader interface {

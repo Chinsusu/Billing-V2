@@ -84,3 +84,46 @@ func TestCreateInvoiceFromOrderSQLEmitsOutboxAndUsesOrderConflict(t *testing.T) 
 		}
 	}
 }
+
+func TestMarkInvoicePaidArgsNormalizeValidate(t *testing.T) {
+	args, err := markInvoicePaidArgs(MarkInvoicePaidInput{
+		ID:                   InvoiceID("invoice-1"),
+		TenantID:             tenant.ID("tenant-1"),
+		PaymentTransactionID: " txn-1 ",
+		WalletID:             " wallet-1 ",
+		LedgerEntryID:        " ledger-1 ",
+		IdempotencyKey:       IdempotencyKey(" key-1 "),
+	})
+	if err != nil {
+		t.Fatalf("expected args: %v", err)
+	}
+	if args[3].(sql.NullString).String != "txn-1" ||
+		args[4].(sql.NullString).String != "wallet-1" ||
+		args[5].(sql.NullString).String != "ledger-1" ||
+		args[6] != IdempotencyKey("key-1") {
+		t.Fatalf("unexpected normalized args: %#v", args)
+	}
+}
+
+func TestMarkInvoicePaidArgsRejectsMissingIdempotency(t *testing.T) {
+	_, err := markInvoicePaidArgs(MarkInvoicePaidInput{
+		ID:       InvoiceID("invoice-1"),
+		TenantID: tenant.ID("tenant-1"),
+	})
+	if !errors.Is(err, ErrIdempotencyKeyMissing) {
+		t.Fatalf("expected idempotency error, got %v", err)
+	}
+}
+
+func TestMarkInvoicePaidSQLEmitsPaidOutboxAndGuardsStatus(t *testing.T) {
+	for _, clause := range []string{
+		"status IN ('issued', 'overdue')",
+		"INSERT INTO outbox_events",
+		EventInvoicePaid,
+		"ON CONFLICT (dedupe_key) DO NOTHING",
+	} {
+		if !strings.Contains(markInvoicePaidSQL, clause) {
+			t.Fatalf("expected %q in mark paid SQL", clause)
+		}
+	}
+}

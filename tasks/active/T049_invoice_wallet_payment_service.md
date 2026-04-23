@@ -1,7 +1,7 @@
 # T049 - Invoice wallet payment service
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: feat/invoice-wallet-payment-service
 PR: -
 Risk: invoice/wallet/payment/money
@@ -36,3 +36,4 @@ Add a service that pays invoices from wallet balance and records the related led
 ## Agent Log
 
 - 2026-04-23: Task created after invoice generation and wallet posting foundation.
+- 2026-04-23: Added wallet invoice payment service, invoice paid transition, payment idempotency lookup, and service tests.

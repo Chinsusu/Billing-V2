@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
+	"time"
 
 	platformdb "github.com/Chinsusu/Billing-V2/internal/platform/db"
 )
@@ -87,6 +89,83 @@ func (store *PostgresStore) CreateInvoiceFromOrder(ctx context.Context, input Cr
 	return InvoiceDetail{Invoice: record, Items: items}, nil
 }
 
+const markInvoicePaidSQL = `
+WITH updated AS (
+UPDATE invoices
+SET status = 'paid',
+    paid_at = COALESCE(paid_at, $3, NOW()),
+    updated_at = NOW()
+WHERE invoice_id = $1
+  AND tenant_id = $2
+  AND status IN ('issued', 'overdue')
+RETURNING ` + invoiceColumns + `
+), event AS (
+INSERT INTO outbox_events (tenant_id, aggregate_type, aggregate_id, event_type, payload_json, dedupe_key, correlation_id)
+SELECT
+    tenant_id,
+    '` + AggregateTypeInvoice + `',
+    invoice_id,
+    '` + EventInvoicePaid + `',
+    jsonb_build_object(
+        'invoice_id', invoice_id,
+        'display_id', display_id,
+        'tenant_id', tenant_id,
+        'order_id', order_id,
+        'buyer_user_id', buyer_user_id,
+        'total_minor', total_minor,
+        'currency', currency,
+        'payment_transaction_id', $4,
+        'wallet_id', $5,
+        'ledger_entry_id', $6,
+        'idempotency_key', $7
+    ),
+    '` + EventInvoicePaid + `:' || invoice_id::text,
+    invoice_id
+FROM updated
+ON CONFLICT (dedupe_key) DO NOTHING
+)
+SELECT ` + invoiceColumns + ` FROM updated`
+
+func (store *PostgresStore) MarkInvoicePaid(ctx context.Context, input MarkInvoicePaidInput) (InvoiceDetail, error) {
+	if err := store.ready(); err != nil {
+		return InvoiceDetail{}, err
+	}
+	args, err := markInvoicePaidArgs(input)
+	if err != nil {
+		return InvoiceDetail{}, err
+	}
+	record, err := scanInvoice(store.executor.QueryRowContext(ctx, markInvoicePaidSQL, args...))
+	if errors.Is(err, ErrInvoiceNotFound) {
+		if _, lookupErr := store.GetInvoice(ctx, InvoiceLookup{ID: input.ID, TenantID: input.TenantID}); lookupErr == nil {
+			return InvoiceDetail{}, ErrInvoiceStatusConflict
+		}
+	}
+	if err != nil {
+		return InvoiceDetail{}, err
+	}
+	items, err := store.listInvoiceItems(ctx, record.TenantID, record.ID)
+	if err != nil {
+		return InvoiceDetail{}, err
+	}
+	return InvoiceDetail{Invoice: record, Items: items}, nil
+}
+
+func markInvoicePaidArgs(input MarkInvoicePaidInput) ([]interface{}, error) {
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return nil, err
+	}
+	return []interface{}{
+		input.ID,
+		input.TenantID,
+		nullableTime(input.PaidAt),
+		nullableString(input.PaymentTransactionID),
+		nullableString(input.WalletID),
+		nullableString(input.LedgerEntryID),
+		input.IdempotencyKey,
+	}, nil
+}
+
 func createInvoiceFromOrderArgs(input CreateInvoiceFromOrderInput) ([]interface{}, error) {
 	input = input.Normalize()
 	if err := input.Validate(); err != nil {
@@ -131,4 +210,11 @@ func nullableString(value string) sql.NullString {
 		return sql.NullString{}
 	}
 	return sql.NullString{String: value, Valid: true}
+}
+
+func nullableTime(value time.Time) sql.NullTime {
+	if value.IsZero() {
+		return sql.NullTime{}
+	}
+	return sql.NullTime{Time: value, Valid: true}
 }

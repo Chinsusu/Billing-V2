@@ -20,9 +20,10 @@ type TransactionFilter struct {
 }
 
 type TransactionLookup struct {
-	ID            TransactionID
-	TenantID      tenant.ID
-	AccountUserID identity.UserID
+	ID             TransactionID
+	TenantID       tenant.ID
+	AccountUserID  identity.UserID
+	IdempotencyKey IdempotencyKey
 }
 
 type Store interface {

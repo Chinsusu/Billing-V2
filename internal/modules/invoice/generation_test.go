@@ -162,3 +162,7 @@ func (store *fakeInvoiceStore) CreateInvoiceFromOrder(ctx context.Context, input
 	}
 	return InvoiceDetail{Invoice: Invoice{ID: "invoice-1", TenantID: input.Invoice.TenantID, OrderID: input.Invoice.OrderID}}, nil
 }
+
+func (store *fakeInvoiceStore) MarkInvoicePaid(ctx context.Context, input MarkInvoicePaidInput) (InvoiceDetail, error) {
+	return store.detail, nil
+}
