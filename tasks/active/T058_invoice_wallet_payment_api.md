@@ -1,7 +1,7 @@
 # T058 - Invoice wallet payment API
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: feat/invoice-wallet-payment-api
 PR: -
 Risk: API/payment/money
@@ -35,3 +35,4 @@ Expose a client API endpoint that lets a customer pay an issued or overdue invoi
 ## Agent Log
 
 - 2026-04-23: Task created for the next backend payment action.
+- 2026-04-23: Codex started the client invoice wallet payment API endpoint.

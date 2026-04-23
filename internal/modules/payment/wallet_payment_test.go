@@ -127,6 +127,22 @@ func TestPayInvoiceFromWalletRejectsCurrencyMismatch(t *testing.T) {
 	}
 }
 
+func TestPayInvoiceFromWalletRejectsWrongOwnerWallet(t *testing.T) {
+	wrongWallet := walletPaymentWallet(2500, "USD")
+	wrongWallet.OwnerID = wallet.OwnerID("other-buyer")
+	invoiceStore := &fakePaymentInvoiceStore{detail: walletPaymentInvoice(invoice.StatusIssued)}
+	walletService := &fakePaymentWalletService{record: wrongWallet}
+	service := NewServiceWithBilling(&fakeWalletPaymentTransactionStore{}, invoiceStore, walletService)
+
+	_, err := service.PayInvoiceFromWallet(context.Background(), walletPaymentInput())
+	if !errors.Is(err, tenant.ErrAccessDenied) {
+		t.Fatalf("expected access denied, got %v", err)
+	}
+	if walletService.postCalls != 0 {
+		t.Fatalf("expected no debit after wallet ownership failure")
+	}
+}
+
 func TestPayInvoiceFromWalletRejectsCrossTenantInvoice(t *testing.T) {
 	detail := walletPaymentInvoice(invoice.StatusIssued)
 	detail.Invoice.TenantID = tenant.ID("tenant-2")
@@ -139,6 +155,28 @@ func TestPayInvoiceFromWalletRejectsCrossTenantInvoice(t *testing.T) {
 	_, err := service.PayInvoiceFromWallet(context.Background(), walletPaymentInput())
 	if !errors.Is(err, tenant.ErrAccessDenied) {
 		t.Fatalf("expected access denied, got %v", err)
+	}
+}
+
+func TestPayInvoiceFromWalletRejectsMissingPaymentValidation(t *testing.T) {
+	service := NewServiceWithBilling(
+		&fakeWalletPaymentTransactionStore{},
+		&fakePaymentInvoiceStore{detail: walletPaymentInvoice(invoice.StatusIssued)},
+		&fakePaymentWalletService{record: walletPaymentWallet(2500, "USD")},
+	)
+
+	input := walletPaymentInput()
+	input.IdempotencyKey = ""
+	_, err := service.PayInvoiceFromWallet(context.Background(), input)
+	if !errors.Is(err, ErrIdempotencyKeyMissing) {
+		t.Fatalf("expected idempotency error, got %v", err)
+	}
+
+	input = walletPaymentInput()
+	input.ActorID = ""
+	_, err = service.PayInvoiceFromWallet(context.Background(), input)
+	if !errors.Is(err, identity.ErrActorIDMissing) {
+		t.Fatalf("expected actor id error, got %v", err)
 	}
 }
 

@@ -55,6 +55,81 @@ func newTransactionResponses(transactions []Transaction) []transactionResponse {
 	return responses
 }
 
+type createInvoiceWalletPaymentRequest struct {
+	InvoiceID invoice.InvoiceID `json:"invoice_id"`
+	WalletID  wallet.WalletID   `json:"wallet_id"`
+}
+
+func (request createInvoiceWalletPaymentRequest) toInput(
+	tenantID tenant.ID,
+	actorID identity.UserID,
+	idempotencyKey IdempotencyKey,
+) PayInvoiceFromWalletInput {
+	return PayInvoiceFromWalletInput{
+		TenantID:       tenantID,
+		InvoiceID:      request.InvoiceID,
+		WalletID:       request.WalletID,
+		ActorID:        actorID,
+		IdempotencyKey: idempotencyKey,
+	}
+}
+
+type invoiceWalletPaymentResponse struct {
+	Invoice     invoiceWalletPaymentInvoiceResponse `json:"invoice"`
+	Transaction transactionResponse                 `json:"transaction"`
+	Ledger      *invoiceWalletPaymentLedgerResponse `json:"ledger,omitempty"`
+}
+
+type invoiceWalletPaymentInvoiceResponse struct {
+	ID         invoice.InvoiceID `json:"id"`
+	DisplayID  int64             `json:"display_id"`
+	Status     invoice.Status    `json:"status"`
+	TotalMinor int64             `json:"total_minor"`
+	Currency   string            `json:"currency"`
+	PaidAt     time.Time         `json:"paid_at,omitempty"`
+}
+
+type invoiceWalletPaymentLedgerResponse struct {
+	ID                wallet.LedgerEntryID `json:"id"`
+	DisplayID         int64                `json:"display_id"`
+	WalletID          wallet.WalletID      `json:"wallet_id"`
+	Direction         wallet.Direction     `json:"direction"`
+	EntryType         wallet.EntryType     `json:"entry_type"`
+	Status            wallet.LedgerStatus  `json:"status"`
+	Currency          string               `json:"currency"`
+	AmountMinor       int64                `json:"amount_minor"`
+	BalanceAfterMinor int64                `json:"balance_after_minor"`
+}
+
+func newInvoiceWalletPaymentResponse(result WalletInvoicePayment) invoiceWalletPaymentResponse {
+	record := result.Invoice.Invoice
+	response := invoiceWalletPaymentResponse{
+		Invoice: invoiceWalletPaymentInvoiceResponse{
+			ID:         record.ID,
+			DisplayID:  record.DisplayID,
+			Status:     record.Status,
+			TotalMinor: record.TotalMinor,
+			Currency:   record.Currency,
+			PaidAt:     record.PaidAt,
+		},
+		Transaction: newTransactionResponse(result.Transaction),
+	}
+	if !result.LedgerEntry.ID.Empty() {
+		response.Ledger = &invoiceWalletPaymentLedgerResponse{
+			ID:                result.LedgerEntry.ID,
+			DisplayID:         result.LedgerEntry.DisplayID,
+			WalletID:          result.LedgerEntry.WalletID,
+			Direction:         result.LedgerEntry.Direction,
+			EntryType:         result.LedgerEntry.EntryType,
+			Status:            result.LedgerEntry.Status,
+			Currency:          result.LedgerEntry.Currency,
+			AmountMinor:       result.LedgerEntry.AmountMinor,
+			BalanceAfterMinor: result.LedgerEntry.BalanceAfterMinor,
+		}
+	}
+	return response
+}
+
 type paymentReconciliationResponse struct {
 	Transaction transactionResponse                   `json:"transaction"`
 	Provider    string                                `json:"provider,omitempty"`

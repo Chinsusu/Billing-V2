@@ -11,12 +11,14 @@ import (
 	"github.com/Chinsusu/Billing-V2/internal/modules/invoice"
 	"github.com/Chinsusu/Billing-V2/internal/modules/order"
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
+	"github.com/Chinsusu/Billing-V2/internal/modules/wallet"
 	"github.com/Chinsusu/Billing-V2/internal/platform/httpserver"
 )
 
 type HTTPService interface {
 	ListTransactions(ctx context.Context, filter TransactionFilter) ([]Transaction, error)
 	GetTransaction(ctx context.Context, lookup TransactionLookup) (Transaction, error)
+	PayInvoiceFromWallet(ctx context.Context, input PayInvoiceFromWalletInput) (WalletInvoicePayment, error)
 	ListPaymentReconciliations(ctx context.Context, filter ReconciliationFilter) ([]PaymentReconciliation, error)
 	GetPaymentReconciliation(ctx context.Context, lookup ReconciliationLookup) (PaymentReconciliation, error)
 }
@@ -34,8 +36,12 @@ type HTTPHandler struct {
 }
 
 const (
-	adminTransactionPrefix  = "/admin/transactions/"
-	clientTransactionPrefix = "/client/transactions/"
+	IdempotencyKeyHeader = "Idempotency-Key"
+
+	adminTransactionPrefix          = "/admin/transactions/"
+	clientTransactionPrefix         = "/client/transactions/"
+	clientInvoiceWalletPaymentsPath = "/client/invoice-wallet-payments"
+	maxJSONBodyBytes                = 1 << 20
 )
 
 func NewHTTPHandler(service HTTPService) *HTTPHandler {
@@ -51,6 +57,7 @@ func (handler *HTTPHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/payment-reconciliation/", handler.adminReconciliationRoute)
 	mux.HandleFunc("/admin/transactions", handler.adminTransactionsRoute)
 	mux.HandleFunc("/admin/transactions/", handler.adminTransactionRoute)
+	mux.HandleFunc(clientInvoiceWalletPaymentsPath, handler.clientInvoiceWalletPaymentsRoute)
 	mux.HandleFunc("/client/transactions", handler.clientTransactionsRoute)
 	mux.HandleFunc("/client/transactions/", handler.clientTransactionRoute)
 }
@@ -340,6 +347,22 @@ func writePaymentError(w http.ResponseWriter, r *http.Request, err error) {
 	switch {
 	case errors.Is(err, ErrTransactionNotFound):
 		httpserver.WriteError(w, r, http.StatusNotFound, "payment.transaction_not_found", "Payment transaction was not found.")
+	case errors.Is(err, invoice.ErrInvoiceNotFound):
+		httpserver.WriteError(w, r, http.StatusNotFound, "invoice.not_found", "Invoice was not found.")
+	case errors.Is(err, order.ErrOrderNotFound):
+		httpserver.WriteError(w, r, http.StatusNotFound, "order.not_found", "Order was not found.")
+	case errors.Is(err, wallet.ErrWalletNotFound):
+		httpserver.WriteError(w, r, http.StatusNotFound, "wallet.not_found", "Wallet was not found.")
+	case errors.Is(err, ErrInvoiceNotPayable):
+		httpserver.WriteError(w, r, http.StatusConflict, "payment.invoice_not_payable", "Invoice is not payable.")
+	case errors.Is(err, ErrIdempotencyConflict):
+		httpserver.WriteError(w, r, http.StatusConflict, "payment.idempotency_conflict", "Idempotency key conflicts with another payment.")
+	case errors.Is(err, ErrWalletCurrencyMismatch):
+		httpserver.WriteError(w, r, http.StatusConflict, "payment.wallet_currency_mismatch", "Wallet currency does not match invoice currency.")
+	case errors.Is(err, wallet.ErrInsufficientBalance):
+		httpserver.WriteError(w, r, http.StatusConflict, "wallet.insufficient_balance", "Wallet balance is insufficient.")
+	case errors.Is(err, invoice.ErrInvoiceStatusConflict):
+		httpserver.WriteError(w, r, http.StatusConflict, "invoice.status_conflict", "Invoice status changed before payment completed.")
 	case errors.Is(err, identity.ErrActorContextMissing),
 		errors.Is(err, identity.ErrActorIDMissing),
 		errors.Is(err, identity.ErrActorTypeMissing),
@@ -362,6 +385,10 @@ func paymentValidationField(err error) (httpserver.ValidationField, bool) {
 		return validationField("account_user_id", "payment.account_missing", "Account user is required."), true
 	case errors.Is(err, ErrTransactionIDMissing):
 		return validationField("transaction_id", "payment.transaction_id_missing", "Transaction id is required."), true
+	case errors.Is(err, invoice.ErrInvoiceIDMissing):
+		return validationField("invoice_id", "invoice.invoice_id_missing", "Invoice id is required."), true
+	case errors.Is(err, wallet.ErrWalletIDMissing):
+		return validationField("wallet_id", "wallet.wallet_id_missing", "Wallet id is required."), true
 	case errors.Is(err, ErrTypeInvalid):
 		return validationField("type", "payment.type_invalid", "Transaction type is invalid."), true
 	case errors.Is(err, ErrStatusInvalid):
