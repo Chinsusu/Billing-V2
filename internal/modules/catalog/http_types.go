@@ -189,6 +189,14 @@ func newProductResponse(product Product) productResponse {
 	}
 }
 
+func newProductResponses(products []Product) []productResponse {
+	responses := make([]productResponse, 0, len(products))
+	for _, product := range products {
+		responses = append(responses, newProductResponse(product))
+	}
+	return responses
+}
+
 type billingCycleResponse struct {
 	Type  BillingCycleType `json:"type"`
 	Value int              `json:"value"`
@@ -273,6 +281,14 @@ func newProviderSourceResponse(source ProviderSource) providerSourceResponse {
 		CreatedAt:         source.CreatedAt,
 		UpdatedAt:         source.UpdatedAt,
 	}
+}
+
+func newProviderSourceResponses(sources []ProviderSource) []providerSourceResponse {
+	responses := make([]providerSourceResponse, 0, len(sources))
+	for _, source := range sources {
+		responses = append(responses, newProviderSourceResponse(source))
+	}
+	return responses
 }
 
 type planSourceResponse struct {

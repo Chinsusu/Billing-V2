@@ -16,6 +16,8 @@ type fakeCatalogStore struct {
 	createPlanSourceInput     CreatePlanSourceInput
 	createTenantProductInput  CreateTenantProductInput
 	createTenantPlanInput     CreateTenantPlanInput
+	listProductsFilter        ProductFilter
+	listProviderSourcesFilter ProviderSourceFilter
 	listTenantCatalogCalled   bool
 }
 
@@ -51,6 +53,16 @@ func (store *fakeCatalogStore) CreateTenantPlan(_ context.Context, input CreateT
 
 func (store *fakeCatalogStore) ListMasterPlans(_ context.Context, _ MasterPlanFilter) ([]Plan, error) {
 	return []Plan{{ID: PlanID("plan-1")}}, nil
+}
+
+func (store *fakeCatalogStore) ListProducts(_ context.Context, filter ProductFilter) ([]Product, error) {
+	store.listProductsFilter = filter
+	return []Product{{ID: ProductID("product-1")}}, nil
+}
+
+func (store *fakeCatalogStore) ListProviderSources(_ context.Context, filter ProviderSourceFilter) ([]ProviderSource, error) {
+	store.listProviderSourcesFilter = filter
+	return []ProviderSource{{ID: ProviderSourceID("source-1")}}, nil
 }
 
 func (store *fakeCatalogStore) ListTenantCatalog(_ context.Context, _ TenantCatalogFilter) (TenantCatalog, error) {
@@ -145,5 +157,31 @@ func TestListTenantCatalogRequiresTenantBeforeStore(t *testing.T) {
 	}
 	if store.listTenantCatalogCalled {
 		t.Fatal("store should not be called without tenant scope")
+	}
+}
+
+func TestListProductsDelegatesToStore(t *testing.T) {
+	store := &fakeCatalogStore{}
+	service := NewService(store)
+
+	_, err := service.ListProducts(context.Background(), ProductFilter{Type: ProductTypeVPS, Status: ProductStatusActive, Limit: 25})
+	if err != nil {
+		t.Fatalf("expected list products: %v", err)
+	}
+	if store.listProductsFilter.Type != ProductTypeVPS || store.listProductsFilter.Status != ProductStatusActive || store.listProductsFilter.Limit != 25 {
+		t.Fatalf("unexpected product filter: %+v", store.listProductsFilter)
+	}
+}
+
+func TestListProviderSourcesDelegatesToStore(t *testing.T) {
+	store := &fakeCatalogStore{}
+	service := NewService(store)
+
+	_, err := service.ListProviderSources(context.Background(), ProviderSourceFilter{Type: provider.TypeManual, Status: ProviderSourceStatusActive, Limit: 10})
+	if err != nil {
+		t.Fatalf("expected list provider sources: %v", err)
+	}
+	if store.listProviderSourcesFilter.Type != provider.TypeManual || store.listProviderSourcesFilter.Status != ProviderSourceStatusActive || store.listProviderSourcesFilter.Limit != 10 {
+		t.Fatalf("unexpected provider source filter: %+v", store.listProviderSourcesFilter)
 	}
 }

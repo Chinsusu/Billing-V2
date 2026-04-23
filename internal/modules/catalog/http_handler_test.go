@@ -174,6 +174,12 @@ type fakeCatalogHTTPService struct {
 	createProductInput CreateProductInput
 	product            Product
 
+	products               []Product
+	productFilter          ProductFilter
+	listProductCalls       int
+	providerSources        []ProviderSource
+	sourceFilter           ProviderSourceFilter
+	listSourceCalls        int
 	tenantCatalog          TenantCatalog
 	tenantCatalogFilter    TenantCatalogFilter
 	listTenantCatalogCalls int
@@ -205,8 +211,20 @@ func (service *fakeCatalogHTTPService) CloneTenantPlan(ctx context.Context, inpu
 	return TenantPlan{}, nil
 }
 
+func (service *fakeCatalogHTTPService) ListProducts(ctx context.Context, filter ProductFilter) ([]Product, error) {
+	service.listProductCalls++
+	service.productFilter = filter
+	return service.products, nil
+}
+
 func (service *fakeCatalogHTTPService) ListMasterPlans(ctx context.Context, filter MasterPlanFilter) ([]Plan, error) {
 	return nil, nil
+}
+
+func (service *fakeCatalogHTTPService) ListProviderSources(ctx context.Context, filter ProviderSourceFilter) ([]ProviderSource, error) {
+	service.listSourceCalls++
+	service.sourceFilter = filter
+	return service.providerSources, nil
 }
 
 func (service *fakeCatalogHTTPService) ListTenantCatalog(ctx context.Context, filter TenantCatalogFilter) (TenantCatalog, error) {

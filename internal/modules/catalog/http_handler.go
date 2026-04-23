@@ -27,7 +27,9 @@ type HTTPService interface {
 	CreatePlanSource(ctx context.Context, input CreatePlanSourceInput) (PlanSource, error)
 	CloneTenantProduct(ctx context.Context, input CreateTenantProductInput) (TenantProduct, error)
 	CloneTenantPlan(ctx context.Context, input CreateTenantPlanInput) (TenantPlan, error)
+	ListProducts(ctx context.Context, filter ProductFilter) ([]Product, error)
 	ListMasterPlans(ctx context.Context, filter MasterPlanFilter) ([]Plan, error)
+	ListProviderSources(ctx context.Context, filter ProviderSourceFilter) ([]ProviderSource, error)
 	ListTenantCatalog(ctx context.Context, filter TenantCatalogFilter) (TenantCatalog, error)
 }
 
@@ -86,9 +88,9 @@ func (handler *HTTPHandler) tenantRoute(next http.HandlerFunc, routeMiddleware R
 }
 
 func (handler *HTTPHandler) RegisterRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/admin/catalog/products", middleware.RequireMethod(http.MethodPost, handler.adminRoute(handler.handleCreateProduct)))
-	mux.HandleFunc("/admin/catalog/plans", middleware.RequireMethod(http.MethodPost, handler.adminRoute(handler.handleCreatePlan)))
-	mux.HandleFunc("/admin/catalog/provider-sources", middleware.RequireMethod(http.MethodPost, handler.adminRoute(handler.handleCreateProviderSource)))
+	mux.HandleFunc("/admin/catalog/products", handler.adminCatalogProductsRoute)
+	mux.HandleFunc("/admin/catalog/plans", handler.adminCatalogPlansRoute)
+	mux.HandleFunc("/admin/catalog/provider-sources", handler.adminCatalogProviderSourcesRoute)
 	mux.HandleFunc("/admin/catalog/plan-sources", middleware.RequireMethod(http.MethodPost, handler.adminRoute(handler.handleCreatePlanSource)))
 	mux.HandleFunc("/reseller/catalog/master-plans", middleware.RequireMethod(http.MethodGet, handler.tenantRoute(handler.handleListMasterPlans, handler.options.ResellerViewMiddleware)))
 	mux.HandleFunc("/reseller/catalog/products/clone", middleware.RequireMethod(http.MethodPost, handler.tenantRoute(handler.handleCloneTenantProduct, handler.options.ResellerManageMiddleware)))

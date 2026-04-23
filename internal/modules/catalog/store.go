@@ -3,13 +3,26 @@ package catalog
 import (
 	"context"
 
+	"github.com/Chinsusu/Billing-V2/internal/modules/provider"
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
 )
+
+type ProductFilter struct {
+	Type   ProductType
+	Status ProductStatus
+	Limit  int
+}
 
 type MasterPlanFilter struct {
 	ProductType ProductType
 	Status      PlanStatus
 	Limit       int
+}
+
+type ProviderSourceFilter struct {
+	Type   provider.Type
+	Status ProviderSourceStatus
+	Limit  int
 }
 
 type TenantCatalogFilter struct {
@@ -32,6 +45,8 @@ type Store interface {
 	CreatePlanSource(ctx context.Context, input CreatePlanSourceInput) (PlanSource, error)
 	CreateTenantProduct(ctx context.Context, input CreateTenantProductInput) (TenantProduct, error)
 	CreateTenantPlan(ctx context.Context, input CreateTenantPlanInput) (TenantPlan, error)
+	ListProducts(ctx context.Context, filter ProductFilter) ([]Product, error)
 	ListMasterPlans(ctx context.Context, filter MasterPlanFilter) ([]Plan, error)
+	ListProviderSources(ctx context.Context, filter ProviderSourceFilter) ([]ProviderSource, error)
 	ListTenantCatalog(ctx context.Context, filter TenantCatalogFilter) (TenantCatalog, error)
 }
