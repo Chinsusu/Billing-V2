@@ -1,6 +1,6 @@
 # T019 - Catalog service layer
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/catalog-service-layer
 PR: https://github.com/Chinsusu/Billing-V2/pull/47
@@ -37,3 +37,4 @@ Add a catalog service/use-case layer above the store so API handlers do not call
 
 - 2026-04-23: Task created and claimed from latest `origin/main` in `/tmp/Billing-T019`.
 - 2026-04-23: Opened PR #47. Validation passed: `go test ./internal/modules/catalog`, `make fmt`, `make test`, `make build`, `make migrate-validate`.
+- 2026-04-23: PR #47 merged into `main`.
