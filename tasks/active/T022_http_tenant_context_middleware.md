@@ -1,6 +1,6 @@
 # T022 - HTTP tenant context middleware
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/http-tenant-context-middleware
 PR: https://github.com/Chinsusu/Billing-V2/pull/53
@@ -37,3 +37,4 @@ Add a small HTTP tenant context middleware so tenant-scoped handlers read tenant
 
 - 2026-04-23: Task created and claimed from latest `origin/main` in `/tmp/Billing-T022`.
 - 2026-04-23: Opened PR #53. Validation passed: `go test ./internal/modules/tenant ./internal/modules/catalog`, `make fmt`, `make test`, `make build`, `make migrate-validate`.
+- 2026-04-23: PR #53 merged into `main`.
