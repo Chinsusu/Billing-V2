@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useState, useRef } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { CheckCircle, XCircle, AlertTriangle, Info, X } from "lucide-react";
 
@@ -33,8 +33,11 @@ const BORDER = {
 };
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+
+  useEffect(() => { setMounted(true); }, []);
 
   const dismiss = useCallback((id: string) => {
     clearTimeout(timers.current[id]);
@@ -51,7 +54,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <Ctx.Provider value={{ toast }}>
       {children}
-      {typeof window !== "undefined" && createPortal(
+      {mounted && createPortal(
         <div className="fixed bottom-5 right-5 z-[100] flex flex-col gap-2 w-[340px]">
           {toasts.map((t) => (
             <div
