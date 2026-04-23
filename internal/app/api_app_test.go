@@ -69,6 +69,7 @@ func TestHealthEndpointRejectsUnsupportedMethod(t *testing.T) {
 func TestNewAPIWithOptionsRegistersOptionalRoutes(t *testing.T) {
 	api, err := NewAPIWithOptions(testAPIConfig(), logger.New(&bytes.Buffer{}, config.LogLevelDebug), APIOptions{
 		CatalogRoutes: testRouteRegistrar{},
+		OrderRoutes:   testOrderRouteRegistrar{},
 	})
 	if err != nil {
 		t.Fatalf("NewAPIWithOptions returned error: %v", err)
@@ -88,6 +89,12 @@ type testRouteRegistrar struct{}
 
 func (testRouteRegistrar) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/catalog-test", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusNoContent) })
+}
+
+type testOrderRouteRegistrar struct{}
+
+func (testOrderRouteRegistrar) RegisterRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("/order-test", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusNoContent) })
 }
 
 func newTestAPI(t *testing.T) *API {

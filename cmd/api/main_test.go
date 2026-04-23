@@ -16,7 +16,7 @@ import (
 	"github.com/Chinsusu/Billing-V2/internal/platform/logger"
 )
 
-func TestNewRuntimeWithoutDSNLeavesCatalogRoutesDisabled(t *testing.T) {
+func TestNewRuntimeWithoutDSNLeavesDomainRoutesDisabled(t *testing.T) {
 	runtime, err := newRuntime(context.Background(), testRuntimeConfig(""), testRuntimeLogger(), func(ctx context.Context, cfg platformdb.Config) (*sql.DB, error) {
 		t.Fatal("database opener should not be called without DB_DSN")
 		return nil, nil
@@ -36,6 +36,12 @@ func TestNewRuntimeWithoutDSNLeavesCatalogRoutesDisabled(t *testing.T) {
 	runtime.api.Handler().ServeHTTP(catalogResponse, httptest.NewRequest(http.MethodGet, "/client/catalog", nil))
 	if catalogResponse.Code != http.StatusNotFound {
 		t.Fatalf("expected catalog route to be disabled without DB_DSN, got %d", catalogResponse.Code)
+	}
+
+	orderResponse := httptest.NewRecorder()
+	runtime.api.Handler().ServeHTTP(orderResponse, httptest.NewRequest(http.MethodPost, "/client/orders", strings.NewReader(`{}`)))
+	if orderResponse.Code != http.StatusNotFound {
+		t.Fatalf("expected order route to be disabled without DB_DSN, got %d", orderResponse.Code)
 	}
 }
 
@@ -69,6 +75,27 @@ func TestNewRuntimeWithDSNRegistersCatalogRoutes(t *testing.T) {
 	}
 }
 
+func TestNewRuntimeWithDSNRegistersOrderRoutes(t *testing.T) {
+	runtime, err := newRuntime(context.Background(), testRuntimeConfig("postgres://billing@localhost/billing"), testRuntimeLogger(), func(ctx context.Context, cfg platformdb.Config) (*sql.DB, error) {
+		return newStubDB(), nil
+	})
+	if err != nil {
+		t.Fatalf("newRuntime returned error: %v", err)
+	}
+	defer closeRuntime(t, runtime)
+
+	response := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodPost, "/client/orders", strings.NewReader(`{}`))
+	runtime.api.Handler().ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("expected registered order route to validate tenant context, got %d: %s", response.Code, response.Body.String())
+	}
+	if !strings.Contains(response.Body.String(), "tenant.context_missing") {
+		t.Fatalf("expected tenant validation response, got %s", response.Body.String())
+	}
+}
+
 func TestNewRuntimeWithDSNProtectsAdminCatalogRoutes(t *testing.T) {
 	runtime, err := newRuntime(context.Background(), testRuntimeConfig("postgres://billing@localhost/billing"), testRuntimeLogger(), func(ctx context.Context, cfg platformdb.Config) (*sql.DB, error) {
 		return newStubDB(), nil
@@ -80,6 +107,25 @@ func TestNewRuntimeWithDSNProtectsAdminCatalogRoutes(t *testing.T) {
 
 	response := httptest.NewRecorder()
 	request := httptest.NewRequest(http.MethodPost, "/admin/catalog/products", strings.NewReader(`{"product_type":"vps","name":"VPS"}`))
+	runtime.api.Handler().ServeHTTP(response, request)
+
+	if response.Code != http.StatusUnauthorized {
+		t.Fatalf("expected missing actor to be rejected, got %d: %s", response.Code, response.Body.String())
+	}
+}
+
+func TestNewRuntimeWithDSNProtectsClientOrderRoutes(t *testing.T) {
+	runtime, err := newRuntime(context.Background(), testRuntimeConfig("postgres://billing@localhost/billing"), testRuntimeLogger(), func(ctx context.Context, cfg platformdb.Config) (*sql.DB, error) {
+		return newStubDB(), nil
+	})
+	if err != nil {
+		t.Fatalf("newRuntime returned error: %v", err)
+	}
+	defer closeRuntime(t, runtime)
+
+	response := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodPost, "/client/orders", strings.NewReader(`{"tenant_plan_id":"tenant_plan_1"}`))
+	request.Header.Set("X-Tenant-Id", "tenant_1")
 	runtime.api.Handler().ServeHTTP(response, request)
 
 	if response.Code != http.StatusUnauthorized {
@@ -113,6 +159,21 @@ func TestNewCatalogRoutesReturnsRegistrar(t *testing.T) {
 	mux.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/client/catalog", nil))
 	if response.Code != http.StatusBadRequest {
 		t.Fatalf("expected catalog route to be registered, got %d", response.Code)
+	}
+}
+
+func TestNewOrderRoutesReturnsRegistrar(t *testing.T) {
+	registrar := newOrderRoutes(newStubDB())
+	if registrar == nil {
+		t.Fatal("expected order route registrar")
+	}
+
+	mux := http.NewServeMux()
+	registrar.RegisterRoutes(mux)
+	response := httptest.NewRecorder()
+	mux.ServeHTTP(response, httptest.NewRequest(http.MethodPost, "/client/orders", nil))
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("expected order route to be registered, got %d", response.Code)
 	}
 }
 
