@@ -16,6 +16,7 @@ export function AdminServicesVPS() {
     { label: "Expire", align: "center" },
     { label: "Auto Renew", align: "center" },
     { label: "Protection", align: "center" },
+    { label: "Action", align: "center" },
   ];
 
   return (
@@ -99,6 +100,11 @@ export function AdminServicesVPS() {
                       <div className="w-8 h-4 bg-gray-200 rounded-full inline-block relative cursor-pointer border border-gray-300">
                         <div className="w-3 h-3 bg-white shadow rounded-full absolute left-0.5 top-0.5"></div>
                       </div>
+                    </td>
+                    <td className="p-3 text-center">
+                      <button className="text-gray-400 hover:text-gray-600 p-1 rounded transition-colors cursor-pointer bg-transparent border-0 inline-flex items-center justify-center">
+                        <Settings size={14} />
+                      </button>
                     </td>
                   </tr>
                 );
