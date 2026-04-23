@@ -1,6 +1,6 @@
 GO ?= go
 
-.PHONY: fmt test build build-api build-migrate build-seed run-api migrate-validate seed-plan seed-dev
+.PHONY: fmt test build build-api build-migrate build-seed build-smoke run-api migrate-validate seed-plan seed-dev smoke-dev-db
 
 fmt:
 	$(GO) fmt ./...
@@ -8,7 +8,7 @@ fmt:
 test:
 	$(GO) test ./...
 
-build: build-api build-migrate build-seed
+build: build-api build-migrate build-seed build-smoke
 
 build-api:
 	$(GO) build -o bin/api ./cmd/api
@@ -18,6 +18,9 @@ build-migrate:
 
 build-seed:
 	$(GO) build -o bin/seed ./cmd/seed
+
+build-smoke:
+	$(GO) build -o bin/smoke ./cmd/smoke
 
 run-api:
 	$(GO) run ./cmd/api
@@ -30,3 +33,6 @@ seed-plan:
 
 seed-dev:
 	$(GO) run ./cmd/seed dev
+
+smoke-dev-db:
+	$(GO) run ./cmd/smoke dev-db

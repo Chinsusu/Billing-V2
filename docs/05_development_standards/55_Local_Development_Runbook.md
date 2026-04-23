@@ -208,6 +208,35 @@ curl -H "X-Tenant-Id: 00000000-0000-0000-0000-000000000010" \
   http://localhost:8080/client/wallets
 ```
 
+## Smoke test database dev
+
+Sau khi có PostgreSQL local/dev và `DB_DSN`, chạy smoke để kiểm tra migration, seed, và billing flow mẫu trên database thật:
+
+```bash
+make smoke-dev-db
+```
+
+Lệnh này tương đương:
+
+```bash
+go run ./cmd/smoke dev-db
+```
+
+Smoke command sẽ:
+
+- Từ chối chạy nếu `APP_ENV=production` hoặc `APP_ENV=prod`.
+- Apply toàn bộ migration còn thiếu.
+- Chạy seed dev hai lần để kiểm tra idempotency.
+- Kiểm tra các record mẫu cho tenant, user, permission, catalog, wallet, top-up, order, service, invoice, ledger và payment.
+
+Nếu cần truyền DSN trực tiếp:
+
+```bash
+go run ./cmd/smoke -dsn "$DB_DSN" dev-db
+```
+
+Chỉ chạy lệnh này trên database local hoặc sandbox được phép. Không dùng production DSN.
+
 ## Quality gate trước PR
 
 Chạy format:
