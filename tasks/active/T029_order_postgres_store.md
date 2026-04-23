@@ -1,6 +1,6 @@
 # T029 - Order PostgreSQL store
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/order-postgres-store
 PR: https://github.com/Chinsusu/Billing-V2/pull/68
@@ -36,3 +36,4 @@ Add PostgreSQL store implementation for the order domain create contracts.
 
 - 2026-04-23: Task created and claimed from latest `origin/main` in `/tmp/Billing-T029`.
 - 2026-04-23: Opened PR #68. Validation passed: `go test ./internal/modules/order`, `make fmt`, `make test`, `make build`, `make migrate-validate`.
+- 2026-04-23: PR #68 merged into `main`.
