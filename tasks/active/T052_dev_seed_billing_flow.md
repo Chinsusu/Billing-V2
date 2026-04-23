@@ -1,7 +1,7 @@
 # T052 - Dev seed billing flow
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: feat/dev-seed-billing-flow
 PR: -
 Risk: seed/dev
@@ -33,3 +33,4 @@ Extend seed data so local development has a realistic billing flow across catalo
 ## Agent Log
 
 - 2026-04-23: Task created to make end-to-end local testing practical.
+- 2026-04-23: Added demo customer and linked wallet/order/service/invoice/payment seed flow plus runbook notes.

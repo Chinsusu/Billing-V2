@@ -26,6 +26,7 @@ func DevStatements() []Statement {
 		{Name: "master_plans", SQL: seedMasterPlansSQL},
 		{Name: "plan_sources", SQL: seedPlanSourcesSQL},
 		{Name: "demo_reseller_catalog", SQL: seedDemoResellerCatalogSQL},
+		{Name: "billing_flow", SQL: seedBillingFlowSQL},
 	}
 }
 

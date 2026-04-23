@@ -176,6 +176,38 @@ go run ./cmd/migrate -dsn "$DB_DSN" up
 
 Không chạy `up` vào staging/production từ máy local nếu không có quy trình vận hành và approval rõ.
 
+## Seed dữ liệu dev
+
+Sau khi migration đã chạy trên PostgreSQL local, tạo dữ liệu demo:
+
+```bash
+go run ./cmd/seed dev
+```
+
+Seed local hiện có các actor mẫu:
+
+```text
+admin@local.billing      Platform admin
+reseller@local.billing   Demo reseller owner
+customer@local.billing   Demo customer
+```
+
+Billing flow mẫu tạo wallet, top-up đã duyệt, order đã paid, service instance, invoice đã paid, wallet ledger debit và payment transaction liên kết với nhau bằng UUID cố định và `display_id` dạng số. Các API mẫu sau dùng header local, không dùng credential thật:
+
+```bash
+curl -H "X-Tenant-Id: 00000000-0000-0000-0000-000000000010" \
+  -H "X-Actor-Id: 00000000-0000-0000-0000-000000000102" \
+  -H "X-Actor-Tenant-Id: 00000000-0000-0000-0000-000000000010" \
+  -H "X-Actor-Type: reseller_owner" \
+  http://localhost:8080/admin/payment-reconciliation
+
+curl -H "X-Tenant-Id: 00000000-0000-0000-0000-000000000010" \
+  -H "X-Actor-Id: 00000000-0000-0000-0000-000000000103" \
+  -H "X-Actor-Tenant-Id: 00000000-0000-0000-0000-000000000010" \
+  -H "X-Actor-Type: client" \
+  http://localhost:8080/client/wallets
+```
+
 ## Quality gate trước PR
 
 Chạy format:

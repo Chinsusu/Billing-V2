@@ -49,6 +49,23 @@ func TestDevStatementsIncludeRBACAndCatalogData(t *testing.T) {
 	}
 }
 
+func TestDevStatementsIncludeBillingFlowData(t *testing.T) {
+	sql := strings.ToLower(joinSeedSQL(DevStatements()))
+	required := []string{
+		"customer@local.billing",
+		"billing_flow",
+		"wallet_ledger_entries",
+		"payment_transactions",
+		"seed-payment-1",
+		"local-vps-405910",
+	}
+	for _, value := range required {
+		if !strings.Contains(sql, value) {
+			t.Fatalf("expected seed SQL to contain %q", value)
+		}
+	}
+}
+
 func TestApplyDevRunsStatementsInOrder(t *testing.T) {
 	executor := &fakeSeedExecutor{}
 	if err := ApplyDev(context.Background(), executor); err != nil {

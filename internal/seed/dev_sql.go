@@ -36,6 +36,24 @@ SET full_name = EXCLUDED.full_name,
     user_type = EXCLUDED.user_type,
     status = EXCLUDED.status,
     two_factor_status = EXCLUDED.two_factor_status;
+
+INSERT INTO users (user_id, tenant_id, email, password_hash, full_name, user_type, status, two_factor_status)
+SELECT
+    '00000000-0000-0000-0000-000000000103',
+    reseller.tenant_id,
+    'customer@local.billing',
+    'dev-only-placeholder-hash',
+    'Demo Customer',
+    'client',
+    'active',
+    'disabled'
+FROM tenants reseller
+WHERE reseller.slug = 'demo-reseller'
+ON CONFLICT (tenant_id, email) DO UPDATE
+SET full_name = EXCLUDED.full_name,
+    user_type = EXCLUDED.user_type,
+    status = EXCLUDED.status,
+    two_factor_status = EXCLUDED.two_factor_status;
 `
 
 const seedSystemRolesSQL = `
@@ -78,7 +96,7 @@ ON CONFLICT (role_id, permission_id) DO NOTHING;
 INSERT INTO role_permissions (role_id, permission_id)
 SELECT role.role_id, permission.permission_id
 FROM roles role
-JOIN permissions permission ON permission.permission_key = 'catalog.view'
+JOIN permissions permission ON permission.permission_key IN ('catalog.view', 'order.create', 'wallet.view')
 WHERE role.role_key = 'customer_catalog_viewer'
   AND role.is_system = TRUE
 ON CONFLICT (role_id, permission_id) DO NOTHING;
@@ -101,5 +119,14 @@ JOIN tenants reseller ON reseller.tenant_id = reseller_user.tenant_id
 JOIN roles role ON role.role_key = 'reseller_catalog_manager' AND role.is_system = TRUE
 WHERE reseller.slug = 'demo-reseller'
   AND reseller_user.email = 'reseller@local.billing'
+ON CONFLICT (user_id, tenant_id, role_id) DO NOTHING;
+
+INSERT INTO user_roles (user_id, tenant_id, role_id)
+SELECT customer.user_id, customer.tenant_id, role.role_id
+FROM users customer
+JOIN tenants reseller ON reseller.tenant_id = customer.tenant_id
+JOIN roles role ON role.role_key = 'customer_catalog_viewer' AND role.is_system = TRUE
+WHERE reseller.slug = 'demo-reseller'
+  AND customer.email = 'customer@local.billing'
 ON CONFLICT (user_id, tenant_id, role_id) DO NOTHING;
 `
