@@ -243,6 +243,11 @@ func invoiceFilterFromRequest(w http.ResponseWriter, r *http.Request) (InvoiceFi
 	if buyerUserID := identity.UserID(strings.TrimSpace(query.Get("buyer_user_id"))); buyerUserID != "" {
 		filter.BuyerUserID = buyerUserID
 	}
+	if displayID, present, ok := invoicePositiveInt64Query(w, r, "display_id"); !ok {
+		return InvoiceFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.DisplayID = displayID
+	}
 	if orderID := order.OrderID(strings.TrimSpace(query.Get("order_id"))); orderID != "" {
 		filter.OrderID = orderID
 	}
@@ -253,6 +258,12 @@ func invoiceFilterFromRequest(w http.ResponseWriter, r *http.Request) (InvoiceFi
 		}
 		filter.Status = status
 	}
+	amountMin, amountMax, ok := invoiceAmountRangeQuery(w, r)
+	if !ok {
+		return InvoiceFilter{}, httpserver.CursorPageRequest{}, false
+	}
+	filter.AmountMinMinor = amountMin
+	filter.AmountMaxMinor = amountMax
 	return filter, page, true
 }
 
@@ -335,6 +346,8 @@ func invoiceValidationField(err error) (httpserver.ValidationField, bool) {
 		return validationField("buyer_user_id", "invoice.buyer_missing", "Buyer is required."), true
 	case errors.Is(err, ErrStatusInvalid):
 		return validationField("status", "invoice.status_invalid", "Invoice status is invalid."), true
+	case errors.Is(err, ErrAmountInvalid):
+		return validationField("amount_minor", "invoice.amount_invalid", "Money amount must not be negative."), true
 	default:
 		return httpserver.ValidationField{}, false
 	}

@@ -93,7 +93,7 @@ func TestHTTPHandlerListAdminTransactionsUsesAccountFilter(t *testing.T) {
 	service := &fakePaymentHTTPService{}
 	handler := registerPaymentTestHandler(service)
 
-	request := httptest.NewRequest(http.MethodGet, "/admin/transactions?account_user_id=account_2&status=posted", nil)
+	request := httptest.NewRequest(http.MethodGet, "/admin/transactions?account_user_id=account_2&display_id=51001&status=posted&amount_min=100&amount_max=900", nil)
 	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
 	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
 	response := httptest.NewRecorder()
@@ -103,8 +103,31 @@ func TestHTTPHandlerListAdminTransactionsUsesAccountFilter(t *testing.T) {
 	if response.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
 	}
-	if service.filter.AccountUserID != identity.UserID("account_2") || service.filter.Status != TransactionStatusPosted {
+	if service.filter.AccountUserID != identity.UserID("account_2") ||
+		service.filter.DisplayID != 51001 ||
+		service.filter.Status != TransactionStatusPosted ||
+		service.filter.AmountMinMinor == nil || *service.filter.AmountMinMinor != 100 ||
+		service.filter.AmountMaxMinor == nil || *service.filter.AmountMaxMinor != 900 {
 		t.Fatalf("unexpected admin transaction filter: %+v", service.filter)
+	}
+}
+
+func TestHTTPHandlerRejectsBadTransactionDisplayID(t *testing.T) {
+	service := &fakePaymentHTTPService{}
+	handler := registerPaymentTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/admin/transactions?display_id=bad", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("expected status 400, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.listCalls != 0 {
+		t.Fatalf("expected no list call, got %d", service.listCalls)
 	}
 }
 

@@ -1,7 +1,7 @@
 # T056 - Admin search filters
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: feat/admin-search-filters
 PR: -
 Risk: API/search/admin
@@ -34,3 +34,4 @@ Add practical admin search filters for operational billing lists so support can 
 ## Agent Log
 
 - 2026-04-23: Task created from operational admin needs.
+- 2026-04-23: Codex claimed task and started admin filter implementation from latest `origin/main`.

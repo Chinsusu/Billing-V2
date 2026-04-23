@@ -170,6 +170,11 @@ func auditFilterFromRequest(w http.ResponseWriter, r *http.Request) (Filter, htt
 		}
 		filter.ActorType = actorType
 	}
+	if displayID, present, ok := auditPositiveInt64Query(w, r, "display_id"); !ok {
+		return Filter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.DisplayID = displayID
+	}
 	filter.Action = strings.TrimSpace(query.Get("action"))
 	filter.TargetType = strings.TrimSpace(query.Get("target_type"))
 	filter.TargetID = TargetID(strings.TrimSpace(query.Get("target_id")))

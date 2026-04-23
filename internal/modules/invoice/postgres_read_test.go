@@ -12,11 +12,14 @@ import (
 
 func TestBuildListInvoicesQueryAddsTenantBuyerAndStatusFilters(t *testing.T) {
 	query, args, err := buildListInvoicesQuery(InvoiceFilter{
-		TenantID:    tenant.ID("tenant-1"),
-		BuyerUserID: identity.UserID("buyer-1"),
-		OrderID:     order.OrderID("order-1"),
-		Status:      StatusIssued,
-		Limit:       25,
+		TenantID:       tenant.ID("tenant-1"),
+		BuyerUserID:    identity.UserID("buyer-1"),
+		DisplayID:      44001,
+		OrderID:        order.OrderID("order-1"),
+		Status:         StatusIssued,
+		AmountMinMinor: int64Ptr(100),
+		AmountMaxMinor: int64Ptr(900),
+		Limit:          25,
 	})
 	if err != nil {
 		t.Fatalf("expected query: %v", err)
@@ -24,15 +27,18 @@ func TestBuildListInvoicesQueryAddsTenantBuyerAndStatusFilters(t *testing.T) {
 	for _, clause := range []string{
 		"inv.tenant_id = $1",
 		"inv.buyer_user_id = $2",
-		"inv.order_id = $3",
-		"inv.status = $4",
-		"LIMIT $5",
+		"inv.display_id = $3",
+		"inv.order_id = $4",
+		"inv.status = $5",
+		"inv.total_minor >= $6",
+		"inv.total_minor <= $7",
+		"LIMIT $8",
 	} {
 		if !strings.Contains(query, clause) {
 			t.Fatalf("expected %q in query: %s", clause, query)
 		}
 	}
-	if len(args) != 5 || args[4] != 25 {
+	if len(args) != 8 || args[7] != 25 {
 		t.Fatalf("unexpected args: %#v", args)
 	}
 }
@@ -77,4 +83,8 @@ func TestBuildGetInvoiceQueryAddsBuyerScope(t *testing.T) {
 	if len(args) != 3 {
 		t.Fatalf("unexpected args: %#v", args)
 	}
+}
+
+func int64Ptr(value int64) *int64 {
+	return &value
 }

@@ -13,13 +13,16 @@ import (
 
 func TestBuildListTransactionsQueryAddsAccountScopeAndFilters(t *testing.T) {
 	query, args, err := buildListTransactionsQuery(TransactionFilter{
-		TenantID:      tenant.ID("tenant-1"),
-		AccountUserID: identity.UserID("account-1"),
-		OrderID:       order.OrderID("order-1"),
-		InvoiceID:     invoice.InvoiceID("invoice-1"),
-		Type:          TransactionTypeCharge,
-		Status:        TransactionStatusPosted,
-		Limit:         25,
+		TenantID:       tenant.ID("tenant-1"),
+		AccountUserID:  identity.UserID("account-1"),
+		DisplayID:      51001,
+		OrderID:        order.OrderID("order-1"),
+		InvoiceID:      invoice.InvoiceID("invoice-1"),
+		Type:           TransactionTypeCharge,
+		Status:         TransactionStatusPosted,
+		AmountMinMinor: int64Ptr(100),
+		AmountMaxMinor: int64Ptr(900),
+		Limit:          25,
 	})
 	if err != nil {
 		t.Fatalf("expected query: %v", err)
@@ -27,17 +30,20 @@ func TestBuildListTransactionsQueryAddsAccountScopeAndFilters(t *testing.T) {
 	for _, clause := range []string{
 		"txn.tenant_id = $1",
 		"txn.account_user_id = $2",
-		"txn.order_id = $3",
-		"txn.invoice_id = $4",
-		"txn.transaction_type = $5",
-		"txn.status = $6",
-		"LIMIT $7",
+		"txn.display_id = $3",
+		"txn.order_id = $4",
+		"txn.invoice_id = $5",
+		"txn.transaction_type = $6",
+		"txn.status = $7",
+		"txn.amount_minor >= $8",
+		"txn.amount_minor <= $9",
+		"LIMIT $10",
 	} {
 		if !strings.Contains(query, clause) {
 			t.Fatalf("expected %q in query: %s", clause, query)
 		}
 	}
-	if len(args) != 7 || args[6] != 25 {
+	if len(args) != 10 || args[9] != 25 {
 		t.Fatalf("unexpected args: %#v", args)
 	}
 }
@@ -100,4 +106,8 @@ func TestBuildGetTransactionQuerySupportsIdempotencyLookup(t *testing.T) {
 	if len(args) != 2 || args[1] != IdempotencyKey("key-1") {
 		t.Fatalf("unexpected args: %#v", args)
 	}
+}
+
+func int64Ptr(value int64) *int64 {
+	return &value
 }

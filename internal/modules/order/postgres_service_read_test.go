@@ -11,21 +11,33 @@ import (
 
 func TestBuildListServiceInstancesQueryAddsClientScope(t *testing.T) {
 	query, args, err := buildListServiceInstancesQuery(ServiceInstanceFilter{
-		TenantID:    tenant.ID("tenant-1"),
-		BuyerUserID: identity.UserID("buyer-1"),
-		OrderID:     OrderID("order-1"),
-		Status:      ServiceStatusActive,
-		Limit:       25,
+		TenantID:       tenant.ID("tenant-1"),
+		BuyerUserID:    identity.UserID("buyer-1"),
+		DisplayID:      50001,
+		OrderID:        OrderID("order-1"),
+		OrderDisplayID: 30001,
+		Status:         ServiceStatusActive,
+		Limit:          25,
 	})
 	if err != nil {
 		t.Fatalf("expected query: %v", err)
 	}
-	for _, clause := range []string{"JOIN orders ord", "svc.tenant_id = $1", "ord.buyer_user_id = $2", "svc.order_id = $3", "svc.status = $4", "LIMIT $5"} {
+	for _, clause := range []string{
+		"JOIN orders ord",
+		"ord.tenant_id = svc.tenant_id",
+		"svc.tenant_id = $1",
+		"ord.buyer_user_id = $2",
+		"svc.display_id = $3",
+		"svc.order_id = $4",
+		"ord.display_id = $5",
+		"svc.status = $6",
+		"LIMIT $7",
+	} {
 		if !strings.Contains(query, clause) {
 			t.Fatalf("expected %q in query: %s", clause, query)
 		}
 	}
-	if len(args) != 5 || args[4] != 25 {
+	if len(args) != 7 || args[6] != 25 {
 		t.Fatalf("unexpected args: %#v", args)
 	}
 }

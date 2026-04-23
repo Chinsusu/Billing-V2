@@ -58,6 +58,10 @@ WHERE txn.tenant_id = $1`
 		args = append(args, filter.AccountUserID)
 		query += fmt.Sprintf("\n  AND txn.account_user_id = $%d", len(args))
 	}
+	if filter.DisplayID > 0 {
+		args = append(args, filter.DisplayID)
+		query += fmt.Sprintf("\n  AND txn.display_id = $%d", len(args))
+	}
 	if filter.OrderID != "" {
 		args = append(args, filter.OrderID)
 		query += fmt.Sprintf("\n  AND txn.order_id = $%d", len(args))
@@ -73,6 +77,14 @@ WHERE txn.tenant_id = $1`
 	if filter.Status != "" {
 		args = append(args, filter.Status)
 		query += fmt.Sprintf("\n  AND txn.status = $%d", len(args))
+	}
+	if filter.AmountMinMinor != nil {
+		args = append(args, *filter.AmountMinMinor)
+		query += fmt.Sprintf("\n  AND txn.amount_minor >= $%d", len(args))
+	}
+	if filter.AmountMaxMinor != nil {
+		args = append(args, *filter.AmountMaxMinor)
+		query += fmt.Sprintf("\n  AND txn.amount_minor <= $%d", len(args))
 	}
 	args = append(args, filter.Limit)
 	query += fmt.Sprintf("\nORDER BY txn.created_at DESC\nLIMIT $%d", len(args))

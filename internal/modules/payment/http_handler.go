@@ -242,6 +242,11 @@ func transactionFilterFromRequest(w http.ResponseWriter, r *http.Request) (Trans
 	if accountUserID != "" {
 		filter.AccountUserID = accountUserID
 	}
+	if displayID, present, ok := paymentPositiveInt64Query(w, r, "display_id"); !ok {
+		return TransactionFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.DisplayID = displayID
+	}
 	orderID := order.OrderID(strings.TrimSpace(query.Get("order_id")))
 	if orderID != "" {
 		filter.OrderID = orderID
@@ -266,6 +271,12 @@ func transactionFilterFromRequest(w http.ResponseWriter, r *http.Request) (Trans
 		}
 		filter.Status = status
 	}
+	amountMin, amountMax, ok := paymentAmountRangeQuery(w, r)
+	if !ok {
+		return TransactionFilter{}, httpserver.CursorPageRequest{}, false
+	}
+	filter.AmountMinMinor = amountMin
+	filter.AmountMaxMinor = amountMax
 	return filter, page, true
 }
 

@@ -9,11 +9,14 @@ import (
 )
 
 type InvoiceFilter struct {
-	TenantID    tenant.ID
-	BuyerUserID identity.UserID
-	OrderID     order.OrderID
-	Status      Status
-	Limit       int
+	TenantID       tenant.ID
+	BuyerUserID    identity.UserID
+	DisplayID      int64
+	OrderID        order.OrderID
+	Status         Status
+	AmountMinMinor *int64
+	AmountMaxMinor *int64
+	Limit          int
 }
 
 type InvoiceLookup struct {

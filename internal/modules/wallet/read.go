@@ -71,6 +71,9 @@ func validateLedgerEntryFilter(filter LedgerEntryFilter) error {
 	if filter.Status != "" && !filter.Status.Valid() {
 		return ErrLedgerStatusInvalid
 	}
+	if amountRangeInvalid(filter.AmountMinMinor, filter.AmountMaxMinor) {
+		return ErrAmountInvalid
+	}
 	return nil
 }
 
@@ -107,6 +110,9 @@ func validateTopupRequestFilter(filter TopupRequestFilter) error {
 	if filter.Status != "" && !filter.Status.Valid() {
 		return ErrTopupStatusInvalid
 	}
+	if amountRangeInvalid(filter.AmountMinMinor, filter.AmountMaxMinor) {
+		return ErrAmountInvalid
+	}
 	return nil
 }
 
@@ -118,4 +124,14 @@ func validateTopupRequestLookup(lookup TopupRequestLookup) error {
 		return tenant.ErrTenantIDMissing
 	}
 	return nil
+}
+
+func amountRangeInvalid(minorMin *int64, minorMax *int64) bool {
+	if minorMin != nil && *minorMin < 0 {
+		return true
+	}
+	if minorMax != nil && *minorMax < 0 {
+		return true
+	}
+	return minorMin != nil && minorMax != nil && *minorMax < *minorMin
 }

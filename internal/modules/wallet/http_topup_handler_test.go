@@ -73,7 +73,7 @@ func TestHTTPHandlerListAdminTopupRequestsUsesReviewFilters(t *testing.T) {
 	service := &fakeWalletHTTPService{}
 	handler := registerWalletTestHandler(service)
 
-	request := httptest.NewRequest(http.MethodGet, "/admin/topup-requests?requested_by=account_2&status=under_review", nil)
+	request := httptest.NewRequest(http.MethodGet, "/admin/topup-requests?requested_by=account_2&display_id=90004&status=under_review&amount_min=100&amount_max=5000", nil)
 	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
 	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
 	response := httptest.NewRecorder()
@@ -85,7 +85,10 @@ func TestHTTPHandlerListAdminTopupRequestsUsesReviewFilters(t *testing.T) {
 	}
 	if service.topupFilter.TenantID != tenant.ID("tenant_1") ||
 		service.topupFilter.RequestedBy != identity.UserID("account_2") ||
-		service.topupFilter.Status != TopupStatusUnderReview {
+		service.topupFilter.DisplayID != 90004 ||
+		service.topupFilter.Status != TopupStatusUnderReview ||
+		service.topupFilter.AmountMinMinor == nil || *service.topupFilter.AmountMinMinor != 100 ||
+		service.topupFilter.AmountMaxMinor == nil || *service.topupFilter.AmountMaxMinor != 5000 {
 		t.Fatalf("unexpected admin topup filter: %+v", service.topupFilter)
 	}
 }

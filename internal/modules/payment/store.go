@@ -10,13 +10,16 @@ import (
 )
 
 type TransactionFilter struct {
-	TenantID      tenant.ID
-	AccountUserID identity.UserID
-	OrderID       order.OrderID
-	InvoiceID     invoice.InvoiceID
-	Type          TransactionType
-	Status        TransactionStatus
-	Limit         int
+	TenantID       tenant.ID
+	AccountUserID  identity.UserID
+	DisplayID      int64
+	OrderID        order.OrderID
+	InvoiceID      invoice.InvoiceID
+	Type           TransactionType
+	Status         TransactionStatus
+	AmountMinMinor *int64
+	AmountMaxMinor *int64
+	Limit          int
 }
 
 type TransactionLookup struct {

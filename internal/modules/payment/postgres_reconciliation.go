@@ -65,6 +65,14 @@ func buildListPaymentReconciliationsQuery(filter ReconciliationFilter) (string, 
 	query := paymentReconciliationBaseQuery() + `
 WHERE txn.tenant_id = $1`
 	args := []interface{}{filter.TenantID}
+	if filter.AccountUserID != "" {
+		args = append(args, filter.AccountUserID)
+		query += fmt.Sprintf("\n  AND txn.account_user_id = $%d", len(args))
+	}
+	if filter.DisplayID > 0 {
+		args = append(args, filter.DisplayID)
+		query += fmt.Sprintf("\n  AND txn.display_id = $%d", len(args))
+	}
 	if filter.Status != "" {
 		args = append(args, filter.Status)
 		query += fmt.Sprintf("\n  AND txn.status = $%d", len(args))
@@ -77,9 +85,25 @@ WHERE txn.tenant_id = $1`
 		args = append(args, filter.InvoiceID)
 		query += fmt.Sprintf("\n  AND txn.invoice_id = $%d", len(args))
 	}
+	if filter.InvoiceDisplayID > 0 {
+		args = append(args, filter.InvoiceDisplayID)
+		query += fmt.Sprintf("\n  AND inv.display_id = $%d", len(args))
+	}
 	if !filter.WalletID.Empty() {
 		args = append(args, filter.WalletID)
 		query += fmt.Sprintf("\n  AND ledger.wallet_id = $%d", len(args))
+	}
+	if filter.WalletDisplayID > 0 {
+		args = append(args, filter.WalletDisplayID)
+		query += fmt.Sprintf("\n  AND linked_wallet.display_id = $%d", len(args))
+	}
+	if filter.AmountMinMinor != nil {
+		args = append(args, *filter.AmountMinMinor)
+		query += fmt.Sprintf("\n  AND txn.amount_minor >= $%d", len(args))
+	}
+	if filter.AmountMaxMinor != nil {
+		args = append(args, *filter.AmountMaxMinor)
+		query += fmt.Sprintf("\n  AND txn.amount_minor <= $%d", len(args))
 	}
 	if !filter.CreatedFrom.IsZero() {
 		args = append(args, filter.CreatedFrom)

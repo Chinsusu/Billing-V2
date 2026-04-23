@@ -11,6 +11,7 @@ import (
 func TestBuildListWalletsQueryAddsOwnerScopeAndFilters(t *testing.T) {
 	query, args, err := buildListWalletsQuery(WalletFilter{
 		TenantID:  tenant.ID("tenant-1"),
+		DisplayID: 70001,
 		OwnerType: OwnerTypeUser,
 		OwnerID:   OwnerID("user-1"),
 		Status:    StatusActive,
@@ -21,16 +22,17 @@ func TestBuildListWalletsQueryAddsOwnerScopeAndFilters(t *testing.T) {
 	}
 	for _, clause := range []string{
 		"wallet.tenant_id = $1",
-		"wallet.owner_type = $2",
-		"wallet.owner_id = $3",
-		"wallet.status = $4",
-		"LIMIT $5",
+		"wallet.display_id = $2",
+		"wallet.owner_type = $3",
+		"wallet.owner_id = $4",
+		"wallet.status = $5",
+		"LIMIT $6",
 	} {
 		if !strings.Contains(query, clause) {
 			t.Fatalf("expected %q in query: %s", clause, query)
 		}
 	}
-	if len(args) != 5 || args[4] != 25 {
+	if len(args) != 6 || args[5] != 25 {
 		t.Fatalf("unexpected args: %#v", args)
 	}
 }
@@ -57,12 +59,15 @@ func TestBuildGetWalletQueryAddsOwnerScope(t *testing.T) {
 
 func TestBuildListLedgerEntriesQueryAddsWalletScopeAndFilters(t *testing.T) {
 	query, args, err := buildListLedgerEntriesQuery(LedgerEntryFilter{
-		TenantID:  tenant.ID("tenant-1"),
-		WalletID:  WalletID("wallet-1"),
-		Direction: DirectionCredit,
-		EntryType: EntryTypeTopup,
-		Status:    LedgerStatusPosted,
-		Limit:     25,
+		TenantID:       tenant.ID("tenant-1"),
+		WalletID:       WalletID("wallet-1"),
+		DisplayID:      71001,
+		Direction:      DirectionCredit,
+		EntryType:      EntryTypeTopup,
+		Status:         LedgerStatusPosted,
+		AmountMinMinor: int64Ptr(100),
+		AmountMaxMinor: int64Ptr(900),
+		Limit:          25,
 	})
 	if err != nil {
 		t.Fatalf("expected query: %v", err)
@@ -70,16 +75,19 @@ func TestBuildListLedgerEntriesQueryAddsWalletScopeAndFilters(t *testing.T) {
 	for _, clause := range []string{
 		"entry.tenant_id = $1",
 		"entry.wallet_id = $2",
-		"entry.direction = $3",
-		"entry.entry_type = $4",
-		"entry.status = $5",
-		"LIMIT $6",
+		"entry.display_id = $3",
+		"entry.direction = $4",
+		"entry.entry_type = $5",
+		"entry.status = $6",
+		"entry.amount_minor >= $7",
+		"entry.amount_minor <= $8",
+		"LIMIT $9",
 	} {
 		if !strings.Contains(query, clause) {
 			t.Fatalf("expected %q in query: %s", clause, query)
 		}
 	}
-	if len(args) != 6 || args[5] != 25 {
+	if len(args) != 9 || args[8] != 25 {
 		t.Fatalf("unexpected args: %#v", args)
 	}
 }
@@ -128,4 +136,8 @@ func TestBuildGetLedgerEntryQueryRequiresWalletScope(t *testing.T) {
 	if len(args) != 3 {
 		t.Fatalf("unexpected args: %#v", args)
 	}
+}
+
+func int64Ptr(value int64) *int64 {
+	return &value
 }

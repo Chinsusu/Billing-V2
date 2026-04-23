@@ -56,6 +56,10 @@ func buildListWalletsQuery(filter WalletFilter) (string, []interface{}, error) {
 FROM wallets wallet
 WHERE wallet.tenant_id = $1`
 	args := []interface{}{filter.TenantID}
+	if filter.DisplayID > 0 {
+		args = append(args, filter.DisplayID)
+		query += fmt.Sprintf("\n  AND wallet.display_id = $%d", len(args))
+	}
 	if filter.OwnerType != "" {
 		args = append(args, filter.OwnerType)
 		query += fmt.Sprintf("\n  AND wallet.owner_type = $%d", len(args))
@@ -141,6 +145,10 @@ FROM wallet_ledger_entries entry
 WHERE entry.tenant_id = $1
   AND entry.wallet_id = $2`
 	args := []interface{}{filter.TenantID, filter.WalletID}
+	if filter.DisplayID > 0 {
+		args = append(args, filter.DisplayID)
+		query += fmt.Sprintf("\n  AND entry.display_id = $%d", len(args))
+	}
 	if filter.Direction != "" {
 		args = append(args, filter.Direction)
 		query += fmt.Sprintf("\n  AND entry.direction = $%d", len(args))
@@ -152,6 +160,14 @@ WHERE entry.tenant_id = $1
 	if filter.Status != "" {
 		args = append(args, filter.Status)
 		query += fmt.Sprintf("\n  AND entry.status = $%d", len(args))
+	}
+	if filter.AmountMinMinor != nil {
+		args = append(args, *filter.AmountMinMinor)
+		query += fmt.Sprintf("\n  AND entry.amount_minor >= $%d", len(args))
+	}
+	if filter.AmountMaxMinor != nil {
+		args = append(args, *filter.AmountMaxMinor)
+		query += fmt.Sprintf("\n  AND entry.amount_minor <= $%d", len(args))
 	}
 	args = append(args, filter.Limit)
 	query += fmt.Sprintf("\nORDER BY entry.created_at DESC\nLIMIT $%d", len(args))
@@ -217,6 +233,10 @@ func buildListTopupRequestsQuery(filter TopupRequestFilter) (string, []interface
 FROM topup_requests topup
 WHERE topup.tenant_id = $1`
 	args := []interface{}{filter.TenantID}
+	if filter.DisplayID > 0 {
+		args = append(args, filter.DisplayID)
+		query += fmt.Sprintf("\n  AND topup.display_id = $%d", len(args))
+	}
 	if filter.WalletID != "" {
 		args = append(args, filter.WalletID)
 		query += fmt.Sprintf("\n  AND topup.wallet_id = $%d", len(args))
@@ -232,6 +252,14 @@ WHERE topup.tenant_id = $1`
 	if filter.Status != "" {
 		args = append(args, filter.Status)
 		query += fmt.Sprintf("\n  AND topup.status = $%d", len(args))
+	}
+	if filter.AmountMinMinor != nil {
+		args = append(args, *filter.AmountMinMinor)
+		query += fmt.Sprintf("\n  AND topup.amount_minor >= $%d", len(args))
+	}
+	if filter.AmountMaxMinor != nil {
+		args = append(args, *filter.AmountMaxMinor)
+		query += fmt.Sprintf("\n  AND topup.amount_minor <= $%d", len(args))
 	}
 	args = append(args, filter.Limit)
 	query += fmt.Sprintf("\nORDER BY topup.created_at DESC\nLIMIT $%d", len(args))
