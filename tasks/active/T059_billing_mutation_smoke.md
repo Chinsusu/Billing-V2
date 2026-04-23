@@ -3,7 +3,7 @@
 Status: DONE
 Owner: Codex
 Branch: feat/billing-mutation-smoke
-PR: -
+PR: #134
 Risk: test/API/audit
 Created: 2026-04-23
 Updated: 2026-04-23
