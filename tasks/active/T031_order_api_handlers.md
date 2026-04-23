@@ -1,9 +1,9 @@
 # T031 - Order API handlers
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: feat/order-api-handlers
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/72
 Risk: API/order
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -36,3 +36,4 @@ Add the first order HTTP API handler and runtime wiring for client order creatio
 ## Agent Log
 
 - 2026-04-23: Task created and claimed from latest `origin/main` in `/tmp/Billing-T031`.
+- 2026-04-23: Opened PR #72. Validation passed: `go test ./internal/modules/order ./internal/app ./cmd/api`, `make fmt`, `make test`, `make build`, `make migrate-validate`.
