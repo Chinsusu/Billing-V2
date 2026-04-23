@@ -17,6 +17,8 @@ import (
 type HTTPService interface {
 	ListTransactions(ctx context.Context, filter TransactionFilter) ([]Transaction, error)
 	GetTransaction(ctx context.Context, lookup TransactionLookup) (Transaction, error)
+	ListPaymentReconciliations(ctx context.Context, filter ReconciliationFilter) ([]PaymentReconciliation, error)
+	GetPaymentReconciliation(ctx context.Context, lookup ReconciliationLookup) (PaymentReconciliation, error)
 }
 
 type RouteMiddleware func(http.HandlerFunc) http.HandlerFunc
@@ -45,6 +47,8 @@ func NewHTTPHandlerWithOptions(service HTTPService, options HTTPHandlerOptions) 
 }
 
 func (handler *HTTPHandler) RegisterRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("/admin/payment-reconciliation", handler.adminReconciliationsRoute)
+	mux.HandleFunc("/admin/payment-reconciliation/", handler.adminReconciliationRoute)
 	mux.HandleFunc("/admin/transactions", handler.adminTransactionsRoute)
 	mux.HandleFunc("/admin/transactions/", handler.adminTransactionRoute)
 	mux.HandleFunc("/client/transactions", handler.clientTransactionsRoute)
@@ -359,6 +363,10 @@ func paymentValidationField(err error) (httpserver.ValidationField, bool) {
 		return validationField("amount_minor", "payment.amount_invalid", "Amount must be greater than zero."), true
 	case errors.Is(err, ErrIdempotencyKeyMissing):
 		return validationField("idempotency_key", "payment.idempotency_key_missing", "Idempotency key is required."), true
+	case errors.Is(err, ErrCreatedTimeInvalid):
+		return validationField("created_at", "payment.created_time_invalid", "Created time is invalid."), true
+	case errors.Is(err, ErrCreatedTimeWindowInvalid):
+		return validationField("created_at", "payment.created_time_window_invalid", "Created time window is invalid."), true
 	default:
 		return httpserver.ValidationField{}, false
 	}

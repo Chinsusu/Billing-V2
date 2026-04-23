@@ -1,7 +1,7 @@
 # T050 - Payment reconciliation read API
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: feat/payment-reconciliation-read-api
 PR: -
 Risk: payment/API/admin
@@ -35,3 +35,4 @@ Add read APIs that let admins inspect payment transactions, wallet ledger links,
 ## Agent Log
 
 - 2026-04-23: Task created for operations visibility.
+- 2026-04-23: Added admin payment reconciliation read API with filters and runtime coverage.

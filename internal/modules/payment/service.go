@@ -56,6 +56,35 @@ func (service *Service) GetTransaction(ctx context.Context, lookup TransactionLo
 	return service.store.GetTransaction(ctx, lookup)
 }
 
+func (service *Service) ListPaymentReconciliations(ctx context.Context, filter ReconciliationFilter) ([]PaymentReconciliation, error) {
+	if err := service.ready(); err != nil {
+		return nil, err
+	}
+	reconciliationStore, err := service.reconciliationStore()
+	if err != nil {
+		return nil, err
+	}
+	filter = normalizeReconciliationFilter(filter)
+	if err := validateReconciliationFilter(filter); err != nil {
+		return nil, err
+	}
+	return reconciliationStore.ListPaymentReconciliations(ctx, filter)
+}
+
+func (service *Service) GetPaymentReconciliation(ctx context.Context, lookup ReconciliationLookup) (PaymentReconciliation, error) {
+	if err := service.ready(); err != nil {
+		return PaymentReconciliation{}, err
+	}
+	reconciliationStore, err := service.reconciliationStore()
+	if err != nil {
+		return PaymentReconciliation{}, err
+	}
+	if err := validateReconciliationLookup(lookup); err != nil {
+		return PaymentReconciliation{}, err
+	}
+	return reconciliationStore.GetPaymentReconciliation(ctx, lookup)
+}
+
 func (service *Service) PayInvoiceFromWallet(ctx context.Context, input PayInvoiceFromWalletInput) (WalletInvoicePayment, error) {
 	if err := service.ready(); err != nil {
 		return WalletInvoicePayment{}, err
@@ -71,6 +100,14 @@ func (service *Service) PayInvoiceFromWallet(ctx context.Context, input PayInvoi
 		return WalletInvoicePayment{}, ErrBillingDependencyMissing
 	}
 	return payInvoiceFromWallet(ctx, service.store, service.invoiceStore, service.walletService, input)
+}
+
+func (service *Service) reconciliationStore() (ReconciliationStore, error) {
+	reconciliationStore, ok := service.store.(ReconciliationStore)
+	if !ok {
+		return nil, ErrBillingDependencyMissing
+	}
+	return reconciliationStore, nil
 }
 
 func (service *Service) ready() error {

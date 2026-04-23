@@ -301,6 +301,25 @@ func TestNewRuntimeWithDSNProtectsAdminPaymentRoutes(t *testing.T) {
 	}
 }
 
+func TestNewRuntimeWithDSNProtectsAdminPaymentReconciliationRoutes(t *testing.T) {
+	runtime, err := newRuntime(context.Background(), testRuntimeConfig("postgres://billing@localhost/billing"), testRuntimeLogger(), func(ctx context.Context, cfg platformdb.Config) (*sql.DB, error) {
+		return newStubDB(), nil
+	})
+	if err != nil {
+		t.Fatalf("newRuntime returned error: %v", err)
+	}
+	defer closeRuntime(t, runtime)
+
+	response := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodGet, "/admin/payment-reconciliation", nil)
+	request.Header.Set("X-Tenant-Id", "tenant_1")
+	runtime.api.Handler().ServeHTTP(response, request)
+
+	if response.Code != http.StatusUnauthorized {
+		t.Fatalf("expected missing actor to be rejected, got %d: %s", response.Code, response.Body.String())
+	}
+}
+
 func TestNewRuntimeWithDSNProtectsClientWalletRoutes(t *testing.T) {
 	runtime, err := newRuntime(context.Background(), testRuntimeConfig("postgres://billing@localhost/billing"), testRuntimeLogger(), func(ctx context.Context, cfg platformdb.Config) (*sql.DB, error) {
 		return newStubDB(), nil
@@ -376,6 +395,12 @@ func TestNewPaymentRoutesReturnsRegistrar(t *testing.T) {
 	mux.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/client/transactions", nil))
 	if response.Code != http.StatusBadRequest {
 		t.Fatalf("expected payment route to be registered, got %d", response.Code)
+	}
+
+	reconciliationResponse := httptest.NewRecorder()
+	mux.ServeHTTP(reconciliationResponse, httptest.NewRequest(http.MethodGet, "/admin/payment-reconciliation", nil))
+	if reconciliationResponse.Code != http.StatusBadRequest {
+		t.Fatalf("expected payment reconciliation route to be registered, got %d", reconciliationResponse.Code)
 	}
 }
 
