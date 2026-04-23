@@ -29,6 +29,7 @@ var (
 	ErrReservationExpiryMissing   = errors.New("reservation expiry missing")
 	ErrTermWindowInvalid          = errors.New("service term window invalid")
 	ErrStatusTransitionInvalid    = errors.New("status transition invalid")
+	ErrOrderStatusConflict        = errors.New("order status conflict")
 	ErrExternalResourceIDMissing  = errors.New("external resource id missing")
 	ErrProviderOperationIDMissing = errors.New("provider operation id missing")
 	ErrStoreExecutorMissing       = errors.New("order store executor missing")

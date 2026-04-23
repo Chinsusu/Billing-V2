@@ -1,9 +1,9 @@
 # T034 - Order status transition API
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: feat/order-status-transition-api
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/79
 Risk: API/order/status
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -37,3 +37,5 @@ Add a tenant-scoped admin API to move an order from one status to another throug
 ## Agent Log
 
 - 2026-04-23: Task created for the next backend batch.
+- 2026-04-23: Claimed by Codex from latest `origin/main` in `/tmp/Billing-T034`.
+- 2026-04-23: Opened PR #79. Validation passed: `go test ./internal/modules/order ./cmd/api ./internal/seed ./internal/modules/rbac`, `make fmt`, `make test`, `make build`, `make migrate-validate`.

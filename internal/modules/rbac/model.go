@@ -25,6 +25,7 @@ const (
 	PermissionWalletAdjustment      Permission = "wallet.adjustment.create"
 	PermissionOrderView             Permission = "order.view"
 	PermissionOrderCreate           Permission = "order.create"
+	PermissionOrderManage           Permission = "order.manage"
 	PermissionServiceView           Permission = "service.view"
 	PermissionServiceReveal         Permission = "service.credential.reveal"
 	PermissionProvisioningJobRetry  Permission = "provisioning.job.retry"

@@ -264,6 +264,98 @@ func TestHTTPHandlerGetAdminOrderUsesTenantScopeOnly(t *testing.T) {
 	}
 }
 
+func TestHTTPHandlerTransitionAdminOrderStatusUsesTenantAndPath(t *testing.T) {
+	service := &fakeOrderHTTPService{
+		order: Order{
+			ID:            "order_1",
+			DisplayID:     30006,
+			TenantID:      "tenant_1",
+			BuyerUserID:   "buyer_2",
+			TenantPlanID:  "tenant_plan_1",
+			OrderStatus:   OrderStatusPaid,
+			BillingStatus: BillingStatusPaid,
+		},
+	}
+	handler := registerOrderTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodPatch, "/admin/orders/order_1/status", strings.NewReader(`{
+		"from_status": "pending_payment",
+		"to_status": "paid",
+		"billing_status": "paid"
+	}`))
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.transitionOrderStatusCalls != 1 {
+		t.Fatalf("expected status transition once, got %d", service.transitionOrderStatusCalls)
+	}
+	if service.transitionOrderStatusInput.ID != OrderID("order_1") ||
+		service.transitionOrderStatusInput.TenantID != tenant.ID("tenant_1") ||
+		service.transitionOrderStatusInput.FromStatus != OrderStatusPendingPayment ||
+		service.transitionOrderStatusInput.ToStatus != OrderStatusPaid ||
+		service.transitionOrderStatusInput.BillingStatus != BillingStatusPaid {
+		t.Fatalf("unexpected transition input: %+v", service.transitionOrderStatusInput)
+	}
+	if !strings.Contains(response.Body.String(), `"display_id":30006`) {
+		t.Fatalf("expected order response, got %s", response.Body.String())
+	}
+}
+
+func TestHTTPHandlerTransitionAdminOrderStatusRejectsBadChange(t *testing.T) {
+	service := &fakeOrderHTTPService{}
+	handler := registerOrderTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodPatch, "/admin/orders/order_1/status", strings.NewReader(`{
+		"from_status": "pending_payment",
+		"to_status": "refunded",
+		"billing_status": "refunded"
+	}`))
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("expected status 400, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.transitionOrderStatusCalls != 0 {
+		t.Fatalf("expected no transition call, got %d", service.transitionOrderStatusCalls)
+	}
+	if !strings.Contains(response.Body.String(), "order.status_transition_invalid") {
+		t.Fatalf("expected transition validation error, got %s", response.Body.String())
+	}
+}
+
+func TestHTTPHandlerTransitionAdminOrderStatusConflict(t *testing.T) {
+	service := &fakeOrderHTTPService{transitionOrderStatusError: ErrOrderStatusConflict}
+	handler := registerOrderTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodPatch, "/admin/orders/order_1/status", strings.NewReader(`{
+		"from_status": "pending_payment",
+		"to_status": "paid",
+		"billing_status": "paid"
+	}`))
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusConflict {
+		t.Fatalf("expected status 409, got %d: %s", response.Code, response.Body.String())
+	}
+	if !strings.Contains(response.Body.String(), "order.status_conflict") {
+		t.Fatalf("expected conflict response, got %s", response.Body.String())
+	}
+}
+
 func TestHTTPHandlerListClientOrdersRejectsBadStatus(t *testing.T) {
 	service := &fakeOrderHTTPService{}
 	handler := registerOrderTestHandler(service)
@@ -290,14 +382,17 @@ func registerOrderTestHandler(service HTTPService) http.Handler {
 }
 
 type fakeOrderHTTPService struct {
-	createOrderCalls int
-	createOrderInput CreateOrderInput
-	listOrderCalls   int
-	orderFilter      OrderFilter
-	getOrderCalls    int
-	orderLookup      OrderLookup
-	order            Order
-	orders           []Order
+	createOrderCalls           int
+	createOrderInput           CreateOrderInput
+	listOrderCalls             int
+	orderFilter                OrderFilter
+	getOrderCalls              int
+	orderLookup                OrderLookup
+	transitionOrderStatusCalls int
+	transitionOrderStatusInput TransitionOrderStatusInput
+	transitionOrderStatusError error
+	order                      Order
+	orders                     []Order
 }
 
 func (service *fakeOrderHTTPService) CreateOrder(ctx context.Context, input CreateOrderInput) (Order, error) {
@@ -335,4 +430,25 @@ func (service *fakeOrderHTTPService) GetOrder(ctx context.Context, lookup OrderL
 	service.getOrderCalls++
 	service.orderLookup = lookup
 	return service.order, nil
+}
+
+func (service *fakeOrderHTTPService) TransitionOrderStatus(ctx context.Context, input TransitionOrderStatusInput) (Order, error) {
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return Order{}, err
+	}
+	service.transitionOrderStatusCalls++
+	service.transitionOrderStatusInput = input
+	if service.transitionOrderStatusError != nil {
+		return Order{}, service.transitionOrderStatusError
+	}
+	if service.order.ID != "" {
+		return service.order, nil
+	}
+	return Order{
+		ID:            input.ID,
+		TenantID:      input.TenantID,
+		OrderStatus:   input.ToStatus,
+		BillingStatus: input.BillingStatus,
+	}, nil
 }

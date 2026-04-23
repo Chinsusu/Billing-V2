@@ -53,6 +53,7 @@ VALUES
     ('wallet.adjustment.create', 'wallet', 'critical'),
     ('order.view', 'order', 'low'),
     ('order.create', 'order', 'medium'),
+    ('order.manage', 'order', 'high'),
     ('service.view', 'service', 'low'),
     ('service.credential.reveal', 'service', 'critical'),
     ('provisioning.job.retry', 'provisioning', 'high'),

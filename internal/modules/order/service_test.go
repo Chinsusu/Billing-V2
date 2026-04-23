@@ -19,6 +19,7 @@ type fakeOrderStore struct {
 	createServiceInstanceInput CreateServiceInstanceInput
 	listOrdersFilter           OrderFilter
 	getOrderLookup             OrderLookup
+	transitionOrderStatusInput TransitionOrderStatusInput
 }
 
 func (store *fakeOrderStore) CreateOrder(_ context.Context, input CreateOrderInput) (Order, error) {
@@ -49,6 +50,11 @@ func (store *fakeOrderStore) ListOrders(_ context.Context, filter OrderFilter) (
 func (store *fakeOrderStore) GetOrder(_ context.Context, lookup OrderLookup) (Order, error) {
 	store.getOrderLookup = lookup
 	return Order{ID: lookup.ID, TenantID: lookup.TenantID, BuyerUserID: lookup.BuyerUserID}, nil
+}
+
+func (store *fakeOrderStore) TransitionOrderStatus(_ context.Context, input TransitionOrderStatusInput) (Order, error) {
+	store.transitionOrderStatusInput = input
+	return Order{ID: input.ID, TenantID: input.TenantID, OrderStatus: input.ToStatus, BillingStatus: input.BillingStatus}, nil
 }
 
 func TestServiceRejectsMissingStore(t *testing.T) {
@@ -152,5 +158,47 @@ func TestServiceGetOrderRequiresOrderID(t *testing.T) {
 	}
 	if store.getOrderLookup.TenantID != "" {
 		t.Fatalf("store should not be called, got %+v", store.getOrderLookup)
+	}
+}
+
+func TestServiceTransitionOrderStatusDelegatesAllowedChange(t *testing.T) {
+	store := &fakeOrderStore{}
+	service := NewService(store)
+
+	order, err := service.TransitionOrderStatus(context.Background(), TransitionOrderStatusInput{
+		ID:            " order-1 ",
+		TenantID:      tenant.ID(" tenant-1 "),
+		FromStatus:    OrderStatusPendingPayment,
+		ToStatus:      OrderStatusPaid,
+		BillingStatus: BillingStatusPaid,
+	})
+	if err != nil {
+		t.Fatalf("expected status transition: %v", err)
+	}
+	if order.OrderStatus != OrderStatusPaid || order.BillingStatus != BillingStatusPaid {
+		t.Fatalf("unexpected order result: %+v", order)
+	}
+	if store.transitionOrderStatusInput.ID != OrderID("order-1") ||
+		store.transitionOrderStatusInput.TenantID != tenant.ID("tenant-1") {
+		t.Fatalf("expected normalized transition input, got %+v", store.transitionOrderStatusInput)
+	}
+}
+
+func TestServiceTransitionOrderStatusRejectsBadChangeBeforeStore(t *testing.T) {
+	store := &fakeOrderStore{}
+	service := NewService(store)
+
+	_, err := service.TransitionOrderStatus(context.Background(), TransitionOrderStatusInput{
+		ID:            "order-1",
+		TenantID:      tenant.ID("tenant-1"),
+		FromStatus:    OrderStatusPendingPayment,
+		ToStatus:      OrderStatusRefunded,
+		BillingStatus: BillingStatusRefunded,
+	})
+	if !errors.Is(err, ErrStatusTransitionInvalid) {
+		t.Fatalf("expected transition error, got %v", err)
+	}
+	if store.transitionOrderStatusInput.ID != "" {
+		t.Fatalf("store should not be called, got %+v", store.transitionOrderStatusInput)
 	}
 }
