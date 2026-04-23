@@ -30,4 +30,5 @@ type InvoiceDetail struct {
 type Store interface {
 	ListInvoices(ctx context.Context, filter InvoiceFilter) ([]Invoice, error)
 	GetInvoice(ctx context.Context, lookup InvoiceLookup) (InvoiceDetail, error)
+	CreateInvoiceFromOrder(ctx context.Context, input CreateInvoiceFromOrderInput) (InvoiceDetail, error)
 }

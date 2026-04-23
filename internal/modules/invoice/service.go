@@ -3,11 +3,16 @@ package invoice
 import "context"
 
 type Service struct {
-	store Store
+	store       Store
+	orderReader OrderReader
 }
 
 func NewService(store Store) *Service {
 	return &Service{store: store}
+}
+
+func NewServiceWithOrderReader(store Store, orderReader OrderReader) *Service {
+	return &Service{store: store, orderReader: orderReader}
 }
 
 func (service *Service) ListInvoices(ctx context.Context, filter InvoiceFilter) ([]Invoice, error) {
