@@ -81,6 +81,23 @@ DONE         PR merged into main
 | T038 | [tasks/active/T038_service_instance_store_api.md](tasks/active/T038_service_instance_store_api.md) | feat/service-instance-store-api | service/API/DB | Add service instance store and read APIs for client/admin portals. |
 | T039 | [tasks/active/T039_invoice_domain_schema.md](tasks/active/T039_invoice_domain_schema.md) | feat/invoice-domain-schema | invoice/migration | Add invoice and invoice item domain models with PostgreSQL schema. |
 | T040 | [tasks/active/T040_payment_transaction_api.md](tasks/active/T040_payment_transaction_api.md) | feat/payment-transaction-api | payment/API/DB | Add payment transaction records and read APIs for account history. |
+| T041 | [tasks/active/T041_wallet_domain_schema.md](tasks/active/T041_wallet_domain_schema.md) | feat/wallet-domain-schema | wallet/migration | Add wallet domain models and PostgreSQL schema for tenant-scoped balances. |
+| T042 | [tasks/active/T042_wallet_ledger_store.md](tasks/active/T042_wallet_ledger_store.md) | feat/wallet-ledger-store | wallet/ledger/DB | Add immutable wallet ledger models, schema, and store methods. |
+| T043 | [tasks/active/T043_wallet_read_api.md](tasks/active/T043_wallet_read_api.md) | feat/wallet-read-api | wallet/API/auth | Add tenant-scoped wallet and ledger read APIs for client and admin portals. |
+| T044 | [tasks/active/T044_topup_request_schema_api.md](tasks/active/T044_topup_request_schema_api.md) | feat/topup-request-schema-api | wallet/topup/API | Add top-up request records and basic create/read APIs. |
+| T045 | [tasks/active/T045_invoice_read_api.md](tasks/active/T045_invoice_read_api.md) | feat/invoice-read-api | invoice/API/auth | Add invoice and invoice item read APIs for customers and admins. |
+| T046 | [tasks/active/T046_invoice_generation_service.md](tasks/active/T046_invoice_generation_service.md) | feat/invoice-generation-service | invoice/order/money | Add invoice generation from paid orders with idempotency. |
+| T047 | [tasks/active/T047_wallet_ledger_posting_service.md](tasks/active/T047_wallet_ledger_posting_service.md) | feat/wallet-ledger-posting-service | wallet/money/DB | Add atomic wallet ledger posting that updates balances and ledger rows together. |
+| T048 | [tasks/active/T048_topup_review_approval_api.md](tasks/active/T048_topup_review_approval_api.md) | feat/topup-review-approval-api | wallet/topup/money/API | Add admin approve/reject actions for wallet top-up requests. |
+| T049 | [tasks/active/T049_invoice_wallet_payment_service.md](tasks/active/T049_invoice_wallet_payment_service.md) | feat/invoice-wallet-payment-service | invoice/wallet/payment/money | Add wallet payment service for invoices with ledger and payment records. |
+| T050 | [tasks/active/T050_payment_reconciliation_read_api.md](tasks/active/T050_payment_reconciliation_read_api.md) | feat/payment-reconciliation-read-api | payment/API/admin | Add admin reconciliation read APIs for transactions, ledger links, and invoices. |
+| T051 | [tasks/active/T051_audit_read_api.md](tasks/active/T051_audit_read_api.md) | feat/audit-read-api | audit/API/admin | Add tenant-scoped audit log read endpoints for admin troubleshooting. |
+| T052 | [tasks/active/T052_dev_seed_billing_flow.md](tasks/active/T052_dev_seed_billing_flow.md) | feat/dev-seed-billing-flow | seed/dev | Add a realistic billing seed flow across catalog, order, wallet, invoice, and payment records. |
+| T053 | [tasks/active/T053_dev_db_smoke.md](tasks/active/T053_dev_db_smoke.md) | test/dev-db-smoke | DB/seed/dev | Add a repeatable dev DB smoke command for migrations, seed data, and billing record checks. |
+| T054 | [tasks/active/T054_billing_api_integration_smoke.md](tasks/active/T054_billing_api_integration_smoke.md) | test/billing-api-integration-smoke | API/billing | Add HTTP smoke coverage for seeded wallet, order, invoice, payment, reconciliation, and audit reads. |
+| T055 | [tasks/active/T055_frontend_api_integration.md](tasks/active/T055_frontend_api_integration.md) | feat/frontend-api-integration | frontend/API | Connect frontend billing/admin screens to real backend API clients with loading and error states. |
+| T056 | [tasks/active/T056_admin_search_filters.md](tasks/active/T056_admin_search_filters.md) | feat/admin-search-filters | API/search/admin | Add display ID, customer, and amount filters for operational admin lists. |
+| T057 | [tasks/active/T057_audit_mutation_events.md](tasks/active/T057_audit_mutation_events.md) | feat/audit-mutation-events | audit/mutation | Write audit events for important top-up, invoice payment, and order status mutations. |
 
 ## Completed Tasks
 
