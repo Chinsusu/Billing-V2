@@ -237,6 +237,35 @@ go run ./cmd/smoke -dsn "$DB_DSN" dev-db
 
 Chỉ chạy lệnh này trên database local hoặc sandbox được phép. Không dùng production DSN.
 
+## Smoke test API billing
+
+Sau khi `make smoke-dev-db` pass và API đang chạy với cùng `DB_DSN`, kiểm tra các endpoint billing đọc dữ liệu seed:
+
+```bash
+make smoke-dev-api
+```
+
+Lệnh này tương đương:
+
+```bash
+go run ./cmd/smoke dev-api
+```
+
+Mặc định smoke gọi `http://localhost:8080`. Nếu API chạy ở địa chỉ khác:
+
+```bash
+go run ./cmd/smoke -base-url "http://localhost:8081" dev-api
+```
+
+Smoke API dùng actor local:
+
+```text
+reseller@local.billing   Admin/read checks
+customer@local.billing   Client/read checks
+```
+
+Các check bao gồm health, readiness, wallet, ledger, order, service, invoice, payment transaction, payment reconciliation, top-up request và audit list. Lệnh chỉ dùng header local/dev, không dùng token hoặc credential thật.
+
 ## Quality gate trước PR
 
 Chạy format:

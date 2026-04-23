@@ -62,7 +62,8 @@ VALUES
     ('00000000-0000-0000-0000-000000000201', NULL, 'platform_admin', 'Platform Admin', TRUE),
     ('00000000-0000-0000-0000-000000000202', NULL, 'catalog_manager', 'Catalog Manager', TRUE),
     ('00000000-0000-0000-0000-000000000203', NULL, 'reseller_catalog_manager', 'Reseller Catalog Manager', TRUE),
-    ('00000000-0000-0000-0000-000000000204', NULL, 'customer_catalog_viewer', 'Customer Catalog Viewer', TRUE)
+    ('00000000-0000-0000-0000-000000000204', NULL, 'customer_catalog_viewer', 'Customer Catalog Viewer', TRUE),
+    ('00000000-0000-0000-0000-000000000205', NULL, 'reseller_admin', 'Reseller Admin', TRUE)
 ON CONFLICT (role_key) WHERE tenant_id IS NULL DO UPDATE
 SET name = EXCLUDED.name,
     is_system = EXCLUDED.is_system;
@@ -96,7 +97,25 @@ ON CONFLICT (role_id, permission_id) DO NOTHING;
 INSERT INTO role_permissions (role_id, permission_id)
 SELECT role.role_id, permission.permission_id
 FROM roles role
-JOIN permissions permission ON permission.permission_key IN ('catalog.view', 'order.create', 'wallet.view')
+JOIN permissions permission ON permission.permission_key IN (
+    'catalog.view',
+    'catalog.manage',
+    'provider.view',
+    'wallet.view',
+    'wallet.topup.approve',
+    'order.view',
+    'order.manage',
+    'service.view',
+    'audit.view'
+)
+WHERE role.role_key = 'reseller_admin'
+  AND role.is_system = TRUE
+ON CONFLICT (role_id, permission_id) DO NOTHING;
+
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT role.role_id, permission.permission_id
+FROM roles role
+JOIN permissions permission ON permission.permission_key IN ('catalog.view', 'order.create', 'service.view', 'wallet.view')
 WHERE role.role_key = 'customer_catalog_viewer'
   AND role.is_system = TRUE
 ON CONFLICT (role_id, permission_id) DO NOTHING;
@@ -116,7 +135,7 @@ INSERT INTO user_roles (user_id, tenant_id, role_id)
 SELECT reseller_user.user_id, reseller_user.tenant_id, role.role_id
 FROM users reseller_user
 JOIN tenants reseller ON reseller.tenant_id = reseller_user.tenant_id
-JOIN roles role ON role.role_key = 'reseller_catalog_manager' AND role.is_system = TRUE
+JOIN roles role ON role.role_key IN ('reseller_catalog_manager', 'reseller_admin') AND role.is_system = TRUE
 WHERE reseller.slug = 'demo-reseller'
   AND reseller_user.email = 'reseller@local.billing'
 ON CONFLICT (user_id, tenant_id, role_id) DO NOTHING;

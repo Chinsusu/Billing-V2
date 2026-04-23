@@ -1,7 +1,7 @@
 # T054 - Billing API integration smoke
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: test/billing-api-integration-smoke
 PR: -
 Risk: API/billing
@@ -34,3 +34,4 @@ Add a repeatable HTTP smoke path that exercises seeded billing read APIs through
 ## Agent Log
 
 - 2026-04-23: Task created for API-level validation after DB smoke.
+- 2026-04-23: Claimed by Codex; adding `smoke dev-api` coverage for seeded client/admin billing reads.

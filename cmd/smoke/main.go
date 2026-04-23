@@ -43,6 +43,7 @@ func run(args []string) error {
 	flags := flag.NewFlagSet("smoke", flag.ContinueOnError)
 	dir := flags.String("dir", "migrations", "migration directory")
 	dsn := flags.String("dsn", os.Getenv("DB_DSN"), "PostgreSQL DSN")
+	baseURL := flags.String("base-url", envOrDefault("API_BASE_URL", "http://localhost:8080"), "API base URL")
 	timeout := flags.Duration("timeout", 60*time.Second, "smoke command timeout")
 	if err := flags.Parse(args); err != nil {
 		return err
@@ -56,9 +57,19 @@ func run(args []string) error {
 	switch command {
 	case "dev-db":
 		return runDevDBSmoke(*dsn, *dir, *timeout)
+	case "dev-api":
+		return runDevAPISmoke(*baseURL, *timeout)
 	default:
-		return fmt.Errorf("unknown command %q; use dev-db", command)
+		return fmt.Errorf("unknown command %q; use dev-db or dev-api", command)
 	}
+}
+
+func envOrDefault(key string, fallback string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		return fallback
+	}
+	return value
 }
 
 func runDevDBSmoke(dsn string, migrationDir string, timeout time.Duration) error {
