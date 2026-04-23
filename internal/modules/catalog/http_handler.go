@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	TenantHeader = "X-Tenant-Id"
+	TenantHeader = tenant.HeaderTenantID
 	ActorHeader  = "X-Actor-Id"
 
 	maxJSONBodyBytes = 1 << 20
@@ -39,16 +39,21 @@ func NewHTTPHandler(service HTTPService) *HTTPHandler {
 	return &HTTPHandler{service: service}
 }
 
+func tenantContext(next http.HandlerFunc) http.HandlerFunc {
+	handler := tenant.HeaderContextMiddleware(http.HandlerFunc(next))
+	return handler.ServeHTTP
+}
+
 func (handler *HTTPHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/catalog/products", middleware.RequireMethod(http.MethodPost, handler.handleCreateProduct))
 	mux.HandleFunc("/admin/catalog/plans", middleware.RequireMethod(http.MethodPost, handler.handleCreatePlan))
 	mux.HandleFunc("/admin/catalog/provider-sources", middleware.RequireMethod(http.MethodPost, handler.handleCreateProviderSource))
 	mux.HandleFunc("/admin/catalog/plan-sources", middleware.RequireMethod(http.MethodPost, handler.handleCreatePlanSource))
 	mux.HandleFunc("/reseller/catalog/master-plans", middleware.RequireMethod(http.MethodGet, handler.handleListMasterPlans))
-	mux.HandleFunc("/reseller/catalog/products/clone", middleware.RequireMethod(http.MethodPost, handler.handleCloneTenantProduct))
-	mux.HandleFunc("/reseller/catalog/plans/clone", middleware.RequireMethod(http.MethodPost, handler.handleCloneTenantPlan))
-	mux.HandleFunc("/reseller/catalog", middleware.RequireMethod(http.MethodGet, handler.handleListTenantCatalog))
-	mux.HandleFunc("/client/catalog", middleware.RequireMethod(http.MethodGet, handler.handleListClientCatalog))
+	mux.HandleFunc("/reseller/catalog/products/clone", middleware.RequireMethod(http.MethodPost, tenantContext(handler.handleCloneTenantProduct)))
+	mux.HandleFunc("/reseller/catalog/plans/clone", middleware.RequireMethod(http.MethodPost, tenantContext(handler.handleCloneTenantPlan)))
+	mux.HandleFunc("/reseller/catalog", middleware.RequireMethod(http.MethodGet, tenantContext(handler.handleListTenantCatalog)))
+	mux.HandleFunc("/client/catalog", middleware.RequireMethod(http.MethodGet, tenantContext(handler.handleListClientCatalog)))
 }
 
 func (handler *HTTPHandler) handleCreateProduct(w http.ResponseWriter, r *http.Request) {
@@ -135,7 +140,7 @@ func (handler *HTTPHandler) handleCloneTenantProduct(w http.ResponseWriter, r *h
 	if !handler.ready(w, r) {
 		return
 	}
-	tenantID, ok := tenantIDFromHeader(w, r)
+	tenantID, ok := tenantIDFromContext(w, r)
 	if !ok {
 		return
 	}
@@ -155,7 +160,7 @@ func (handler *HTTPHandler) handleCloneTenantPlan(w http.ResponseWriter, r *http
 	if !handler.ready(w, r) {
 		return
 	}
-	tenantID, ok := tenantIDFromHeader(w, r)
+	tenantID, ok := tenantIDFromContext(w, r)
 	if !ok {
 		return
 	}
@@ -230,13 +235,13 @@ func actorIDFromHeader(r *http.Request) UserID {
 	return UserID(strings.TrimSpace(r.Header.Get(ActorHeader)))
 }
 
-func tenantIDFromHeader(w http.ResponseWriter, r *http.Request) (tenant.ID, bool) {
-	tenantID := tenant.ID(strings.TrimSpace(r.Header.Get(TenantHeader)))
-	if tenantID.Empty() {
-		writeCatalogError(w, r, tenant.ErrTenantIDMissing)
+func tenantIDFromContext(w http.ResponseWriter, r *http.Request) (tenant.ID, bool) {
+	tenantContext, err := tenant.RequireContext(r.Context())
+	if err != nil {
+		writeCatalogError(w, r, err)
 		return "", false
 	}
-	return tenantID, true
+	return tenantContext.EffectiveTenantID, true
 }
 
 func masterPlanFilterFromRequest(w http.ResponseWriter, r *http.Request) (MasterPlanFilter, httpserver.CursorPageRequest, bool) {
@@ -266,7 +271,7 @@ func masterPlanFilterFromRequest(w http.ResponseWriter, r *http.Request) (Master
 }
 
 func tenantCatalogFilterFromRequest(w http.ResponseWriter, r *http.Request) (TenantCatalogFilter, httpserver.CursorPageRequest, bool) {
-	tenantID, ok := tenantIDFromHeader(w, r)
+	tenantID, ok := tenantIDFromContext(w, r)
 	if !ok {
 		return TenantCatalogFilter{}, httpserver.CursorPageRequest{}, false
 	}
