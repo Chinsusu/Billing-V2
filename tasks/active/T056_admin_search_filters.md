@@ -1,9 +1,9 @@
 # T056 - Admin search filters
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: feat/admin-search-filters
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/127
 Risk: API/search/admin
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -35,3 +35,4 @@ Add practical admin search filters for operational billing lists so support can 
 
 - 2026-04-23: Task created from operational admin needs.
 - 2026-04-23: Codex claimed task and started admin filter implementation from latest `origin/main`.
+- 2026-04-23: PR #127 opened. Validation: `go test ./internal/platform/httpserver ./internal/modules/order ./internal/modules/invoice ./internal/modules/payment ./internal/modules/wallet ./internal/modules/audit`, `make fmt`, `make test`, `make build`, `make migrate-validate`.
