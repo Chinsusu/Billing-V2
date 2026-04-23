@@ -1,6 +1,6 @@
 # T060 - Billing API docs
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: docs/billing-api-contracts
 PR: #135
@@ -34,4 +34,5 @@ Document the billing API routes and operational query parameters so agents and f
 - 2026-04-23: Task created to stabilize API contract knowledge.
 - 2026-04-23: Codex claimed the task and started a billing API operational reference based on live handler/filter code.
 - 2026-04-23: PR #135 opened with the new billing API operational reference and AGENTS link update.
-- 2026-04-23: Validation for the docs branch was `git diff --check`; CI is the remaining gate.
+- 2026-04-23: Validation for the docs branch was `git diff --check`; CI passed before merge.
+- 2026-04-23: PR #135 merged into `main` with commit `178239ba667cef6fbfb0e90d24978b7a0bf7cdfd`.
