@@ -6,6 +6,7 @@ import (
 )
 
 const ledgerEntryReadColumns = `entry.ledger_entry_id, entry.display_id, entry.wallet_id, entry.tenant_id, entry.direction, entry.amount_minor, entry.currency, entry.entry_type, entry.status, entry.balance_after_minor, entry.reference_type, entry.reference_id, entry.idempotency_key, entry.created_by, entry.reason, entry.correlation_id, entry.created_at`
+const topupRequestReadColumns = `topup.topup_request_id, topup.display_id, topup.tenant_id, topup.wallet_id, topup.requested_by, topup.amount_minor, topup.currency, topup.payment_method, topup.payment_reference, topup.status, topup.reviewed_by, topup.reviewed_at, topup.review_note, topup.ledger_entry_id, topup.idempotency_key, topup.created_at, topup.updated_at`
 const walletReadColumns = `wallet.wallet_id, wallet.display_id, wallet.tenant_id, wallet.owner_type, wallet.owner_id, wallet.currency, wallet.status, wallet.available_balance_minor, wallet.locked_balance_minor, wallet.metadata, wallet.created_at, wallet.updated_at`
 
 func (store *PostgresStore) ListWallets(ctx context.Context, filter WalletFilter) ([]Wallet, error) {
@@ -167,4 +168,88 @@ WHERE entry.ledger_entry_id = $1
   AND entry.tenant_id = $2
   AND entry.wallet_id = $3`
 	return query, []interface{}{lookup.ID, lookup.TenantID, lookup.WalletID}, nil
+}
+
+func (store *PostgresStore) ListTopupRequests(ctx context.Context, filter TopupRequestFilter) ([]TopupRequest, error) {
+	if err := store.ready(); err != nil {
+		return nil, err
+	}
+	query, args, err := buildListTopupRequestsQuery(filter)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := store.executor.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("list wallet top-up requests: %w", err)
+	}
+	defer rows.Close()
+	requests := make([]TopupRequest, 0)
+	for rows.Next() {
+		request, err := scanTopupRequest(rows)
+		if err != nil {
+			return nil, err
+		}
+		requests = append(requests, request)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("read wallet top-up requests: %w", err)
+	}
+	return requests, nil
+}
+
+func (store *PostgresStore) GetTopupRequest(ctx context.Context, lookup TopupRequestLookup) (TopupRequest, error) {
+	if err := store.ready(); err != nil {
+		return TopupRequest{}, err
+	}
+	query, args, err := buildGetTopupRequestQuery(lookup)
+	if err != nil {
+		return TopupRequest{}, err
+	}
+	return scanTopupRequest(store.executor.QueryRowContext(ctx, query, args...))
+}
+
+func buildListTopupRequestsQuery(filter TopupRequestFilter) (string, []interface{}, error) {
+	filter = normalizeTopupRequestFilter(filter)
+	if err := validateTopupRequestFilter(filter); err != nil {
+		return "", nil, err
+	}
+	query := `SELECT ` + topupRequestReadColumns + `
+FROM topup_requests topup
+WHERE topup.tenant_id = $1`
+	args := []interface{}{filter.TenantID}
+	if filter.WalletID != "" {
+		args = append(args, filter.WalletID)
+		query += fmt.Sprintf("\n  AND topup.wallet_id = $%d", len(args))
+	}
+	if filter.RequestedBy != "" {
+		args = append(args, filter.RequestedBy)
+		query += fmt.Sprintf("\n  AND topup.requested_by = $%d", len(args))
+	}
+	if filter.PaymentMethod != "" {
+		args = append(args, filter.PaymentMethod)
+		query += fmt.Sprintf("\n  AND topup.payment_method = $%d", len(args))
+	}
+	if filter.Status != "" {
+		args = append(args, filter.Status)
+		query += fmt.Sprintf("\n  AND topup.status = $%d", len(args))
+	}
+	args = append(args, filter.Limit)
+	query += fmt.Sprintf("\nORDER BY topup.created_at DESC\nLIMIT $%d", len(args))
+	return query, args, nil
+}
+
+func buildGetTopupRequestQuery(lookup TopupRequestLookup) (string, []interface{}, error) {
+	if err := validateTopupRequestLookup(lookup); err != nil {
+		return "", nil, err
+	}
+	query := `SELECT ` + topupRequestReadColumns + `
+FROM topup_requests topup
+WHERE topup.topup_request_id = $1
+  AND topup.tenant_id = $2`
+	args := []interface{}{lookup.ID, lookup.TenantID}
+	if lookup.RequestedBy != "" {
+		args = append(args, lookup.RequestedBy)
+		query += fmt.Sprintf("\n  AND topup.requested_by = $%d", len(args))
+	}
+	return query, args, nil
 }

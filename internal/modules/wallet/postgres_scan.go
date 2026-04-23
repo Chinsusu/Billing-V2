@@ -64,3 +64,36 @@ func scanLedgerEntry(row ledgerEntryScanner) (LedgerEntry, error) {
 	record.CorrelationID = CorrelationID(correlationID)
 	return record, nil
 }
+
+func scanTopupRequest(row ledgerEntryScanner) (TopupRequest, error) {
+	var record TopupRequest
+	var id, tenantID, walletID, requestedBy, currency, method, status, idempotencyKey string
+	var paymentReference, reviewedBy, reviewNote, ledgerEntryID sql.NullString
+	var reviewedAt sql.NullTime
+	if err := row.Scan(
+		&id, &record.DisplayID, &tenantID, &walletID, &requestedBy, &record.AmountMinor,
+		&currency, &method, &paymentReference, &status, &reviewedBy, &reviewedAt,
+		&reviewNote, &ledgerEntryID, &idempotencyKey, &record.CreatedAt, &record.UpdatedAt,
+	); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return TopupRequest{}, ErrTopupRequestNotFound
+		}
+		return TopupRequest{}, fmt.Errorf("scan wallet top-up request: %w", err)
+	}
+	record.ID = TopupRequestID(id)
+	record.TenantID = tenant.ID(tenantID)
+	record.WalletID = WalletID(walletID)
+	record.RequestedBy = identity.UserID(requestedBy)
+	record.Currency = currency
+	record.PaymentMethod = PaymentMethod(method)
+	record.PaymentReference = paymentReference.String
+	record.Status = TopupStatus(status)
+	record.ReviewedBy = identity.UserID(reviewedBy.String)
+	if reviewedAt.Valid {
+		record.ReviewedAt = &reviewedAt.Time
+	}
+	record.ReviewNote = reviewNote.String
+	record.LedgerEntryID = LedgerEntryID(ledgerEntryID.String)
+	record.IdempotencyKey = IdempotencyKey(idempotencyKey)
+	return record, nil
+}

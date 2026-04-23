@@ -155,15 +155,23 @@ func registerWalletTestHandler(service HTTPService) http.Handler {
 }
 
 type fakeWalletHTTPService struct {
-	wallets         []Wallet
-	wallet          Wallet
-	entries         []LedgerEntry
-	walletFilter    WalletFilter
-	walletLookup    WalletLookup
-	ledgerFilter    LedgerEntryFilter
-	listWalletCalls int
-	getWalletCalls  int
-	listLedgerCalls int
+	wallets          []Wallet
+	wallet           Wallet
+	entries          []LedgerEntry
+	topup            TopupRequest
+	topups           []TopupRequest
+	walletFilter     WalletFilter
+	walletLookup     WalletLookup
+	ledgerFilter     LedgerEntryFilter
+	topupInput       CreateTopupRequestInput
+	topupFilter      TopupRequestFilter
+	topupLookup      TopupRequestLookup
+	listWalletCalls  int
+	getWalletCalls   int
+	listLedgerCalls  int
+	createTopupCalls int
+	listTopupCalls   int
+	getTopupCalls    int
 }
 
 func (service *fakeWalletHTTPService) ListWallets(ctx context.Context, filter WalletFilter) ([]Wallet, error) {
@@ -182,4 +190,22 @@ func (service *fakeWalletHTTPService) ListLedgerEntries(ctx context.Context, fil
 	service.listLedgerCalls++
 	service.ledgerFilter = filter
 	return service.entries, nil
+}
+
+func (service *fakeWalletHTTPService) CreateTopupRequest(ctx context.Context, input CreateTopupRequestInput) (TopupRequest, error) {
+	service.createTopupCalls++
+	service.topupInput = input
+	return service.topup, nil
+}
+
+func (service *fakeWalletHTTPService) ListTopupRequests(ctx context.Context, filter TopupRequestFilter) ([]TopupRequest, error) {
+	service.listTopupCalls++
+	service.topupFilter = filter
+	return service.topups, nil
+}
+
+func (service *fakeWalletHTTPService) GetTopupRequest(ctx context.Context, lookup TopupRequestLookup) (TopupRequest, error) {
+	service.getTopupCalls++
+	service.topupLookup = lookup
+	return service.topup, nil
 }

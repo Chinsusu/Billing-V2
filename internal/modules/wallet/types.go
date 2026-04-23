@@ -9,12 +9,15 @@ import (
 var (
 	ErrWalletIDMissing       = errors.New("wallet id missing")
 	ErrLedgerEntryIDMissing  = errors.New("wallet ledger entry id missing")
+	ErrTopupRequestIDMissing = errors.New("wallet top-up request id missing")
 	ErrOwnerTypeInvalid      = errors.New("wallet owner type invalid")
 	ErrOwnerIDMissing        = errors.New("wallet owner id missing")
 	ErrStatusInvalid         = errors.New("wallet status invalid")
 	ErrDirectionInvalid      = errors.New("wallet ledger direction invalid")
 	ErrEntryTypeInvalid      = errors.New("wallet ledger entry type invalid")
 	ErrLedgerStatusInvalid   = errors.New("wallet ledger status invalid")
+	ErrTopupStatusInvalid    = errors.New("wallet top-up status invalid")
+	ErrPaymentMethodInvalid  = errors.New("wallet top-up payment method invalid")
 	ErrCurrencyMissing       = errors.New("wallet currency missing")
 	ErrCurrencyInvalid       = errors.New("wallet currency invalid")
 	ErrBalanceInvalid        = errors.New("wallet balance invalid")
@@ -28,19 +31,22 @@ var (
 	ErrServiceStoreMissing   = errors.New("wallet service store missing")
 	ErrWalletNotFound        = errors.New("wallet not found")
 	ErrLedgerEntryNotFound   = errors.New("wallet ledger entry not found")
+	ErrTopupRequestNotFound  = errors.New("wallet top-up request not found")
 )
 
 type WalletID string
 type LedgerEntryID string
+type TopupRequestID string
 type OwnerID string
 type ReferenceType string
 type ReferenceID string
 type IdempotencyKey string
 type CorrelationID string
 
-func (id WalletID) Empty() bool      { return strings.TrimSpace(string(id)) == "" }
-func (id LedgerEntryID) Empty() bool { return strings.TrimSpace(string(id)) == "" }
-func (id OwnerID) Empty() bool       { return strings.TrimSpace(string(id)) == "" }
+func (id WalletID) Empty() bool       { return strings.TrimSpace(string(id)) == "" }
+func (id LedgerEntryID) Empty() bool  { return strings.TrimSpace(string(id)) == "" }
+func (id TopupRequestID) Empty() bool { return strings.TrimSpace(string(id)) == "" }
+func (id OwnerID) Empty() bool        { return strings.TrimSpace(string(id)) == "" }
 
 func trim(value string) string {
 	return strings.TrimSpace(value)

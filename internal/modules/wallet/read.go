@@ -6,6 +6,8 @@ const defaultWalletListLimit = 100
 const maxWalletListLimit = 500
 const defaultLedgerEntryListLimit = 100
 const maxLedgerEntryListLimit = 500
+const defaultTopupRequestListLimit = 100
+const maxTopupRequestListLimit = 500
 
 func normalizeWalletFilter(filter WalletFilter) WalletFilter {
 	if filter.Limit <= 0 {
@@ -81,6 +83,39 @@ func validateLedgerEntryLookup(lookup LedgerEntryLookup) error {
 	}
 	if lookup.WalletID.Empty() {
 		return ErrWalletIDMissing
+	}
+	return nil
+}
+
+func normalizeTopupRequestFilter(filter TopupRequestFilter) TopupRequestFilter {
+	if filter.Limit <= 0 {
+		filter.Limit = defaultTopupRequestListLimit
+	}
+	if filter.Limit > maxTopupRequestListLimit {
+		filter.Limit = maxTopupRequestListLimit
+	}
+	return filter
+}
+
+func validateTopupRequestFilter(filter TopupRequestFilter) error {
+	if filter.TenantID.Empty() {
+		return tenant.ErrTenantIDMissing
+	}
+	if filter.PaymentMethod != "" && !filter.PaymentMethod.Valid() {
+		return ErrPaymentMethodInvalid
+	}
+	if filter.Status != "" && !filter.Status.Valid() {
+		return ErrTopupStatusInvalid
+	}
+	return nil
+}
+
+func validateTopupRequestLookup(lookup TopupRequestLookup) error {
+	if lookup.ID.Empty() {
+		return ErrTopupRequestIDMissing
+	}
+	if lookup.TenantID.Empty() {
+		return tenant.ErrTenantIDMissing
 	}
 	return nil
 }

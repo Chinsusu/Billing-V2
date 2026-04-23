@@ -18,6 +18,7 @@ func NewPostgresStore(executor platformdb.Executor) *PostgresStore {
 }
 
 const ledgerEntryColumns = `ledger_entry_id, display_id, wallet_id, tenant_id, direction, amount_minor, currency, entry_type, status, balance_after_minor, reference_type, reference_id, idempotency_key, created_by, reason, correlation_id, created_at`
+const topupRequestColumns = `topup_request_id, display_id, tenant_id, wallet_id, requested_by, amount_minor, currency, payment_method, payment_reference, status, reviewed_by, reviewed_at, review_note, ledger_entry_id, idempotency_key, created_at, updated_at`
 
 const createLedgerEntrySQL = `
 WITH inserted AS (
@@ -54,6 +55,43 @@ func createLedgerEntryArgs(input CreateLedgerEntryInput) ([]interface{}, error) 
 		input.WalletID, input.TenantID, input.Direction, input.AmountMinor, input.Currency,
 		input.EntryType, input.Status, input.BalanceAfterMinor, input.ReferenceType, input.ReferenceID,
 		input.IdempotencyKey, nullableString(string(input.CreatedBy)), nullableString(input.Reason), input.CorrelationID,
+	}, nil
+}
+
+const createTopupRequestSQL = `
+WITH inserted AS (
+INSERT INTO topup_requests (tenant_id, wallet_id, requested_by, amount_minor, currency, payment_method, payment_reference, status, idempotency_key)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+ON CONFLICT (tenant_id, requested_by, idempotency_key)
+DO NOTHING
+RETURNING ` + topupRequestColumns + `
+)
+SELECT ` + topupRequestColumns + ` FROM inserted
+UNION ALL
+SELECT ` + topupRequestColumns + `
+FROM topup_requests
+WHERE tenant_id = $1 AND requested_by = $3 AND idempotency_key = $9
+LIMIT 1`
+
+func (store *PostgresStore) CreateTopupRequest(ctx context.Context, input CreateTopupRequestInput) (TopupRequest, error) {
+	if err := store.ready(); err != nil {
+		return TopupRequest{}, err
+	}
+	args, err := createTopupRequestArgs(input)
+	if err != nil {
+		return TopupRequest{}, err
+	}
+	return scanTopupRequest(store.executor.QueryRowContext(ctx, createTopupRequestSQL, args...))
+}
+
+func createTopupRequestArgs(input CreateTopupRequestInput) ([]interface{}, error) {
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return nil, err
+	}
+	return []interface{}{
+		input.TenantID, input.WalletID, input.RequestedBy, input.AmountMinor, input.Currency,
+		input.PaymentMethod, nullableString(input.PaymentReference), input.Status, input.IdempotencyKey,
 	}, nil
 }
 

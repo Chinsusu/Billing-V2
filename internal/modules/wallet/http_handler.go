@@ -16,6 +16,9 @@ type HTTPService interface {
 	ListWallets(ctx context.Context, filter WalletFilter) ([]Wallet, error)
 	GetWallet(ctx context.Context, lookup WalletLookup) (Wallet, error)
 	ListLedgerEntries(ctx context.Context, filter LedgerEntryFilter) ([]LedgerEntry, error)
+	CreateTopupRequest(ctx context.Context, input CreateTopupRequestInput) (TopupRequest, error)
+	ListTopupRequests(ctx context.Context, filter TopupRequestFilter) ([]TopupRequest, error)
+	GetTopupRequest(ctx context.Context, lookup TopupRequestLookup) (TopupRequest, error)
 }
 
 type RouteMiddleware func(http.HandlerFunc) http.HandlerFunc
@@ -31,8 +34,10 @@ type HTTPHandler struct {
 }
 
 const (
-	adminWalletPrefix  = "/admin/wallets/"
-	clientWalletPrefix = "/client/wallets/"
+	adminWalletPrefix        = "/admin/wallets/"
+	adminTopupRequestPrefix  = "/admin/topup-requests/"
+	clientWalletPrefix       = "/client/wallets/"
+	clientTopupRequestPrefix = "/client/topup-requests/"
 )
 
 func NewHTTPHandler(service HTTPService) *HTTPHandler {
@@ -46,8 +51,12 @@ func NewHTTPHandlerWithOptions(service HTTPService, options HTTPHandlerOptions) 
 func (handler *HTTPHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/wallets", handler.adminWalletsRoute)
 	mux.HandleFunc("/admin/wallets/", handler.adminWalletRoute)
+	mux.HandleFunc("/admin/topup-requests", handler.adminTopupRequestsRoute)
+	mux.HandleFunc("/admin/topup-requests/", handler.adminTopupRequestRoute)
 	mux.HandleFunc("/client/wallets", handler.clientWalletsRoute)
 	mux.HandleFunc("/client/wallets/", handler.clientWalletRoute)
+	mux.HandleFunc("/client/topup-requests", handler.clientTopupRequestsRoute)
+	mux.HandleFunc("/client/topup-requests/", handler.clientTopupRequestRoute)
 }
 
 func (handler *HTTPHandler) adminWalletsRoute(w http.ResponseWriter, r *http.Request) {
@@ -431,6 +440,8 @@ func writeWalletError(w http.ResponseWriter, r *http.Request, err error) {
 		httpserver.WriteError(w, r, http.StatusNotFound, "wallet.not_found", "Wallet was not found.")
 	case errors.Is(err, ErrLedgerEntryNotFound):
 		httpserver.WriteError(w, r, http.StatusNotFound, "wallet.ledger_not_found", "Wallet ledger entry was not found.")
+	case errors.Is(err, ErrTopupRequestNotFound):
+		httpserver.WriteError(w, r, http.StatusNotFound, "wallet.topup_not_found", "Wallet top-up request was not found.")
 	case errors.Is(err, identity.ErrActorContextMissing),
 		errors.Is(err, identity.ErrActorIDMissing),
 		errors.Is(err, identity.ErrActorTypeMissing),
@@ -451,6 +462,8 @@ func walletValidationField(err error) (httpserver.ValidationField, bool) {
 		return validationField("tenant_id", "tenant.context_invalid", "Tenant context is invalid."), true
 	case errors.Is(err, ErrWalletIDMissing):
 		return validationField("wallet_id", "wallet.wallet_id_missing", "Wallet id is required."), true
+	case errors.Is(err, ErrTopupRequestIDMissing):
+		return validationField("topup_request_id", "wallet.topup_request_id_missing", "Top-up request id is required."), true
 	case errors.Is(err, ErrOwnerTypeInvalid):
 		return validationField("owner_type", "wallet.owner_type_invalid", "Wallet owner type is invalid."), true
 	case errors.Is(err, ErrStatusInvalid):
@@ -461,6 +474,16 @@ func walletValidationField(err error) (httpserver.ValidationField, bool) {
 		return validationField("entry_type", "wallet.entry_type_invalid", "Ledger entry type is invalid."), true
 	case errors.Is(err, ErrLedgerStatusInvalid):
 		return validationField("status", "wallet.ledger_status_invalid", "Ledger status is invalid."), true
+	case errors.Is(err, ErrTopupStatusInvalid):
+		return validationField("status", "wallet.topup_status_invalid", "Top-up status is invalid."), true
+	case errors.Is(err, ErrPaymentMethodInvalid):
+		return validationField("payment_method", "wallet.payment_method_invalid", "Payment method is invalid."), true
+	case errors.Is(err, ErrAmountInvalid):
+		return validationField("amount_minor", "wallet.amount_invalid", "Amount must be greater than zero."), true
+	case errors.Is(err, ErrCurrencyMissing), errors.Is(err, ErrCurrencyInvalid):
+		return validationField("currency", "wallet.currency_invalid", "Currency must be a three-letter code."), true
+	case errors.Is(err, ErrIdempotencyKeyMissing):
+		return validationField("idempotency_key", "wallet.idempotency_key_missing", "Idempotency key is required."), true
 	default:
 		return httpserver.ValidationField{}, false
 	}

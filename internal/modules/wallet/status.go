@@ -90,3 +90,43 @@ func (status LedgerStatus) Valid() bool {
 		return false
 	}
 }
+
+type TopupStatus string
+
+const (
+	TopupStatusDraft       TopupStatus = "draft"
+	TopupStatusSubmitted   TopupStatus = "submitted"
+	TopupStatusUnderReview TopupStatus = "under_review"
+	TopupStatusApproved    TopupStatus = "approved"
+	TopupStatusRejected    TopupStatus = "rejected"
+	TopupStatusExpired     TopupStatus = "expired"
+	TopupStatusCancelled   TopupStatus = "cancelled"
+)
+
+func (status TopupStatus) Valid() bool {
+	switch status {
+	case TopupStatusDraft, TopupStatusSubmitted, TopupStatusUnderReview, TopupStatusApproved,
+		TopupStatusRejected, TopupStatusExpired, TopupStatusCancelled:
+		return true
+	default:
+		return false
+	}
+}
+
+type PaymentMethod string
+
+const (
+	PaymentMethodBankTransfer PaymentMethod = "bank_transfer"
+	PaymentMethodCrypto       PaymentMethod = "crypto"
+	PaymentMethodManual       PaymentMethod = "manual"
+	PaymentMethodOther        PaymentMethod = "other"
+)
+
+func (method PaymentMethod) Valid() bool {
+	switch method {
+	case PaymentMethodBankTransfer, PaymentMethodCrypto, PaymentMethodManual, PaymentMethodOther:
+		return true
+	default:
+		return false
+	}
+}
