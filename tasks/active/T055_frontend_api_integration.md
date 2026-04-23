@@ -1,6 +1,6 @@
 # T055 - Frontend API integration
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/frontend-api-integration
 PR: https://github.com/Chinsusu/Billing-V2/pull/125
@@ -37,3 +37,4 @@ Connect billing and admin frontend screens to real backend API clients using the
 - 2026-04-23: Task created for frontend/backend integration.
 - 2026-04-23: Claimed by Codex; adding typed API client, hooks, and live-data wiring with mock fallback.
 - 2026-04-23: Opened PR #125. Validation passed: `npm ci`, `npm run build`, `npm audit --omit=dev`, backend gates, and Playwright live API probe against local seed data.
+- 2026-04-23: PR #125 merged; task marked DONE.
