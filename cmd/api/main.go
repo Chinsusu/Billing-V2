@@ -12,6 +12,7 @@ import (
 	"github.com/Chinsusu/Billing-V2/internal/app"
 	"github.com/Chinsusu/Billing-V2/internal/modules/catalog"
 	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
+	"github.com/Chinsusu/Billing-V2/internal/modules/invoice"
 	"github.com/Chinsusu/Billing-V2/internal/modules/order"
 	"github.com/Chinsusu/Billing-V2/internal/modules/payment"
 	"github.com/Chinsusu/Billing-V2/internal/modules/rbac"
@@ -72,6 +73,7 @@ func newRuntime(ctx context.Context, cfg config.Config, log *logger.Logger, open
 		}
 		cleanup = conn.Close
 		options.CatalogRoutes = newCatalogRoutes(conn)
+		options.InvoiceRoutes = newInvoiceRoutes(conn)
 		options.OrderRoutes = newOrderRoutes(conn)
 		options.PaymentRoutes = newPaymentRoutes(conn)
 		options.WalletRoutes = newWalletRoutes(conn)
@@ -110,6 +112,16 @@ func newOrderRoutes(executor platformdb.Executor) app.RouteRegistrar {
 		AdminServiceMiddleware:  orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
 		ClientMiddleware:        orderAuthMiddleware(authorizer, rbac.PermissionOrderCreate, rbac.RiskMedium),
 		ClientServiceMiddleware: orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
+	})
+}
+
+func newInvoiceRoutes(executor platformdb.Executor) app.RouteRegistrar {
+	store := invoice.NewPostgresStore(executor)
+	service := invoice.NewService(store)
+	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
+	return invoice.NewHTTPHandlerWithOptions(service, invoice.HTTPHandlerOptions{
+		AdminMiddleware:  invoiceAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
+		ClientMiddleware: invoiceAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
 	})
 }
 
@@ -153,6 +165,31 @@ func chainOrderMiddleware(middlewares ...order.RouteMiddleware) order.RouteMiddl
 }
 
 func wrapOrderMiddleware(middleware func(http.Handler) http.Handler) order.RouteMiddleware {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		return middleware(http.HandlerFunc(next)).ServeHTTP
+	}
+}
+
+func invoiceAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) invoice.RouteMiddleware {
+	return chainInvoiceMiddleware(
+		wrapInvoiceMiddleware(identity.HeaderActorMiddleware),
+		invoice.RouteMiddleware(rbac.RequirePermission(authorizer, permission, risk)),
+	)
+}
+
+func chainInvoiceMiddleware(middlewares ...invoice.RouteMiddleware) invoice.RouteMiddleware {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		for index := len(middlewares) - 1; index >= 0; index-- {
+			if middlewares[index] == nil {
+				continue
+			}
+			next = middlewares[index](next)
+		}
+		return next
+	}
+}
+
+func wrapInvoiceMiddleware(middleware func(http.Handler) http.Handler) invoice.RouteMiddleware {
 	return func(next http.HandlerFunc) http.HandlerFunc {
 		return middleware(http.HandlerFunc(next)).ServeHTTP
 	}

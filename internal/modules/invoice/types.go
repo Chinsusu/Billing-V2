@@ -17,6 +17,9 @@ var (
 	ErrQuantityInvalid      = errors.New("invoice item quantity invalid")
 	ErrDescriptionMissing   = errors.New("invoice item description missing")
 	ErrStatusInvalid        = errors.New("invoice status invalid")
+	ErrStoreExecutorMissing = errors.New("invoice store executor missing")
+	ErrServiceStoreMissing  = errors.New("invoice service store missing")
+	ErrInvoiceNotFound      = errors.New("invoice not found")
 )
 
 type InvoiceID string
