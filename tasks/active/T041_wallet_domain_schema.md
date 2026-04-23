@@ -3,7 +3,7 @@
 Status: REVIEW
 Owner: Codex
 Branch: feat/wallet-domain-schema
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/95
 Risk: wallet/migration
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -37,3 +37,4 @@ Add wallet domain models and PostgreSQL schema so account balances have a stable
 - 2026-04-23: Task created for the next backend wallet/invoice batch.
 - 2026-04-23: Claimed by Codex from latest `origin/main` in `/tmp/Billing-T041`.
 - 2026-04-23: Added wallet domain models, wallet schema, and rollback script. Validation passed: `make fmt`, `make test`, `make build`, `make migrate-validate`.
+- 2026-04-23: Opened PR #95.
