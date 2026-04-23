@@ -37,9 +37,10 @@ type PayInvoiceFromWalletInput struct {
 }
 
 type WalletInvoicePayment struct {
-	Invoice     invoice.InvoiceDetail
-	Transaction Transaction
-	LedgerEntry wallet.LedgerEntry
+	Invoice               invoice.InvoiceDetail
+	Transaction           Transaction
+	LedgerEntry           wallet.LedgerEntry
+	PreviousInvoiceStatus invoice.Status
 }
 
 func (input PayInvoiceFromWalletInput) Normalize() PayInvoiceFromWalletInput {
@@ -152,7 +153,12 @@ func payInvoiceFromWallet(
 	if err != nil {
 		return WalletInvoicePayment{}, err
 	}
-	return WalletInvoicePayment{Invoice: paidInvoice, Transaction: transaction, LedgerEntry: ledgerEntry}, nil
+	return WalletInvoicePayment{
+		Invoice:               paidInvoice,
+		Transaction:           transaction,
+		LedgerEntry:           ledgerEntry,
+		PreviousInvoiceStatus: detail.Invoice.Status,
+	}, nil
 }
 
 func invoicePayableStatus(status invoice.Status) bool {

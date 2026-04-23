@@ -115,7 +115,7 @@ func newCatalogRoutes(executor platformdb.Executor) app.RouteRegistrar {
 
 func newOrderRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	store := order.NewPostgresStore(executor)
-	service := order.NewService(store)
+	service := order.NewServiceWithAudit(store, audit.NewService(audit.NewPostgresStore(executor)))
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return order.NewHTTPHandlerWithOptions(service, order.HTTPHandlerOptions{
 		AdminMiddleware:         orderAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
@@ -138,7 +138,7 @@ func newInvoiceRoutes(executor platformdb.Executor) app.RouteRegistrar {
 
 func newPaymentRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	store := payment.NewPostgresStore(executor)
-	service := payment.NewService(store)
+	service := payment.NewServiceWithAudit(store, audit.NewService(audit.NewPostgresStore(executor)))
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return payment.NewHTTPHandlerWithOptions(service, payment.HTTPHandlerOptions{
 		AdminMiddleware:  paymentAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
@@ -148,7 +148,7 @@ func newPaymentRoutes(executor platformdb.Executor) app.RouteRegistrar {
 
 func newWalletRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	store := wallet.NewPostgresStore(executor)
-	service := wallet.NewService(store)
+	service := wallet.NewServiceWithAudit(store, audit.NewService(audit.NewPostgresStore(executor)))
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return wallet.NewHTTPHandlerWithOptions(service, wallet.HTTPHandlerOptions{
 		AdminMiddleware:       walletAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),

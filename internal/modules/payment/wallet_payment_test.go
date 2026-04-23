@@ -5,6 +5,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/Chinsusu/Billing-V2/internal/modules/audit"
 	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
 	"github.com/Chinsusu/Billing-V2/internal/modules/invoice"
 	"github.com/Chinsusu/Billing-V2/internal/modules/order"
@@ -16,7 +17,8 @@ func TestPayInvoiceFromWalletPaysIssuedInvoice(t *testing.T) {
 	invoiceStore := &fakePaymentInvoiceStore{detail: walletPaymentInvoice(invoice.StatusIssued)}
 	walletService := &fakePaymentWalletService{record: walletPaymentWallet(2500, "USD")}
 	transactionStore := &fakeWalletPaymentTransactionStore{}
-	service := NewServiceWithBilling(transactionStore, invoiceStore, walletService)
+	auditLog := &fakePaymentAuditAppender{}
+	service := NewServiceWithBillingAndAudit(transactionStore, invoiceStore, walletService, auditLog)
 
 	result, err := service.PayInvoiceFromWallet(context.Background(), walletPaymentInput())
 	if err != nil {
@@ -37,12 +39,19 @@ func TestPayInvoiceFromWalletPaysIssuedInvoice(t *testing.T) {
 	if result.Invoice.Invoice.Status != invoice.StatusPaid || result.LedgerEntry.ID != wallet.LedgerEntryID("ledger-1") {
 		t.Fatalf("unexpected result: %+v", result)
 	}
+	if auditLog.calls != 1 ||
+		auditLog.input.Action != walletPaymentAuditAction ||
+		auditLog.input.TargetID != audit.TargetID("invoice-1") ||
+		auditLog.input.ActorID != audit.ActorID("buyer-1") {
+		t.Fatalf("unexpected audit input: %+v", auditLog.input)
+	}
 }
 
 func TestPayInvoiceFromWalletReturnsPaidDuplicateByIdempotency(t *testing.T) {
 	invoiceStore := &fakePaymentInvoiceStore{detail: walletPaymentInvoice(invoice.StatusPaid)}
 	transactionStore := &fakeWalletPaymentTransactionStore{existing: walletPaymentTransaction()}
-	service := NewServiceWithBilling(transactionStore, invoiceStore, &fakePaymentWalletService{})
+	auditLog := &fakePaymentAuditAppender{}
+	service := NewServiceWithBillingAndAudit(transactionStore, invoiceStore, &fakePaymentWalletService{}, auditLog)
 
 	result, err := service.PayInvoiceFromWallet(context.Background(), walletPaymentInput())
 	if err != nil {
@@ -56,6 +65,25 @@ func TestPayInvoiceFromWalletReturnsPaidDuplicateByIdempotency(t *testing.T) {
 	}
 	if result.Transaction.ID != TransactionID("txn-1") {
 		t.Fatalf("expected existing transaction, got %+v", result.Transaction)
+	}
+	if auditLog.calls != 0 {
+		t.Fatalf("expected no duplicate audit event, got %d", auditLog.calls)
+	}
+}
+
+func TestPayInvoiceFromWalletReturnsAuditError(t *testing.T) {
+	invoiceStore := &fakePaymentInvoiceStore{detail: walletPaymentInvoice(invoice.StatusIssued)}
+	walletService := &fakePaymentWalletService{record: walletPaymentWallet(2500, "USD")}
+	transactionStore := &fakeWalletPaymentTransactionStore{}
+	auditLog := &fakePaymentAuditAppender{err: audit.ErrActionMissing}
+	service := NewServiceWithBillingAndAudit(transactionStore, invoiceStore, walletService, auditLog)
+
+	_, err := service.PayInvoiceFromWallet(context.Background(), walletPaymentInput())
+	if !errors.Is(err, audit.ErrActionMissing) {
+		t.Fatalf("expected audit error, got %v", err)
+	}
+	if invoiceStore.markPaidCalls != 1 || auditLog.calls != 1 {
+		t.Fatalf("expected payment mutation and audit attempt, got paid=%d audit=%d", invoiceStore.markPaidCalls, auditLog.calls)
 	}
 }
 
@@ -254,4 +282,19 @@ func (service *fakePaymentWalletService) PostLedgerEntry(ctx context.Context, in
 		ReferenceType: input.ReferenceType,
 		ReferenceID:   input.ReferenceID,
 	}, nil
+}
+
+type fakePaymentAuditAppender struct {
+	input audit.AppendInput
+	err   error
+	calls int
+}
+
+func (appender *fakePaymentAuditAppender) Append(ctx context.Context, input audit.AppendInput) (audit.Log, error) {
+	appender.calls++
+	appender.input = input
+	if appender.err != nil {
+		return audit.Log{}, appender.err
+	}
+	return audit.Log{Action: input.Action}, nil
 }

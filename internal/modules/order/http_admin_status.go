@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
 	"github.com/Chinsusu/Billing-V2/internal/platform/httpserver"
 )
@@ -30,7 +31,8 @@ func (handler *HTTPHandler) handleTransitionAdminOrderStatus(w http.ResponseWrit
 	if !ok {
 		return
 	}
-	if _, ok := actorFromContext(w, r); !ok {
+	actor, ok := actorFromContext(w, r)
+	if !ok {
 		return
 	}
 	orderID, ok := adminOrderIDFromStatusPath(w, r)
@@ -41,7 +43,7 @@ func (handler *HTTPHandler) handleTransitionAdminOrderStatus(w http.ResponseWrit
 	if !decodeOrderJSON(w, r, &request) {
 		return
 	}
-	order, err := handler.service.TransitionOrderStatus(r.Context(), request.toInput(orderID, tenantID))
+	order, err := handler.service.TransitionOrderStatus(r.Context(), request.toInput(orderID, tenantID, actor.ID))
 	if err != nil {
 		writeOrderError(w, r, err)
 		return
@@ -59,10 +61,11 @@ func adminOrderIDFromStatusPath(w http.ResponseWriter, r *http.Request) (OrderID
 	return OrderID(value), true
 }
 
-func (request transitionOrderStatusRequest) toInput(orderID OrderID, tenantID tenant.ID) TransitionOrderStatusInput {
+func (request transitionOrderStatusRequest) toInput(orderID OrderID, tenantID tenant.ID, actorID identity.UserID) TransitionOrderStatusInput {
 	return TransitionOrderStatusInput{
 		ID:            orderID,
 		TenantID:      tenantID,
+		ActorID:       actorID,
 		FromStatus:    request.FromStatus,
 		ToStatus:      request.ToStatus,
 		BillingStatus: request.BillingStatus,

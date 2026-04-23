@@ -4,10 +4,15 @@ import "context"
 
 type Service struct {
 	store Store
+	audit AuditAppender
 }
 
 func NewService(store Store) *Service {
 	return &Service{store: store}
+}
+
+func NewServiceWithAudit(store Store, audit AuditAppender) *Service {
+	return &Service{store: store, audit: audit}
 }
 
 func (service *Service) CreateOrder(ctx context.Context, input CreateOrderInput) (Order, error) {
@@ -83,7 +88,14 @@ func (service *Service) TransitionOrderStatus(ctx context.Context, input Transit
 	if err := input.Validate(); err != nil {
 		return Order{}, err
 	}
-	return service.store.TransitionOrderStatus(ctx, input)
+	record, err := service.store.TransitionOrderStatus(ctx, input)
+	if err != nil {
+		return Order{}, err
+	}
+	if err := service.appendOrderStatusAudit(ctx, input, record); err != nil {
+		return Order{}, err
+	}
+	return record, nil
 }
 
 func (service *Service) ListServiceInstances(ctx context.Context, filter ServiceInstanceFilter) ([]ServiceInstance, error) {

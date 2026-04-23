@@ -1,7 +1,7 @@
 # T057 - Audit mutation events
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: feat/audit-mutation-events
 PR: -
 Risk: audit/mutation
@@ -34,3 +34,4 @@ Write audit events for important state-changing billing operations so the audit 
 ## Agent Log
 
 - 2026-04-23: Task created after audit read API landed.
+- 2026-04-23: Codex claimed task from latest `origin/main` after T056 merged.

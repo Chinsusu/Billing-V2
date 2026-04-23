@@ -301,6 +301,7 @@ func TestHTTPHandlerTransitionAdminOrderStatusUsesTenantAndPath(t *testing.T) {
 	}
 	if service.transitionOrderStatusInput.ID != OrderID("order_1") ||
 		service.transitionOrderStatusInput.TenantID != tenant.ID("tenant_1") ||
+		service.transitionOrderStatusInput.ActorID != identity.UserID("admin_1") ||
 		service.transitionOrderStatusInput.FromStatus != OrderStatusPendingPayment ||
 		service.transitionOrderStatusInput.ToStatus != OrderStatusPaid ||
 		service.transitionOrderStatusInput.BillingStatus != BillingStatusPaid {
