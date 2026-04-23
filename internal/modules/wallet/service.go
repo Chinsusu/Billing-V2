@@ -42,6 +42,17 @@ func (service *Service) CreateLedgerEntry(ctx context.Context, input CreateLedge
 	return service.store.CreateLedgerEntry(ctx, input)
 }
 
+func (service *Service) PostLedgerEntry(ctx context.Context, input PostLedgerEntryInput) (LedgerEntry, error) {
+	if err := service.ready(); err != nil {
+		return LedgerEntry{}, err
+	}
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return LedgerEntry{}, err
+	}
+	return service.store.PostLedgerEntry(ctx, input)
+}
+
 func (service *Service) ListLedgerEntries(ctx context.Context, filter LedgerEntryFilter) ([]LedgerEntry, error) {
 	if err := service.ready(); err != nil {
 		return nil, err

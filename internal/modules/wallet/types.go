@@ -21,6 +21,7 @@ var (
 	ErrCurrencyMissing       = errors.New("wallet currency missing")
 	ErrCurrencyInvalid       = errors.New("wallet currency invalid")
 	ErrBalanceInvalid        = errors.New("wallet balance invalid")
+	ErrInsufficientBalance   = errors.New("wallet insufficient balance")
 	ErrAmountInvalid         = errors.New("wallet amount invalid")
 	ErrReferenceTypeMissing  = errors.New("wallet reference type missing")
 	ErrReferenceIDMissing    = errors.New("wallet reference id missing")
