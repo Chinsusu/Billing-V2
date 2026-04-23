@@ -98,6 +98,11 @@ DONE         PR merged into main
 | T055 | [tasks/active/T055_frontend_api_integration.md](tasks/active/T055_frontend_api_integration.md) | feat/frontend-api-integration | frontend/API | Connect frontend billing/admin screens to real backend API clients with loading and error states. |
 | T056 | [tasks/active/T056_admin_search_filters.md](tasks/active/T056_admin_search_filters.md) | feat/admin-search-filters | API/search/admin | Add display ID, customer, and amount filters for operational admin lists. |
 | T057 | [tasks/active/T057_audit_mutation_events.md](tasks/active/T057_audit_mutation_events.md) | feat/audit-mutation-events | audit/mutation | Write audit events for important top-up, invoice payment, and order status mutations. |
+| T058 | [tasks/active/T058_invoice_wallet_payment_api.md](tasks/active/T058_invoice_wallet_payment_api.md) | feat/invoice-wallet-payment-api | API/payment/money | Expose a client wallet payment endpoint for invoices with idempotency, RBAC, and audit integration. |
+| T059 | [tasks/active/T059_billing_mutation_smoke.md](tasks/active/T059_billing_mutation_smoke.md) | test/billing-mutation-smoke | test/API/audit | Add integration smoke coverage for top-up review, invoice wallet payment, order status transition, and audit visibility. |
+| T060 | [tasks/active/T060_billing_api_docs.md](tasks/active/T060_billing_api_docs.md) | docs/billing-api-contracts | docs/API | Document billing API routes, mutation inputs, filters, display IDs, and error semantics. |
+| T061 | [tasks/active/T061_frontend_admin_filters.md](tasks/active/T061_frontend_admin_filters.md) | feat/frontend-admin-filters | frontend/API | Wire admin UI list filters to backend display ID, account, status, and amount query params. |
+| T062 | [tasks/active/T062_frontend_ci_gate.md](tasks/active/T062_frontend_ci_gate.md) | ci/frontend-quality-gate | CI/frontend | Add CI checks for frontend install, build, lint, and production dependency audit. |
 
 ## Completed Tasks
 
