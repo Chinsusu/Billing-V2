@@ -98,6 +98,39 @@ func TestCreateProvisioningJobArgs(t *testing.T) {
 	}
 }
 
+func TestRecordProvisioningResultArgs(t *testing.T) {
+	args, err := recordProvisioningResultArgs(RecordProvisioningResultInput{
+		OrderID:             OrderID("order-1"),
+		TenantID:            tenant.ID("tenant-1"),
+		ProviderSourceID:    catalog.ProviderSourceID("source-1"),
+		ProviderOperationID: " operation-1 ",
+		Status:              ProvisioningStatusFailed,
+		IdempotencyKey:      " provision-key-1 ",
+		LastErrorCode:       " PROVIDER_TEMPORARY_ERROR ",
+		LastErrorMessage:    " temporary provider error ",
+	})
+	if err != nil {
+		t.Fatalf("expected provisioning result args: %v", err)
+	}
+	if len(args) != 9 || args[3] != ProviderOperationID("operation-1") ||
+		args[4] != ProvisioningStatusFailed || args[6] != 1 {
+		t.Fatalf("unexpected provisioning result args: %#v", args)
+	}
+}
+
+func TestRecordProvisioningResultSQLUpsertsByIdempotencyKey(t *testing.T) {
+	for _, clause := range []string{
+		"INSERT INTO order_provisioning_jobs",
+		"ON CONFLICT (tenant_id, idempotency_key)",
+		"last_error_code = EXCLUDED.last_error_code",
+		"RETURNING",
+	} {
+		if !strings.Contains(recordProvisioningResultSQL, clause) {
+			t.Fatalf("expected %q in provisioning result SQL: %s", clause, recordProvisioningResultSQL)
+		}
+	}
+}
+
 func TestCreateServiceInstanceArgsUsesNullableSuspensionReason(t *testing.T) {
 	now := time.Now()
 	args, err := createServiceInstanceArgs(CreateServiceInstanceInput{

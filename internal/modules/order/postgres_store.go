@@ -62,6 +62,18 @@ INSERT INTO order_provisioning_jobs (order_id, tenant_id, provider_source_id, pr
 VALUES ($1, $2, $3, $4, $5, $6, $7)
 RETURNING ` + provisioningJobColumns
 
+const recordProvisioningResultSQL = `
+INSERT INTO order_provisioning_jobs (order_id, tenant_id, provider_source_id, provider_operation_id, status, idempotency_key, attempt_number, last_error_code, last_error_message)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+ON CONFLICT (tenant_id, idempotency_key)
+DO UPDATE SET
+    status = EXCLUDED.status,
+    attempt_number = EXCLUDED.attempt_number,
+    last_error_code = EXCLUDED.last_error_code,
+    last_error_message = EXCLUDED.last_error_message,
+    updated_at = NOW()
+RETURNING ` + provisioningJobColumns
+
 const createServiceInstanceSQL = `
 INSERT INTO service_instances (tenant_id, order_id, tenant_plan_id, provider_source_id, external_resource_id, status, billing_status, suspension_reason, term_start, term_end)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
@@ -98,6 +110,17 @@ func (store *PostgresStore) CreateProvisioningJob(ctx context.Context, input Cre
 		return ProvisioningJob{}, err
 	}
 	return scanProvisioningJob(store.executor.QueryRowContext(ctx, createProvisioningJobSQL, args...))
+}
+
+func (store *PostgresStore) RecordProvisioningResult(ctx context.Context, input RecordProvisioningResultInput) (ProvisioningJob, error) {
+	if err := store.ready(); err != nil {
+		return ProvisioningJob{}, err
+	}
+	args, err := recordProvisioningResultArgs(input)
+	if err != nil {
+		return ProvisioningJob{}, err
+	}
+	return scanProvisioningJob(store.executor.QueryRowContext(ctx, recordProvisioningResultSQL, args...))
 }
 
 func (store *PostgresStore) CreateServiceInstance(ctx context.Context, input CreateServiceInstanceInput) (ServiceInstance, error) {
@@ -139,6 +162,18 @@ func createProvisioningJobArgs(input CreateProvisioningJobInput) ([]interface{},
 	return []interface{}{
 		input.OrderID, input.TenantID, input.ProviderSourceID, input.ProviderOperationID,
 		input.Status, input.IdempotencyKey, input.AttemptNumber,
+	}, nil
+}
+
+func recordProvisioningResultArgs(input RecordProvisioningResultInput) ([]interface{}, error) {
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return nil, err
+	}
+	return []interface{}{
+		input.OrderID, input.TenantID, input.ProviderSourceID, input.ProviderOperationID,
+		input.Status, input.IdempotencyKey, input.AttemptNumber,
+		nullableString(input.LastErrorCode), nullableString(input.LastErrorMessage),
 	}, nil
 }
 

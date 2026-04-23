@@ -14,6 +14,7 @@ var (
 	ErrBuyerIDMissing             = errors.New("buyer id missing")
 	ErrTenantPlanIDMissing        = errors.New("tenant plan id missing")
 	ErrProviderSourceIDMissing    = errors.New("provider source id missing")
+	ErrProviderTypeMissing        = errors.New("provider type missing")
 	ErrIdempotencyKeyMissing      = errors.New("idempotency key missing")
 	ErrCurrencyMissing            = errors.New("currency missing")
 	ErrCurrencyInvalid            = errors.New("currency invalid")

@@ -7,6 +7,7 @@ import (
 	"github.com/Chinsusu/Billing-V2/internal/modules/catalog"
 	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
 	"github.com/Chinsusu/Billing-V2/internal/modules/jobs"
+	"github.com/Chinsusu/Billing-V2/internal/modules/provider"
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
 )
 
@@ -29,6 +30,7 @@ type QueueProvisioningInput struct {
 	OrderID          OrderID
 	TenantID         tenant.ID
 	ProviderSourceID catalog.ProviderSourceID
+	ProviderType     provider.Type
 }
 
 type ProvisioningQueuePayload struct {
@@ -38,6 +40,7 @@ type ProvisioningQueuePayload struct {
 	BuyerUserID      identity.UserID          `json:"buyer_user_id"`
 	TenantPlanID     catalog.TenantPlanID     `json:"tenant_plan_id"`
 	ProviderSourceID catalog.ProviderSourceID `json:"provider_source_id"`
+	ProviderType     provider.Type            `json:"provider_type"`
 	Currency         string                   `json:"currency"`
 	TotalMinor       int64                    `json:"total_minor"`
 }
@@ -61,7 +64,7 @@ func (service *ProvisioningQueueService) QueueOrderProvisioning(ctx context.Cont
 	if order.OrderStatus != OrderStatusPaid || order.BillingStatus != BillingStatusPaid {
 		return jobs.Job{}, ErrProvisioningQueueNotPaid
 	}
-	payload, err := provisioningQueuePayloadJSON(order, input.ProviderSourceID)
+	payload, err := provisioningQueuePayloadJSON(order, input.ProviderSourceID, input.ProviderType)
 	if err != nil {
 		return jobs.Job{}, err
 	}
@@ -94,6 +97,7 @@ func (input QueueProvisioningInput) Normalize() QueueProvisioningInput {
 		OrderID:          OrderID(trim(string(input.OrderID))),
 		TenantID:         tenant.ID(trim(string(input.TenantID))),
 		ProviderSourceID: catalog.ProviderSourceID(trim(string(input.ProviderSourceID))),
+		ProviderType:     provider.Type(trim(string(input.ProviderType))),
 	}
 }
 
@@ -107,6 +111,9 @@ func (input QueueProvisioningInput) Validate() error {
 	if input.ProviderSourceID.Empty() {
 		return ErrProviderSourceIDMissing
 	}
+	if input.ProviderType == "" {
+		return ErrProviderTypeMissing
+	}
 	return nil
 }
 
@@ -114,7 +121,7 @@ func provisioningQueueKey(input QueueProvisioningInput) string {
 	return "provisioning:" + string(input.TenantID) + ":" + string(input.OrderID) + ":" + string(input.ProviderSourceID)
 }
 
-func provisioningQueuePayloadJSON(order Order, providerSourceID catalog.ProviderSourceID) (json.RawMessage, error) {
+func provisioningQueuePayloadJSON(order Order, providerSourceID catalog.ProviderSourceID, providerType provider.Type) (json.RawMessage, error) {
 	payload := ProvisioningQueuePayload{
 		OrderID:          order.ID,
 		OrderDisplayID:   order.DisplayID,
@@ -122,6 +129,7 @@ func provisioningQueuePayloadJSON(order Order, providerSourceID catalog.Provider
 		BuyerUserID:      order.BuyerUserID,
 		TenantPlanID:     order.TenantPlanID,
 		ProviderSourceID: providerSourceID,
+		ProviderType:     providerType,
 		Currency:         order.Currency,
 		TotalMinor:       order.TotalMinor,
 	}

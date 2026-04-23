@@ -9,6 +9,7 @@ import (
 	"github.com/Chinsusu/Billing-V2/internal/modules/catalog"
 	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
 	"github.com/Chinsusu/Billing-V2/internal/modules/jobs"
+	"github.com/Chinsusu/Billing-V2/internal/modules/provider"
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
 )
 
@@ -21,6 +22,7 @@ func TestProvisioningQueueServiceQueuesPaidOrder(t *testing.T) {
 		OrderID:          " order-1 ",
 		TenantID:         tenant.ID(" tenant-1 "),
 		ProviderSourceID: catalog.ProviderSourceID(" source-1 "),
+		ProviderType:     provider.TypeManual,
 	})
 	if err != nil {
 		t.Fatalf("expected provisioning queue: %v", err)
@@ -44,7 +46,9 @@ func TestProvisioningQueueServiceQueuesPaidOrder(t *testing.T) {
 		t.Fatalf("expected payload json: %v", err)
 	}
 	if payload.OrderID != "order-1" || payload.OrderDisplayID != 30001 ||
-		payload.BuyerUserID != identity.UserID("buyer-1") || payload.ProviderSourceID != catalog.ProviderSourceID("source-1") {
+		payload.BuyerUserID != identity.UserID("buyer-1") ||
+		payload.ProviderSourceID != catalog.ProviderSourceID("source-1") ||
+		payload.ProviderType != provider.TypeManual {
 		t.Fatalf("unexpected payload: %+v", payload)
 	}
 }
@@ -112,11 +116,25 @@ func TestProvisioningQueueServiceRequiresProviderSource(t *testing.T) {
 	}
 }
 
+func TestProvisioningQueueServiceRequiresProviderType(t *testing.T) {
+	service := NewProvisioningQueueService(&fakeProvisioningOrderStore{order: paidProvisioningOrder()}, &fakeProvisioningJobQueue{})
+
+	_, err := service.QueueOrderProvisioning(context.Background(), QueueProvisioningInput{
+		OrderID:          "order-1",
+		TenantID:         tenant.ID("tenant-1"),
+		ProviderSourceID: catalog.ProviderSourceID("source-1"),
+	})
+	if !errors.Is(err, ErrProviderTypeMissing) {
+		t.Fatalf("expected provider type error, got %v", err)
+	}
+}
+
 func validQueueProvisioningInput() QueueProvisioningInput {
 	return QueueProvisioningInput{
 		OrderID:          "order-1",
 		TenantID:         tenant.ID("tenant-1"),
 		ProviderSourceID: catalog.ProviderSourceID("source-1"),
+		ProviderType:     provider.TypeManual,
 	}
 }
 
