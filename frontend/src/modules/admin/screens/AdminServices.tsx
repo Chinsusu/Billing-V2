@@ -24,14 +24,14 @@ export function AdminServices() {
   const [tab, setTab] = useState<Tab>("proxies");
 
   return (
-    <div className="p-5 flex flex-col gap-4">
+    <div className="p-4 flex flex-col gap-4">
       {/* Sub-tabs */}
       <div className="flex gap-0 border-b border-gray-200">
         {TABS.map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`px-4 py-2 text-[13px] font-medium border-b-2 -mb-px transition-colors cursor-pointer bg-transparent
+            className={`p-4 p-4 text-[13px] font-medium border-b-2 -mb-px transition-colors cursor-pointer bg-transparent
               ${tab === t.id
                 ? "border-[#D50C2D] text-[#D50C2D]"
                 : "border-transparent text-gray-500 hover:text-gray-800"}`}
@@ -51,7 +51,7 @@ export function AdminServices() {
             <thead>
               <tr className="bg-gray-50">
                 {["ID", "Type", "Label", "Customer", "Tenant", "Region", "IPs", "Protocol", "Usage", "Price/mo", "Status", "Renews"].map((h) => (
-                  <th key={h} className="text-left text-[11px] font-medium uppercase tracking-wide text-gray-400 px-3 py-2 border-b border-gray-200">
+                  <th key={h} className="text-left text-[11px] font-medium uppercase tracking-wide text-gray-400 p-4 p-4 border-b border-gray-200">
                     {h}
                   </th>
                 ))}
@@ -62,22 +62,22 @@ export function AdminServices() {
                 const pct = Math.round((s.usedGB / s.totalGB) * 100);
                 return (
                   <tr key={s.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
-                    <td className="px-3 py-2 font-mono text-[11px] text-[#D50C2D]">{s.id}</td>
-                    <td className="px-3 py-2">
+                    <td className="p-4 p-4 text-[11px] text-[#D50C2D]">{s.id}</td>
+                    <td className="p-4 p-4">
                       <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700">
                         {PROXY_TYPE_LABEL[s.proxyType]}
                       </span>
                     </td>
-                    <td className="px-3 py-2 text-gray-800 max-w-[180px] truncate">{s.label}</td>
-                    <td className="px-3 py-2 text-gray-500">{s.customer}</td>
-                    <td className="px-3 py-2 text-gray-400 text-[11px]">{s.tenant}</td>
-                    <td className="px-3 py-2 font-mono text-[11px] text-gray-400">{s.region}</td>
-                    <td className="px-3 py-2 text-gray-500 tabular-nums">{s.ipCount > 0 ? s.ipCount : "—"}</td>
-                    <td className="px-3 py-2">
-                      <span className="text-[10px] font-mono px-1 py-px bg-gray-100 text-gray-500 rounded">{s.protocol}</span>
+                    <td className="p-4 p-4 text-gray-800 max-w-[180px] truncate">{s.label}</td>
+                    <td className="p-4 p-4 text-gray-500">{s.customer}</td>
+                    <td className="p-4 p-4 text-gray-400 text-[11px]">{s.tenant}</td>
+                    <td className="p-4 p-4 text-[11px] text-gray-400">{s.region}</td>
+                    <td className="p-4 p-4 text-gray-500 tabular-nums">{s.ipCount > 0 ? s.ipCount : "—"}</td>
+                    <td className="p-4 p-4">
+                      <span className="text-[10px] px-1 py-px bg-gray-100 text-gray-500 rounded">{s.protocol}</span>
                     </td>
-                    <td className="px-3 py-2">
-                      <div className="flex items-center gap-2 min-w-[100px]">
+                    <td className="p-4 p-4">
+                      <div className="flex items-center gap-4 min-w-[100px]">
                         <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full ${pct >= 90 ? "bg-red-500" : pct >= 70 ? "bg-amber-400" : "bg-green-500"}`}
@@ -87,9 +87,9 @@ export function AdminServices() {
                         <span className="text-[11px] text-gray-400 tabular-nums w-8 text-right">{pct}%</span>
                       </div>
                     </td>
-                    <td className="px-3 py-2 tabular-nums text-right font-medium">{fmtMoney(s.price)}</td>
-                    <td className="px-3 py-2"><StatusBadge status={s.status} dot /></td>
-                    <td className="px-3 py-2 tabular-nums">
+                    <td className="p-4 p-4 tabular-nums text-right font-medium">{fmtMoney(s.price)}</td>
+                    <td className="p-4 p-4"><StatusBadge status={s.status} dot /></td>
+                    <td className="p-4 p-4 tabular-nums">
                       <span className={s.renewsIn < 0 ? "text-red-600 font-medium" : s.renewsIn <= 7 ? "text-amber-600" : "text-gray-500"}>
                         {s.renewsIn < 0 ? `${Math.abs(s.renewsIn)}d overdue` : `${s.renewsIn}d`}
                       </span>
@@ -109,7 +109,7 @@ export function AdminServices() {
             <thead>
               <tr className="bg-gray-50">
                 {["ID", "OS", "Label", "Customer", "Tenant", "Region", "Spec", "IP", "Provider", "Price/mo", "Status", "Renews"].map((h) => (
-                  <th key={h} className="text-left text-[11px] font-medium uppercase tracking-wide text-gray-400 px-3 py-2 border-b border-gray-200">
+                  <th key={h} className="text-left text-[11px] font-medium uppercase tracking-wide text-gray-400 p-4 p-4 border-b border-gray-200">
                     {h}
                   </th>
                 ))}
@@ -118,24 +118,24 @@ export function AdminServices() {
             <tbody>
               {VPS_SERVICES.map((s) => (
                 <tr key={s.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
-                  <td className="px-3 py-2 font-mono text-[11px] text-[#D50C2D]">{s.id}</td>
-                  <td className="px-3 py-2">
+                  <td className="p-4 p-4 text-[11px] text-[#D50C2D]">{s.id}</td>
+                  <td className="p-4 p-4">
                     <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${s.os === "linux" ? "bg-orange-50 text-orange-700" : "bg-blue-50 text-blue-700"}`}>
                       {s.os === "linux" ? "Linux" : "Windows"}
                     </span>
                   </td>
-                  <td className="px-3 py-2 text-gray-800 max-w-[160px] truncate">{s.label}</td>
-                  <td className="px-3 py-2 text-gray-500">{s.customer}</td>
-                  <td className="px-3 py-2 text-gray-400 text-[11px]">{s.tenant}</td>
-                  <td className="px-3 py-2 font-mono text-[11px] text-gray-400">{s.region}</td>
-                  <td className="px-3 py-2 text-gray-500 text-[11px] whitespace-nowrap">
+                  <td className="p-4 p-4 text-gray-800 max-w-[160px] truncate">{s.label}</td>
+                  <td className="p-4 p-4 text-gray-500">{s.customer}</td>
+                  <td className="p-4 p-4 text-gray-400 text-[11px]">{s.tenant}</td>
+                  <td className="p-4 p-4 text-[11px] text-gray-400">{s.region}</td>
+                  <td className="p-4 p-4 text-gray-500 text-[11px] whitespace-nowrap">
                     {s.cpu}C / {s.ram}G / {s.disk}G
                   </td>
-                  <td className="px-3 py-2 font-mono text-[11px] text-gray-400">{s.ip}</td>
-                  <td className="px-3 py-2 text-gray-400 text-[11px]">{s.provider}</td>
-                  <td className="px-3 py-2 tabular-nums text-right font-medium">{fmtMoney(s.price)}</td>
-                  <td className="px-3 py-2"><StatusBadge status={s.status} dot /></td>
-                  <td className="px-3 py-2 tabular-nums">
+                  <td className="p-4 p-4 text-[11px] text-gray-400">{s.ip}</td>
+                  <td className="p-4 p-4 text-gray-400 text-[11px]">{s.provider}</td>
+                  <td className="p-4 p-4 tabular-nums text-right font-medium">{fmtMoney(s.price)}</td>
+                  <td className="p-4 p-4"><StatusBadge status={s.status} dot /></td>
+                  <td className="p-4 p-4 tabular-nums">
                     <span className={s.renewsIn < 0 ? "text-red-600 font-medium" : s.renewsIn <= 7 ? "text-amber-600" : "text-gray-500"}>
                       {s.renewsIn < 0 ? `${Math.abs(s.renewsIn)}d overdue` : `${s.renewsIn}d`}
                     </span>
@@ -154,7 +154,7 @@ export function AdminServices() {
             <thead>
               <tr className="bg-gray-50">
                 {["ID", "Label", "Customer", "Tenant", "Region", "Used", "Total", "Usage %", "Price/mo", "Status", "Renews"].map((h) => (
-                  <th key={h} className="text-left text-[11px] font-medium uppercase tracking-wide text-gray-400 px-3 py-2 border-b border-gray-200">
+                  <th key={h} className="text-left text-[11px] font-medium uppercase tracking-wide text-gray-400 p-4 p-4 border-b border-gray-200">
                     {h}
                   </th>
                 ))}
@@ -163,15 +163,15 @@ export function AdminServices() {
             <tbody>
               {BANDWIDTH_SERVICES.map((s) => (
                 <tr key={s.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
-                  <td className="px-3 py-2 font-mono text-[11px] text-[#D50C2D]">{s.id}</td>
-                  <td className="px-3 py-2 text-gray-800 max-w-[200px] truncate">{s.label}</td>
-                  <td className="px-3 py-2 text-gray-500">{s.customer}</td>
-                  <td className="px-3 py-2 text-gray-400 text-[11px]">{s.tenant}</td>
-                  <td className="px-3 py-2 font-mono text-[11px] text-gray-400">{s.region}</td>
-                  <td className="px-3 py-2 tabular-nums text-gray-600">{s.usedGB} GB</td>
-                  <td className="px-3 py-2 tabular-nums text-gray-400">{s.totalGB} GB</td>
-                  <td className="px-3 py-2">
-                    <div className="flex items-center gap-2 min-w-[110px]">
+                  <td className="p-4 p-4 text-[11px] text-[#D50C2D]">{s.id}</td>
+                  <td className="p-4 p-4 text-gray-800 max-w-[200px] truncate">{s.label}</td>
+                  <td className="p-4 p-4 text-gray-500">{s.customer}</td>
+                  <td className="p-4 p-4 text-gray-400 text-[11px]">{s.tenant}</td>
+                  <td className="p-4 p-4 text-[11px] text-gray-400">{s.region}</td>
+                  <td className="p-4 p-4 tabular-nums text-gray-600">{s.usedGB} GB</td>
+                  <td className="p-4 p-4 tabular-nums text-gray-400">{s.totalGB} GB</td>
+                  <td className="p-4 p-4">
+                    <div className="flex items-center gap-4 min-w-[110px]">
                       <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full ${s.usedPct >= 90 ? "bg-red-500" : s.usedPct >= 70 ? "bg-amber-400" : "bg-green-500"}`}
@@ -183,9 +183,9 @@ export function AdminServices() {
                       </span>
                     </div>
                   </td>
-                  <td className="px-3 py-2 tabular-nums text-right font-medium">{fmtMoney(s.price)}</td>
-                  <td className="px-3 py-2"><StatusBadge status={s.status} dot /></td>
-                  <td className="px-3 py-2 tabular-nums">
+                  <td className="p-4 p-4 tabular-nums text-right font-medium">{fmtMoney(s.price)}</td>
+                  <td className="p-4 p-4"><StatusBadge status={s.status} dot /></td>
+                  <td className="p-4 p-4 tabular-nums">
                     <span className={s.renewsIn < 0 ? "text-red-600 font-medium" : s.renewsIn <= 7 ? "text-amber-600" : "text-gray-500"}>
                       {s.renewsIn < 0 ? `${Math.abs(s.renewsIn)}d overdue` : `${s.renewsIn}d`}
                     </span>

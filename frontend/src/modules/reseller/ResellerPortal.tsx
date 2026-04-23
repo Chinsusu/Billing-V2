@@ -18,39 +18,49 @@ interface ScreenConfig {
 
 const SCREENS: Record<string, ScreenConfig> = {
   "reseller-overview": {
-    title: "Dashboard", breadcrumbs: ["ProxyVN", "Dashboard"],
+    title: "Overview", breadcrumbs: ["ProxyVN", "Overview"],
     meta: <StatusBadge status="active" dot />,
     component: <ResellerDashboard />,
   },
-  "reseller-clients": {
-    title: "Clients", breadcrumbs: ["ProxyVN", "Clients"],
-    meta: <span className="text-[11px] text-gray-400">312 clients</span>,
+  "reseller-accounts": {
+    title: "Accounts", breadcrumbs: ["ProxyVN", "Customers", "Accounts"],
+    meta: <span className="text-[11px] text-gray-400">312 accounts</span>,
     component: <ResellerClients />,
   },
-  "reseller-catalog": {
-    title: "Catalog / Pricing", breadcrumbs: ["ProxyVN", "Catalog"],
-    meta: <span className="text-[11px] text-amber-600 font-medium">1 margin warning</span>,
-    component: <ResellerCatalog />,
-  },
-  "reseller-services": {
-    title: "Services", breadcrumbs: ["ProxyVN", "Services"],
+  "reseller-tickets": {
+    title: "Support tickets", breadcrumbs: ["ProxyVN", "Customers", "Tickets"],
     component: <ResellerClients />,
   },
-  "reseller-orders": {
-    title: "Orders", breadcrumbs: ["ProxyVN", "Orders"],
+  "reseller-services-proxies": {
+    title: "Proxies", breadcrumbs: ["ProxyVN", "Services", "Proxies"],
     component: <ResellerClients />,
   },
-  "reseller-wallet": {
-    title: "Wallet & Top-up", breadcrumbs: ["ProxyVN", "Finance", "Wallet"],
-    meta: <StatusBadge status="active" dot />,
+  "reseller-services-vps": {
+    title: "VPS", breadcrumbs: ["ProxyVN", "Services", "VPS"],
+    component: <ResellerClients />,
+  },
+  "reseller-services-bandwidth": {
+    title: "Bandwidth", breadcrumbs: ["ProxyVN", "Services", "Bandwidth"],
+    component: <ResellerClients />,
+  },
+  "reseller-invoices": {
+    title: "Invoices", breadcrumbs: ["ProxyVN", "Billing", "Invoices"],
     component: <ResellerWallet />,
   },
+  "reseller-transactions": {
+    title: "Transactions", breadcrumbs: ["ProxyVN", "Billing", "Transactions"],
+    component: <ResellerWallet />,
+  },
+  "reseller-products": {
+    title: "Products & Pricing", breadcrumbs: ["ProxyVN", "Billing", "Products"],
+    component: <ResellerCatalog />,
+  },
   "reseller-reports": {
-    title: "Reports", breadcrumbs: ["ProxyVN", "Reports"],
+    title: "Reports", breadcrumbs: ["ProxyVN", "Billing", "Reports"],
     component: <ResellerDashboard />,
   },
   "reseller-settings": {
-    title: "Branding & Settings", breadcrumbs: ["ProxyVN", "Settings"],
+    title: "Settings", breadcrumbs: ["ProxyVN", "Settings"],
     component: <ResellerSettings />,
   },
 };
@@ -68,7 +78,7 @@ export function ResellerPortal() {
       breadcrumbs={cur.breadcrumbs}
       meta={cur.meta}
       actions={
-        <button className="h-7 px-3 text-[12px] font-medium bg-[#D50C2D] text-white rounded-[3px] border-0 hover:bg-[#B3082A] cursor-pointer">
+        <button className="inline-flex items-center justify-center gap-2 px-4 h-9 text-[13px] font-medium bg-[#D50C2D] hover:bg-[#B3082A] text-white rounded-md border-0 cursor-pointer transition-colors shadow-sm">
           + Top up
         </button>
       }

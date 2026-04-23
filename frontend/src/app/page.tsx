@@ -19,13 +19,13 @@ export default function Home() {
   return (
     <div className="flex flex-col h-full">
       {/* Portal switcher */}
-      <div className="shrink-0 h-8 bg-[#0E1116] flex items-center gap-0.5 px-3 z-50">
+      <div className="shrink-0 h-8 bg-[#0E1116] flex items-center gap-0.5 p-4 z-50">
         <span className="text-[11px] text-gray-500 mr-2">Portal</span>
         {PORTALS.map((p) => (
           <button
             key={p.id}
             onClick={() => setPortal(p.id)}
-            className={`h-[22px] px-2.5 text-[11px] font-medium rounded-[3px] border-0 cursor-pointer transition-colors
+            className={`h-[22px] p-4.5 text-[11px] font-medium rounded-[3px] border-0 cursor-pointer transition-colors
               ${portal === p.id
                 ? "bg-[#D50C2D] text-white"
                 : "bg-transparent text-gray-400 hover:bg-[#1F2937] hover:text-gray-200"

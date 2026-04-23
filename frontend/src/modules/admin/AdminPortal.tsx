@@ -33,9 +33,9 @@ const SCREENS: Record<string, ScreenConfig> = {
     meta: <StatusBadge status="active" dot />,
     component: <AdminOverview />,
   },
-  "admin-tenants": {
-    title: "Tenants", breadcrumbs: ["HANetwork", "Platform", "Tenants"],
-    meta: <span className="text-[11px] text-gray-400">5 tenants · 4 resellers</span>,
+  "admin-accounts": {
+    title: "Accounts", breadcrumbs: ["HANetwork", "Customers", "Accounts"],
+    meta: <span className="text-[11px] text-gray-400">2,852 accounts · 4 resellers</span>,
     component: <AdminTenants />,
   },
   "admin-provisioning": {
@@ -85,6 +85,10 @@ const SCREENS: Record<string, ScreenConfig> = {
     title: "Products & Pricing", breadcrumbs: ["HANetwork", "Billing", "Products"],
     component: <AdminProducts />,
   },
+  "admin-reports": {
+    title: "Reports", breadcrumbs: ["HANetwork", "Billing", "Reports"],
+    component: <AdminOverview />,
+  },
   "admin-alerts": {
     title: "Alerts", breadcrumbs: ["HANetwork", "System", "Alerts"],
     meta: <span className="text-[11px] text-red-600 font-medium">5 open</span>,
@@ -113,7 +117,7 @@ export function AdminPortal() {
       breadcrumbs={cur.breadcrumbs}
       meta={cur.meta}
       actions={
-        <button className="h-7 px-3 text-[12px] font-medium border border-gray-300 rounded-[3px] bg-white hover:bg-gray-50 cursor-pointer">
+        <button className="inline-flex items-center justify-center gap-2 px-4 h-9 text-[13px] font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded-md cursor-pointer transition-colors shadow-sm">
           + New
         </button>
       }

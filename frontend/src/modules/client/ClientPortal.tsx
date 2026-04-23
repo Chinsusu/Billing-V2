@@ -16,34 +16,38 @@ interface ScreenConfig {
 
 const SCREENS: Record<string, ScreenConfig> = {
   "client-overview": {
-    title: "Dashboard", breadcrumbs: ["ProxyVN", "Dashboard"],
+    title: "Overview", breadcrumbs: ["ProxyVN", "Overview"],
     meta: <span className="text-[11px] text-gray-400">Wallet $128.40</span>,
     component: <ClientDashboard />,
   },
-  "client-shop": {
-    title: "Shop", breadcrumbs: ["ProxyVN", "Shop"],
-    component: <ClientShop />,
+  "client-tickets": {
+    title: "Support tickets", breadcrumbs: ["ProxyVN", "Customers", "Tickets"],
+    component: <ClientPlaceholder title="Support tickets" />,
   },
-  "client-services": {
-    title: "My services", breadcrumbs: ["ProxyVN", "Services"],
+  "client-services-proxies": {
+    title: "Proxies", breadcrumbs: ["ProxyVN", "Services", "Proxies"],
     component: <ClientDashboard />,
   },
-  "client-wallet": {
-    title: "Wallet", breadcrumbs: ["ProxyVN", "Billing", "Wallet"],
+  "client-services-vps": {
+    title: "VPS", breadcrumbs: ["ProxyVN", "Services", "VPS"],
+    component: <ClientDashboard />,
+  },
+  "client-services-bandwidth": {
+    title: "Bandwidth", breadcrumbs: ["ProxyVN", "Services", "Bandwidth"],
+    component: <ClientDashboard />,
+  },
+  "client-invoices": {
+    title: "Invoices", breadcrumbs: ["ProxyVN", "Billing", "Invoices"],
+    component: <ClientShop />,
+  },
+  "client-transactions": {
+    title: "Transactions", breadcrumbs: ["ProxyVN", "Billing", "Transactions"],
     meta: <span className="text-[11px] text-gray-400">$128.40</span>,
     component: <ClientWallet />,
   },
-  "client-usage": {
-    title: "Usage", breadcrumbs: ["ProxyVN", "Billing", "Usage"],
-    component: <ClientPlaceholder title="Usage" />,
-  },
   "client-settings": {
-    title: "Settings", breadcrumbs: ["ProxyVN", "Account", "Settings"],
+    title: "Settings", breadcrumbs: ["ProxyVN", "Settings"],
     component: <ClientPlaceholder title="Settings" />,
-  },
-  "client-support": {
-    title: "Support", breadcrumbs: ["ProxyVN", "Support"],
-    component: <ClientPlaceholder title="Support" />,
   },
 };
 

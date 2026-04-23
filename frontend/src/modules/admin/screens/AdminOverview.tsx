@@ -15,9 +15,9 @@ const ACTIVITY_ICONS: Record<ActivityEvent["icon"], React.ReactNode> = {
 
 export function AdminOverview() {
   return (
-    <div className="p-5 flex flex-col gap-4">
+    <div className="p-4 flex flex-col gap-4">
       {/* KPIs */}
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-4 gap-4">
         <KpiCard label="MRR" value="$118.2k" delta={8.4} sub="vs last month" />
         <KpiCard label="Revenue · MTD" value="$29.2k" delta={12.1} sub="Apr 2026" />
         <KpiCard label="Active customers" value="2,847" delta={1.2} sub="net +34" />
@@ -28,15 +28,15 @@ export function AdminOverview() {
       <div className="grid grid-cols-[1.7fr_1fr] gap-4">
         {/* Recent invoices */}
         <div className="bg-white border border-gray-200 rounded">
-          <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="text-[13px] font-semibold text-gray-900 m-0">Recent invoices</h3>
+          <div className="p-4 p-4 border-b border-gray-100 flex items-center justify-between">
+            <h3 className="text-[13px] font-medium text-gray-900 m-0">Recent invoices</h3>
             <a href="#" className="text-[12px] text-[#D50C2D]">View all →</a>
           </div>
           <table className="w-full text-[13px] border-collapse">
             <thead>
               <tr className="bg-gray-50">
                 {["Invoice", "Customer", "Issued", "Due", "Amount", "Status"].map((h) => (
-                  <th key={h} className="text-left text-[11px] font-medium uppercase tracking-wide text-gray-400 px-3 py-2 border-b border-gray-200">
+                  <th key={h} className="text-left text-[11px] font-medium uppercase tracking-wide text-gray-400 p-4 p-4 border-b border-gray-200">
                     {h}
                   </th>
                 ))}
@@ -45,12 +45,12 @@ export function AdminOverview() {
             <tbody>
               {INVOICES.slice(0, 7).map((inv) => (
                 <tr key={inv.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
-                  <td className="px-3 py-2 font-mono text-[12px] text-[#D50C2D]">{inv.id}</td>
-                  <td className="px-3 py-2 text-gray-700">{inv.customer}</td>
-                  <td className="px-3 py-2 text-gray-400">{inv.issued}</td>
-                  <td className="px-3 py-2 text-gray-400">{inv.due}</td>
-                  <td className="px-3 py-2 text-right font-medium tabular-nums">{fmtMoney(inv.amount)}</td>
-                  <td className="px-3 py-2"><StatusBadge status={inv.status} dot /></td>
+                  <td className="p-4 p-4 text-[12px] text-[#D50C2D]">{inv.id}</td>
+                  <td className="p-4 p-4 text-gray-700">{inv.customer}</td>
+                  <td className="p-4 p-4 text-gray-400">{inv.issued}</td>
+                  <td className="p-4 p-4 text-gray-400">{inv.due}</td>
+                  <td className="p-4 p-4 text-right font-medium tabular-nums">{fmtMoney(inv.amount)}</td>
+                  <td className="p-4 p-4"><StatusBadge status={inv.status} dot /></td>
                 </tr>
               ))}
             </tbody>
@@ -59,15 +59,15 @@ export function AdminOverview() {
 
         {/* Activity feed */}
         <div className="bg-white border border-gray-200 rounded">
-          <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="text-[13px] font-semibold text-gray-900 m-0">Activity feed</h3>
+          <div className="p-4 p-4 border-b border-gray-100 flex items-center justify-between">
+            <h3 className="text-[13px] font-medium text-gray-900 m-0">Activity feed</h3>
             <span className="text-[11px] text-gray-400">Live</span>
           </div>
           <div>
             {ACTIVITY_FEED.map((a, i) => (
               <div
                 key={i}
-                className="flex gap-2.5 px-4 py-2.5 border-b border-gray-100 last:border-0 items-start"
+                className="flex gap-4.5 p-4 p-4.5 border-b border-gray-100 last:border-0 items-start"
               >
                 <div
                   className={`w-[22px] h-[22px] rounded-full grid place-items-center text-[11px] shrink-0
@@ -90,8 +90,8 @@ export function AdminOverview() {
 
       {/* Infrastructure health */}
       <div className="bg-white border border-gray-200 rounded">
-        <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-          <h3 className="text-[13px] font-semibold text-gray-900 m-0">Infrastructure health</h3>
+        <div className="p-4 p-4 border-b border-gray-100 flex items-center justify-between">
+          <h3 className="text-[13px] font-medium text-gray-900 m-0">Infrastructure health</h3>
           <StatusBadge status="active" dot />
         </div>
         <div>
@@ -102,7 +102,7 @@ export function AdminOverview() {
             { label: "API · p95 latency", value: "142ms", bar: 0.82 },
             { label: "Support · first response", value: "8m avg", bar: 0.72 },
           ].map((r, i) => (
-            <div key={i} className="px-4 py-2.5 border-b border-gray-100 last:border-0">
+            <div key={i} className="p-4 p-4.5 border-b border-gray-100 last:border-0">
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-[12px] text-gray-700">{r.label}</span>
                 <span className="text-[12px] font-medium tabular-nums">{r.value}</span>

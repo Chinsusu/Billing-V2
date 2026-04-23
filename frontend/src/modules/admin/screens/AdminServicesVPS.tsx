@@ -1,54 +1,125 @@
+"use client";
+import { useState } from "react";
+import { TablePagination } from "@/components/ui/TablePagination";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { Settings, Edit2 } from "lucide-react";
 import { VPS_SERVICES } from "@/mocks/billingData";
-import { fmtMoney } from "@/mocks/sampleData";
 
 export function AdminServicesVPS() {
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const displayed = limit === -1 ? VPS_SERVICES : VPS_SERVICES.slice((page - 1) * limit, page * limit);
+
+  const cols = [
+    { label: "ID", align: "left" },
+    { label: "Host:Port", align: "left" },
+    { label: "User/Pass", align: "left" },
+    { label: "Port(http/Socks)", align: "left" },
+    { label: "Status", align: "center" },
+    { label: "Region", align: "left" },
+    { label: "Member", align: "left" },
+    { label: "Plan", align: "center" },
+    { label: "Date", align: "left" },
+    { label: "Expire", align: "center" },
+    { label: "Auto Renew", align: "center" },
+    { label: "Protection", align: "center" },
+    { label: "Action", align: "center" },
+  ];
+
   return (
-    <div className="p-5">
-      <div className="bg-white border border-gray-200 rounded">
-        <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-          <h3 className="text-[13px] font-semibold text-gray-900 m-0">VPS</h3>
+    <div className="p-4">
+      <div className="bg-white border border-gray-200 rounded shadow-sm text-[12px]">
+        <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+          <h3 className="text-[13px] font-medium text-gray-900 m-0">VPS</h3>
           <span className="text-[11px] text-gray-400">{VPS_SERVICES.length} services</span>
         </div>
-        <table className="w-full text-[13px] border-collapse">
-          <thead>
-            <tr className="bg-gray-50">
-              {["ID", "OS", "Label", "Customer", "Tenant", "Region", "Spec", "IP", "Provider", "Price/mo", "Status", "Renews"].map((h) => (
-                <th key={h} className="text-left text-[11px] font-medium uppercase tracking-wide text-gray-400 px-3 py-2 border-b border-gray-200">
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {VPS_SERVICES.map((s) => (
-              <tr key={s.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
-                <td className="px-3 py-2 font-mono text-[11px] text-[#D50C2D]">{s.id}</td>
-                <td className="px-3 py-2">
-                  <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${s.os === "linux" ? "bg-orange-50 text-orange-700" : "bg-blue-50 text-blue-700"}`}>
-                    {s.os === "linux" ? "Linux" : "Windows"}
-                  </span>
-                </td>
-                <td className="px-3 py-2 text-gray-800 max-w-[160px] truncate">{s.label}</td>
-                <td className="px-3 py-2 text-gray-500">{s.customer}</td>
-                <td className="px-3 py-2 text-gray-400 text-[11px]">{s.tenant}</td>
-                <td className="px-3 py-2 font-mono text-[11px] text-gray-400">{s.region}</td>
-                <td className="px-3 py-2 text-gray-500 text-[11px] whitespace-nowrap">
-                  {s.cpu}C / {s.ram}G / {s.disk}G
-                </td>
-                <td className="px-3 py-2 font-mono text-[11px] text-gray-400">{s.ip}</td>
-                <td className="px-3 py-2 text-gray-400 text-[11px]">{s.provider}</td>
-                <td className="px-3 py-2 tabular-nums text-right font-medium">{fmtMoney(s.price)}</td>
-                <td className="px-3 py-2"><StatusBadge status={s.status} dot /></td>
-                <td className="px-3 py-2 tabular-nums">
-                  <span className={s.renewsIn < 0 ? "text-red-600 font-medium" : s.renewsIn <= 7 ? "text-amber-600" : "text-gray-500"}>
-                    {s.renewsIn < 0 ? `${Math.abs(s.renewsIn)}d overdue` : `${s.renewsIn}d`}
-                  </span>
-                </td>
+        <div className="overflow-x-auto max-w-full">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-gray-50 text-gray-500">
+                {cols.map((c) => (
+                  <th key={c.label} className={`font-medium p-3 text-${c.align} border-b border-gray-200 text-[11px] tracking-wider`}>
+                    {c.label}
+                  </th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white text-gray-600">
+              {displayed.map((s, i) => {
+                const now = new Date();
+                const exp = new Date(now.getTime() + s.renewsIn * 24 * 3600 * 1000);
+                const ord = new Date(exp.getTime() - 30 * 24 * 3600 * 1000);
+                const pad = (n: number) => n.toString().padStart(2, '0');
+                const f = (d: Date) => `${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+
+                return (
+                  <tr key={s.id} className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer" onClick={(e) => { if(!(e.target as Element).closest("button") && !(e.target as Element).closest("svg") && !(e.target as Element).closest(".bg-emerald-500") && !(e.target as Element).closest(".bg-gray-200")) alert("Tưởng tượng đang chuyển tới trang Details của ID: " + s.id) }}>
+                    <td className="p-3 text-[#D50C2D] font-medium">{s.id}</td>
+                    <td className="p-3">
+                      <div className="bg-gray-100/80 rounded px-2 py-1 text-[11px] inline-flex items-center gap-1 border border-gray-200/50">
+                        {s.ip}:3389 <Edit2 size={10} className="text-gray-400 cursor-pointer" />
+                      </div>
+                    </td>
+                    <td className="p-3">
+                      <div className="flex flex-col gap-1.5 align-start items-start">
+                        <div className="bg-gray-100/80 rounded px-2 py-1 text-[11px] inline-flex items-center gap-1 border border-gray-200/50">
+                          administrator <Edit2 size={10} className="text-gray-400 cursor-pointer" />
+                        </div>
+                        <div className="bg-gray-100/80 rounded px-2 py-1 text-[11px] inline-flex items-center gap-1 border border-gray-200/50">
+                          vpsPass{i}** <Edit2 size={10} className="text-gray-400 cursor-pointer" />
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-3 text-[11px]">
+                      <div className="flex flex-col text-gray-500 gap-1.5 align-start items-start">
+                        <div className="flex items-center gap-1">OS: <span className="bg-gray-100 rounded px-1 text-gray-500 text-[10px]">{s.os}</span> <Edit2 size={10} className="cursor-pointer text-gray-400" /></div>
+                        <div className="flex items-center gap-1">Spec: <span className="bg-gray-100 rounded px-1 text-gray-500 text-[10px]">{s.cpu}C/{s.ram}G</span> <Edit2 size={10} className="cursor-pointer text-gray-400" /></div>
+                      </div>
+                    </td>
+                    <td className="p-3 text-center"><StatusBadge status={s.status} dot /></td>
+                    <td className="p-3">{s.region}</td>
+                    <td className="p-3 text-[11px]">
+                      <div className="font-medium text-gray-800">{s.customer}</div>
+                      <div className="text-gray-400">{s.tenant.toLowerCase().replace(/ /g, '')}@gmail.com</div>
+                    </td>
+                    <td className="p-3 text-center">
+                      <div className="flex flex-col items-center gap-1.5">
+                        <div className="bg-indigo-500 text-white rounded-full px-3 py-1 text-[10px] font-medium leading-none">vps-plan</div>
+                        <div className="bg-indigo-500 text-white rounded-full px-3 py-1 text-[10px] font-medium leading-none">{s.price.toLocaleString()}</div>
+                      </div>
+                    </td>
+                    <td className="p-3 text-[10px] text-gray-400 leading-tight">
+                      <div className="mb-0.5">{f(ord)}</div>
+                      <div>{f(exp)}</div>
+                    </td>
+                    <td className="p-3 text-center">
+                      <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium text-white ${s.renewsIn < 0 ? "bg-[#D50C2D]" : "bg-[#D50C2D]"}`}>
+                        {s.renewsIn < 0 ? `quá hạn ${Math.abs(s.renewsIn)} ngày` : `còn ${s.renewsIn} ngày`}
+                        <Edit2 size={10} />
+                      </span>
+                    </td>
+                    <td className="p-3 text-center">
+                      <div className="w-8 h-4 bg-emerald-500 rounded-full inline-block relative cursor-pointer border border-emerald-600">
+                        <div className="w-3 h-3 bg-white shadow rounded-full absolute right-0.5 top-0.5"></div>
+                      </div>
+                    </td>
+                    <td className="p-3 text-center">
+                      <div className="w-8 h-4 bg-gray-200 rounded-full inline-block relative cursor-pointer border border-gray-300">
+                        <div className="w-3 h-3 bg-white shadow rounded-full absolute left-0.5 top-0.5"></div>
+                      </div>
+                    </td>
+                    <td className="p-3 text-center">
+                      <button className="text-gray-400 hover:text-gray-600 p-1 rounded transition-colors cursor-pointer bg-transparent border-0 inline-flex items-center justify-center">
+                        <Settings size={14} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <TablePagination page={page} setPage={setPage} limit={limit} setLimit={setLimit} total={VPS_SERVICES.length} />
       </div>
     </div>
   );
