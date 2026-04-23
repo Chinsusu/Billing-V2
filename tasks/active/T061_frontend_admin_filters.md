@@ -1,12 +1,12 @@
 # T061 - Frontend admin filters
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: feat/frontend-admin-filters
 PR: -
 Risk: frontend/API
 Created: 2026-04-23
-Updated: 2026-04-23
+Updated: 2026-04-24
 
 ## Summary
 
@@ -32,3 +32,4 @@ Wire admin list screens to the backend search filters for practical support work
 ## Agent Log
 
 - 2026-04-23: Task created after backend search filters merged.
+- 2026-04-24: Codex claimed the task and started wiring shared admin filter controls to the live billing API queries.
