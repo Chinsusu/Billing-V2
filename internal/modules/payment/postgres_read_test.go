@@ -83,3 +83,21 @@ func TestBuildGetTransactionQueryAddsAccountScope(t *testing.T) {
 		t.Fatalf("unexpected args: %#v", args)
 	}
 }
+
+func TestBuildGetTransactionQuerySupportsIdempotencyLookup(t *testing.T) {
+	query, args, err := buildGetTransactionQuery(TransactionLookup{
+		TenantID:       tenant.ID("tenant-1"),
+		IdempotencyKey: IdempotencyKey(" key-1 "),
+	})
+	if err != nil {
+		t.Fatalf("expected query: %v", err)
+	}
+	for _, clause := range []string{"txn.tenant_id = $1", "txn.idempotency_key = $2"} {
+		if !strings.Contains(query, clause) {
+			t.Fatalf("expected %q in query: %s", clause, query)
+		}
+	}
+	if len(args) != 2 || args[1] != IdempotencyKey("key-1") {
+		t.Fatalf("unexpected args: %#v", args)
+	}
+}

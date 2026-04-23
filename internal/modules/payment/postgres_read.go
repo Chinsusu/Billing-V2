@@ -80,8 +80,21 @@ WHERE txn.tenant_id = $1`
 }
 
 func buildGetTransactionQuery(lookup TransactionLookup) (string, []interface{}, error) {
+	lookup = normalizeTransactionLookup(lookup)
 	if err := validateTransactionLookup(lookup); err != nil {
 		return "", nil, err
+	}
+	if lookup.ID.Empty() {
+		query := `SELECT ` + transactionReadColumns + `
+FROM payment_transactions txn
+WHERE txn.tenant_id = $1
+  AND txn.idempotency_key = $2`
+		args := []interface{}{lookup.TenantID, lookup.IdempotencyKey}
+		if lookup.AccountUserID != "" {
+			args = append(args, lookup.AccountUserID)
+			query += fmt.Sprintf("\n  AND txn.account_user_id = $%d", len(args))
+		}
+		return query, args, nil
 	}
 	query := `SELECT ` + transactionReadColumns + `
 FROM payment_transactions txn

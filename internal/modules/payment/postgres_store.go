@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/Chinsusu/Billing-V2/internal/modules/invoice"
+	"github.com/Chinsusu/Billing-V2/internal/modules/wallet"
 	platformdb "github.com/Chinsusu/Billing-V2/internal/platform/db"
 )
 
@@ -35,6 +37,41 @@ func (store *PostgresStore) CreateTransaction(ctx context.Context, input CreateT
 		return Transaction{}, err
 	}
 	return scanTransaction(store.executor.QueryRowContext(ctx, createTransactionSQL, args...))
+}
+
+func (store *PostgresStore) PayInvoiceFromWallet(ctx context.Context, input PayInvoiceFromWalletInput) (WalletInvoicePayment, error) {
+	if err := store.ready(); err != nil {
+		return WalletInvoicePayment{}, err
+	}
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return WalletInvoicePayment{}, err
+	}
+	if conn, ok := store.executor.(*sql.DB); ok {
+		var result WalletInvoicePayment
+		err := platformdb.WithTx(ctx, conn, func(ctx context.Context, tx *sql.Tx) error {
+			var runErr error
+			result, runErr = payInvoiceFromWallet(
+				ctx,
+				NewPostgresStore(tx),
+				invoice.NewPostgresStore(tx),
+				wallet.NewService(wallet.NewPostgresStore(tx)),
+				input,
+			)
+			return runErr
+		})
+		if err != nil {
+			return WalletInvoicePayment{}, err
+		}
+		return result, nil
+	}
+	return payInvoiceFromWallet(
+		ctx,
+		store,
+		invoice.NewPostgresStore(store.executor),
+		wallet.NewService(wallet.NewPostgresStore(store.executor)),
+		input,
+	)
 }
 
 func createTransactionArgs(input CreateTransactionInput) ([]interface{}, error) {

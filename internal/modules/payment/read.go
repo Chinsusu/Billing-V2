@@ -29,11 +29,18 @@ func validateTransactionFilter(filter TransactionFilter) error {
 }
 
 func validateTransactionLookup(lookup TransactionLookup) error {
-	if lookup.ID.Empty() {
+	lookup = normalizeTransactionLookup(lookup)
+	if lookup.ID.Empty() && lookup.IdempotencyKey == "" {
 		return ErrTransactionIDMissing
 	}
 	if lookup.TenantID.Empty() {
 		return tenant.ErrTenantIDMissing
 	}
 	return nil
+}
+
+func normalizeTransactionLookup(lookup TransactionLookup) TransactionLookup {
+	output := lookup
+	output.IdempotencyKey = IdempotencyKey(trim(string(output.IdempotencyKey)))
+	return output
 }

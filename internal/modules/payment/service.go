@@ -3,11 +3,25 @@ package payment
 import "context"
 
 type Service struct {
-	store Store
+	store              Store
+	invoiceStore       InvoicePaymentStore
+	walletService      WalletPaymentService
+	walletPaymentStore WalletInvoicePaymentStore
 }
 
 func NewService(store Store) *Service {
-	return &Service{store: store}
+	service := &Service{store: store}
+	if walletPaymentStore, ok := store.(WalletInvoicePaymentStore); ok {
+		service.walletPaymentStore = walletPaymentStore
+	}
+	return service
+}
+
+func NewServiceWithBilling(store Store, invoiceStore InvoicePaymentStore, walletService WalletPaymentService) *Service {
+	service := NewService(store)
+	service.invoiceStore = invoiceStore
+	service.walletService = walletService
+	return service
 }
 
 func (service *Service) CreateTransaction(ctx context.Context, input CreateTransactionInput) (Transaction, error) {
@@ -40,6 +54,23 @@ func (service *Service) GetTransaction(ctx context.Context, lookup TransactionLo
 		return Transaction{}, err
 	}
 	return service.store.GetTransaction(ctx, lookup)
+}
+
+func (service *Service) PayInvoiceFromWallet(ctx context.Context, input PayInvoiceFromWalletInput) (WalletInvoicePayment, error) {
+	if err := service.ready(); err != nil {
+		return WalletInvoicePayment{}, err
+	}
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return WalletInvoicePayment{}, err
+	}
+	if service.walletPaymentStore != nil {
+		return service.walletPaymentStore.PayInvoiceFromWallet(ctx, input)
+	}
+	if service.invoiceStore == nil || service.walletService == nil {
+		return WalletInvoicePayment{}, ErrBillingDependencyMissing
+	}
+	return payInvoiceFromWallet(ctx, service.store, service.invoiceStore, service.walletService, input)
 }
 
 func (service *Service) ready() error {

@@ -36,6 +36,17 @@ func (service *Service) GetInvoice(ctx context.Context, lookup InvoiceLookup) (I
 	return service.store.GetInvoice(ctx, lookup)
 }
 
+func (service *Service) MarkInvoicePaid(ctx context.Context, input MarkInvoicePaidInput) (InvoiceDetail, error) {
+	if err := service.ready(); err != nil {
+		return InvoiceDetail{}, err
+	}
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return InvoiceDetail{}, err
+	}
+	return service.store.MarkInvoicePaid(ctx, input)
+}
+
 func (service *Service) ready() error {
 	if service == nil || service.store == nil {
 		return ErrServiceStoreMissing
