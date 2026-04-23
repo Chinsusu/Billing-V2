@@ -68,6 +68,7 @@ DONE         PR merged into main
 | T025 | [tasks/active/T025_catalog_admin_read_api.md](tasks/active/T025_catalog_admin_read_api.md) | feat/catalog-admin-read-api | API/catalog | Add admin catalog read/list API endpoints for products, plans, and provider sources. |
 | T026 | [tasks/active/T026_catalog_admin_status_api.md](tasks/active/T026_catalog_admin_status_api.md) | feat/catalog-admin-update-api | API/catalog | Add admin catalog status update endpoints for products, plans, and provider sources. |
 | T027 | [tasks/active/T027_order_domain_skeleton.md](tasks/active/T027_order_domain_skeleton.md) | feat/order-domain-skeleton | order/service/lifecycle | Add order domain lifecycle skeleton for orders, reservations, provisioning, and services. |
+| T028 | [tasks/active/T028_order_schema_migration.md](tasks/active/T028_order_schema_migration.md) | feat/order-schema-migration | migration/order/service | Add PostgreSQL tables for order, reservation, provisioning, and service lifecycle records. |
 
 ## Completed Tasks
 
