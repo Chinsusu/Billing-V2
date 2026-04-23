@@ -1,6 +1,6 @@
 # T020 - Catalog API handlers
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/catalog-api-handlers
 PR: https://github.com/Chinsusu/Billing-V2/pull/49
@@ -36,3 +36,4 @@ Add catalog HTTP handlers on top of the catalog service layer so future app wiri
 
 - 2026-04-23: Task created and claimed from latest `origin/main` in `/tmp/Billing-T020`.
 - 2026-04-23: Opened PR #49. Validation passed: `go test ./internal/modules/catalog ./internal/app`, `make fmt`, `make test`, `make build`, `make migrate-validate`.
+- 2026-04-23: PR #49 merged into `main`.
