@@ -12,6 +12,14 @@ import (
 	"github.com/Chinsusu/Billing-V2/internal/platform/middleware"
 )
 
+type RouteRegistrar interface {
+	RegisterRoutes(mux *http.ServeMux)
+}
+
+type APIOptions struct {
+	CatalogRoutes RouteRegistrar
+}
+
 type API struct {
 	cfg     config.Config
 	log     *logger.Logger
@@ -25,6 +33,10 @@ type HealthResponse struct {
 }
 
 func NewAPI(cfg config.Config, log *logger.Logger) (*API, error) {
+	return NewAPIWithOptions(cfg, log, APIOptions{})
+}
+
+func NewAPIWithOptions(cfg config.Config, log *logger.Logger, options APIOptions) (*API, error) {
 	if err := cfg.Validate(); err != nil {
 		return nil, err
 	}
@@ -39,6 +51,9 @@ func NewAPI(cfg config.Config, log *logger.Logger) (*API, error) {
 	}
 	mux.HandleFunc("/healthz", middleware.RequireMethod(http.MethodGet, api.handleHealth))
 	mux.HandleFunc("/readyz", middleware.RequireMethod(http.MethodGet, api.handleReady))
+	if options.CatalogRoutes != nil {
+		options.CatalogRoutes.RegisterRoutes(mux)
+	}
 	api.handler = httpserver.WithRequestID(
 		middleware.Chain(
 			mux,
