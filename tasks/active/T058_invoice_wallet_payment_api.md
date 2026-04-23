@@ -1,9 +1,9 @@
 # T058 - Invoice wallet payment API
 
-Status: IN_PROGRESS
+Status: DONE
 Owner: Codex
 Branch: feat/invoice-wallet-payment-api
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/132
 Risk: API/payment/money
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -36,3 +36,4 @@ Expose a client API endpoint that lets a customer pay an issued or overdue invoi
 
 - 2026-04-23: Task created for the next backend payment action.
 - 2026-04-23: Codex started the client invoice wallet payment API endpoint.
+- 2026-04-23: PR #132 merged. Added the client wallet payment endpoint and passed backend gates.
