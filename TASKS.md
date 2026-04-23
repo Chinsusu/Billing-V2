@@ -67,6 +67,7 @@ DONE         PR merged into main
 | T024 | [tasks/active/T024_dev_seed_data.md](tasks/active/T024_dev_seed_data.md) | feat/dev-seed-data | seed/catalog/RBAC | Add idempotent development seed runner for RBAC permissions, demo users, catalog, and reseller catalog data. |
 | T025 | [tasks/active/T025_catalog_admin_read_api.md](tasks/active/T025_catalog_admin_read_api.md) | feat/catalog-admin-read-api | API/catalog | Add admin catalog read/list API endpoints for products, plans, and provider sources. |
 | T026 | [tasks/active/T026_catalog_admin_status_api.md](tasks/active/T026_catalog_admin_status_api.md) | feat/catalog-admin-update-api | API/catalog | Add admin catalog status update endpoints for products, plans, and provider sources. |
+| T027 | [tasks/active/T027_order_domain_skeleton.md](tasks/active/T027_order_domain_skeleton.md) | feat/order-domain-skeleton | order/service/lifecycle | Add order domain lifecycle skeleton for orders, reservations, provisioning, and services. |
 
 ## Completed Tasks
 
