@@ -129,7 +129,6 @@ export function AdminTenants() {
               className="h-9 px-3 text-[13px] border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-400 bg-white"
             >
               <option value="reseller">Reseller</option>
-              <option value="admin">Admin</option>
             </select>
           </div>
 
