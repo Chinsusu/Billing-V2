@@ -26,8 +26,8 @@ export function AdminServicesProxies() {
           <h3 className="text-[13px] font-medium text-gray-900 m-0">Proxies</h3>
           <span className="text-[11px] text-gray-400">{PROXY_SERVICES.length} services</span>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse whitespace-nowrap">
+        <div className="overflow-x-auto max-w-full">
+          <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 text-gray-500">
                 {cols.map((c) => (
