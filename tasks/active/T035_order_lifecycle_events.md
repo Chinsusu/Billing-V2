@@ -1,7 +1,7 @@
 # T035 - Order lifecycle events
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: feat/order-lifecycle-events
 PR: -
 Risk: order/outbox
@@ -35,3 +35,4 @@ Publish outbox events when orders are created and when order status changes, so 
 ## Agent Log
 
 - 2026-04-23: Task created for the next backend batch.
+- 2026-04-23: Claimed by Codex from latest `origin/main` in `/tmp/Billing-T035`.
