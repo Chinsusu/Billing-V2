@@ -69,6 +69,24 @@ func TestHTTPHandlerClientCatalogRequiresTenant(t *testing.T) {
 	}
 }
 
+func TestHTTPHandlerClientCatalogUsesTenantContext(t *testing.T) {
+	service := &fakeCatalogHTTPService{}
+	handler := registerCatalogTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/client/catalog", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_context")))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.tenantCatalogFilter.TenantID != tenant.ID("tenant_context") {
+		t.Fatalf("expected tenant from context, got %q", service.tenantCatalogFilter.TenantID)
+	}
+}
+
 func TestHTTPHandlerClientCatalogOmitsResellerCost(t *testing.T) {
 	service := &fakeCatalogHTTPService{
 		tenantCatalog: TenantCatalog{

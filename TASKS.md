@@ -62,6 +62,7 @@ DONE         PR merged into main
 | T019 | [tasks/active/T019_catalog_service_layer.md](tasks/active/T019_catalog_service_layer.md) | feat/catalog-service-layer | catalog/pricing | Add catalog service layer for admin catalog setup, tenant cloning, margin guard, and catalog list flows. |
 | T020 | [tasks/active/T020_catalog_api_handlers.md](tasks/active/T020_catalog_api_handlers.md) | feat/catalog-api-handlers | API/catalog | Add catalog HTTP handler routes and API option wiring on top of the catalog service. |
 | T021 | [tasks/active/T021_catalog_api_runtime_wiring.md](tasks/active/T021_catalog_api_runtime_wiring.md) | feat/catalog-api-runtime-wiring | API/DB/catalog | Wire catalog HTTP routes into the API runtime when database config is present. |
+| T022 | [tasks/active/T022_http_tenant_context_middleware.md](tasks/active/T022_http_tenant_context_middleware.md) | feat/http-tenant-context-middleware | API/tenant | Add HTTP tenant context middleware and make catalog tenant routes read tenant scope from request context. |
 
 ## Completed Tasks
 
