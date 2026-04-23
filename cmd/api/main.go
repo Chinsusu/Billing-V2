@@ -12,6 +12,7 @@ import (
 	"github.com/Chinsusu/Billing-V2/internal/app"
 	"github.com/Chinsusu/Billing-V2/internal/modules/catalog"
 	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
+	"github.com/Chinsusu/Billing-V2/internal/modules/order"
 	"github.com/Chinsusu/Billing-V2/internal/modules/rbac"
 	"github.com/Chinsusu/Billing-V2/internal/platform/config"
 	platformdb "github.com/Chinsusu/Billing-V2/internal/platform/db"
@@ -69,6 +70,7 @@ func newRuntime(ctx context.Context, cfg config.Config, log *logger.Logger, open
 		}
 		cleanup = conn.Close
 		options.CatalogRoutes = newCatalogRoutes(conn)
+		options.OrderRoutes = newOrderRoutes(conn)
 	}
 
 	api, err := app.NewAPIWithOptions(cfg, log, options)
@@ -92,6 +94,40 @@ func newCatalogRoutes(executor platformdb.Executor) app.RouteRegistrar {
 		ResellerManageMiddleware: catalogAuthMiddleware(authorizer, rbac.PermissionCatalogManage, rbac.RiskMedium),
 		ClientMiddleware:         catalogAuthMiddleware(authorizer, rbac.PermissionCatalogView, rbac.RiskLow),
 	})
+}
+
+func newOrderRoutes(executor platformdb.Executor) app.RouteRegistrar {
+	store := order.NewPostgresStore(executor)
+	service := order.NewService(store)
+	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
+	return order.NewHTTPHandlerWithOptions(service, order.HTTPHandlerOptions{
+		ClientMiddleware: orderAuthMiddleware(authorizer, rbac.PermissionOrderCreate, rbac.RiskMedium),
+	})
+}
+
+func orderAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) order.RouteMiddleware {
+	return chainOrderMiddleware(
+		wrapOrderMiddleware(identity.HeaderActorMiddleware),
+		order.RouteMiddleware(rbac.RequirePermission(authorizer, permission, risk)),
+	)
+}
+
+func chainOrderMiddleware(middlewares ...order.RouteMiddleware) order.RouteMiddleware {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		for index := len(middlewares) - 1; index >= 0; index-- {
+			if middlewares[index] == nil {
+				continue
+			}
+			next = middlewares[index](next)
+		}
+		return next
+	}
+}
+
+func wrapOrderMiddleware(middleware func(http.Handler) http.Handler) order.RouteMiddleware {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		return middleware(http.HandlerFunc(next)).ServeHTTP
+	}
 }
 
 func catalogAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) catalog.RouteMiddleware {

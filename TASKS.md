@@ -71,6 +71,7 @@ DONE         PR merged into main
 | T028 | [tasks/active/T028_order_schema_migration.md](tasks/active/T028_order_schema_migration.md) | feat/order-schema-migration | migration/order/service | Add PostgreSQL tables for order, reservation, provisioning, and service lifecycle records. |
 | T029 | [tasks/active/T029_order_postgres_store.md](tasks/active/T029_order_postgres_store.md) | feat/order-postgres-store | order/DB | Add PostgreSQL store implementation for order domain create contracts. |
 | T030 | [tasks/active/T030_order_service_layer.md](tasks/active/T030_order_service_layer.md) | feat/order-service-layer | order/service | Add order service layer methods on top of the order store contracts. |
+| T031 | [tasks/active/T031_order_api_handlers.md](tasks/active/T031_order_api_handlers.md) | feat/order-api-handlers | API/order | Add client order creation HTTP handler and runtime wiring. |
 
 ## Completed Tasks
 

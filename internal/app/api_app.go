@@ -18,6 +18,7 @@ type RouteRegistrar interface {
 
 type APIOptions struct {
 	CatalogRoutes RouteRegistrar
+	OrderRoutes   RouteRegistrar
 }
 
 type API struct {
@@ -53,6 +54,9 @@ func NewAPIWithOptions(cfg config.Config, log *logger.Logger, options APIOptions
 	mux.HandleFunc("/readyz", middleware.RequireMethod(http.MethodGet, api.handleReady))
 	if options.CatalogRoutes != nil {
 		options.CatalogRoutes.RegisterRoutes(mux)
+	}
+	if options.OrderRoutes != nil {
+		options.OrderRoutes.RegisterRoutes(mux)
 	}
 	api.handler = httpserver.WithRequestID(
 		middleware.Chain(
