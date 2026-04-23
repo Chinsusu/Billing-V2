@@ -15,6 +15,27 @@ interface NewProductForm {
 
 const EMPTY: NewProductForm = { sku: "", name: "", unit: "", price: "" };
 
+function FormField({ label, placeholder, value, onChange, error, type = "text" }: {
+  label: string; placeholder: string; value: string;
+  onChange: (v: string) => void; error?: string; type?: string;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-[11px] font-medium uppercase tracking-wide text-gray-500">
+        {label} <span className="text-red-500">*</span>
+      </label>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="h-9 px-3 text-[13px] border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-400"
+      />
+      {error && <span className="text-[11px] text-red-500">{error}</span>}
+    </div>
+  );
+}
+
 export function AdminProducts() {
   const { toast } = useToast();
   const [products, setProducts] = useState<ProductCatalog[]>(PRODUCTS);
@@ -33,6 +54,8 @@ export function AdminProducts() {
     return Object.keys(e).length === 0;
   };
 
+  const handleClose = () => { setShowForm(false); setForm(EMPTY); setErrors({}); };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
@@ -46,28 +69,8 @@ export function AdminProducts() {
     };
     setProducts((prev) => [...prev, newProduct]);
     toast(`Product "${newProduct.name}" added`, "success");
-    setShowForm(false);
-    setForm(EMPTY);
-    setErrors({});
+    handleClose();
   };
-
-  const Field = ({ id, label, placeholder, value, onChange, error }: {
-    id: keyof NewProductForm; label: string; placeholder: string;
-    value: string; onChange: (v: string) => void; error?: string;
-  }) => (
-    <div className="flex flex-col gap-1">
-      <label className="text-[11px] font-medium uppercase tracking-wide text-gray-500">
-        {label} <span className="text-red-500">*</span>
-      </label>
-      <input
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="h-9 px-3 text-[13px] border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-400"
-      />
-      {error && <span className="text-[11px] text-red-500">{error}</span>}
-    </div>
-  );
 
   return (
     <div className="p-4">
@@ -106,17 +109,17 @@ export function AdminProducts() {
         </table>
       </div>
 
-      <Modal open={showForm} onClose={() => { setShowForm(false); setForm(EMPTY); setErrors({}); }} title="Add product" description="Add a new product or pricing plan">
+      <Modal open={showForm} onClose={handleClose} title="Add product" description="Add a new product or pricing plan">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-3">
-            <Field id="sku" label="SKU" placeholder="PRX-RES-STD" value={form.sku} onChange={(v) => setForm((f) => ({ ...f, sku: v }))} error={errors.sku} />
-            <Field id="price" label="Price (USD)" placeholder="6.50" value={form.price} onChange={(v) => setForm((f) => ({ ...f, price: v }))} error={errors.price} />
+            <FormField label="SKU" placeholder="PRX-RES-STD" value={form.sku} onChange={(v) => setForm((f) => ({ ...f, sku: v }))} error={errors.sku} />
+            <FormField label="Price (USD)" placeholder="6.50" value={form.price} onChange={(v) => setForm((f) => ({ ...f, price: v }))} error={errors.price} type="number" />
           </div>
-          <Field id="name" label="Name" placeholder="Residential · Standard" value={form.name} onChange={(v) => setForm((f) => ({ ...f, name: v }))} error={errors.name} />
-          <Field id="unit" label="Unit" placeholder="per GB" value={form.unit} onChange={(v) => setForm((f) => ({ ...f, unit: v }))} error={errors.unit} />
+          <FormField label="Name" placeholder="Residential · Standard" value={form.name} onChange={(v) => setForm((f) => ({ ...f, name: v }))} error={errors.name} />
+          <FormField label="Unit" placeholder="per GB" value={form.unit} onChange={(v) => setForm((f) => ({ ...f, unit: v }))} error={errors.unit} />
 
           <div className="flex justify-end gap-2 pt-1 border-t border-gray-100">
-            <button type="button" onClick={() => { setShowForm(false); setForm(EMPTY); setErrors({}); }} className="h-9 px-4 text-[13px] font-medium bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 cursor-pointer transition-colors">
+            <button type="button" onClick={handleClose} className="h-9 px-4 text-[13px] font-medium bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 cursor-pointer transition-colors">
               Cancel
             </button>
             <button type="submit" className="h-9 px-4 text-[13px] font-medium bg-[#D50C2D] hover:bg-[#B3082A] text-white rounded-md border-0 cursor-pointer transition-colors">
