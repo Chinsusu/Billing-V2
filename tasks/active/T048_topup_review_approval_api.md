@@ -1,9 +1,9 @@
 # T048 - Top-up review and approval API
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/topup-review-approval-api
-PR: pending
+PR: https://github.com/Chinsusu/Billing-V2/pull/110
 Risk: wallet/topup/money/API
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -37,3 +37,4 @@ Add admin review actions for wallet top-up requests, including approval that cre
 
 - 2026-04-23: Task created for manual wallet funding workflow.
 - 2026-04-23: Implemented admin approve/reject top-up review flow, ledger credit handoff, review middleware, and focused tests.
+- 2026-04-23: PR #110 passed checks and was merged.
