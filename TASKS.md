@@ -61,6 +61,7 @@ DONE         PR merged into main
 | T018 | [tasks/active/T018_catalog_postgres_store.md](tasks/active/T018_catalog_postgres_store.md) | feat/catalog-postgres-store | catalog/DB | Add PostgreSQL store implementation for catalog products, plans, sources, and tenant catalog records. |
 | T019 | [tasks/active/T019_catalog_service_layer.md](tasks/active/T019_catalog_service_layer.md) | feat/catalog-service-layer | catalog/pricing | Add catalog service layer for admin catalog setup, tenant cloning, margin guard, and catalog list flows. |
 | T020 | [tasks/active/T020_catalog_api_handlers.md](tasks/active/T020_catalog_api_handlers.md) | feat/catalog-api-handlers | API/catalog | Add catalog HTTP handler routes and API option wiring on top of the catalog service. |
+| T021 | [tasks/active/T021_catalog_api_runtime_wiring.md](tasks/active/T021_catalog_api_runtime_wiring.md) | feat/catalog-api-runtime-wiring | API/DB/catalog | Wire catalog HTTP routes into the API runtime when database config is present. |
 
 ## Completed Tasks
 
