@@ -56,11 +56,11 @@ SELECT
         'display_id', display_id,
         'tenant_id', tenant_id,
         'order_id', order_id,
-        'order_display_id', $22,
+        'order_display_id', $22::bigint,
         'buyer_user_id', buyer_user_id,
         'total_minor', total_minor,
         'currency', currency,
-        'idempotency_key', $23
+        'idempotency_key', $23::text
     ),
     '` + EventInvoiceGenerated + `:' || order_id::text,
     invoice_id
@@ -114,10 +114,10 @@ SELECT
         'buyer_user_id', buyer_user_id,
         'total_minor', total_minor,
         'currency', currency,
-        'payment_transaction_id', $4,
-        'wallet_id', $5,
-        'ledger_entry_id', $6,
-        'idempotency_key', $7
+        'payment_transaction_id', $4::text,
+        'wallet_id', $5::text,
+        'ledger_entry_id', $6::text,
+        'idempotency_key', $7::text
     ),
     '` + EventInvoicePaid + `:' || invoice_id::text,
     invoice_id
