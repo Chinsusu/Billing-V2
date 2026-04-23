@@ -1,6 +1,6 @@
 # T053 - Dev DB smoke
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: test/dev-db-smoke
 PR: https://github.com/Chinsusu/Billing-V2/pull/121
@@ -39,3 +39,4 @@ Add a repeatable dev database smoke command that runs migrations, applies dev se
 - 2026-04-23: Task created after billing seed flow landed.
 - 2026-04-23: Claimed by Codex; adding repeatable dev DB smoke command and Make target.
 - 2026-04-23: Opened PR #121. Validation passed: `make fmt`, `make test`, `make build`, `make migrate-validate`, and real PostgreSQL `make smoke-dev-db` twice on fresh `billing_smoke` database.
+- 2026-04-23: PR #121 merged; task marked DONE.
