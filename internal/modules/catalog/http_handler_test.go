@@ -173,16 +173,24 @@ type fakeCatalogHTTPService struct {
 	createProductCalls int
 	createProductInput CreateProductInput
 	product            Product
+	plan               Plan
+	source             ProviderSource
 
-	products               []Product
-	productFilter          ProductFilter
-	listProductCalls       int
-	providerSources        []ProviderSource
-	sourceFilter           ProviderSourceFilter
-	listSourceCalls        int
-	tenantCatalog          TenantCatalog
-	tenantCatalogFilter    TenantCatalogFilter
-	listTenantCatalogCalls int
+	updateProductStatusInput        UpdateProductStatusInput
+	updateProductStatusCalls        int
+	updatePlanStatusInput           UpdatePlanStatusInput
+	updatePlanStatusCalls           int
+	updateProviderSourceStatusInput UpdateProviderSourceStatusInput
+	updateProviderSourceStatusCalls int
+	products                        []Product
+	productFilter                   ProductFilter
+	listProductCalls                int
+	providerSources                 []ProviderSource
+	sourceFilter                    ProviderSourceFilter
+	listSourceCalls                 int
+	tenantCatalog                   TenantCatalog
+	tenantCatalogFilter             TenantCatalogFilter
+	listTenantCatalogCalls          int
 }
 
 func (service *fakeCatalogHTTPService) CreateProduct(ctx context.Context, input CreateProductInput) (Product, error) {
@@ -209,6 +217,24 @@ func (service *fakeCatalogHTTPService) CloneTenantProduct(ctx context.Context, i
 
 func (service *fakeCatalogHTTPService) CloneTenantPlan(ctx context.Context, input CreateTenantPlanInput) (TenantPlan, error) {
 	return TenantPlan{}, nil
+}
+
+func (service *fakeCatalogHTTPService) UpdateProductStatus(ctx context.Context, input UpdateProductStatusInput) (Product, error) {
+	service.updateProductStatusCalls++
+	service.updateProductStatusInput = input
+	return service.product, nil
+}
+
+func (service *fakeCatalogHTTPService) UpdatePlanStatus(ctx context.Context, input UpdatePlanStatusInput) (Plan, error) {
+	service.updatePlanStatusCalls++
+	service.updatePlanStatusInput = input
+	return service.plan, nil
+}
+
+func (service *fakeCatalogHTTPService) UpdateProviderSourceStatus(ctx context.Context, input UpdateProviderSourceStatusInput) (ProviderSource, error) {
+	service.updateProviderSourceStatusCalls++
+	service.updateProviderSourceStatusInput = input
+	return service.source, nil
 }
 
 func (service *fakeCatalogHTTPService) ListProducts(ctx context.Context, filter ProductFilter) ([]Product, error) {

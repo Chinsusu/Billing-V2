@@ -16,6 +16,9 @@ type fakeCatalogStore struct {
 	createPlanSourceInput     CreatePlanSourceInput
 	createTenantProductInput  CreateTenantProductInput
 	createTenantPlanInput     CreateTenantPlanInput
+	updateProductStatusInput  UpdateProductStatusInput
+	updatePlanStatusInput     UpdatePlanStatusInput
+	updateSourceStatusInput   UpdateProviderSourceStatusInput
 	listProductsFilter        ProductFilter
 	listProviderSourcesFilter ProviderSourceFilter
 	listTenantCatalogCalled   bool
@@ -53,6 +56,21 @@ func (store *fakeCatalogStore) CreateTenantPlan(_ context.Context, input CreateT
 
 func (store *fakeCatalogStore) ListMasterPlans(_ context.Context, _ MasterPlanFilter) ([]Plan, error) {
 	return []Plan{{ID: PlanID("plan-1")}}, nil
+}
+
+func (store *fakeCatalogStore) UpdateProductStatus(_ context.Context, input UpdateProductStatusInput) (Product, error) {
+	store.updateProductStatusInput = input
+	return Product{ID: input.ID, Status: input.Status}, nil
+}
+
+func (store *fakeCatalogStore) UpdatePlanStatus(_ context.Context, input UpdatePlanStatusInput) (Plan, error) {
+	store.updatePlanStatusInput = input
+	return Plan{ID: input.ID, Status: input.Status}, nil
+}
+
+func (store *fakeCatalogStore) UpdateProviderSourceStatus(_ context.Context, input UpdateProviderSourceStatusInput) (ProviderSource, error) {
+	store.updateSourceStatusInput = input
+	return ProviderSource{ID: input.ID, Status: input.Status}, nil
 }
 
 func (store *fakeCatalogStore) ListProducts(_ context.Context, filter ProductFilter) ([]Product, error) {
@@ -170,6 +188,38 @@ func TestListProductsDelegatesToStore(t *testing.T) {
 	}
 	if store.listProductsFilter.Type != ProductTypeVPS || store.listProductsFilter.Status != ProductStatusActive || store.listProductsFilter.Limit != 25 {
 		t.Fatalf("unexpected product filter: %+v", store.listProductsFilter)
+	}
+}
+
+func TestUpdateProductStatusDelegatesNormalizedInput(t *testing.T) {
+	store := &fakeCatalogStore{}
+	service := NewService(store)
+
+	_, err := service.UpdateProductStatus(context.Background(), UpdateProductStatusInput{
+		ID:     " product-1 ",
+		Status: " disabled ",
+	})
+	if err != nil {
+		t.Fatalf("expected product status update: %v", err)
+	}
+	if store.updateProductStatusInput.ID != ProductID("product-1") || store.updateProductStatusInput.Status != ProductStatusDisabled {
+		t.Fatalf("unexpected update input: %+v", store.updateProductStatusInput)
+	}
+}
+
+func TestUpdateProviderSourceStatusRejectsBadStatusBeforeStore(t *testing.T) {
+	store := &fakeCatalogStore{}
+	service := NewService(store)
+
+	_, err := service.UpdateProviderSourceStatus(context.Background(), UpdateProviderSourceStatusInput{
+		ID:     "source-1",
+		Status: ProviderSourceStatus("bad"),
+	})
+	if !errors.Is(err, ErrSourceStatusInvalid) {
+		t.Fatalf("expected source status error, got %v", err)
+	}
+	if store.updateSourceStatusInput.ID != "" {
+		t.Fatalf("store should not be called, got %+v", store.updateSourceStatusInput)
 	}
 }
 

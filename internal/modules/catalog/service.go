@@ -81,6 +81,39 @@ func (service *Service) CloneTenantPlan(ctx context.Context, input CreateTenantP
 	return service.store.CreateTenantPlan(ctx, input)
 }
 
+func (service *Service) UpdateProductStatus(ctx context.Context, input UpdateProductStatusInput) (Product, error) {
+	if err := service.ready(); err != nil {
+		return Product{}, err
+	}
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return Product{}, err
+	}
+	return service.store.UpdateProductStatus(ctx, input)
+}
+
+func (service *Service) UpdatePlanStatus(ctx context.Context, input UpdatePlanStatusInput) (Plan, error) {
+	if err := service.ready(); err != nil {
+		return Plan{}, err
+	}
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return Plan{}, err
+	}
+	return service.store.UpdatePlanStatus(ctx, input)
+}
+
+func (service *Service) UpdateProviderSourceStatus(ctx context.Context, input UpdateProviderSourceStatusInput) (ProviderSource, error) {
+	if err := service.ready(); err != nil {
+		return ProviderSource{}, err
+	}
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return ProviderSource{}, err
+	}
+	return service.store.UpdateProviderSourceStatus(ctx, input)
+}
+
 func (service *Service) ListProducts(ctx context.Context, filter ProductFilter) ([]Product, error) {
 	if err := service.ready(); err != nil {
 		return nil, err
