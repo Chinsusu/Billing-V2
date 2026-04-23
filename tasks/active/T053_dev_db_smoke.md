@@ -1,7 +1,7 @@
 # T053 - Dev DB smoke
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: test/dev-db-smoke
 PR: -
 Risk: DB/seed/dev
@@ -37,3 +37,4 @@ Add a repeatable dev database smoke command that runs migrations, applies dev se
 ## Agent Log
 
 - 2026-04-23: Task created after billing seed flow landed.
+- 2026-04-23: Claimed by Codex; adding repeatable dev DB smoke command and Make target.

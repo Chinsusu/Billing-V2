@@ -213,6 +213,14 @@ make migrate-up
 
 Nếu chưa có `Makefile`, lệnh migration phải được ghi trong README hoặc runbook.
 
+Với backend hiện tại, local/dev database smoke dùng lệnh:
+
+```bash
+make smoke-dev-db
+```
+
+Lệnh này yêu cầu `DB_DSN`, apply migration, chạy seed dev hai lần để kiểm tra idempotency, rồi verify các record billing mẫu. Chỉ chạy với database local hoặc sandbox được phép.
+
 ## Review checklist
 
 Reviewer kiểm:
