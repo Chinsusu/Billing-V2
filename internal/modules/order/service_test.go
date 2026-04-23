@@ -17,6 +17,8 @@ type fakeOrderStore struct {
 	createReservationInput     CreateReservationInput
 	createProvisioningJobInput CreateProvisioningJobInput
 	createServiceInstanceInput CreateServiceInstanceInput
+	listOrdersFilter           OrderFilter
+	getOrderLookup             OrderLookup
 }
 
 func (store *fakeOrderStore) CreateOrder(_ context.Context, input CreateOrderInput) (Order, error) {
@@ -37,6 +39,16 @@ func (store *fakeOrderStore) CreateProvisioningJob(_ context.Context, input Crea
 func (store *fakeOrderStore) CreateServiceInstance(_ context.Context, input CreateServiceInstanceInput) (ServiceInstance, error) {
 	store.createServiceInstanceInput = input
 	return ServiceInstance{OrderID: input.OrderID, Status: input.Status, BillingStatus: input.BillingStatus}, nil
+}
+
+func (store *fakeOrderStore) ListOrders(_ context.Context, filter OrderFilter) ([]Order, error) {
+	store.listOrdersFilter = filter
+	return []Order{{ID: OrderID("order-1"), TenantID: filter.TenantID, BuyerUserID: filter.BuyerUserID}}, nil
+}
+
+func (store *fakeOrderStore) GetOrder(_ context.Context, lookup OrderLookup) (Order, error) {
+	store.getOrderLookup = lookup
+	return Order{ID: lookup.ID, TenantID: lookup.TenantID, BuyerUserID: lookup.BuyerUserID}, nil
 }
 
 func TestServiceRejectsMissingStore(t *testing.T) {
@@ -110,5 +122,35 @@ func TestServiceCreateServiceInstanceDelegates(t *testing.T) {
 	}
 	if store.createServiceInstanceInput.Status != ServiceStatusActive || store.createServiceInstanceInput.BillingStatus != BillingStatusPaid {
 		t.Fatalf("expected default statuses, got %+v", store.createServiceInstanceInput)
+	}
+}
+
+func TestServiceListOrdersValidatesAndDelegates(t *testing.T) {
+	store := &fakeOrderStore{}
+	service := NewService(store)
+
+	_, err := service.ListOrders(context.Background(), OrderFilter{
+		TenantID:    tenant.ID("tenant-1"),
+		BuyerUserID: identity.UserID("buyer-1"),
+		Limit:       0,
+	})
+	if err != nil {
+		t.Fatalf("expected list orders: %v", err)
+	}
+	if store.listOrdersFilter.Limit != defaultOrderListLimit {
+		t.Fatalf("expected default limit, got %+v", store.listOrdersFilter)
+	}
+}
+
+func TestServiceGetOrderRequiresOrderID(t *testing.T) {
+	store := &fakeOrderStore{}
+	service := NewService(store)
+
+	_, err := service.GetOrder(context.Background(), OrderLookup{TenantID: tenant.ID("tenant-1")})
+	if !errors.Is(err, ErrOrderIDMissing) {
+		t.Fatalf("expected order id error, got %v", err)
+	}
+	if store.getOrderLookup.TenantID != "" {
+		t.Fatalf("store should not be called, got %+v", store.getOrderLookup)
 	}
 }

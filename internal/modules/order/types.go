@@ -33,6 +33,7 @@ var (
 	ErrProviderOperationIDMissing = errors.New("provider operation id missing")
 	ErrStoreExecutorMissing       = errors.New("order store executor missing")
 	ErrServiceStoreMissing        = errors.New("order service store missing")
+	ErrOrderNotFound              = errors.New("order not found")
 )
 
 type OrderID string

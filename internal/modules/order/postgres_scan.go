@@ -3,6 +3,7 @@ package order
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/Chinsusu/Billing-V2/internal/modules/catalog"
@@ -24,6 +25,9 @@ func scanOrder(row orderScanner) (Order, error) {
 		&record.UnitPriceMinor, &record.DiscountMinor, &record.TotalMinor, &orderStatus, &billingStatus, &idempotencyKey,
 		&productSnapshot, &planSnapshot, &priceSnapshot, &record.CreatedAt, &record.UpdatedAt,
 	); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return Order{}, ErrOrderNotFound
+		}
 		return Order{}, fmt.Errorf("scan order: %w", err)
 	}
 	record.ID = OrderID(id)

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"sort"
 	"strings"
 
 	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
@@ -23,6 +24,8 @@ const (
 
 type HTTPService interface {
 	CreateOrder(ctx context.Context, input CreateOrderInput) (Order, error)
+	ListOrders(ctx context.Context, filter OrderFilter) ([]Order, error)
+	GetOrder(ctx context.Context, lookup OrderLookup) (Order, error)
 }
 
 type RouteMiddleware func(http.HandlerFunc) http.HandlerFunc
@@ -36,6 +39,8 @@ type HTTPHandler struct {
 	options HTTPHandlerOptions
 }
 
+const clientOrderPrefix = "/client/orders/"
+
 func NewHTTPHandler(service HTTPService) *HTTPHandler {
 	return NewHTTPHandlerWithOptions(service, HTTPHandlerOptions{})
 }
@@ -48,7 +53,39 @@ func NewHTTPHandlerWithOptions(service HTTPService, options HTTPHandlerOptions) 
 }
 
 func (handler *HTTPHandler) RegisterRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/client/orders", middleware.RequireMethod(http.MethodPost, handler.tenantRoute(handler.handleCreateClientOrder, handler.options.ClientMiddleware)))
+	mux.HandleFunc("/client/orders", handler.clientOrdersRoute)
+	mux.HandleFunc("/client/orders/", handler.clientOrderRoute)
+}
+
+func (handler *HTTPHandler) clientOrdersRoute(w http.ResponseWriter, r *http.Request) {
+	dispatchOrderMethods(w, r, map[string]http.HandlerFunc{
+		http.MethodGet:  handler.tenantRoute(handler.handleListClientOrders, handler.options.ClientMiddleware),
+		http.MethodPost: middleware.RequireMethod(http.MethodPost, handler.tenantRoute(handler.handleCreateClientOrder, handler.options.ClientMiddleware)),
+	})
+}
+
+func (handler *HTTPHandler) clientOrderRoute(w http.ResponseWriter, r *http.Request) {
+	dispatchOrderMethods(w, r, map[string]http.HandlerFunc{
+		http.MethodGet: handler.tenantRoute(handler.handleGetClientOrder, handler.options.ClientMiddleware),
+	})
+}
+
+func dispatchOrderMethods(w http.ResponseWriter, r *http.Request, methods map[string]http.HandlerFunc) {
+	if handler, ok := methods[r.Method]; ok {
+		handler(w, r)
+		return
+	}
+	w.Header().Set("Allow", orderAllowHeader(methods))
+	httpserver.WriteError(w, r, http.StatusMethodNotAllowed, "request.method_not_allowed", "Method is not allowed.")
+}
+
+func orderAllowHeader(methods map[string]http.HandlerFunc) string {
+	allowed := make([]string, 0, len(methods))
+	for method := range methods {
+		allowed = append(allowed, method)
+	}
+	sort.Strings(allowed)
+	return strings.Join(allowed, ", ")
 }
 
 func (handler *HTTPHandler) tenantRoute(next http.HandlerFunc, routeMiddleware RouteMiddleware) http.HandlerFunc {
@@ -100,6 +137,60 @@ func (handler *HTTPHandler) handleCreateClientOrder(w http.ResponseWriter, r *ht
 	httpserver.WriteSuccess(w, r, http.StatusCreated, newOrderResponse(order))
 }
 
+func (handler *HTTPHandler) handleListClientOrders(w http.ResponseWriter, r *http.Request) {
+	if !handler.ready(w, r) {
+		return
+	}
+	tenantID, ok := tenantIDFromContext(w, r)
+	if !ok {
+		return
+	}
+	actor, ok := actorFromContext(w, r)
+	if !ok {
+		return
+	}
+	filter, page, ok := orderFilterFromRequest(w, r)
+	if !ok {
+		return
+	}
+	filter.TenantID = tenantID
+	filter.BuyerUserID = actor.ID
+	orders, err := handler.service.ListOrders(r.Context(), filter)
+	if err != nil {
+		writeOrderError(w, r, err)
+		return
+	}
+	httpserver.WriteList(w, r, http.StatusOK, newOrderResponses(orders), httpserver.NewPage(page.Limit, ""))
+}
+
+func (handler *HTTPHandler) handleGetClientOrder(w http.ResponseWriter, r *http.Request) {
+	if !handler.ready(w, r) {
+		return
+	}
+	tenantID, ok := tenantIDFromContext(w, r)
+	if !ok {
+		return
+	}
+	actor, ok := actorFromContext(w, r)
+	if !ok {
+		return
+	}
+	orderID, ok := orderIDFromPath(w, r)
+	if !ok {
+		return
+	}
+	order, err := handler.service.GetOrder(r.Context(), OrderLookup{
+		ID:          orderID,
+		TenantID:    tenantID,
+		BuyerUserID: actor.ID,
+	})
+	if err != nil {
+		writeOrderError(w, r, err)
+		return
+	}
+	httpserver.WriteSuccess(w, r, http.StatusOK, newOrderResponse(order))
+}
+
 func (handler *HTTPHandler) ready(w http.ResponseWriter, r *http.Request) bool {
 	if handler == nil || handler.service == nil {
 		writeOrderError(w, r, ErrServiceStoreMissing)
@@ -145,6 +236,55 @@ func idempotencyKeyFromHeader(r *http.Request) IdempotencyKey {
 	return IdempotencyKey(strings.TrimSpace(r.Header.Get(IdempotencyKeyHeader)))
 }
 
+func orderIDFromPath(w http.ResponseWriter, r *http.Request) (OrderID, bool) {
+	value := strings.TrimSpace(strings.TrimPrefix(r.URL.Path, clientOrderPrefix))
+	if value == "" || strings.Contains(value, "/") {
+		writeOrderError(w, r, ErrOrderIDMissing)
+		return "", false
+	}
+	return OrderID(value), true
+}
+
+func orderFilterFromRequest(w http.ResponseWriter, r *http.Request) (OrderFilter, httpserver.CursorPageRequest, bool) {
+	page, ok := pageFromRequest(w, r)
+	if !ok {
+		return OrderFilter{}, httpserver.CursorPageRequest{}, false
+	}
+	filter := OrderFilter{Limit: page.Limit}
+	query := r.URL.Query()
+	orderStatus := OrderStatus(strings.TrimSpace(query.Get("status")))
+	if orderStatus != "" {
+		if !orderStatus.Valid() {
+			writeOrderError(w, r, ErrOrderStatusInvalid)
+			return OrderFilter{}, httpserver.CursorPageRequest{}, false
+		}
+		filter.OrderStatus = orderStatus
+	}
+	billingStatus := BillingStatus(strings.TrimSpace(query.Get("billing_status")))
+	if billingStatus != "" {
+		if !billingStatus.Valid() {
+			writeOrderError(w, r, ErrBillingStatusInvalid)
+			return OrderFilter{}, httpserver.CursorPageRequest{}, false
+		}
+		filter.BillingStatus = billingStatus
+	}
+	return filter, page, true
+}
+
+func pageFromRequest(w http.ResponseWriter, r *http.Request) (httpserver.CursorPageRequest, bool) {
+	page, err := httpserver.ParseCursorPage(r)
+	if err == nil {
+		return page, true
+	}
+	switch {
+	case errors.Is(err, httpserver.ErrPageLimitTooLarge):
+		httpserver.WriteValidationError(w, r, []httpserver.ValidationField{validationField("limit", "request.limit_too_large", "Limit is too large.")})
+	default:
+		httpserver.WriteValidationError(w, r, []httpserver.ValidationField{validationField("limit", "request.limit_invalid", "Limit must be a positive number.")})
+	}
+	return httpserver.CursorPageRequest{}, false
+}
+
 func writeOrderError(w http.ResponseWriter, r *http.Request, err error) {
 	if err == nil {
 		return
@@ -154,6 +294,8 @@ func writeOrderError(w http.ResponseWriter, r *http.Request, err error) {
 		return
 	}
 	switch {
+	case errors.Is(err, ErrOrderNotFound):
+		httpserver.WriteError(w, r, http.StatusNotFound, "order.not_found", "Order was not found.")
 	case errors.Is(err, identity.ErrActorContextMissing),
 		errors.Is(err, identity.ErrActorIDMissing),
 		errors.Is(err, identity.ErrActorTypeMissing),
@@ -174,6 +316,8 @@ func orderValidationField(err error) (httpserver.ValidationField, bool) {
 		return validationField("tenant_id", "tenant.context_invalid", "Tenant context is invalid."), true
 	case errors.Is(err, ErrBuyerIDMissing):
 		return validationField("actor_id", "order.buyer_missing", "Buyer actor is required."), true
+	case errors.Is(err, ErrOrderIDMissing):
+		return validationField("order_id", "order.order_id_missing", "Order id is required."), true
 	case errors.Is(err, ErrTenantPlanIDMissing):
 		return validationField("tenant_plan_id", "order.tenant_plan_id_missing", "Tenant plan id is required."), true
 	case errors.Is(err, ErrIdempotencyKeyMissing):

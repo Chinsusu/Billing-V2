@@ -72,6 +72,7 @@ DONE         PR merged into main
 | T029 | [tasks/active/T029_order_postgres_store.md](tasks/active/T029_order_postgres_store.md) | feat/order-postgres-store | order/DB | Add PostgreSQL store implementation for order domain create contracts. |
 | T030 | [tasks/active/T030_order_service_layer.md](tasks/active/T030_order_service_layer.md) | feat/order-service-layer | order/service | Add order service layer methods on top of the order store contracts. |
 | T031 | [tasks/active/T031_order_api_handlers.md](tasks/active/T031_order_api_handlers.md) | feat/order-api-handlers | API/order | Add client order creation HTTP handler and runtime wiring. |
+| T032 | [tasks/active/T032_order_read_api.md](tasks/active/T032_order_read_api.md) | feat/order-read-api | API/order/DB | Add tenant-scoped order list/detail read APIs for the client portal. |
 
 ## Completed Tasks
 
