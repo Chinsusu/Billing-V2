@@ -1,9 +1,9 @@
 # T045 - Invoice read API
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: feat/invoice-read-api
-PR: -
+PR: pending
 Risk: invoice/API/auth
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -35,3 +35,4 @@ Add invoice and invoice item read APIs so customers and admins can inspect gener
 ## Agent Log
 
 - 2026-04-23: Task created for the next backend wallet/invoice batch.
+- 2026-04-23: Implemented invoice list/detail store, client/admin HTTP read APIs, runtime wiring, and focused tests.
