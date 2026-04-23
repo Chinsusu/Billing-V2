@@ -1,9 +1,9 @@
 # T046 - Invoice generation service
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: feat/invoice-generation-service
-PR: -
+PR: pending
 Risk: invoice/order/money
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -35,3 +35,4 @@ Add an invoice generation service that can create an invoice from a paid order u
 ## Agent Log
 
 - 2026-04-23: Task created for the next backend wallet/invoice batch.
+- 2026-04-23: Implemented invoice generation service, order idempotency index, create store path, outbox event, and focused tests.

@@ -7,24 +7,28 @@ import (
 )
 
 var (
-	ErrInvoiceIDMissing     = errors.New("invoice id missing")
-	ErrInvoiceItemIDMissing = errors.New("invoice item id missing")
-	ErrBuyerIDMissing       = errors.New("invoice buyer id missing")
-	ErrCurrencyMissing      = errors.New("invoice currency missing")
-	ErrCurrencyInvalid      = errors.New("invoice currency invalid")
-	ErrAmountInvalid        = errors.New("invoice amount invalid")
-	ErrTotalInvalid         = errors.New("invoice total invalid")
-	ErrQuantityInvalid      = errors.New("invoice item quantity invalid")
-	ErrDescriptionMissing   = errors.New("invoice item description missing")
-	ErrStatusInvalid        = errors.New("invoice status invalid")
-	ErrStoreExecutorMissing = errors.New("invoice store executor missing")
-	ErrServiceStoreMissing  = errors.New("invoice service store missing")
-	ErrInvoiceNotFound      = errors.New("invoice not found")
+	ErrInvoiceIDMissing      = errors.New("invoice id missing")
+	ErrInvoiceItemIDMissing  = errors.New("invoice item id missing")
+	ErrBuyerIDMissing        = errors.New("invoice buyer id missing")
+	ErrCurrencyMissing       = errors.New("invoice currency missing")
+	ErrCurrencyInvalid       = errors.New("invoice currency invalid")
+	ErrAmountInvalid         = errors.New("invoice amount invalid")
+	ErrTotalInvalid          = errors.New("invoice total invalid")
+	ErrQuantityInvalid       = errors.New("invoice item quantity invalid")
+	ErrDescriptionMissing    = errors.New("invoice item description missing")
+	ErrStatusInvalid         = errors.New("invoice status invalid")
+	ErrIdempotencyKeyMissing = errors.New("invoice idempotency key missing")
+	ErrOrderReaderMissing    = errors.New("invoice order reader missing")
+	ErrOrderNotPaid          = errors.New("invoice generation requires paid order")
+	ErrStoreExecutorMissing  = errors.New("invoice store executor missing")
+	ErrServiceStoreMissing   = errors.New("invoice service store missing")
+	ErrInvoiceNotFound       = errors.New("invoice not found")
 )
 
 type InvoiceID string
 type InvoiceItemID string
 type OrderItemID string
+type IdempotencyKey string
 
 func (id InvoiceID) Empty() bool     { return strings.TrimSpace(string(id)) == "" }
 func (id InvoiceItemID) Empty() bool { return strings.TrimSpace(string(id)) == "" }
