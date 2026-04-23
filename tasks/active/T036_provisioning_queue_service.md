@@ -1,9 +1,9 @@
 # T036 - Provisioning queue service
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: feat/provisioning-queue-service
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/84
 Risk: order/provisioning
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -35,3 +35,5 @@ Add a service that decides when a paid order should be queued for provisioning a
 ## Agent Log
 
 - 2026-04-23: Task created for the next backend batch.
+- 2026-04-23: Claimed by Codex from latest `origin/main` in `/tmp/Billing-T036`.
+- 2026-04-23: Opened PR #84. Validation passed: `go test ./internal/modules/order ./internal/modules/jobs`, `make fmt`, `make test`, `make build`, `make migrate-validate`.
