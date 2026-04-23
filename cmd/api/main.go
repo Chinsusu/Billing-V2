@@ -15,6 +15,7 @@ import (
 	"github.com/Chinsusu/Billing-V2/internal/modules/order"
 	"github.com/Chinsusu/Billing-V2/internal/modules/payment"
 	"github.com/Chinsusu/Billing-V2/internal/modules/rbac"
+	"github.com/Chinsusu/Billing-V2/internal/modules/wallet"
 	"github.com/Chinsusu/Billing-V2/internal/platform/config"
 	platformdb "github.com/Chinsusu/Billing-V2/internal/platform/db"
 	"github.com/Chinsusu/Billing-V2/internal/platform/logger"
@@ -73,6 +74,7 @@ func newRuntime(ctx context.Context, cfg config.Config, log *logger.Logger, open
 		options.CatalogRoutes = newCatalogRoutes(conn)
 		options.OrderRoutes = newOrderRoutes(conn)
 		options.PaymentRoutes = newPaymentRoutes(conn)
+		options.WalletRoutes = newWalletRoutes(conn)
 	}
 
 	api, err := app.NewAPIWithOptions(cfg, log, options)
@@ -121,6 +123,16 @@ func newPaymentRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	})
 }
 
+func newWalletRoutes(executor platformdb.Executor) app.RouteRegistrar {
+	store := wallet.NewPostgresStore(executor)
+	service := wallet.NewService(store)
+	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
+	return wallet.NewHTTPHandlerWithOptions(service, wallet.HTTPHandlerOptions{
+		AdminMiddleware:  walletAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
+		ClientMiddleware: walletAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
+	})
+}
+
 func orderAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) order.RouteMiddleware {
 	return chainOrderMiddleware(
 		wrapOrderMiddleware(identity.HeaderActorMiddleware),
@@ -166,6 +178,31 @@ func chainPaymentMiddleware(middlewares ...payment.RouteMiddleware) payment.Rout
 }
 
 func wrapPaymentMiddleware(middleware func(http.Handler) http.Handler) payment.RouteMiddleware {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		return middleware(http.HandlerFunc(next)).ServeHTTP
+	}
+}
+
+func walletAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) wallet.RouteMiddleware {
+	return chainWalletMiddleware(
+		wrapWalletMiddleware(identity.HeaderActorMiddleware),
+		wallet.RouteMiddleware(rbac.RequirePermission(authorizer, permission, risk)),
+	)
+}
+
+func chainWalletMiddleware(middlewares ...wallet.RouteMiddleware) wallet.RouteMiddleware {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		for index := len(middlewares) - 1; index >= 0; index-- {
+			if middlewares[index] == nil {
+				continue
+			}
+			next = middlewares[index](next)
+		}
+		return next
+	}
+}
+
+func wrapWalletMiddleware(middleware func(http.Handler) http.Handler) wallet.RouteMiddleware {
 	return func(next http.HandlerFunc) http.HandlerFunc {
 		return middleware(http.HandlerFunc(next)).ServeHTTP
 	}
