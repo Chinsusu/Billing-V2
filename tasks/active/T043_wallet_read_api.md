@@ -1,6 +1,6 @@
 # T043 - Wallet read API
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/wallet-read-api
 PR: https://github.com/Chinsusu/Billing-V2/pull/99
@@ -38,3 +38,4 @@ Add tenant-scoped wallet and ledger read APIs so clients and admins can inspect 
 - 2026-04-23: Claimed by Codex from latest `origin/main` in `/tmp/Billing-T043`.
 - 2026-04-23: Added wallet and ledger read APIs with tenant/account scope and runtime wiring. Validation passed: `make fmt`, `make test`, `make build`, `make migrate-validate`.
 - 2026-04-23: Opened PR #99.
+- 2026-04-23: PR #99 merged into `main`.
