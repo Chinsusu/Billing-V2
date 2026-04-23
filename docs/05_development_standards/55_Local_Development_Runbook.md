@@ -292,6 +292,18 @@ Validate migration:
 make migrate-validate
 ```
 
+Frontend local validation for the runnable Next.js app:
+
+```bash
+cd frontend
+npm ci
+npm audit --omit=dev
+npm run lint
+npm run build
+```
+
+Dung `npm ci` de giong CI hon `npm install`. Neu frontend PR chi doi UI hoac CI, van nen chay du 4 lenh tren truoc khi mo PR.
+
 Với PR chỉ sửa docs, vẫn nên chạy tối thiểu `make test` và `make build` nếu acceptance criteria của task yêu cầu backend còn build được.
 
 ## Lỗi thường gặp
