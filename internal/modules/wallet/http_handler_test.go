@@ -114,7 +114,7 @@ func TestHTTPHandlerListAdminWalletsUsesOwnerFilter(t *testing.T) {
 	service := &fakeWalletHTTPService{}
 	handler := registerWalletTestHandler(service)
 
-	request := httptest.NewRequest(http.MethodGet, "/admin/wallets?owner_type=user&owner_id=account_2", nil)
+	request := httptest.NewRequest(http.MethodGet, "/admin/wallets?display_id=70004&owner_type=user&owner_id=account_2", nil)
 	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
 	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
 	response := httptest.NewRecorder()
@@ -124,7 +124,9 @@ func TestHTTPHandlerListAdminWalletsUsesOwnerFilter(t *testing.T) {
 	if response.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
 	}
-	if service.walletFilter.OwnerType != OwnerTypeUser || service.walletFilter.OwnerID != OwnerID("account_2") {
+	if service.walletFilter.DisplayID != 70004 ||
+		service.walletFilter.OwnerType != OwnerTypeUser ||
+		service.walletFilter.OwnerID != OwnerID("account_2") {
 		t.Fatalf("unexpected admin wallet filter: %+v", service.walletFilter)
 	}
 }

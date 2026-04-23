@@ -83,6 +83,29 @@ func TestHTTPHandlerGetAdminServiceUsesTenantScopeOnly(t *testing.T) {
 	}
 }
 
+func TestHTTPHandlerListAdminServicesUsesSearchFilters(t *testing.T) {
+	service := &fakeOrderHTTPService{}
+	handler := registerOrderTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/admin/services?buyer_user_id=buyer_2&display_id=50002&order_display_id=30005&status=active", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.serviceFilter.TenantID != tenant.ID("tenant_1") ||
+		service.serviceFilter.BuyerUserID != identity.UserID("buyer_2") ||
+		service.serviceFilter.DisplayID != 50002 ||
+		service.serviceFilter.OrderDisplayID != 30005 ||
+		service.serviceFilter.Status != ServiceStatusActive {
+		t.Fatalf("unexpected admin service filter: %+v", service.serviceFilter)
+	}
+}
+
 func TestHTTPHandlerListServicesRejectsBadStatus(t *testing.T) {
 	service := &fakeOrderHTTPService{}
 	handler := registerOrderTestHandler(service)

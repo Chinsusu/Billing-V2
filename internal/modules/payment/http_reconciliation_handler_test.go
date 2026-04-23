@@ -19,7 +19,7 @@ func TestHTTPHandlerListAdminPaymentReconciliationUsesFilters(t *testing.T) {
 	}
 	handler := registerPaymentTestHandler(service)
 
-	request := httptest.NewRequest(http.MethodGet, "/admin/payment-reconciliation?status=posted&provider=wallet&invoice_id=invoice_1&wallet_id=wallet_1&created_from=2026-04-23T00:00:00Z&created_to=2026-04-24T00:00:00Z&limit=20", nil)
+	request := httptest.NewRequest(http.MethodGet, "/admin/payment-reconciliation?account_user_id=buyer_1&display_id=30001&status=posted&provider=wallet&invoice_id=invoice_1&invoice_display_id=20001&wallet_id=wallet_1&wallet_display_id=40001&amount_min=1000&amount_max=2000&created_from=2026-04-23T00:00:00Z&created_to=2026-04-24T00:00:00Z&limit=20", nil)
 	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
 	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
 	response := httptest.NewRecorder()
@@ -33,10 +33,16 @@ func TestHTTPHandlerListAdminPaymentReconciliationUsesFilters(t *testing.T) {
 		t.Fatalf("expected reconciliation list once, got %d", service.reconciliationListCalls)
 	}
 	if service.reconciliationFilter.TenantID != tenant.ID("tenant_1") ||
+		service.reconciliationFilter.AccountUserID != identity.UserID("buyer_1") ||
+		service.reconciliationFilter.DisplayID != 30001 ||
 		service.reconciliationFilter.Status != TransactionStatusPosted ||
 		service.reconciliationFilter.Provider != "wallet" ||
 		service.reconciliationFilter.InvoiceID != invoice.InvoiceID("invoice_1") ||
+		service.reconciliationFilter.InvoiceDisplayID != 20001 ||
 		service.reconciliationFilter.WalletID != wallet.WalletID("wallet_1") ||
+		service.reconciliationFilter.WalletDisplayID != 40001 ||
+		service.reconciliationFilter.AmountMinMinor == nil || *service.reconciliationFilter.AmountMinMinor != 1000 ||
+		service.reconciliationFilter.AmountMaxMinor == nil || *service.reconciliationFilter.AmountMaxMinor != 2000 ||
 		service.reconciliationFilter.Limit != 20 {
 		t.Fatalf("unexpected reconciliation filter: %+v", service.reconciliationFilter)
 	}

@@ -255,6 +255,11 @@ func topupRequestFilterFromRequest(w http.ResponseWriter, r *http.Request) (Topu
 	if requestedBy := strings.TrimSpace(query.Get("requested_by")); requestedBy != "" {
 		filter.RequestedBy = identity.UserID(requestedBy)
 	}
+	if displayID, present, ok := walletPositiveInt64Query(w, r, "display_id"); !ok {
+		return TopupRequestFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.DisplayID = displayID
+	}
 	if method := PaymentMethod(strings.TrimSpace(query.Get("payment_method"))); method != "" {
 		if !method.Valid() {
 			writeWalletError(w, r, ErrPaymentMethodInvalid)
@@ -269,6 +274,12 @@ func topupRequestFilterFromRequest(w http.ResponseWriter, r *http.Request) (Topu
 		}
 		filter.Status = status
 	}
+	amountMin, amountMax, ok := walletAmountRangeQuery(w, r)
+	if !ok {
+		return TopupRequestFilter{}, httpserver.CursorPageRequest{}, false
+	}
+	filter.AmountMinMinor = amountMin
+	filter.AmountMaxMinor = amountMax
 	return filter, page, true
 }
 

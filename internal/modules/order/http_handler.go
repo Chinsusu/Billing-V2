@@ -350,6 +350,11 @@ func orderFilterFromRequest(w http.ResponseWriter, r *http.Request) (OrderFilter
 	if buyerUserID != "" {
 		filter.BuyerUserID = buyerUserID
 	}
+	if displayID, present, ok := orderPositiveInt64Query(w, r, "display_id"); !ok {
+		return OrderFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.DisplayID = displayID
+	}
 	orderStatus := OrderStatus(strings.TrimSpace(query.Get("status")))
 	if orderStatus != "" {
 		if !orderStatus.Valid() {
@@ -366,6 +371,12 @@ func orderFilterFromRequest(w http.ResponseWriter, r *http.Request) (OrderFilter
 		}
 		filter.BillingStatus = billingStatus
 	}
+	amountMin, amountMax, ok := orderAmountRangeQuery(w, r)
+	if !ok {
+		return OrderFilter{}, httpserver.CursorPageRequest{}, false
+	}
+	filter.AmountMinMinor = amountMin
+	filter.AmountMaxMinor = amountMax
 	return filter, page, true
 }
 

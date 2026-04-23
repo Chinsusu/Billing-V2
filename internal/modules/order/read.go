@@ -25,6 +25,9 @@ func validateOrderFilter(filter OrderFilter) error {
 	if filter.BillingStatus != "" && !filter.BillingStatus.Valid() {
 		return ErrBillingStatusInvalid
 	}
+	if amountRangeInvalid(filter.AmountMinMinor, filter.AmountMaxMinor) {
+		return ErrAmountInvalid
+	}
 	return nil
 }
 
@@ -36,4 +39,14 @@ func validateOrderLookup(lookup OrderLookup) error {
 		return tenant.ErrTenantIDMissing
 	}
 	return nil
+}
+
+func amountRangeInvalid(minorMin *int64, minorMax *int64) bool {
+	if minorMin != nil && *minorMin < 0 {
+		return true
+	}
+	if minorMax != nil && *minorMax < 0 {
+		return true
+	}
+	return minorMin != nil && minorMax != nil && *minorMax < *minorMin
 }

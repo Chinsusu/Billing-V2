@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
 	"github.com/Chinsusu/Billing-V2/internal/platform/httpserver"
 )
 
@@ -142,9 +143,23 @@ func serviceInstanceFilterFromRequest(w http.ResponseWriter, r *http.Request) (S
 	}
 	filter := ServiceInstanceFilter{Limit: page.Limit}
 	query := r.URL.Query()
+	buyerUserID := identity.UserID(strings.TrimSpace(query.Get("buyer_user_id")))
+	if buyerUserID != "" {
+		filter.BuyerUserID = buyerUserID
+	}
+	if displayID, present, ok := orderPositiveInt64Query(w, r, "display_id"); !ok {
+		return ServiceInstanceFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.DisplayID = displayID
+	}
 	orderID := OrderID(strings.TrimSpace(query.Get("order_id")))
 	if orderID != "" {
 		filter.OrderID = orderID
+	}
+	if orderDisplayID, present, ok := orderPositiveInt64Query(w, r, "order_display_id"); !ok {
+		return ServiceInstanceFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.OrderDisplayID = orderDisplayID
 	}
 	status := ServiceStatus(strings.TrimSpace(query.Get("status")))
 	if status != "" {

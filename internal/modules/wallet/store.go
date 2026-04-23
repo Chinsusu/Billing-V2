@@ -9,6 +9,7 @@ import (
 
 type WalletFilter struct {
 	TenantID  tenant.ID
+	DisplayID int64
 	OwnerType OwnerType
 	OwnerID   OwnerID
 	Status    Status
@@ -23,12 +24,15 @@ type WalletLookup struct {
 }
 
 type LedgerEntryFilter struct {
-	TenantID  tenant.ID
-	WalletID  WalletID
-	Direction Direction
-	EntryType EntryType
-	Status    LedgerStatus
-	Limit     int
+	TenantID       tenant.ID
+	WalletID       WalletID
+	DisplayID      int64
+	Direction      Direction
+	EntryType      EntryType
+	Status         LedgerStatus
+	AmountMinMinor *int64
+	AmountMaxMinor *int64
+	Limit          int
 }
 
 type LedgerEntryLookup struct {
@@ -38,12 +42,15 @@ type LedgerEntryLookup struct {
 }
 
 type TopupRequestFilter struct {
-	TenantID      tenant.ID
-	WalletID      WalletID
-	RequestedBy   identity.UserID
-	PaymentMethod PaymentMethod
-	Status        TopupStatus
-	Limit         int
+	TenantID       tenant.ID
+	WalletID       WalletID
+	RequestedBy    identity.UserID
+	DisplayID      int64
+	PaymentMethod  PaymentMethod
+	Status         TopupStatus
+	AmountMinMinor *int64
+	AmountMaxMinor *int64
+	Limit          int
 }
 
 type TopupRequestLookup struct {

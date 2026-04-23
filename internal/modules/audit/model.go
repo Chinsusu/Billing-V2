@@ -88,6 +88,7 @@ type Filter struct {
 	TenantID    tenant.ID
 	ActorID     ActorID
 	ActorType   ActorType
+	DisplayID   int64
 	Action      string
 	TargetType  string
 	TargetID    TargetID

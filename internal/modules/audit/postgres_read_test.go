@@ -16,6 +16,7 @@ func TestBuildListLogsQueryAddsFilters(t *testing.T) {
 		TenantID:    tenant.ID("tenant-1"),
 		ActorID:     ActorID("actor-1"),
 		ActorType:   ActorTypeUser,
+		DisplayID:   70001,
 		Action:      "invoice.paid",
 		TargetType:  "invoice",
 		TargetID:    TargetID("target-1"),
@@ -30,18 +31,19 @@ func TestBuildListLogsQueryAddsFilters(t *testing.T) {
 		"tenant_id = $1",
 		"actor_id = $2",
 		"actor_type = $3",
-		"action = $4",
-		"target_type = $5",
-		"target_id = $6",
-		"created_at >= $7",
-		"created_at <= $8",
-		"LIMIT $9",
+		"display_id = $4",
+		"action = $5",
+		"target_type = $6",
+		"target_id = $7",
+		"created_at >= $8",
+		"created_at <= $9",
+		"LIMIT $10",
 	} {
 		if !strings.Contains(query, clause) {
 			t.Fatalf("expected %q in query: %s", clause, query)
 		}
 	}
-	if len(args) != 9 || args[8] != 25 {
+	if len(args) != 10 || args[9] != 25 {
 		t.Fatalf("unexpected args: %#v", args)
 	}
 }

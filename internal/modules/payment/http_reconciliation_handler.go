@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
 	"github.com/Chinsusu/Billing-V2/internal/modules/invoice"
 	"github.com/Chinsusu/Billing-V2/internal/modules/wallet"
 	"github.com/Chinsusu/Billing-V2/internal/platform/httpserver"
@@ -81,6 +82,14 @@ func reconciliationFilterFromRequest(w http.ResponseWriter, r *http.Request) (Re
 	}
 	filter := ReconciliationFilter{Limit: page.Limit}
 	query := r.URL.Query()
+	if accountUserID := identity.UserID(strings.TrimSpace(query.Get("account_user_id"))); accountUserID != "" {
+		filter.AccountUserID = accountUserID
+	}
+	if displayID, present, ok := paymentPositiveInt64Query(w, r, "display_id"); !ok {
+		return ReconciliationFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.DisplayID = displayID
+	}
 	status := TransactionStatus(strings.TrimSpace(query.Get("status")))
 	if status != "" {
 		if !status.Valid() {
@@ -93,9 +102,25 @@ func reconciliationFilterFromRequest(w http.ResponseWriter, r *http.Request) (Re
 	if invoiceID := invoice.InvoiceID(strings.TrimSpace(query.Get("invoice_id"))); invoiceID != "" {
 		filter.InvoiceID = invoiceID
 	}
+	if invoiceDisplayID, present, ok := paymentPositiveInt64Query(w, r, "invoice_display_id"); !ok {
+		return ReconciliationFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.InvoiceDisplayID = invoiceDisplayID
+	}
 	if walletID := wallet.WalletID(strings.TrimSpace(query.Get("wallet_id"))); !walletID.Empty() {
 		filter.WalletID = walletID
 	}
+	if walletDisplayID, present, ok := paymentPositiveInt64Query(w, r, "wallet_display_id"); !ok {
+		return ReconciliationFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.WalletDisplayID = walletDisplayID
+	}
+	amountMin, amountMax, ok := paymentAmountRangeQuery(w, r)
+	if !ok {
+		return ReconciliationFilter{}, httpserver.CursorPageRequest{}, false
+	}
+	filter.AmountMinMinor = amountMin
+	filter.AmountMaxMinor = amountMax
 	createdFrom, ok := reconciliationTimeFromRequest(w, r, "created_from")
 	if !ok {
 		return ReconciliationFilter{}, httpserver.CursorPageRequest{}, false

@@ -11,29 +11,35 @@ import (
 
 func TestBuildListTopupRequestsQueryAddsReviewFilters(t *testing.T) {
 	query, args, err := buildListTopupRequestsQuery(TopupRequestFilter{
-		TenantID:      tenant.ID("tenant-1"),
-		WalletID:      WalletID("wallet-1"),
-		RequestedBy:   identity.UserID("account-1"),
-		PaymentMethod: PaymentMethodBankTransfer,
-		Status:        TopupStatusUnderReview,
-		Limit:         25,
+		TenantID:       tenant.ID("tenant-1"),
+		WalletID:       WalletID("wallet-1"),
+		RequestedBy:    identity.UserID("account-1"),
+		DisplayID:      90001,
+		PaymentMethod:  PaymentMethodBankTransfer,
+		Status:         TopupStatusUnderReview,
+		AmountMinMinor: int64Ptr(100),
+		AmountMaxMinor: int64Ptr(900),
+		Limit:          25,
 	})
 	if err != nil {
 		t.Fatalf("expected query: %v", err)
 	}
 	for _, clause := range []string{
 		"topup.tenant_id = $1",
-		"topup.wallet_id = $2",
-		"topup.requested_by = $3",
-		"topup.payment_method = $4",
-		"topup.status = $5",
-		"LIMIT $6",
+		"topup.display_id = $2",
+		"topup.wallet_id = $3",
+		"topup.requested_by = $4",
+		"topup.payment_method = $5",
+		"topup.status = $6",
+		"topup.amount_minor >= $7",
+		"topup.amount_minor <= $8",
+		"LIMIT $9",
 	} {
 		if !strings.Contains(query, clause) {
 			t.Fatalf("expected %q in query: %s", clause, query)
 		}
 	}
-	if len(args) != 6 || args[5] != 25 {
+	if len(args) != 9 || args[8] != 25 {
 		t.Fatalf("unexpected args: %#v", args)
 	}
 }

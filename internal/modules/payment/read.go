@@ -25,6 +25,9 @@ func validateTransactionFilter(filter TransactionFilter) error {
 	if filter.Status != "" && !filter.Status.Valid() {
 		return ErrStatusInvalid
 	}
+	if amountRangeInvalid(filter.AmountMinMinor, filter.AmountMaxMinor) {
+		return ErrAmountInvalid
+	}
 	return nil
 }
 
@@ -43,4 +46,14 @@ func normalizeTransactionLookup(lookup TransactionLookup) TransactionLookup {
 	output := lookup
 	output.IdempotencyKey = IdempotencyKey(trim(string(output.IdempotencyKey)))
 	return output
+}
+
+func amountRangeInvalid(minorMin *int64, minorMax *int64) bool {
+	if minorMin != nil && *minorMin < 0 {
+		return true
+	}
+	if minorMax != nil && *minorMax < 0 {
+		return true
+	}
+	return minorMin != nil && minorMax != nil && *minorMax < *minorMin
 }

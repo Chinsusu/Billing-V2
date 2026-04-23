@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
 	"github.com/Chinsusu/Billing-V2/internal/modules/invoice"
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
 	"github.com/Chinsusu/Billing-V2/internal/modules/wallet"
@@ -13,14 +14,20 @@ const defaultReconciliationListLimit = 100
 const maxReconciliationListLimit = 500
 
 type ReconciliationFilter struct {
-	TenantID    tenant.ID
-	Status      TransactionStatus
-	Provider    string
-	InvoiceID   invoice.InvoiceID
-	WalletID    wallet.WalletID
-	CreatedFrom time.Time
-	CreatedTo   time.Time
-	Limit       int
+	TenantID         tenant.ID
+	AccountUserID    identity.UserID
+	DisplayID        int64
+	Status           TransactionStatus
+	Provider         string
+	InvoiceID        invoice.InvoiceID
+	InvoiceDisplayID int64
+	WalletID         wallet.WalletID
+	WalletDisplayID  int64
+	AmountMinMinor   *int64
+	AmountMaxMinor   *int64
+	CreatedFrom      time.Time
+	CreatedTo        time.Time
+	Limit            int
 }
 
 type ReconciliationLookup struct {
@@ -88,6 +95,9 @@ func validateReconciliationFilter(filter ReconciliationFilter) error {
 	}
 	if !filter.CreatedFrom.IsZero() && !filter.CreatedTo.IsZero() && filter.CreatedTo.Before(filter.CreatedFrom) {
 		return ErrCreatedTimeWindowInvalid
+	}
+	if amountRangeInvalid(filter.AmountMinMinor, filter.AmountMaxMinor) {
+		return ErrAmountInvalid
 	}
 	return nil
 }

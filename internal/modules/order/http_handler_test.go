@@ -178,7 +178,7 @@ func TestHTTPHandlerListAdminOrdersUsesTenantAndBuyerFilter(t *testing.T) {
 	}
 	handler := registerOrderTestHandler(service)
 
-	request := httptest.NewRequest(http.MethodGet, "/admin/orders?buyer_user_id=buyer_2&status=paid&billing_status=paid&limit=20", nil)
+	request := httptest.NewRequest(http.MethodGet, "/admin/orders?buyer_user_id=buyer_2&display_id=30004&status=paid&billing_status=paid&amount_min=1000&amount_max=3000&limit=20", nil)
 	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
 	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
 	response := httptest.NewRecorder()
@@ -194,7 +194,11 @@ func TestHTTPHandlerListAdminOrdersUsesTenantAndBuyerFilter(t *testing.T) {
 	if service.orderFilter.TenantID != tenant.ID("tenant_1") || service.orderFilter.BuyerUserID != identity.UserID("buyer_2") {
 		t.Fatalf("unexpected admin order filter: %+v", service.orderFilter)
 	}
-	if service.orderFilter.OrderStatus != OrderStatusPaid || service.orderFilter.BillingStatus != BillingStatusPaid {
+	if service.orderFilter.DisplayID != 30004 ||
+		service.orderFilter.OrderStatus != OrderStatusPaid ||
+		service.orderFilter.BillingStatus != BillingStatusPaid ||
+		service.orderFilter.AmountMinMinor == nil || *service.orderFilter.AmountMinMinor != 1000 ||
+		service.orderFilter.AmountMaxMinor == nil || *service.orderFilter.AmountMaxMinor != 3000 {
 		t.Fatalf("unexpected admin status filters: %+v", service.orderFilter)
 	}
 }

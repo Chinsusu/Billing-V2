@@ -52,16 +52,26 @@ func buildListServiceInstancesQuery(filter ServiceInstanceFilter) (string, []int
 	}
 	query := `SELECT ` + serviceInstanceReadColumns + `
 FROM service_instances svc
-JOIN orders ord ON ord.order_id = svc.order_id
+JOIN orders ord
+  ON ord.order_id = svc.order_id
+ AND ord.tenant_id = svc.tenant_id
 WHERE svc.tenant_id = $1`
 	args := []interface{}{filter.TenantID}
 	if filter.BuyerUserID != "" {
 		args = append(args, filter.BuyerUserID)
 		query += fmt.Sprintf("\n  AND ord.buyer_user_id = $%d", len(args))
 	}
+	if filter.DisplayID > 0 {
+		args = append(args, filter.DisplayID)
+		query += fmt.Sprintf("\n  AND svc.display_id = $%d", len(args))
+	}
 	if filter.OrderID != "" {
 		args = append(args, filter.OrderID)
 		query += fmt.Sprintf("\n  AND svc.order_id = $%d", len(args))
+	}
+	if filter.OrderDisplayID > 0 {
+		args = append(args, filter.OrderDisplayID)
+		query += fmt.Sprintf("\n  AND ord.display_id = $%d", len(args))
 	}
 	if filter.Status != "" {
 		args = append(args, filter.Status)
@@ -78,7 +88,9 @@ func buildGetServiceInstanceQuery(lookup ServiceInstanceLookup) (string, []inter
 	}
 	query := `SELECT ` + serviceInstanceReadColumns + `
 FROM service_instances svc
-JOIN orders ord ON ord.order_id = svc.order_id
+JOIN orders ord
+  ON ord.order_id = svc.order_id
+ AND ord.tenant_id = svc.tenant_id
 WHERE svc.service_instance_id = $1
   AND svc.tenant_id = $2`
 	args := []interface{}{lookup.ID, lookup.TenantID}

@@ -60,6 +60,10 @@ WHERE tenant_id = $1`
 		args = append(args, filter.ActorType)
 		query += fmt.Sprintf("\n  AND actor_type = $%d", len(args))
 	}
+	if filter.DisplayID > 0 {
+		args = append(args, filter.DisplayID)
+		query += fmt.Sprintf("\n  AND display_id = $%d", len(args))
+	}
 	if filter.Action != "" {
 		args = append(args, filter.Action)
 		query += fmt.Sprintf("\n  AND action = $%d", len(args))
