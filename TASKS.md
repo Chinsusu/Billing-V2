@@ -64,6 +64,7 @@ DONE         PR merged into main
 | T021 | [tasks/active/T021_catalog_api_runtime_wiring.md](tasks/active/T021_catalog_api_runtime_wiring.md) | feat/catalog-api-runtime-wiring | API/DB/catalog | Wire catalog HTTP routes into the API runtime when database config is present. |
 | T022 | [tasks/active/T022_http_tenant_context_middleware.md](tasks/active/T022_http_tenant_context_middleware.md) | feat/http-tenant-context-middleware | API/tenant | Add HTTP tenant context middleware and make catalog tenant routes read tenant scope from request context. |
 | T023 | [tasks/active/T023_api_auth_rbac_middleware.md](tasks/active/T023_api_auth_rbac_middleware.md) | feat/api-auth-rbac-middleware | API/auth/RBAC | Add actor context and RBAC HTTP middleware, then protect catalog routes with catalog permissions. |
+| T024 | [tasks/active/T024_dev_seed_data.md](tasks/active/T024_dev_seed_data.md) | feat/dev-seed-data | seed/catalog/RBAC | Add idempotent development seed runner for RBAC permissions, demo users, catalog, and reseller catalog data. |
 
 ## Completed Tasks
 
