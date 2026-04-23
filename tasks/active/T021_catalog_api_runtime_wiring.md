@@ -1,6 +1,6 @@
 # T021 - Catalog API runtime wiring
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/catalog-api-runtime-wiring
 PR: https://github.com/Chinsusu/Billing-V2/pull/51
@@ -37,3 +37,4 @@ Wire catalog HTTP routes into the API runtime by composing the PostgreSQL store,
 
 - 2026-04-23: Task created and claimed from latest `origin/main` in `/tmp/Billing-T021`.
 - 2026-04-23: Opened PR #51. Validation passed: `go test ./cmd/api`, `make fmt`, `make test`, `make build`, `make migrate-validate`.
+- 2026-04-23: PR #51 merged into `main`.
