@@ -49,6 +49,30 @@ func TestHTTPHandlerCreateProductUsesActorHeader(t *testing.T) {
 	}
 }
 
+func TestHTTPHandlerAdminMiddlewareRunsBeforeService(t *testing.T) {
+	service := &fakeCatalogHTTPService{}
+	mux := http.NewServeMux()
+	NewHTTPHandlerWithOptions(service, HTTPHandlerOptions{
+		AdminMiddleware: func(next http.HandlerFunc) http.HandlerFunc {
+			return func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusForbidden)
+			}
+		},
+	}).RegisterRoutes(mux)
+
+	request := httptest.NewRequest(http.MethodPost, "/admin/catalog/products", strings.NewReader(`{"product_type":"vps","name":"VPS"}`))
+	response := httptest.NewRecorder()
+
+	mux.ServeHTTP(response, request)
+
+	if response.Code != http.StatusForbidden {
+		t.Fatalf("expected status 403, got %d", response.Code)
+	}
+	if service.createProductCalls != 0 {
+		t.Fatalf("expected service not to run, got %d calls", service.createProductCalls)
+	}
+}
+
 func TestHTTPHandlerClientCatalogRequiresTenant(t *testing.T) {
 	service := &fakeCatalogHTTPService{}
 	handler := registerCatalogTestHandler(service)

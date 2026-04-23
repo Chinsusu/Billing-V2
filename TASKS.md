@@ -63,6 +63,7 @@ DONE         PR merged into main
 | T020 | [tasks/active/T020_catalog_api_handlers.md](tasks/active/T020_catalog_api_handlers.md) | feat/catalog-api-handlers | API/catalog | Add catalog HTTP handler routes and API option wiring on top of the catalog service. |
 | T021 | [tasks/active/T021_catalog_api_runtime_wiring.md](tasks/active/T021_catalog_api_runtime_wiring.md) | feat/catalog-api-runtime-wiring | API/DB/catalog | Wire catalog HTTP routes into the API runtime when database config is present. |
 | T022 | [tasks/active/T022_http_tenant_context_middleware.md](tasks/active/T022_http_tenant_context_middleware.md) | feat/http-tenant-context-middleware | API/tenant | Add HTTP tenant context middleware and make catalog tenant routes read tenant scope from request context. |
+| T023 | [tasks/active/T023_api_auth_rbac_middleware.md](tasks/active/T023_api_auth_rbac_middleware.md) | feat/api-auth-rbac-middleware | API/auth/RBAC | Add actor context and RBAC HTTP middleware, then protect catalog routes with catalog permissions. |
 
 ## Completed Tasks
 

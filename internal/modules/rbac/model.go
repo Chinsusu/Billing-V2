@@ -31,6 +31,8 @@ const (
 	PermissionManualReviewResolve   Permission = "provisioning.manual_review.resolve"
 	PermissionProviderView          Permission = "provider.view"
 	PermissionProviderManage        Permission = "provider.manage"
+	PermissionCatalogView           Permission = "catalog.view"
+	PermissionCatalogManage         Permission = "catalog.manage"
 	PermissionAuditView             Permission = "audit.view"
 	PermissionTenantEmergencyAccess Permission = "tenant.emergency_access"
 )
