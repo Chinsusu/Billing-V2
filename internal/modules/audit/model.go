@@ -19,12 +19,19 @@ var (
 	ErrTargetTypeMissing    = errors.New("audit target type missing")
 	ErrTargetIDMissing      = errors.New("audit target id missing")
 	ErrCorrelationIDMissing = errors.New("audit correlation id missing")
+	ErrCreatedTimeInvalid   = errors.New("audit created time invalid")
+	ErrCreatedWindowInvalid = errors.New("audit created time window invalid")
+	ErrServiceStoreMissing  = errors.New("audit service store missing")
 )
 
 type ID string
 type ActorID string
 type TargetID string
 type CorrelationID string
+
+func (id ID) Empty() bool       { return strings.TrimSpace(string(id)) == "" }
+func (id ActorID) Empty() bool  { return strings.TrimSpace(string(id)) == "" }
+func (id TargetID) Empty() bool { return strings.TrimSpace(string(id)) == "" }
 
 type ActorType string
 
@@ -77,6 +84,23 @@ type AppendInput struct {
 	CorrelationID          CorrelationID
 }
 
+type Filter struct {
+	TenantID    tenant.ID
+	ActorID     ActorID
+	ActorType   ActorType
+	Action      string
+	TargetType  string
+	TargetID    TargetID
+	CreatedFrom time.Time
+	CreatedTo   time.Time
+	Limit       int
+}
+
+type Lookup struct {
+	ID       ID
+	TenantID tenant.ID
+}
+
 func (input AppendInput) Normalize() AppendInput {
 	output := input
 	output.Action = strings.TrimSpace(output.Action)
@@ -116,4 +140,6 @@ func (input AppendInput) Validate() error {
 
 type Store interface {
 	Append(ctx context.Context, input AppendInput) (Log, error)
+	ListLogs(ctx context.Context, filter Filter) ([]Log, error)
+	GetLog(ctx context.Context, lookup Lookup) (Log, error)
 }

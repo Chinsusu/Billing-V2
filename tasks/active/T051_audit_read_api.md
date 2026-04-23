@@ -1,7 +1,7 @@
 # T051 - Audit read API
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: feat/audit-read-api
 PR: -
 Risk: audit/API/admin
@@ -35,3 +35,4 @@ Add tenant-scoped audit log read endpoints for admin troubleshooting and complia
 ## Agent Log
 
 - 2026-04-23: Task created for admin observability.
+- 2026-04-23: Added tenant-scoped admin audit read API with filters, RBAC runtime wiring, and tests.
