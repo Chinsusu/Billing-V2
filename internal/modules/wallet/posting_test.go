@@ -122,3 +122,11 @@ func (store *fakePostingStore) ListTopupRequests(ctx context.Context, filter Top
 func (store *fakePostingStore) GetTopupRequest(ctx context.Context, lookup TopupRequestLookup) (TopupRequest, error) {
 	return TopupRequest{}, nil
 }
+
+func (store *fakePostingStore) ApproveTopupRequest(ctx context.Context, input ApproveTopupRequestInput, ledgerEntryID LedgerEntryID) (TopupRequest, error) {
+	return TopupRequest{}, nil
+}
+
+func (store *fakePostingStore) RejectTopupRequest(ctx context.Context, input RejectTopupRequestInput) (TopupRequest, error) {
+	return TopupRequest{}, nil
+}

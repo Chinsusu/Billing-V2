@@ -16,15 +16,32 @@ func (handler *HTTPHandler) adminTopupRequestsRoute(w http.ResponseWriter, r *ht
 }
 
 func (handler *HTTPHandler) adminTopupRequestRoute(w http.ResponseWriter, r *http.Request) {
-	topupRequestID, ok := topupRequestPath(w, r, adminTopupRequestPrefix)
+	topupRequestID, action, ok := topupRequestPath(w, r, adminTopupRequestPrefix)
 	if !ok {
 		return
 	}
-	dispatchWalletMethods(w, r, map[string]http.HandlerFunc{
-		http.MethodGet: handler.tenantRoute(func(w http.ResponseWriter, r *http.Request) {
-			handler.handleGetAdminTopupRequest(w, r, topupRequestID)
-		}, handler.options.AdminMiddleware),
-	})
+	switch action {
+	case "":
+		dispatchWalletMethods(w, r, map[string]http.HandlerFunc{
+			http.MethodGet: handler.tenantRoute(func(w http.ResponseWriter, r *http.Request) {
+				handler.handleGetAdminTopupRequest(w, r, topupRequestID)
+			}, handler.options.AdminMiddleware),
+		})
+	case "approve":
+		dispatchWalletMethods(w, r, map[string]http.HandlerFunc{
+			http.MethodPost: handler.tenantRoute(func(w http.ResponseWriter, r *http.Request) {
+				handler.handleApproveAdminTopupRequest(w, r, topupRequestID)
+			}, handler.options.AdminReviewMiddleware),
+		})
+	case "reject":
+		dispatchWalletMethods(w, r, map[string]http.HandlerFunc{
+			http.MethodPost: handler.tenantRoute(func(w http.ResponseWriter, r *http.Request) {
+				handler.handleRejectAdminTopupRequest(w, r, topupRequestID)
+			}, handler.options.AdminReviewMiddleware),
+		})
+	default:
+		writeWalletError(w, r, ErrTopupRequestIDMissing)
+	}
 }
 
 func (handler *HTTPHandler) clientTopupRequestsRoute(w http.ResponseWriter, r *http.Request) {
@@ -35,8 +52,12 @@ func (handler *HTTPHandler) clientTopupRequestsRoute(w http.ResponseWriter, r *h
 }
 
 func (handler *HTTPHandler) clientTopupRequestRoute(w http.ResponseWriter, r *http.Request) {
-	topupRequestID, ok := topupRequestPath(w, r, clientTopupRequestPrefix)
+	topupRequestID, action, ok := topupRequestPath(w, r, clientTopupRequestPrefix)
 	if !ok {
+		return
+	}
+	if action != "" {
+		writeWalletError(w, r, ErrTopupRequestIDMissing)
 		return
 	}
 	dispatchWalletMethods(w, r, map[string]http.HandlerFunc{
@@ -169,6 +190,58 @@ func (handler *HTTPHandler) handleGetAdminTopupRequest(w http.ResponseWriter, r 
 	httpserver.WriteSuccess(w, r, http.StatusOK, newTopupRequestResponse(request))
 }
 
+func (handler *HTTPHandler) handleApproveAdminTopupRequest(w http.ResponseWriter, r *http.Request, topupRequestID TopupRequestID) {
+	if !handler.ready(w, r) {
+		return
+	}
+	tenantID, ok := tenantIDFromContext(w, r)
+	if !ok {
+		return
+	}
+	actor, ok := actorFromContext(w, r)
+	if !ok {
+		return
+	}
+	var body reviewTopupRequestBody
+	if !decodeTopupJSON(w, r, &body) {
+		return
+	}
+	request, err := handler.service.ApproveTopupRequest(r.Context(), ApproveTopupRequestInput{
+		ID: topupRequestID, TenantID: tenantID, ReviewedBy: actor.ID, ReviewNote: body.ReviewNote,
+	})
+	if err != nil {
+		writeWalletError(w, r, err)
+		return
+	}
+	httpserver.WriteSuccess(w, r, http.StatusOK, newTopupRequestResponse(request))
+}
+
+func (handler *HTTPHandler) handleRejectAdminTopupRequest(w http.ResponseWriter, r *http.Request, topupRequestID TopupRequestID) {
+	if !handler.ready(w, r) {
+		return
+	}
+	tenantID, ok := tenantIDFromContext(w, r)
+	if !ok {
+		return
+	}
+	actor, ok := actorFromContext(w, r)
+	if !ok {
+		return
+	}
+	var body reviewTopupRequestBody
+	if !decodeTopupJSON(w, r, &body) {
+		return
+	}
+	request, err := handler.service.RejectTopupRequest(r.Context(), RejectTopupRequestInput{
+		ID: topupRequestID, TenantID: tenantID, ReviewedBy: actor.ID, ReviewNote: body.ReviewNote,
+	})
+	if err != nil {
+		writeWalletError(w, r, err)
+		return
+	}
+	httpserver.WriteSuccess(w, r, http.StatusOK, newTopupRequestResponse(request))
+}
+
 func topupRequestFilterFromRequest(w http.ResponseWriter, r *http.Request) (TopupRequestFilter, httpserver.CursorPageRequest, bool) {
 	page, ok := pageFromRequest(w, r)
 	if !ok {
@@ -199,12 +272,27 @@ func topupRequestFilterFromRequest(w http.ResponseWriter, r *http.Request) (Topu
 	return filter, page, true
 }
 
-func topupRequestPath(w http.ResponseWriter, r *http.Request, prefix string) (TopupRequestID, bool) {
+func topupRequestPath(w http.ResponseWriter, r *http.Request, prefix string) (TopupRequestID, string, bool) {
 	value := strings.Trim(strings.TrimPrefix(r.URL.Path, prefix), "/")
 	parts := strings.Split(value, "/")
-	if len(parts) != 1 || parts[0] == "" {
+	if len(parts) == 0 || parts[0] == "" || len(parts) > 2 {
 		writeWalletError(w, r, ErrTopupRequestIDMissing)
-		return "", false
+		return "", "", false
 	}
-	return TopupRequestID(parts[0]), true
+	if len(parts) == 2 {
+		return TopupRequestID(parts[0]), parts[1], true
+	}
+	return TopupRequestID(parts[0]), "", true
+}
+
+func decodeTopupJSON(w http.ResponseWriter, r *http.Request, target interface{}) bool {
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(target); err != nil {
+		httpserver.WriteValidationError(w, r, []httpserver.ValidationField{
+			validationField("body", "request.body_invalid", "Request body must be valid JSON."),
+		})
+		return false
+	}
+	return true
 }

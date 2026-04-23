@@ -15,6 +15,10 @@ type createTopupRequestBody struct {
 	PaymentReference string        `json:"payment_reference"`
 }
 
+type reviewTopupRequestBody struct {
+	ReviewNote string `json:"review_note"`
+}
+
 type topupRequestResponse struct {
 	ID               TopupRequestID  `json:"id"`
 	DisplayID        int64           `json:"display_id"`

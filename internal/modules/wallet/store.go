@@ -62,6 +62,8 @@ type Store interface {
 	CreateTopupRequest(ctx context.Context, input CreateTopupRequestInput) (TopupRequest, error)
 	ListTopupRequests(ctx context.Context, filter TopupRequestFilter) ([]TopupRequest, error)
 	GetTopupRequest(ctx context.Context, lookup TopupRequestLookup) (TopupRequest, error)
+	ApproveTopupRequest(ctx context.Context, input ApproveTopupRequestInput, ledgerEntryID LedgerEntryID) (TopupRequest, error)
+	RejectTopupRequest(ctx context.Context, input RejectTopupRequestInput) (TopupRequest, error)
 }
 
 func UserOwnerID(userID identity.UserID) OwnerID {
