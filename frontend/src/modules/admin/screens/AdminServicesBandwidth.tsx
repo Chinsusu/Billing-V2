@@ -16,6 +16,7 @@ export function AdminServicesBandwidth() {
     { label: "Expire", align: "center" },
     { label: "Auto Renew", align: "center" },
     { label: "Protection", align: "center" },
+    { label: "Details", align: "center" },
     { label: "Action", align: "center" },
   ];
 
