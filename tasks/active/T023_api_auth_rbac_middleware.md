@@ -1,9 +1,9 @@
 # T023 - API auth/RBAC middleware
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: feat/api-auth-rbac-middleware
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/56
 Risk: API/auth/RBAC
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -38,3 +38,4 @@ Add actor context and RBAC HTTP middleware, then protect catalog routes with cat
 ## Agent Log
 
 - 2026-04-23: Task created and claimed from latest `origin/main` in `/tmp/Billing-T023`.
+- 2026-04-23: Opened PR #56. Validation passed: `go test ./internal/modules/identity ./internal/modules/rbac ./internal/modules/catalog ./cmd/api`, `make fmt`, `make test`, `make build`, `make migrate-validate`.
