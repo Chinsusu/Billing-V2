@@ -15,6 +15,8 @@ interface NewProductForm {
 
 const EMPTY: NewProductForm = { sku: "", name: "", unit: "", price: "" };
 
+const UNITS = ["per GB", "per IP/mo", "per port/mo", "per mo"];
+
 function FormField({ label, placeholder, value, onChange, error, type = "text" }: {
   label: string; placeholder: string; value: string;
   onChange: (v: string) => void; error?: string; type?: string;
@@ -116,7 +118,20 @@ export function AdminProducts() {
             <FormField label="Price (USD)" placeholder="6.50" value={form.price} onChange={(v) => setForm((f) => ({ ...f, price: v }))} error={errors.price} type="number" />
           </div>
           <FormField label="Name" placeholder="Residential · Standard" value={form.name} onChange={(v) => setForm((f) => ({ ...f, name: v }))} error={errors.name} />
-          <FormField label="Unit" placeholder="per GB" value={form.unit} onChange={(v) => setForm((f) => ({ ...f, unit: v }))} error={errors.unit} />
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-medium uppercase tracking-wide text-gray-500">
+              Unit <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={form.unit}
+              onChange={(e) => setForm((f) => ({ ...f, unit: e.target.value }))}
+              className="h-9 px-3 text-[13px] border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-400 bg-white"
+            >
+              <option value="">— chọn unit —</option>
+              {UNITS.map((u) => <option key={u} value={u}>{u}</option>)}
+            </select>
+            {errors.unit && <span className="text-[11px] text-red-500">{errors.unit}</span>}
+          </div>
 
           <div className="flex justify-end gap-2 pt-1 border-t border-gray-100">
             <button type="button" onClick={handleClose} className="h-9 px-4 text-[13px] font-medium bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 cursor-pointer transition-colors">
