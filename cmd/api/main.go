@@ -101,9 +101,11 @@ func newOrderRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	service := order.NewService(store)
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return order.NewHTTPHandlerWithOptions(service, order.HTTPHandlerOptions{
-		AdminMiddleware:       orderAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
-		AdminManageMiddleware: orderAuthMiddleware(authorizer, rbac.PermissionOrderManage, rbac.RiskHigh),
-		ClientMiddleware:      orderAuthMiddleware(authorizer, rbac.PermissionOrderCreate, rbac.RiskMedium),
+		AdminMiddleware:         orderAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
+		AdminManageMiddleware:   orderAuthMiddleware(authorizer, rbac.PermissionOrderManage, rbac.RiskHigh),
+		AdminServiceMiddleware:  orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
+		ClientMiddleware:        orderAuthMiddleware(authorizer, rbac.PermissionOrderCreate, rbac.RiskMedium),
+		ClientServiceMiddleware: orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
 	})
 }
 

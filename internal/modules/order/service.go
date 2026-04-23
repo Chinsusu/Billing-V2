@@ -86,6 +86,27 @@ func (service *Service) TransitionOrderStatus(ctx context.Context, input Transit
 	return service.store.TransitionOrderStatus(ctx, input)
 }
 
+func (service *Service) ListServiceInstances(ctx context.Context, filter ServiceInstanceFilter) ([]ServiceInstance, error) {
+	if err := service.ready(); err != nil {
+		return nil, err
+	}
+	filter = normalizeServiceInstanceFilter(filter)
+	if err := validateServiceInstanceFilter(filter); err != nil {
+		return nil, err
+	}
+	return service.store.ListServiceInstances(ctx, filter)
+}
+
+func (service *Service) GetServiceInstance(ctx context.Context, lookup ServiceInstanceLookup) (ServiceInstance, error) {
+	if err := service.ready(); err != nil {
+		return ServiceInstance{}, err
+	}
+	if err := validateServiceInstanceLookup(lookup); err != nil {
+		return ServiceInstance{}, err
+	}
+	return service.store.GetServiceInstance(ctx, lookup)
+}
+
 func (service *Service) ready() error {
 	if service == nil || service.store == nil {
 		return ErrServiceStoreMissing

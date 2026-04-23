@@ -21,6 +21,20 @@ type OrderLookup struct {
 	BuyerUserID identity.UserID
 }
 
+type ServiceInstanceFilter struct {
+	TenantID    tenant.ID
+	BuyerUserID identity.UserID
+	OrderID     OrderID
+	Status      ServiceStatus
+	Limit       int
+}
+
+type ServiceInstanceLookup struct {
+	ID          ServiceID
+	TenantID    tenant.ID
+	BuyerUserID identity.UserID
+}
+
 type Store interface {
 	CreateOrder(ctx context.Context, input CreateOrderInput) (Order, error)
 	CreateReservation(ctx context.Context, input CreateReservationInput) (Reservation, error)
@@ -29,4 +43,6 @@ type Store interface {
 	ListOrders(ctx context.Context, filter OrderFilter) ([]Order, error)
 	GetOrder(ctx context.Context, lookup OrderLookup) (Order, error)
 	TransitionOrderStatus(ctx context.Context, input TransitionOrderStatusInput) (Order, error)
+	ListServiceInstances(ctx context.Context, filter ServiceInstanceFilter) ([]ServiceInstance, error)
+	GetServiceInstance(ctx context.Context, lookup ServiceInstanceLookup) (ServiceInstance, error)
 }

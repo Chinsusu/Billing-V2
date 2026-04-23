@@ -1,7 +1,7 @@
 # T038 - Service instance store API
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: feat/service-instance-store-api
 PR: -
 Risk: service/API/DB
@@ -35,3 +35,4 @@ Add store methods and read APIs for provisioned service instances so customer an
 ## Agent Log
 
 - 2026-04-23: Task created for the next backend batch.
+- 2026-04-23: Claimed by Codex from latest `origin/main` in `/tmp/Billing-T038`.
