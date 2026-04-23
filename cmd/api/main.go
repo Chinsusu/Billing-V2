@@ -13,6 +13,7 @@ import (
 	"github.com/Chinsusu/Billing-V2/internal/modules/catalog"
 	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
 	"github.com/Chinsusu/Billing-V2/internal/modules/order"
+	"github.com/Chinsusu/Billing-V2/internal/modules/payment"
 	"github.com/Chinsusu/Billing-V2/internal/modules/rbac"
 	"github.com/Chinsusu/Billing-V2/internal/platform/config"
 	platformdb "github.com/Chinsusu/Billing-V2/internal/platform/db"
@@ -71,6 +72,7 @@ func newRuntime(ctx context.Context, cfg config.Config, log *logger.Logger, open
 		cleanup = conn.Close
 		options.CatalogRoutes = newCatalogRoutes(conn)
 		options.OrderRoutes = newOrderRoutes(conn)
+		options.PaymentRoutes = newPaymentRoutes(conn)
 	}
 
 	api, err := app.NewAPIWithOptions(cfg, log, options)
@@ -109,6 +111,16 @@ func newOrderRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	})
 }
 
+func newPaymentRoutes(executor platformdb.Executor) app.RouteRegistrar {
+	store := payment.NewPostgresStore(executor)
+	service := payment.NewService(store)
+	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
+	return payment.NewHTTPHandlerWithOptions(service, payment.HTTPHandlerOptions{
+		AdminMiddleware:  paymentAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
+		ClientMiddleware: paymentAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
+	})
+}
+
 func orderAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) order.RouteMiddleware {
 	return chainOrderMiddleware(
 		wrapOrderMiddleware(identity.HeaderActorMiddleware),
@@ -129,6 +141,31 @@ func chainOrderMiddleware(middlewares ...order.RouteMiddleware) order.RouteMiddl
 }
 
 func wrapOrderMiddleware(middleware func(http.Handler) http.Handler) order.RouteMiddleware {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		return middleware(http.HandlerFunc(next)).ServeHTTP
+	}
+}
+
+func paymentAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) payment.RouteMiddleware {
+	return chainPaymentMiddleware(
+		wrapPaymentMiddleware(identity.HeaderActorMiddleware),
+		payment.RouteMiddleware(rbac.RequirePermission(authorizer, permission, risk)),
+	)
+}
+
+func chainPaymentMiddleware(middlewares ...payment.RouteMiddleware) payment.RouteMiddleware {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		for index := len(middlewares) - 1; index >= 0; index-- {
+			if middlewares[index] == nil {
+				continue
+			}
+			next = middlewares[index](next)
+		}
+		return next
+	}
+}
+
+func wrapPaymentMiddleware(middleware func(http.Handler) http.Handler) payment.RouteMiddleware {
 	return func(next http.HandlerFunc) http.HandlerFunc {
 		return middleware(http.HandlerFunc(next)).ServeHTTP
 	}

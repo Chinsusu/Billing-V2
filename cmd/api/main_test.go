@@ -43,6 +43,12 @@ func TestNewRuntimeWithoutDSNLeavesDomainRoutesDisabled(t *testing.T) {
 	if orderResponse.Code != http.StatusNotFound {
 		t.Fatalf("expected order route to be disabled without DB_DSN, got %d", orderResponse.Code)
 	}
+
+	paymentResponse := httptest.NewRecorder()
+	runtime.api.Handler().ServeHTTP(paymentResponse, httptest.NewRequest(http.MethodGet, "/client/transactions", nil))
+	if paymentResponse.Code != http.StatusNotFound {
+		t.Fatalf("expected payment route to be disabled without DB_DSN, got %d", paymentResponse.Code)
+	}
 }
 
 func TestNewRuntimeWithDSNRegistersCatalogRoutes(t *testing.T) {
@@ -90,6 +96,27 @@ func TestNewRuntimeWithDSNRegistersOrderRoutes(t *testing.T) {
 
 	if response.Code != http.StatusBadRequest {
 		t.Fatalf("expected registered order route to validate tenant context, got %d: %s", response.Code, response.Body.String())
+	}
+	if !strings.Contains(response.Body.String(), "tenant.context_missing") {
+		t.Fatalf("expected tenant validation response, got %s", response.Body.String())
+	}
+}
+
+func TestNewRuntimeWithDSNRegistersPaymentRoutes(t *testing.T) {
+	runtime, err := newRuntime(context.Background(), testRuntimeConfig("postgres://billing@localhost/billing"), testRuntimeLogger(), func(ctx context.Context, cfg platformdb.Config) (*sql.DB, error) {
+		return newStubDB(), nil
+	})
+	if err != nil {
+		t.Fatalf("newRuntime returned error: %v", err)
+	}
+	defer closeRuntime(t, runtime)
+
+	response := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodGet, "/client/transactions", nil)
+	runtime.api.Handler().ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("expected registered payment route to validate tenant context, got %d: %s", response.Code, response.Body.String())
 	}
 	if !strings.Contains(response.Body.String(), "tenant.context_missing") {
 		t.Fatalf("expected tenant validation response, got %s", response.Body.String())
@@ -209,6 +236,44 @@ func TestNewRuntimeWithDSNProtectsAdminServiceRoutes(t *testing.T) {
 	}
 }
 
+func TestNewRuntimeWithDSNProtectsClientPaymentRoutes(t *testing.T) {
+	runtime, err := newRuntime(context.Background(), testRuntimeConfig("postgres://billing@localhost/billing"), testRuntimeLogger(), func(ctx context.Context, cfg platformdb.Config) (*sql.DB, error) {
+		return newStubDB(), nil
+	})
+	if err != nil {
+		t.Fatalf("newRuntime returned error: %v", err)
+	}
+	defer closeRuntime(t, runtime)
+
+	response := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodGet, "/client/transactions", nil)
+	request.Header.Set("X-Tenant-Id", "tenant_1")
+	runtime.api.Handler().ServeHTTP(response, request)
+
+	if response.Code != http.StatusUnauthorized {
+		t.Fatalf("expected missing actor to be rejected, got %d: %s", response.Code, response.Body.String())
+	}
+}
+
+func TestNewRuntimeWithDSNProtectsAdminPaymentRoutes(t *testing.T) {
+	runtime, err := newRuntime(context.Background(), testRuntimeConfig("postgres://billing@localhost/billing"), testRuntimeLogger(), func(ctx context.Context, cfg platformdb.Config) (*sql.DB, error) {
+		return newStubDB(), nil
+	})
+	if err != nil {
+		t.Fatalf("newRuntime returned error: %v", err)
+	}
+	defer closeRuntime(t, runtime)
+
+	response := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodGet, "/admin/transactions", nil)
+	request.Header.Set("X-Tenant-Id", "tenant_1")
+	runtime.api.Handler().ServeHTTP(response, request)
+
+	if response.Code != http.StatusUnauthorized {
+		t.Fatalf("expected missing actor to be rejected, got %d: %s", response.Code, response.Body.String())
+	}
+}
+
 func TestNewRuntimeReturnsDatabaseOpenError(t *testing.T) {
 	expected := errors.New("dial failed")
 	_, err := newRuntime(context.Background(), testRuntimeConfig("postgres://billing@localhost/billing"), testRuntimeLogger(), func(ctx context.Context, cfg platformdb.Config) (*sql.DB, error) {
@@ -250,6 +315,21 @@ func TestNewOrderRoutesReturnsRegistrar(t *testing.T) {
 	mux.ServeHTTP(response, httptest.NewRequest(http.MethodPost, "/client/orders", nil))
 	if response.Code != http.StatusBadRequest {
 		t.Fatalf("expected order route to be registered, got %d", response.Code)
+	}
+}
+
+func TestNewPaymentRoutesReturnsRegistrar(t *testing.T) {
+	registrar := newPaymentRoutes(newStubDB())
+	if registrar == nil {
+		t.Fatal("expected payment route registrar")
+	}
+
+	mux := http.NewServeMux()
+	registrar.RegisterRoutes(mux)
+	response := httptest.NewRecorder()
+	mux.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/client/transactions", nil))
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("expected payment route to be registered, got %d", response.Code)
 	}
 }
 

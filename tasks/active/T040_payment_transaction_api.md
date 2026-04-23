@@ -1,7 +1,7 @@
 # T040 - Payment transaction API
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: feat/payment-transaction-api
 PR: -
 Risk: payment/API/DB
@@ -35,3 +35,5 @@ Add payment transaction records and read APIs so account history can show charge
 ## Agent Log
 
 - 2026-04-23: Task created for the next backend batch.
+- 2026-04-23: Claimed by Codex from latest `origin/main` in `/tmp/Billing-T040`.
+- 2026-04-23: Added payment transaction schema, store, tenant-scoped read APIs, and runtime wiring. Validation passed: `make fmt`, `make test`, `make build`, `make migrate-validate`.
