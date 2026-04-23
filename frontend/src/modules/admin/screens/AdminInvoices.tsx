@@ -1,14 +1,36 @@
+"use client";
+
 import { INVOICES } from "@/mocks/billingData";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { fmtMoney } from "@/mocks/sampleData";
+import { billingApi } from "@/lib/api/billing";
+import { compactDateTime, moneyMinor, recordLabel, shortID } from "@/lib/api/format";
+import { useApiResource } from "@/lib/api/useApiResource";
 
 export function AdminInvoices() {
+  const invoices = useApiResource(billingApi.listAdminInvoices);
+  const liveInvoices = invoices.data ?? [];
+  const usingLive = invoices.status === "success";
+  const rows = usingLive
+    ? liveInvoices.map((inv) => ({
+        id: recordLabel(inv.display_id, "INV-"),
+        customer: shortID(inv.buyer_user_id),
+        issued: compactDateTime(inv.issued_at),
+        due: compactDateTime(inv.due_at),
+        amount: moneyMinor(inv.total_minor, inv.currency),
+        status: inv.status,
+      }))
+    : INVOICES.map((inv) => ({
+        ...inv,
+        amount: fmtMoney(inv.amount),
+      }));
+
   return (
     <div className="p-4">
       <div className="bg-white border border-gray-200 rounded">
         <div className="p-4 p-4 border-b border-gray-100 flex items-center justify-between">
           <h3 className="text-[13px] font-medium text-gray-900 m-0">Invoices</h3>
-          <span className="text-[11px] text-gray-400">{INVOICES.length} records</span>
+          <span className="text-[11px] text-gray-400">{rows.length} records</span>
         </div>
         <table className="w-full text-[13px] border-collapse">
           <thead>
@@ -21,16 +43,19 @@ export function AdminInvoices() {
             </tr>
           </thead>
           <tbody>
-            {INVOICES.map((inv) => (
+            {rows.map((inv) => (
               <tr key={inv.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
                 <td className="p-4 p-4 text-[12px] text-[#D50C2D]">{inv.id}</td>
                 <td className="p-4 p-4 text-gray-700">{inv.customer}</td>
                 <td className="p-4 p-4 text-gray-400">{inv.issued}</td>
                 <td className="p-4 p-4 text-gray-400">{inv.due}</td>
-                <td className="p-4 p-4 text-right font-medium tabular-nums">{fmtMoney(inv.amount)}</td>
+                <td className="p-4 p-4 text-right font-medium tabular-nums">{inv.amount}</td>
                 <td className="p-4 p-4"><StatusBadge status={inv.status} dot /></td>
               </tr>
             ))}
+            {usingLive && rows.length === 0 && (
+              <tr><td colSpan={6} className="p-4 text-center text-[12px] text-gray-400">No invoices</td></tr>
+            )}
           </tbody>
         </table>
       </div>

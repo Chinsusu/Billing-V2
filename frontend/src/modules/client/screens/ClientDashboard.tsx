@@ -1,9 +1,30 @@
+"use client";
+
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { CLIENT_SERVICES } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
+import { billingApi } from "@/lib/api/billing";
+import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
+import { useApiResource } from "@/lib/api/useApiResource";
 
 export function ClientDashboard() {
-  const suspended = CLIENT_SERVICES.filter((s) => s.status === "suspended");
+  const wallets = useApiResource(billingApi.listClientWallets);
+  const services = useApiResource(billingApi.listClientServices);
+  const orders = useApiResource(billingApi.listClientOrders);
+  const wallet = wallets.data?.[0];
+  const liveServices = services.status === "success" ? services.data ?? [] : null;
+  const serviceRows = liveServices
+    ? liveServices.map((s) => ({
+        id: s.id,
+        label: recordLabel(s.display_id, "SVC-"),
+        region: s.external_resource_id,
+        bandwidth: recordLabel(s.order_id.slice(-6), "ORD-"),
+        expiry: compactDateTime(s.term_end),
+        status: s.status,
+        note: undefined,
+      }))
+    : CLIENT_SERVICES;
+  const suspended = serviceRows.filter((s) => s.status === "suspended");
 
   return (
     <div className="p-4 flex flex-col gap-4">
@@ -21,7 +42,10 @@ export function ClientDashboard() {
       <div className="bg-white border border-gray-200 rounded p-4 flex items-center justify-between">
         <div>
           <div className="text-[11px] text-gray-400 uppercase tracking-wide mb-1">Wallet balance</div>
-          <div className="text-lg font-medium tabular-nums text-gray-900">$128.40</div>
+          <div className="text-lg font-medium tabular-nums text-gray-900">
+            {wallet ? moneyMinor(wallet.available_balance_minor, wallet.currency) : "$128.40"}
+          </div>
+          <div className="text-[11px] text-gray-400 mt-0.5">{orders.data?.length ?? 0} order records</div>
         </div>
         <button className="inline-flex items-center justify-center gap-2 px-4 h-9 text-[13px] font-medium bg-[#D50C2D] hover:bg-[#B3082A] text-white rounded-md border-0 cursor-pointer transition-colors shadow-sm">
           + Top up
@@ -45,7 +69,7 @@ export function ClientDashboard() {
             </tr>
           </thead>
           <tbody>
-            {CLIENT_SERVICES.map((s) => (
+            {serviceRows.map((s) => (
               <tr key={s.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
                 <td className="p-4 p-4 font-medium text-gray-900">{s.label}</td>
                 <td className="p-4 p-4 text-[12px] text-gray-400">{s.region}</td>
