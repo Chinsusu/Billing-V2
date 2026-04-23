@@ -47,3 +47,19 @@ func TestTransitionOrderStatusSQLScopesTenantAndExpectedStatus(t *testing.T) {
 		}
 	}
 }
+
+func TestTransitionOrderStatusSQLEmitsStatusChangedOutboxEvent(t *testing.T) {
+	for _, clause := range []string{
+		"WITH updated AS",
+		"INSERT INTO outbox_events",
+		OrderEventStatusChanged,
+		"'from_status', $3::text",
+		"'to_status', order_status",
+		"'display_id', display_id",
+		"FROM updated",
+	} {
+		if !strings.Contains(transitionOrderStatusSQL, clause) {
+			t.Fatalf("expected %q in transition SQL: %s", clause, transitionOrderStatusSQL)
+		}
+	}
+}

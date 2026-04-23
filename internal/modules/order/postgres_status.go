@@ -10,6 +10,7 @@ import (
 )
 
 const transitionOrderStatusSQL = `
+WITH updated AS (
 UPDATE orders
 SET order_status = $4,
     billing_status = $5,
@@ -17,7 +18,28 @@ SET order_status = $4,
 WHERE order_id = $1
   AND tenant_id = $2
   AND order_status = $3
-RETURNING ` + orderColumns
+RETURNING ` + orderColumns + `
+), event AS (
+    INSERT INTO outbox_events (tenant_id, aggregate_type, aggregate_id, event_type, payload_json, dedupe_key, correlation_id)
+    SELECT
+        tenant_id,
+        '` + OrderAggregateType + `',
+        order_id,
+        '` + OrderEventStatusChanged + `',
+        jsonb_build_object(
+            'order_id', order_id,
+            'display_id', display_id,
+            'tenant_id', tenant_id,
+            'from_status', $3::text,
+            'to_status', order_status,
+            'billing_status', billing_status
+        ),
+        '` + OrderEventStatusChanged + `:' || order_id::text || ':' || $3::text || ':' || order_status::text || ':' || EXTRACT(EPOCH FROM updated_at)::text,
+        order_id
+    FROM updated
+    ON CONFLICT (dedupe_key) DO NOTHING
+)
+SELECT ` + orderColumns + ` FROM updated`
 
 const getOrderStatusSQL = `
 SELECT order_status

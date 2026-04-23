@@ -1,9 +1,9 @@
 # T035 - Order lifecycle events
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: feat/order-lifecycle-events
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/82
 Risk: order/outbox
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -35,3 +35,5 @@ Publish outbox events when orders are created and when order status changes, so 
 ## Agent Log
 
 - 2026-04-23: Task created for the next backend batch.
+- 2026-04-23: Claimed by Codex from latest `origin/main` in `/tmp/Billing-T035`.
+- 2026-04-23: Opened PR #82. Validation passed: `go test ./internal/modules/order`, `make fmt`, `make test`, `make build`, `make migrate-validate`.

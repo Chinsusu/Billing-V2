@@ -23,9 +23,34 @@ const provisioningJobColumns = `provisioning_job_id, display_id, order_id, tenan
 const serviceInstanceColumns = `service_instance_id, display_id, tenant_id, order_id, tenant_plan_id, provider_source_id, external_resource_id, status, billing_status, suspension_reason, term_start, term_end, created_at, updated_at`
 
 const createOrderSQL = `
+WITH created AS (
 INSERT INTO orders (tenant_id, buyer_user_id, tenant_plan_id, quantity, currency, unit_price_minor, discount_minor, total_minor, order_status, billing_status, idempotency_key, product_snapshot, plan_snapshot, price_snapshot)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::jsonb, $13::jsonb, $14::jsonb)
-RETURNING ` + orderColumns
+RETURNING ` + orderColumns + `
+), event AS (
+    INSERT INTO outbox_events (tenant_id, aggregate_type, aggregate_id, event_type, payload_json, dedupe_key, correlation_id)
+    SELECT
+        tenant_id,
+        '` + OrderAggregateType + `',
+        order_id,
+        '` + OrderEventCreated + `',
+        jsonb_build_object(
+            'order_id', order_id,
+            'display_id', display_id,
+            'tenant_id', tenant_id,
+            'buyer_user_id', buyer_user_id,
+            'tenant_plan_id', tenant_plan_id,
+            'order_status', order_status,
+            'billing_status', billing_status,
+            'total_minor', total_minor,
+            'currency', currency
+        ),
+        '` + OrderEventCreated + `:' || order_id::text,
+        order_id
+    FROM created
+    ON CONFLICT (dedupe_key) DO NOTHING
+)
+SELECT ` + orderColumns + ` FROM created`
 
 const createReservationSQL = `
 INSERT INTO order_reservations (order_id, tenant_id, provider_source_id, status, expires_at)

@@ -3,6 +3,7 @@ package order
 import (
 	"database/sql"
 	"errors"
+	"strings"
 	"testing"
 	"time"
 
@@ -47,6 +48,20 @@ func TestCreateOrderArgsRejectsInvalidInput(t *testing.T) {
 	_, err := createOrderArgs(CreateOrderInput{})
 	if !errors.Is(err, tenant.ErrTenantIDMissing) {
 		t.Fatalf("expected tenant error, got %v", err)
+	}
+}
+
+func TestCreateOrderSQLEmitsCreatedOutboxEvent(t *testing.T) {
+	for _, clause := range []string{
+		"WITH created AS",
+		"INSERT INTO outbox_events",
+		OrderEventCreated,
+		"'display_id', display_id",
+		"FROM created",
+	} {
+		if !strings.Contains(createOrderSQL, clause) {
+			t.Fatalf("expected %q in create order SQL: %s", clause, createOrderSQL)
+		}
 	}
 }
 
