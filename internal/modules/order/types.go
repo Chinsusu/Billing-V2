@@ -38,6 +38,7 @@ var (
 	ErrServiceStoreMissing        = errors.New("order service store missing")
 	ErrProvisioningQueueMissing   = errors.New("provisioning queue missing")
 	ErrOrderNotFound              = errors.New("order not found")
+	ErrServiceNotFound            = errors.New("service instance not found")
 )
 
 type OrderID string

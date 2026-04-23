@@ -20,6 +20,8 @@ type fakeOrderStore struct {
 	listOrdersFilter           OrderFilter
 	getOrderLookup             OrderLookup
 	transitionOrderStatusInput TransitionOrderStatusInput
+	listServicesFilter         ServiceInstanceFilter
+	getServiceLookup           ServiceInstanceLookup
 }
 
 func (store *fakeOrderStore) CreateOrder(_ context.Context, input CreateOrderInput) (Order, error) {
@@ -55,6 +57,16 @@ func (store *fakeOrderStore) GetOrder(_ context.Context, lookup OrderLookup) (Or
 func (store *fakeOrderStore) TransitionOrderStatus(_ context.Context, input TransitionOrderStatusInput) (Order, error) {
 	store.transitionOrderStatusInput = input
 	return Order{ID: input.ID, TenantID: input.TenantID, OrderStatus: input.ToStatus, BillingStatus: input.BillingStatus}, nil
+}
+
+func (store *fakeOrderStore) ListServiceInstances(_ context.Context, filter ServiceInstanceFilter) ([]ServiceInstance, error) {
+	store.listServicesFilter = filter
+	return []ServiceInstance{{ID: ServiceID("service-1"), TenantID: filter.TenantID}}, nil
+}
+
+func (store *fakeOrderStore) GetServiceInstance(_ context.Context, lookup ServiceInstanceLookup) (ServiceInstance, error) {
+	store.getServiceLookup = lookup
+	return ServiceInstance{ID: lookup.ID, TenantID: lookup.TenantID}, nil
 }
 
 func TestServiceRejectsMissingStore(t *testing.T) {
@@ -200,5 +212,35 @@ func TestServiceTransitionOrderStatusRejectsBadChangeBeforeStore(t *testing.T) {
 	}
 	if store.transitionOrderStatusInput.ID != "" {
 		t.Fatalf("store should not be called, got %+v", store.transitionOrderStatusInput)
+	}
+}
+
+func TestServiceListServiceInstancesValidatesAndDelegates(t *testing.T) {
+	store := &fakeOrderStore{}
+	service := NewService(store)
+
+	_, err := service.ListServiceInstances(context.Background(), ServiceInstanceFilter{
+		TenantID:    tenant.ID("tenant-1"),
+		BuyerUserID: identity.UserID("buyer-1"),
+	})
+	if err != nil {
+		t.Fatalf("expected list services: %v", err)
+	}
+	if store.listServicesFilter.Limit != defaultServiceInstanceListLimit ||
+		store.listServicesFilter.BuyerUserID != identity.UserID("buyer-1") {
+		t.Fatalf("expected normalized service filter, got %+v", store.listServicesFilter)
+	}
+}
+
+func TestServiceGetServiceInstanceRequiresID(t *testing.T) {
+	store := &fakeOrderStore{}
+	service := NewService(store)
+
+	_, err := service.GetServiceInstance(context.Background(), ServiceInstanceLookup{TenantID: tenant.ID("tenant-1")})
+	if !errors.Is(err, ErrServiceIDMissing) {
+		t.Fatalf("expected service id error, got %v", err)
+	}
+	if store.getServiceLookup.TenantID != "" {
+		t.Fatalf("store should not be called, got %+v", store.getServiceLookup)
 	}
 }

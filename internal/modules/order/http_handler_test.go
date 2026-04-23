@@ -391,8 +391,14 @@ type fakeOrderHTTPService struct {
 	transitionOrderStatusCalls int
 	transitionOrderStatusInput TransitionOrderStatusInput
 	transitionOrderStatusError error
+	listServiceCalls           int
+	serviceFilter              ServiceInstanceFilter
+	getServiceCalls            int
+	serviceLookup              ServiceInstanceLookup
 	order                      Order
 	orders                     []Order
+	service                    ServiceInstance
+	services                   []ServiceInstance
 }
 
 func (service *fakeOrderHTTPService) CreateOrder(ctx context.Context, input CreateOrderInput) (Order, error) {
@@ -451,4 +457,16 @@ func (service *fakeOrderHTTPService) TransitionOrderStatus(ctx context.Context, 
 		OrderStatus:   input.ToStatus,
 		BillingStatus: input.BillingStatus,
 	}, nil
+}
+
+func (service *fakeOrderHTTPService) ListServiceInstances(ctx context.Context, filter ServiceInstanceFilter) ([]ServiceInstance, error) {
+	service.listServiceCalls++
+	service.serviceFilter = filter
+	return service.services, nil
+}
+
+func (service *fakeOrderHTTPService) GetServiceInstance(ctx context.Context, lookup ServiceInstanceLookup) (ServiceInstance, error) {
+	service.getServiceCalls++
+	service.serviceLookup = lookup
+	return service.service, nil
 }

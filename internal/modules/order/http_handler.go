@@ -27,14 +27,18 @@ type HTTPService interface {
 	ListOrders(ctx context.Context, filter OrderFilter) ([]Order, error)
 	GetOrder(ctx context.Context, lookup OrderLookup) (Order, error)
 	TransitionOrderStatus(ctx context.Context, input TransitionOrderStatusInput) (Order, error)
+	ListServiceInstances(ctx context.Context, filter ServiceInstanceFilter) ([]ServiceInstance, error)
+	GetServiceInstance(ctx context.Context, lookup ServiceInstanceLookup) (ServiceInstance, error)
 }
 
 type RouteMiddleware func(http.HandlerFunc) http.HandlerFunc
 
 type HTTPHandlerOptions struct {
-	AdminMiddleware       RouteMiddleware
-	AdminManageMiddleware RouteMiddleware
-	ClientMiddleware      RouteMiddleware
+	AdminMiddleware         RouteMiddleware
+	AdminManageMiddleware   RouteMiddleware
+	AdminServiceMiddleware  RouteMiddleware
+	ClientMiddleware        RouteMiddleware
+	ClientServiceMiddleware RouteMiddleware
 }
 
 type HTTPHandler struct {
@@ -43,8 +47,10 @@ type HTTPHandler struct {
 }
 
 const (
-	adminOrderPrefix  = "/admin/orders/"
-	clientOrderPrefix = "/client/orders/"
+	adminOrderPrefix    = "/admin/orders/"
+	clientOrderPrefix   = "/client/orders/"
+	adminServicePrefix  = "/admin/services/"
+	clientServicePrefix = "/client/services/"
 )
 
 func NewHTTPHandler(service HTTPService) *HTTPHandler {
@@ -61,8 +67,12 @@ func NewHTTPHandlerWithOptions(service HTTPService, options HTTPHandlerOptions) 
 func (handler *HTTPHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/orders", handler.adminOrdersRoute)
 	mux.HandleFunc("/admin/orders/", handler.adminOrderRoute)
+	mux.HandleFunc("/admin/services", handler.adminServicesRoute)
+	mux.HandleFunc("/admin/services/", handler.adminServiceRoute)
 	mux.HandleFunc("/client/orders", handler.clientOrdersRoute)
 	mux.HandleFunc("/client/orders/", handler.clientOrderRoute)
+	mux.HandleFunc("/client/services", handler.clientServicesRoute)
+	mux.HandleFunc("/client/services/", handler.clientServiceRoute)
 }
 
 func (handler *HTTPHandler) adminOrdersRoute(w http.ResponseWriter, r *http.Request) {
@@ -384,6 +394,8 @@ func writeOrderError(w http.ResponseWriter, r *http.Request, err error) {
 	switch {
 	case errors.Is(err, ErrOrderNotFound):
 		httpserver.WriteError(w, r, http.StatusNotFound, "order.not_found", "Order was not found.")
+	case errors.Is(err, ErrServiceNotFound):
+		httpserver.WriteError(w, r, http.StatusNotFound, "service.not_found", "Service instance was not found.")
 	case errors.Is(err, ErrOrderStatusConflict):
 		httpserver.WriteError(w, r, http.StatusConflict, "order.status_conflict", "Order status no longer matches the expected value.")
 	case errors.Is(err, identity.ErrActorContextMissing),
@@ -408,6 +420,8 @@ func orderValidationField(err error) (httpserver.ValidationField, bool) {
 		return validationField("actor_id", "order.buyer_missing", "Buyer actor is required."), true
 	case errors.Is(err, ErrOrderIDMissing):
 		return validationField("order_id", "order.order_id_missing", "Order id is required."), true
+	case errors.Is(err, ErrServiceIDMissing):
+		return validationField("service_id", "service.service_id_missing", "Service id is required."), true
 	case errors.Is(err, ErrTenantPlanIDMissing):
 		return validationField("tenant_plan_id", "order.tenant_plan_id_missing", "Tenant plan id is required."), true
 	case errors.Is(err, ErrIdempotencyKeyMissing):
@@ -424,6 +438,8 @@ func orderValidationField(err error) (httpserver.ValidationField, bool) {
 		return validationField("order_status", "order.status_invalid", "Order status is invalid."), true
 	case errors.Is(err, ErrBillingStatusInvalid):
 		return validationField("billing_status", "order.billing_status_invalid", "Billing status is invalid."), true
+	case errors.Is(err, ErrServiceStatusInvalid):
+		return validationField("status", "service.status_invalid", "Service status is invalid."), true
 	case errors.Is(err, ErrStatusTransitionInvalid):
 		return validationField("to_status", "order.status_transition_invalid", "Order status change is not allowed."), true
 	default:

@@ -90,6 +90,9 @@ func scanServiceInstance(row orderScanner) (ServiceInstance, error) {
 		&id, &record.DisplayID, &tenantID, &orderID, &tenantPlanID, &providerSourceID, &externalResourceID,
 		&status, &billingStatus, &suspensionReason, &record.TermStart, &record.TermEnd, &record.CreatedAt, &record.UpdatedAt,
 	); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ServiceInstance{}, ErrServiceNotFound
+		}
 		return ServiceInstance{}, fmt.Errorf("scan service instance: %w", err)
 	}
 	record.ID = ServiceID(id)
