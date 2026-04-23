@@ -1,9 +1,9 @@
 # T044 - Top-up request schema API
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/topup-request-schema-api
-PR: pending
+PR: https://github.com/Chinsusu/Billing-V2/pull/101
 Risk: wallet/topup/API
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -36,3 +36,4 @@ Add top-up request records and basic read/create APIs so manual wallet funding c
 
 - 2026-04-23: Task created for the next backend wallet/invoice batch.
 - 2026-04-23: Implemented top-up request schema, store/read service methods, client/admin APIs, rollback runbook, and focused tests.
+- 2026-04-23: PR #101 passed checks and was merged.
