@@ -1,9 +1,9 @@
 # T047 - Wallet ledger posting service
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/wallet-ledger-posting-service
-PR: pending
+PR: https://github.com/Chinsusu/Billing-V2/pull/108
 Risk: wallet/money/DB
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -36,3 +36,4 @@ Add an atomic wallet ledger posting path that updates wallet balances and writes
 
 - 2026-04-23: Task created after T046 to make wallet money movement safe.
 - 2026-04-23: Implemented atomic ledger posting service/store path with balance updates, idempotent SQL, and focused tests.
+- 2026-04-23: PR #108 passed checks and was merged.
