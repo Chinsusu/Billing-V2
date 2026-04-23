@@ -1,3 +1,4 @@
+"use client";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Settings, Edit2 } from "lucide-react";
 import { PROXY_SERVICES } from "@/mocks/billingData";
@@ -16,7 +17,6 @@ export function AdminServicesProxies() {
     { label: "Expire", align: "center" },
     { label: "Auto Renew", align: "center" },
     { label: "Protection", align: "center" },
-    { label: "Details", align: "center" },
     { label: "Action", align: "center" },
   ];
 
@@ -47,7 +47,7 @@ export function AdminServicesProxies() {
                 const f = (d: Date) => `${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 
                 return (
-                  <tr key={s.id} className="border-b border-gray-100 hover:bg-gray-50">
+                  <tr key={s.id} className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer" onClick={(e) => { if(!(e.target as Element).closest("button") && !(e.target as Element).closest("svg") && !(e.target as Element).closest(".bg-emerald-500") && !(e.target as Element).closest(".bg-gray-200")) alert("Tưởng tượng đang chuyển tới trang Details của ID: " + s.id) }}>
                     <td className="p-3 text-[#D50C2D] font-medium">{s.id}</td>
                     <td className="p-3">
                       <div className="bg-gray-100/80 rounded px-2 py-1 text-[11px] inline-flex items-center gap-1 border border-gray-200/50">
