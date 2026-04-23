@@ -1,4 +1,9 @@
+"use client";
+
 import { AUDIT_LOGS, AuditLog } from "@/mocks/billingData";
+import { billingApi } from "@/lib/api/billing";
+import { compactDateTime, recordLabel, shortID } from "@/lib/api/format";
+import { useApiResource } from "@/lib/api/useApiResource";
 
 const LEVEL_STYLE: Record<AuditLog["level"], string> = {
   info:  "bg-blue-50 text-blue-700",
@@ -14,12 +19,28 @@ const ACTOR_STYLE: Record<AuditLog["actor"], string> = {
 };
 
 export function AdminLogs() {
+  const logs = useApiResource(billingApi.listAdminAuditLogs);
+  const usingLive = logs.status === "success";
+  const rows = usingLive
+    ? (logs.data ?? []).map((log) => ({
+        id: log.id,
+        ts: compactDateTime(log.created_at),
+        level: "info" as AuditLog["level"],
+        actor: log.actor_type === "client" ? "client" as const : "reseller" as const,
+        actorName: shortID(log.actor_id),
+        action: log.action,
+        target: `${log.target_type} ${recordLabel(log.display_id)}`,
+        detail: shortID(log.target_id),
+        requestId: shortID(log.correlation_id),
+      }))
+    : AUDIT_LOGS;
+
   return (
     <div className="p-4">
       <div className="bg-white border border-gray-200 rounded">
         <div className="p-4 p-4 border-b border-gray-100 flex items-center justify-between">
           <h3 className="text-[13px] font-medium text-gray-900 m-0">Audit logs</h3>
-          <span className="text-[11px] text-gray-400">{AUDIT_LOGS.length} entries (mock)</span>
+          <span className="text-[11px] text-gray-400">{rows.length} entries</span>
         </div>
         <table className="w-full text-[13px] border-collapse">
           <thead>
@@ -32,7 +53,7 @@ export function AdminLogs() {
             </tr>
           </thead>
           <tbody>
-            {AUDIT_LOGS.map((log) => (
+            {rows.map((log) => (
               <tr key={log.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
                 <td className="p-4 p-4 text-gray-400 text-[11px] tabular-nums whitespace-nowrap">{log.ts}</td>
                 <td className="p-4 p-4">
@@ -52,6 +73,9 @@ export function AdminLogs() {
                 <td className="p-4 p-4 text-[11px] text-gray-300">{log.requestId}</td>
               </tr>
             ))}
+            {usingLive && rows.length === 0 && (
+              <tr><td colSpan={7} className="p-4 text-center text-[12px] text-gray-400">No audit logs</td></tr>
+            )}
           </tbody>
         </table>
       </div>

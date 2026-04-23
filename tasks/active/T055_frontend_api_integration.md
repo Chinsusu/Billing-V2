@@ -1,7 +1,7 @@
 # T055 - Frontend API integration
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: feat/frontend-api-integration
 PR: -
 Risk: frontend/API
@@ -35,3 +35,4 @@ Connect billing and admin frontend screens to real backend API clients using the
 ## Agent Log
 
 - 2026-04-23: Task created for frontend/backend integration.
+- 2026-04-23: Claimed by Codex; adding typed API client, hooks, and live-data wiring with mock fallback.
