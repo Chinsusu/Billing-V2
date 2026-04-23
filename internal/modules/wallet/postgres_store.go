@@ -3,6 +3,7 @@ package wallet
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	platformdb "github.com/Chinsusu/Billing-V2/internal/platform/db"
 )
@@ -55,6 +56,65 @@ func createLedgerEntryArgs(input CreateLedgerEntryInput) ([]interface{}, error) 
 		input.WalletID, input.TenantID, input.Direction, input.AmountMinor, input.Currency,
 		input.EntryType, input.Status, input.BalanceAfterMinor, input.ReferenceType, input.ReferenceID,
 		input.IdempotencyKey, nullableString(string(input.CreatedBy)), nullableString(input.Reason), input.CorrelationID,
+	}, nil
+}
+
+const postLedgerEntrySQL = `
+WITH existing AS (
+SELECT ` + ledgerEntryColumns + `
+FROM wallet_ledger_entries
+WHERE wallet_id = $1 AND idempotency_key = $9
+), updated_wallet AS (
+UPDATE wallets wallet
+SET available_balance_minor = CASE
+        WHEN $3::wallet_ledger_direction = 'credit' THEN wallet.available_balance_minor + $4
+        ELSE wallet.available_balance_minor - $4
+    END,
+    updated_at = NOW()
+WHERE wallet.wallet_id = $1
+  AND wallet.tenant_id = $2
+  AND wallet.currency = $5
+  AND wallet.status = 'active'
+  AND NOT EXISTS (SELECT 1 FROM existing)
+  AND ($3::wallet_ledger_direction = 'credit' OR wallet.available_balance_minor >= $4)
+RETURNING wallet.available_balance_minor
+), inserted AS (
+INSERT INTO wallet_ledger_entries (wallet_id, tenant_id, direction, amount_minor, currency, entry_type, status, balance_after_minor, reference_type, reference_id, idempotency_key, created_by, reason, correlation_id)
+SELECT $1, $2, $3, $4, $5, $6, 'posted', updated_wallet.available_balance_minor, $7, $8, $9, $10, $11, $12
+FROM updated_wallet
+ON CONFLICT (wallet_id, idempotency_key)
+DO NOTHING
+RETURNING ` + ledgerEntryColumns + `
+)
+SELECT ` + ledgerEntryColumns + ` FROM inserted
+UNION ALL
+SELECT ` + ledgerEntryColumns + ` FROM existing
+LIMIT 1`
+
+func (store *PostgresStore) PostLedgerEntry(ctx context.Context, input PostLedgerEntryInput) (LedgerEntry, error) {
+	if err := store.ready(); err != nil {
+		return LedgerEntry{}, err
+	}
+	args, err := postLedgerEntryArgs(input)
+	if err != nil {
+		return LedgerEntry{}, err
+	}
+	entry, err := scanLedgerEntry(store.executor.QueryRowContext(ctx, postLedgerEntrySQL, args...))
+	if errors.Is(err, ErrLedgerEntryNotFound) && input.Normalize().Direction == DirectionDebit {
+		return LedgerEntry{}, ErrInsufficientBalance
+	}
+	return entry, err
+}
+
+func postLedgerEntryArgs(input PostLedgerEntryInput) ([]interface{}, error) {
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return nil, err
+	}
+	return []interface{}{
+		input.WalletID, input.TenantID, input.Direction, input.AmountMinor, input.Currency,
+		input.EntryType, input.ReferenceType, input.ReferenceID, input.IdempotencyKey,
+		nullableString(string(input.CreatedBy)), nullableString(input.Reason), input.CorrelationID,
 	}, nil
 }
 
