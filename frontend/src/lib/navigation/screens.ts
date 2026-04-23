@@ -12,6 +12,7 @@ export interface NavItem {
 export const ADMIN_NAV: NavItem[] = [
   { id: "admin-overview", label: "Overview", portal: "admin" },
 
+  { id: "admin-customers", label: "Customers", portal: "admin", section: "Customers" },
   { id: "admin-accounts", label: "Accounts", portal: "admin", section: "Customers", count: 2852 },
   { id: "admin-tickets", label: "Support tickets", portal: "admin", section: "Customers", badge: "danger", count: 23 },
 
