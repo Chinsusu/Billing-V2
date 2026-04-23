@@ -79,3 +79,11 @@ func newOrderResponse(order Order) orderResponse {
 		UpdatedAt:       order.UpdatedAt,
 	}
 }
+
+func newOrderResponses(orders []Order) []orderResponse {
+	responses := make([]orderResponse, 0, len(orders))
+	for _, order := range orders {
+		responses = append(responses, newOrderResponse(order))
+	}
+	return responses
+}

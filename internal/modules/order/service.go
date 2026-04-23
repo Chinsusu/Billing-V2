@@ -54,6 +54,27 @@ func (service *Service) CreateServiceInstance(ctx context.Context, input CreateS
 	return service.store.CreateServiceInstance(ctx, input)
 }
 
+func (service *Service) ListOrders(ctx context.Context, filter OrderFilter) ([]Order, error) {
+	if err := service.ready(); err != nil {
+		return nil, err
+	}
+	filter = normalizeOrderFilter(filter)
+	if err := validateOrderFilter(filter); err != nil {
+		return nil, err
+	}
+	return service.store.ListOrders(ctx, filter)
+}
+
+func (service *Service) GetOrder(ctx context.Context, lookup OrderLookup) (Order, error) {
+	if err := service.ready(); err != nil {
+		return Order{}, err
+	}
+	if err := validateOrderLookup(lookup); err != nil {
+		return Order{}, err
+	}
+	return service.store.GetOrder(ctx, lookup)
+}
+
 func (service *Service) ready() error {
 	if service == nil || service.store == nil {
 		return ErrServiceStoreMissing

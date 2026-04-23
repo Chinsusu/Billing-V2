@@ -124,6 +124,99 @@ func TestHTTPHandlerClientOrderRequiresIdempotencyKey(t *testing.T) {
 	}
 }
 
+func TestHTTPHandlerListClientOrdersUsesContextAndFilters(t *testing.T) {
+	service := &fakeOrderHTTPService{
+		orders: []Order{{
+			ID:            "order_1",
+			DisplayID:     30002,
+			TenantID:      "tenant_1",
+			BuyerUserID:   "buyer_1",
+			TenantPlanID:  "tenant_plan_1",
+			OrderStatus:   OrderStatusPendingPayment,
+			BillingStatus: BillingStatusUnpaid,
+		}},
+	}
+	handler := registerOrderTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/client/orders?status=pending_payment&billing_status=unpaid&limit=15", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("buyer_1", "tenant_1", identity.ActorTypeClient)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.listOrderCalls != 1 {
+		t.Fatalf("expected list orders once, got %d", service.listOrderCalls)
+	}
+	if service.orderFilter.TenantID != tenant.ID("tenant_1") || service.orderFilter.BuyerUserID != identity.UserID("buyer_1") {
+		t.Fatalf("unexpected tenant/buyer filter: %+v", service.orderFilter)
+	}
+	if service.orderFilter.OrderStatus != OrderStatusPendingPayment ||
+		service.orderFilter.BillingStatus != BillingStatusUnpaid ||
+		service.orderFilter.Limit != 15 {
+		t.Fatalf("unexpected order filter: %+v", service.orderFilter)
+	}
+	if !strings.Contains(response.Body.String(), `"display_id":30002`) {
+		t.Fatalf("expected order response, got %s", response.Body.String())
+	}
+}
+
+func TestHTTPHandlerGetClientOrderUsesPathAndContext(t *testing.T) {
+	service := &fakeOrderHTTPService{
+		order: Order{
+			ID:            "order_1",
+			DisplayID:     30003,
+			TenantID:      "tenant_1",
+			BuyerUserID:   "buyer_1",
+			TenantPlanID:  "tenant_plan_1",
+			OrderStatus:   OrderStatusPaid,
+			BillingStatus: BillingStatusPaid,
+		},
+	}
+	handler := registerOrderTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/client/orders/order_1", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("buyer_1", "tenant_1", identity.ActorTypeClient)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.getOrderCalls != 1 {
+		t.Fatalf("expected get order once, got %d", service.getOrderCalls)
+	}
+	if service.orderLookup.ID != OrderID("order_1") ||
+		service.orderLookup.TenantID != tenant.ID("tenant_1") ||
+		service.orderLookup.BuyerUserID != identity.UserID("buyer_1") {
+		t.Fatalf("unexpected order lookup: %+v", service.orderLookup)
+	}
+}
+
+func TestHTTPHandlerListClientOrdersRejectsBadStatus(t *testing.T) {
+	service := &fakeOrderHTTPService{}
+	handler := registerOrderTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/client/orders?status=bad", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("buyer_1", "tenant_1", identity.ActorTypeClient)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("expected status 400, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.listOrderCalls != 0 {
+		t.Fatalf("expected no list call, got %d", service.listOrderCalls)
+	}
+}
+
 func registerOrderTestHandler(service HTTPService) http.Handler {
 	mux := http.NewServeMux()
 	NewHTTPHandler(service).RegisterRoutes(mux)
@@ -133,7 +226,12 @@ func registerOrderTestHandler(service HTTPService) http.Handler {
 type fakeOrderHTTPService struct {
 	createOrderCalls int
 	createOrderInput CreateOrderInput
+	listOrderCalls   int
+	orderFilter      OrderFilter
+	getOrderCalls    int
+	orderLookup      OrderLookup
 	order            Order
+	orders           []Order
 }
 
 func (service *fakeOrderHTTPService) CreateOrder(ctx context.Context, input CreateOrderInput) (Order, error) {
@@ -159,4 +257,16 @@ func (service *fakeOrderHTTPService) CreateOrder(ctx context.Context, input Crea
 		OrderStatus:    input.OrderStatus,
 		BillingStatus:  input.BillingStatus,
 	}, nil
+}
+
+func (service *fakeOrderHTTPService) ListOrders(ctx context.Context, filter OrderFilter) ([]Order, error) {
+	service.listOrderCalls++
+	service.orderFilter = filter
+	return service.orders, nil
+}
+
+func (service *fakeOrderHTTPService) GetOrder(ctx context.Context, lookup OrderLookup) (Order, error) {
+	service.getOrderCalls++
+	service.orderLookup = lookup
+	return service.order, nil
 }
