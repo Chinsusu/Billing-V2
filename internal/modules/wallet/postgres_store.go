@@ -155,6 +155,65 @@ func createTopupRequestArgs(input CreateTopupRequestInput) ([]interface{}, error
 	}, nil
 }
 
+const approveTopupRequestSQL = `
+UPDATE topup_requests
+SET status = 'approved',
+    reviewed_by = $3,
+    reviewed_at = NOW(),
+    review_note = $4,
+    ledger_entry_id = $5,
+    updated_at = NOW()
+WHERE topup_request_id = $1
+  AND tenant_id = $2
+  AND status IN ('submitted', 'under_review')
+RETURNING ` + topupRequestColumns
+
+func (store *PostgresStore) ApproveTopupRequest(ctx context.Context, input ApproveTopupRequestInput, ledgerEntryID LedgerEntryID) (TopupRequest, error) {
+	if err := store.ready(); err != nil {
+		return TopupRequest{}, err
+	}
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return TopupRequest{}, err
+	}
+	request, err := scanTopupRequest(store.executor.QueryRowContext(
+		ctx, approveTopupRequestSQL, input.ID, input.TenantID, input.ReviewedBy, nullableString(input.ReviewNote), ledgerEntryID,
+	))
+	if errors.Is(err, ErrTopupRequestNotFound) {
+		return TopupRequest{}, ErrTopupStatusConflict
+	}
+	return request, err
+}
+
+const rejectTopupRequestSQL = `
+UPDATE topup_requests
+SET status = 'rejected',
+    reviewed_by = $3,
+    reviewed_at = NOW(),
+    review_note = $4,
+    updated_at = NOW()
+WHERE topup_request_id = $1
+  AND tenant_id = $2
+  AND status IN ('submitted', 'under_review')
+RETURNING ` + topupRequestColumns
+
+func (store *PostgresStore) RejectTopupRequest(ctx context.Context, input RejectTopupRequestInput) (TopupRequest, error) {
+	if err := store.ready(); err != nil {
+		return TopupRequest{}, err
+	}
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return TopupRequest{}, err
+	}
+	request, err := scanTopupRequest(store.executor.QueryRowContext(
+		ctx, rejectTopupRequestSQL, input.ID, input.TenantID, input.ReviewedBy, input.ReviewNote,
+	))
+	if errors.Is(err, ErrTopupRequestNotFound) {
+		return TopupRequest{}, ErrTopupStatusConflict
+	}
+	return request, err
+}
+
 func (store *PostgresStore) ready() error {
 	if store == nil || store.executor == nil {
 		return ErrStoreExecutorMissing

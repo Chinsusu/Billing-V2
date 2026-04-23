@@ -166,12 +166,16 @@ type fakeWalletHTTPService struct {
 	topupInput       CreateTopupRequestInput
 	topupFilter      TopupRequestFilter
 	topupLookup      TopupRequestLookup
+	approveInput     ApproveTopupRequestInput
+	rejectInput      RejectTopupRequestInput
 	listWalletCalls  int
 	getWalletCalls   int
 	listLedgerCalls  int
 	createTopupCalls int
 	listTopupCalls   int
 	getTopupCalls    int
+	approveCalls     int
+	rejectCalls      int
 }
 
 func (service *fakeWalletHTTPService) ListWallets(ctx context.Context, filter WalletFilter) ([]Wallet, error) {
@@ -207,5 +211,25 @@ func (service *fakeWalletHTTPService) ListTopupRequests(ctx context.Context, fil
 func (service *fakeWalletHTTPService) GetTopupRequest(ctx context.Context, lookup TopupRequestLookup) (TopupRequest, error) {
 	service.getTopupCalls++
 	service.topupLookup = lookup
+	return service.topup, nil
+}
+
+func (service *fakeWalletHTTPService) ApproveTopupRequest(ctx context.Context, input ApproveTopupRequestInput) (TopupRequest, error) {
+	service.approveCalls++
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return TopupRequest{}, err
+	}
+	service.approveInput = input
+	return service.topup, nil
+}
+
+func (service *fakeWalletHTTPService) RejectTopupRequest(ctx context.Context, input RejectTopupRequestInput) (TopupRequest, error) {
+	service.rejectCalls++
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return TopupRequest{}, err
+	}
+	service.rejectInput = input
 	return service.topup, nil
 }

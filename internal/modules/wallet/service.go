@@ -106,6 +106,52 @@ func (service *Service) GetTopupRequest(ctx context.Context, lookup TopupRequest
 	return service.store.GetTopupRequest(ctx, lookup)
 }
 
+func (service *Service) ApproveTopupRequest(ctx context.Context, input ApproveTopupRequestInput) (TopupRequest, error) {
+	if err := service.ready(); err != nil {
+		return TopupRequest{}, err
+	}
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return TopupRequest{}, err
+	}
+	request, err := service.store.GetTopupRequest(ctx, TopupRequestLookup{ID: input.ID, TenantID: input.TenantID})
+	if err != nil {
+		return TopupRequest{}, err
+	}
+	if request.Status == TopupStatusApproved {
+		return request, nil
+	}
+	if !reviewableTopupStatus(request.Status) {
+		return TopupRequest{}, ErrTopupStatusConflict
+	}
+	entry, err := service.store.PostLedgerEntry(ctx, approveLedgerInput(request, input.ReviewedBy))
+	if err != nil {
+		return TopupRequest{}, err
+	}
+	return service.store.ApproveTopupRequest(ctx, input, entry.ID)
+}
+
+func (service *Service) RejectTopupRequest(ctx context.Context, input RejectTopupRequestInput) (TopupRequest, error) {
+	if err := service.ready(); err != nil {
+		return TopupRequest{}, err
+	}
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return TopupRequest{}, err
+	}
+	request, err := service.store.GetTopupRequest(ctx, TopupRequestLookup{ID: input.ID, TenantID: input.TenantID})
+	if err != nil {
+		return TopupRequest{}, err
+	}
+	if request.Status == TopupStatusRejected {
+		return request, nil
+	}
+	if !reviewableTopupStatus(request.Status) {
+		return TopupRequest{}, ErrTopupStatusConflict
+	}
+	return service.store.RejectTopupRequest(ctx, input)
+}
+
 func (service *Service) ready() error {
 	if service == nil || service.store == nil {
 		return ErrServiceStoreMissing

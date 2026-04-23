@@ -1,9 +1,9 @@
 # T048 - Top-up review and approval API
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: feat/topup-review-approval-api
-PR: -
+PR: pending
 Risk: wallet/topup/money/API
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -36,3 +36,4 @@ Add admin review actions for wallet top-up requests, including approval that cre
 ## Agent Log
 
 - 2026-04-23: Task created for manual wallet funding workflow.
+- 2026-04-23: Implemented admin approve/reject top-up review flow, ledger credit handoff, review middleware, and focused tests.

@@ -140,8 +140,9 @@ func newWalletRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	service := wallet.NewService(store)
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return wallet.NewHTTPHandlerWithOptions(service, wallet.HTTPHandlerOptions{
-		AdminMiddleware:  walletAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
-		ClientMiddleware: walletAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
+		AdminMiddleware:       walletAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
+		AdminReviewMiddleware: walletAuthMiddleware(authorizer, rbac.PermissionWalletTopupApprove, rbac.RiskHigh),
+		ClientMiddleware:      walletAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
 	})
 }
 

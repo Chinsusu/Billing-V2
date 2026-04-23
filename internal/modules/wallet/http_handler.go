@@ -1,7 +1,6 @@
 package wallet
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"sort"
@@ -12,20 +11,12 @@ import (
 	"github.com/Chinsusu/Billing-V2/internal/platform/httpserver"
 )
 
-type HTTPService interface {
-	ListWallets(ctx context.Context, filter WalletFilter) ([]Wallet, error)
-	GetWallet(ctx context.Context, lookup WalletLookup) (Wallet, error)
-	ListLedgerEntries(ctx context.Context, filter LedgerEntryFilter) ([]LedgerEntry, error)
-	CreateTopupRequest(ctx context.Context, input CreateTopupRequestInput) (TopupRequest, error)
-	ListTopupRequests(ctx context.Context, filter TopupRequestFilter) ([]TopupRequest, error)
-	GetTopupRequest(ctx context.Context, lookup TopupRequestLookup) (TopupRequest, error)
-}
-
 type RouteMiddleware func(http.HandlerFunc) http.HandlerFunc
 
 type HTTPHandlerOptions struct {
-	AdminMiddleware  RouteMiddleware
-	ClientMiddleware RouteMiddleware
+	AdminMiddleware       RouteMiddleware
+	AdminReviewMiddleware RouteMiddleware
+	ClientMiddleware      RouteMiddleware
 }
 
 type HTTPHandler struct {
@@ -442,6 +433,8 @@ func writeWalletError(w http.ResponseWriter, r *http.Request, err error) {
 		httpserver.WriteError(w, r, http.StatusNotFound, "wallet.ledger_not_found", "Wallet ledger entry was not found.")
 	case errors.Is(err, ErrTopupRequestNotFound):
 		httpserver.WriteError(w, r, http.StatusNotFound, "wallet.topup_not_found", "Wallet top-up request was not found.")
+	case errors.Is(err, ErrTopupStatusConflict):
+		httpserver.WriteError(w, r, http.StatusConflict, "wallet.topup_status_conflict", "Top-up request status does not allow this action.")
 	case errors.Is(err, identity.ErrActorContextMissing),
 		errors.Is(err, identity.ErrActorIDMissing),
 		errors.Is(err, identity.ErrActorTypeMissing),
@@ -478,6 +471,8 @@ func walletValidationField(err error) (httpserver.ValidationField, bool) {
 		return validationField("status", "wallet.topup_status_invalid", "Top-up status is invalid."), true
 	case errors.Is(err, ErrPaymentMethodInvalid):
 		return validationField("payment_method", "wallet.payment_method_invalid", "Payment method is invalid."), true
+	case errors.Is(err, ErrReviewNoteMissing):
+		return validationField("review_note", "wallet.review_note_missing", "Review note is required."), true
 	case errors.Is(err, ErrAmountInvalid):
 		return validationField("amount_minor", "wallet.amount_invalid", "Amount must be greater than zero."), true
 	case errors.Is(err, ErrCurrencyMissing), errors.Is(err, ErrCurrencyInvalid):

@@ -108,3 +108,47 @@ func TestHTTPHandlerRejectsBadTopupPaymentMethod(t *testing.T) {
 		t.Fatalf("expected no topup list call, got %d", service.listTopupCalls)
 	}
 }
+
+func TestHTTPHandlerApproveAdminTopupRequestUsesReviewer(t *testing.T) {
+	service := &fakeWalletHTTPService{topup: TopupRequest{ID: "topup_1", DisplayID: 90003, Status: TopupStatusApproved}}
+	handler := registerWalletTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodPost, "/admin/topup-requests/topup_1/approve", strings.NewReader(`{"review_note":"verified bank transfer"}`))
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.approveCalls != 1 {
+		t.Fatalf("expected approve once, got %d", service.approveCalls)
+	}
+	if service.approveInput.ID != TopupRequestID("topup_1") ||
+		service.approveInput.TenantID != tenant.ID("tenant_1") ||
+		service.approveInput.ReviewedBy != identity.UserID("admin_1") ||
+		service.approveInput.ReviewNote != "verified bank transfer" {
+		t.Fatalf("unexpected approve input: %+v", service.approveInput)
+	}
+}
+
+func TestHTTPHandlerRejectAdminTopupRequestRequiresNote(t *testing.T) {
+	service := &fakeWalletHTTPService{}
+	handler := registerWalletTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodPost, "/admin/topup-requests/topup_1/reject", strings.NewReader(`{"review_note":""}`))
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("expected status 400, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.rejectCalls != 1 {
+		t.Fatalf("expected service validation call, got %d", service.rejectCalls)
+	}
+}

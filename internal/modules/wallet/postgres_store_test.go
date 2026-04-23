@@ -104,3 +104,14 @@ func TestPostLedgerEntrySQLUpdatesBalanceOnce(t *testing.T) {
 		}
 	}
 }
+
+func TestTopupReviewSQLRestrictsReviewableStatuses(t *testing.T) {
+	for _, query := range []string{approveTopupRequestSQL, rejectTopupRequestSQL} {
+		if !strings.Contains(query, "status IN ('submitted', 'under_review')") {
+			t.Fatalf("expected reviewable status guard in query: %s", query)
+		}
+	}
+	if !strings.Contains(approveTopupRequestSQL, "ledger_entry_id = $5") {
+		t.Fatalf("expected approve query to link ledger entry: %s", approveTopupRequestSQL)
+	}
+}
