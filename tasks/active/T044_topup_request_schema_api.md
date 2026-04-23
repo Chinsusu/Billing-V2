@@ -1,9 +1,9 @@
 # T044 - Top-up request schema API
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: feat/topup-request-schema-api
-PR: -
+PR: pending
 Risk: wallet/topup/API
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -35,3 +35,4 @@ Add top-up request records and basic read/create APIs so manual wallet funding c
 ## Agent Log
 
 - 2026-04-23: Task created for the next backend wallet/invoice batch.
+- 2026-04-23: Implemented top-up request schema, store/read service methods, client/admin APIs, rollback runbook, and focused tests.
