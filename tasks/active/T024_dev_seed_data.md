@@ -1,9 +1,9 @@
 # T024 - Development seed data
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: feat/dev-seed-data
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/58
 Risk: seed/catalog/RBAC
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -37,3 +37,4 @@ Add an idempotent development seed runner for RBAC permissions, demo users, mast
 ## Agent Log
 
 - 2026-04-23: Task created and claimed from latest `origin/main` in `/tmp/Billing-T024`.
+- 2026-04-23: Opened PR #58. Validation passed: `go test ./internal/seed ./cmd/seed`, `go run ./cmd/seed plan`, `make fmt`, `make test`, `make build`, `make migrate-validate`.
