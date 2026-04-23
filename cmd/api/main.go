@@ -10,6 +10,7 @@ import (
 	"syscall"
 
 	"github.com/Chinsusu/Billing-V2/internal/app"
+	"github.com/Chinsusu/Billing-V2/internal/modules/audit"
 	"github.com/Chinsusu/Billing-V2/internal/modules/catalog"
 	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
 	"github.com/Chinsusu/Billing-V2/internal/modules/invoice"
@@ -72,6 +73,7 @@ func newRuntime(ctx context.Context, cfg config.Config, log *logger.Logger, open
 			return nil, fmt.Errorf("open api database: %w", err)
 		}
 		cleanup = conn.Close
+		options.AuditRoutes = newAuditRoutes(conn)
 		options.CatalogRoutes = newCatalogRoutes(conn)
 		options.InvoiceRoutes = newInvoiceRoutes(conn)
 		options.OrderRoutes = newOrderRoutes(conn)
@@ -88,6 +90,15 @@ func newRuntime(ctx context.Context, cfg config.Config, log *logger.Logger, open
 		api:     api,
 		cleanup: cleanup,
 	}, nil
+}
+
+func newAuditRoutes(executor platformdb.Executor) app.RouteRegistrar {
+	store := audit.NewPostgresStore(executor)
+	service := audit.NewService(store)
+	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
+	return audit.NewHTTPHandlerWithOptions(service, audit.HTTPHandlerOptions{
+		AdminMiddleware: auditAuthMiddleware(authorizer, rbac.PermissionAuditView, rbac.RiskHigh),
+	})
 }
 
 func newCatalogRoutes(executor platformdb.Executor) app.RouteRegistrar {
@@ -144,6 +155,31 @@ func newWalletRoutes(executor platformdb.Executor) app.RouteRegistrar {
 		AdminReviewMiddleware: walletAuthMiddleware(authorizer, rbac.PermissionWalletTopupApprove, rbac.RiskHigh),
 		ClientMiddleware:      walletAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
 	})
+}
+
+func auditAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) audit.RouteMiddleware {
+	return chainAuditMiddleware(
+		wrapAuditMiddleware(identity.HeaderActorMiddleware),
+		audit.RouteMiddleware(rbac.RequirePermission(authorizer, permission, risk)),
+	)
+}
+
+func chainAuditMiddleware(middlewares ...audit.RouteMiddleware) audit.RouteMiddleware {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		for index := len(middlewares) - 1; index >= 0; index-- {
+			if middlewares[index] == nil {
+				continue
+			}
+			next = middlewares[index](next)
+		}
+		return next
+	}
+}
+
+func wrapAuditMiddleware(middleware func(http.Handler) http.Handler) audit.RouteMiddleware {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		return middleware(http.HandlerFunc(next)).ServeHTTP
+	}
 }
 
 func orderAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) order.RouteMiddleware {
