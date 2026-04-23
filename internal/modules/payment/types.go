@@ -19,6 +19,8 @@ var (
 	ErrInvoiceNotPayable        = errors.New("payment invoice not payable")
 	ErrWalletCurrencyMismatch   = errors.New("payment wallet currency mismatch")
 	ErrBillingDependencyMissing = errors.New("payment billing dependency missing")
+	ErrCreatedTimeInvalid       = errors.New("payment created time invalid")
+	ErrCreatedTimeWindowInvalid = errors.New("payment created time window invalid")
 	ErrStoreExecutorMissing     = errors.New("payment store executor missing")
 	ErrServiceStoreMissing      = errors.New("payment service store missing")
 	ErrTransactionNotFound      = errors.New("payment transaction not found")

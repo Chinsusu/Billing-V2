@@ -152,12 +152,18 @@ func registerPaymentTestHandler(service HTTPService) http.Handler {
 }
 
 type fakePaymentHTTPService struct {
-	transactions []Transaction
-	transaction  Transaction
-	filter       TransactionFilter
-	lookup       TransactionLookup
-	listCalls    int
-	getCalls     int
+	transactions            []Transaction
+	transaction             Transaction
+	reconciliations         []PaymentReconciliation
+	reconciliation          PaymentReconciliation
+	filter                  TransactionFilter
+	lookup                  TransactionLookup
+	reconciliationFilter    ReconciliationFilter
+	reconciliationLookup    ReconciliationLookup
+	listCalls               int
+	getCalls                int
+	reconciliationListCalls int
+	reconciliationGetCalls  int
 }
 
 func (service *fakePaymentHTTPService) ListTransactions(ctx context.Context, filter TransactionFilter) ([]Transaction, error) {
@@ -170,4 +176,16 @@ func (service *fakePaymentHTTPService) GetTransaction(ctx context.Context, looku
 	service.getCalls++
 	service.lookup = lookup
 	return service.transaction, nil
+}
+
+func (service *fakePaymentHTTPService) ListPaymentReconciliations(ctx context.Context, filter ReconciliationFilter) ([]PaymentReconciliation, error) {
+	service.reconciliationListCalls++
+	service.reconciliationFilter = filter
+	return service.reconciliations, nil
+}
+
+func (service *fakePaymentHTTPService) GetPaymentReconciliation(ctx context.Context, lookup ReconciliationLookup) (PaymentReconciliation, error) {
+	service.reconciliationGetCalls++
+	service.reconciliationLookup = lookup
+	return service.reconciliation, nil
 }
