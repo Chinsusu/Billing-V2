@@ -16,6 +16,7 @@ docs/05_development_standards/47_Git_Workflow_Build_Test_PR_Merge_Guide.md
 docs/05_development_standards/48_Definition_Of_Ready_Done_And_Task_Workflow.md
 docs/05_development_standards/49_Testing_Strategy_And_Quality_Gates.md
 docs/05_development_standards/50_API_Response_Error_Logging_Standard.md
+docs/05_development_standards/56_Billing_API_Operational_Reference.md
 docs/05_development_standards/54_Multi_Agent_Task_Board_Conflict_Workflow.md
 docs/04_architecture_deep_dive/37_Go_Backend_Architecture_And_Module_Boundaries.md
 docs/04_architecture_deep_dive/45_Architecture_Decision_Records_ADR.md
@@ -67,6 +68,7 @@ If the task touches frontend or API contract, also read:
 docs/02_technical_handoff/16_API_Contract_And_Permission_Spec.md
 docs/02_technical_handoff/20_UI_Wireflow_And_Screen_Spec.md
 docs/05_development_standards/50_API_Response_Error_Logging_Standard.md
+docs/05_development_standards/56_Billing_API_Operational_Reference.md
 docs/05_development_standards/53_Frontend_App_Shell_And_UI_Implementation_Standard.md
 ```
 
