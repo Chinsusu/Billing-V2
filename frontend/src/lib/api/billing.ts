@@ -1,5 +1,8 @@
 import { getApiData } from "./client";
 import {
+  AdminAuditLogQuery,
+  AdminInvoiceQuery,
+  AdminTransactionQuery,
   AuditLog,
   Invoice,
   LedgerEntry,
@@ -19,9 +22,12 @@ export const billingApi = {
   listClientServices: () => getApiData<ServiceInstance[]>("/client/services", "client"),
   listClientTransactions: () => getApiData<PaymentTransaction[]>("/client/transactions", "client"),
 
-  listAdminInvoices: () => getApiData<Invoice[]>("/admin/invoices", "admin"),
-  listAdminTransactions: () => getApiData<PaymentTransaction[]>("/admin/transactions", "admin"),
-  listAdminReconciliation: () =>
-    getApiData<PaymentReconciliation[]>("/admin/payment-reconciliation", "admin"),
-  listAdminAuditLogs: () => getApiData<AuditLog[]>("/admin/audit-logs", "admin"),
+  listAdminInvoices: (query: AdminInvoiceQuery = {}) =>
+    getApiData<Invoice[]>("/admin/invoices", "admin", query),
+  listAdminTransactions: (query: AdminTransactionQuery = {}) =>
+    getApiData<PaymentTransaction[]>("/admin/transactions", "admin", query),
+  listAdminReconciliation: (query: AdminTransactionQuery = {}) =>
+    getApiData<PaymentReconciliation[]>("/admin/payment-reconciliation", "admin", query),
+  listAdminAuditLogs: (query: AdminAuditLogQuery = {}) =>
+    getApiData<AuditLog[]>("/admin/audit-logs", "admin", query),
 };

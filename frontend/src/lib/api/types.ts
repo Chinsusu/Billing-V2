@@ -7,6 +7,9 @@ export interface ApiEnvelope<T> {
   };
 }
 
+export type ApiQueryValue = string | number | null | undefined;
+export type ApiQuery = object;
+
 export interface Wallet {
   id: string;
   display_id: number;
@@ -108,4 +111,27 @@ export interface AuditLog {
   target_id: string;
   correlation_id: string;
   created_at: string;
+}
+
+export interface AdminInvoiceQuery {
+  display_id?: string;
+  buyer_user_id?: string;
+  status?: string;
+  amount_min?: string;
+  amount_max?: string;
+}
+
+export interface AdminTransactionQuery {
+  display_id?: string;
+  account_user_id?: string;
+  status?: string;
+  amount_min?: string;
+  amount_max?: string;
+}
+
+export interface AdminAuditLogQuery {
+  display_id?: string;
+  actor_id?: string;
+  action?: string;
+  target_type?: string;
 }
