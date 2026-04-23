@@ -13,6 +13,28 @@ type ledgerEntryScanner interface {
 	Scan(dest ...interface{}) error
 }
 
+func scanWallet(row ledgerEntryScanner) (Wallet, error) {
+	var record Wallet
+	var id, tenantID, ownerType, ownerID, status string
+	var metadata []byte
+	if err := row.Scan(
+		&id, &record.DisplayID, &tenantID, &ownerType, &ownerID, &record.Currency, &status,
+		&record.AvailableBalanceMinor, &record.LockedBalanceMinor, &metadata, &record.CreatedAt, &record.UpdatedAt,
+	); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return Wallet{}, ErrWalletNotFound
+		}
+		return Wallet{}, fmt.Errorf("scan wallet: %w", err)
+	}
+	record.ID = WalletID(id)
+	record.TenantID = tenant.ID(tenantID)
+	record.OwnerType = OwnerType(ownerType)
+	record.OwnerID = OwnerID(ownerID)
+	record.Status = Status(status)
+	record.Metadata = append(record.Metadata, metadata...)
+	return record, nil
+}
+
 func scanLedgerEntry(row ledgerEntryScanner) (LedgerEntry, error) {
 	var record LedgerEntry
 	var id, walletID, tenantID, direction, currency, entryType, status, referenceType, referenceID, idempotencyKey, correlationID string

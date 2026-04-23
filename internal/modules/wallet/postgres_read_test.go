@@ -8,6 +8,53 @@ import (
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
 )
 
+func TestBuildListWalletsQueryAddsOwnerScopeAndFilters(t *testing.T) {
+	query, args, err := buildListWalletsQuery(WalletFilter{
+		TenantID:  tenant.ID("tenant-1"),
+		OwnerType: OwnerTypeUser,
+		OwnerID:   OwnerID("user-1"),
+		Status:    StatusActive,
+		Limit:     25,
+	})
+	if err != nil {
+		t.Fatalf("expected query: %v", err)
+	}
+	for _, clause := range []string{
+		"wallet.tenant_id = $1",
+		"wallet.owner_type = $2",
+		"wallet.owner_id = $3",
+		"wallet.status = $4",
+		"LIMIT $5",
+	} {
+		if !strings.Contains(query, clause) {
+			t.Fatalf("expected %q in query: %s", clause, query)
+		}
+	}
+	if len(args) != 5 || args[4] != 25 {
+		t.Fatalf("unexpected args: %#v", args)
+	}
+}
+
+func TestBuildGetWalletQueryAddsOwnerScope(t *testing.T) {
+	query, args, err := buildGetWalletQuery(WalletLookup{
+		ID:        WalletID("wallet-1"),
+		TenantID:  tenant.ID("tenant-1"),
+		OwnerType: OwnerTypeUser,
+		OwnerID:   OwnerID("user-1"),
+	})
+	if err != nil {
+		t.Fatalf("expected query: %v", err)
+	}
+	for _, clause := range []string{"wallet.wallet_id = $1", "wallet.tenant_id = $2", "wallet.owner_type = $3", "wallet.owner_id = $4"} {
+		if !strings.Contains(query, clause) {
+			t.Fatalf("expected %q in query: %s", clause, query)
+		}
+	}
+	if len(args) != 4 {
+		t.Fatalf("unexpected args: %#v", args)
+	}
+}
+
 func TestBuildListLedgerEntriesQueryAddsWalletScopeAndFilters(t *testing.T) {
 	query, args, err := buildListLedgerEntriesQuery(LedgerEntryFilter{
 		TenantID:  tenant.ID("tenant-1"),
