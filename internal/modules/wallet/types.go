@@ -7,23 +7,40 @@ import (
 )
 
 var (
-	ErrWalletIDMissing      = errors.New("wallet id missing")
-	ErrOwnerTypeInvalid     = errors.New("wallet owner type invalid")
-	ErrOwnerIDMissing       = errors.New("wallet owner id missing")
-	ErrStatusInvalid        = errors.New("wallet status invalid")
-	ErrCurrencyMissing      = errors.New("wallet currency missing")
-	ErrCurrencyInvalid      = errors.New("wallet currency invalid")
-	ErrBalanceInvalid       = errors.New("wallet balance invalid")
-	ErrStoreExecutorMissing = errors.New("wallet store executor missing")
-	ErrServiceStoreMissing  = errors.New("wallet service store missing")
-	ErrWalletNotFound       = errors.New("wallet not found")
+	ErrWalletIDMissing       = errors.New("wallet id missing")
+	ErrLedgerEntryIDMissing  = errors.New("wallet ledger entry id missing")
+	ErrOwnerTypeInvalid      = errors.New("wallet owner type invalid")
+	ErrOwnerIDMissing        = errors.New("wallet owner id missing")
+	ErrStatusInvalid         = errors.New("wallet status invalid")
+	ErrDirectionInvalid      = errors.New("wallet ledger direction invalid")
+	ErrEntryTypeInvalid      = errors.New("wallet ledger entry type invalid")
+	ErrLedgerStatusInvalid   = errors.New("wallet ledger status invalid")
+	ErrCurrencyMissing       = errors.New("wallet currency missing")
+	ErrCurrencyInvalid       = errors.New("wallet currency invalid")
+	ErrBalanceInvalid        = errors.New("wallet balance invalid")
+	ErrAmountInvalid         = errors.New("wallet amount invalid")
+	ErrReferenceTypeMissing  = errors.New("wallet reference type missing")
+	ErrReferenceIDMissing    = errors.New("wallet reference id missing")
+	ErrIdempotencyKeyMissing = errors.New("wallet idempotency key missing")
+	ErrCorrelationIDMissing  = errors.New("wallet correlation id missing")
+	ErrReasonMissing         = errors.New("wallet ledger reason missing")
+	ErrStoreExecutorMissing  = errors.New("wallet store executor missing")
+	ErrServiceStoreMissing   = errors.New("wallet service store missing")
+	ErrWalletNotFound        = errors.New("wallet not found")
+	ErrLedgerEntryNotFound   = errors.New("wallet ledger entry not found")
 )
 
 type WalletID string
+type LedgerEntryID string
 type OwnerID string
+type ReferenceType string
+type ReferenceID string
+type IdempotencyKey string
+type CorrelationID string
 
-func (id WalletID) Empty() bool { return strings.TrimSpace(string(id)) == "" }
-func (id OwnerID) Empty() bool  { return strings.TrimSpace(string(id)) == "" }
+func (id WalletID) Empty() bool      { return strings.TrimSpace(string(id)) == "" }
+func (id LedgerEntryID) Empty() bool { return strings.TrimSpace(string(id)) == "" }
+func (id OwnerID) Empty() bool       { return strings.TrimSpace(string(id)) == "" }
 
 func trim(value string) string {
 	return strings.TrimSpace(value)
@@ -58,6 +75,13 @@ func validateCurrency(value string) error {
 func validateBalance(value int64) error {
 	if value < 0 {
 		return ErrBalanceInvalid
+	}
+	return nil
+}
+
+func validatePositiveAmount(value int64) error {
+	if value <= 0 {
+		return ErrAmountInvalid
 	}
 	return nil
 }

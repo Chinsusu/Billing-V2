@@ -1,7 +1,7 @@
 # T042 - Wallet ledger store
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: feat/wallet-ledger-store
 PR: -
 Risk: wallet/ledger/DB
@@ -35,3 +35,5 @@ Add immutable wallet ledger models, schema, and store methods so balance movemen
 ## Agent Log
 
 - 2026-04-23: Task created for the next backend wallet/invoice batch.
+- 2026-04-23: Claimed by Codex from latest `origin/main` in `/tmp/Billing-T042`.
+- 2026-04-23: Added wallet ledger domain models, schema, store methods, and scoped read query builders. Validation passed: `make fmt`, `make test`, `make build`, `make migrate-validate`.
