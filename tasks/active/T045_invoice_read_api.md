@@ -1,9 +1,9 @@
 # T045 - Invoice read API
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/invoice-read-api
-PR: pending
+PR: https://github.com/Chinsusu/Billing-V2/pull/103
 Risk: invoice/API/auth
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -36,3 +36,4 @@ Add invoice and invoice item read APIs so customers and admins can inspect gener
 
 - 2026-04-23: Task created for the next backend wallet/invoice batch.
 - 2026-04-23: Implemented invoice list/detail store, client/admin HTTP read APIs, runtime wiring, and focused tests.
+- 2026-04-23: PR #103 passed checks and was merged.
