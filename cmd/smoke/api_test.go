@@ -27,3 +27,22 @@ func TestAPISmokeChecksIncludeAdminAudit(t *testing.T) {
 	}
 	t.Fatal("expected admin audit smoke check with reseller actor")
 }
+
+func TestBillingMutationScenarioKeysIncludeRunID(t *testing.T) {
+	scenario := billingMutationScenario{RunID: "12345"}
+
+	for _, value := range []string{
+		scenario.topupIdempotencyKey(),
+		scenario.orderIdempotencyKey(),
+		scenario.invoiceIdempotencyKey(),
+		scenario.paymentIdempotencyKey(),
+		scenario.topupPaymentReference(),
+	} {
+		if value == "" || value == "12345" {
+			t.Fatalf("expected derived billing smoke value, got %q", value)
+		}
+		if value[len(value)-5:] != "12345" {
+			t.Fatalf("expected run id suffix in %q", value)
+		}
+	}
+}

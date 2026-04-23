@@ -78,6 +78,8 @@ func TestCreateInvoiceFromOrderSQLEmitsOutboxAndUsesOrderConflict(t *testing.T) 
 		"INSERT INTO invoice_items",
 		"INSERT INTO outbox_events",
 		EventInvoiceGenerated,
+		"'order_display_id', $22::bigint",
+		"'idempotency_key', $23::text",
 	} {
 		if !strings.Contains(createInvoiceFromOrderSQL, clause) {
 			t.Fatalf("expected %q in create SQL", clause)
@@ -121,6 +123,10 @@ func TestMarkInvoicePaidSQLEmitsPaidOutboxAndGuardsStatus(t *testing.T) {
 		"INSERT INTO outbox_events",
 		EventInvoicePaid,
 		"ON CONFLICT (dedupe_key) DO NOTHING",
+		"'payment_transaction_id', $4::text",
+		"'wallet_id', $5::text",
+		"'ledger_entry_id', $6::text",
+		"'idempotency_key', $7::text",
 	} {
 		if !strings.Contains(markInvoicePaidSQL, clause) {
 			t.Fatalf("expected %q in mark paid SQL", clause)
