@@ -1,6 +1,6 @@
 # T057 - Audit mutation events
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/audit-mutation-events
 PR: https://github.com/Chinsusu/Billing-V2/pull/129
@@ -36,3 +36,4 @@ Write audit events for important state-changing billing operations so the audit 
 - 2026-04-23: Task created after audit read API landed.
 - 2026-04-23: Codex claimed task from latest `origin/main` after T056 merged.
 - 2026-04-23: PR #129 opened. Validation: `go test ./internal/modules/wallet ./internal/modules/order ./internal/modules/payment ./cmd/api`, `make fmt`, `make test`, `make build`, `make migrate-validate`.
+- 2026-04-23: PR #129 merged into `main`.
