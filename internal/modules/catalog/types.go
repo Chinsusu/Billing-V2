@@ -37,6 +37,7 @@ var (
 	ErrTenantPlanVisibility        = errors.New("catalog tenant plan visibility invalid")
 	ErrCreatedByMissing            = errors.New("catalog created by missing")
 	ErrCatalogStoreExecutorMissing = errors.New("catalog store executor missing")
+	ErrCatalogServiceStoreMissing  = errors.New("catalog service store missing")
 	ErrProductNotFound             = errors.New("catalog product not found")
 	ErrPlanNotFound                = errors.New("catalog plan not found")
 	ErrProviderSourceNotFound      = errors.New("catalog provider source not found")

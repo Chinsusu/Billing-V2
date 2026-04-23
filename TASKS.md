@@ -59,6 +59,7 @@ DONE         PR merged into main
 | T016 | [tasks/active/T016_catalog_domain_skeleton.md](tasks/active/T016_catalog_domain_skeleton.md) | feat/catalog-domain-skeleton | catalog/pricing | Add catalog domain models, validation, and store contracts before migrations/API. |
 | T017 | [tasks/active/T017_catalog_schema_migration.md](tasks/active/T017_catalog_schema_migration.md) | feat/catalog-schema-migration | migration/catalog | Add catalog PostgreSQL tables for products, plans, provider sources, and tenant catalog clones. |
 | T018 | [tasks/active/T018_catalog_postgres_store.md](tasks/active/T018_catalog_postgres_store.md) | feat/catalog-postgres-store | catalog/DB | Add PostgreSQL store implementation for catalog products, plans, sources, and tenant catalog records. |
+| T019 | [tasks/active/T019_catalog_service_layer.md](tasks/active/T019_catalog_service_layer.md) | feat/catalog-service-layer | catalog/pricing | Add catalog service layer for admin catalog setup, tenant cloning, margin guard, and catalog list flows. |
 
 ## Completed Tasks
 
