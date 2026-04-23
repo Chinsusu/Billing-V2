@@ -164,6 +164,41 @@ func TestHTTPHandlerListClientOrdersUsesContextAndFilters(t *testing.T) {
 	}
 }
 
+func TestHTTPHandlerListAdminOrdersUsesTenantAndBuyerFilter(t *testing.T) {
+	service := &fakeOrderHTTPService{
+		orders: []Order{{
+			ID:            "order_1",
+			DisplayID:     30004,
+			TenantID:      "tenant_1",
+			BuyerUserID:   "buyer_2",
+			TenantPlanID:  "tenant_plan_1",
+			OrderStatus:   OrderStatusPaid,
+			BillingStatus: BillingStatusPaid,
+		}},
+	}
+	handler := registerOrderTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/admin/orders?buyer_user_id=buyer_2&status=paid&billing_status=paid&limit=20", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.listOrderCalls != 1 {
+		t.Fatalf("expected list orders once, got %d", service.listOrderCalls)
+	}
+	if service.orderFilter.TenantID != tenant.ID("tenant_1") || service.orderFilter.BuyerUserID != identity.UserID("buyer_2") {
+		t.Fatalf("unexpected admin order filter: %+v", service.orderFilter)
+	}
+	if service.orderFilter.OrderStatus != OrderStatusPaid || service.orderFilter.BillingStatus != BillingStatusPaid {
+		t.Fatalf("unexpected admin status filters: %+v", service.orderFilter)
+	}
+}
+
 func TestHTTPHandlerGetClientOrderUsesPathAndContext(t *testing.T) {
 	service := &fakeOrderHTTPService{
 		order: Order{
@@ -195,6 +230,37 @@ func TestHTTPHandlerGetClientOrderUsesPathAndContext(t *testing.T) {
 		service.orderLookup.TenantID != tenant.ID("tenant_1") ||
 		service.orderLookup.BuyerUserID != identity.UserID("buyer_1") {
 		t.Fatalf("unexpected order lookup: %+v", service.orderLookup)
+	}
+}
+
+func TestHTTPHandlerGetAdminOrderUsesTenantScopeOnly(t *testing.T) {
+	service := &fakeOrderHTTPService{
+		order: Order{
+			ID:            "order_1",
+			DisplayID:     30005,
+			TenantID:      "tenant_1",
+			BuyerUserID:   "buyer_2",
+			TenantPlanID:  "tenant_plan_1",
+			OrderStatus:   OrderStatusPaid,
+			BillingStatus: BillingStatusPaid,
+		},
+	}
+	handler := registerOrderTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/admin/orders/order_1", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.orderLookup.ID != OrderID("order_1") ||
+		service.orderLookup.TenantID != tenant.ID("tenant_1") ||
+		service.orderLookup.BuyerUserID != "" {
+		t.Fatalf("unexpected admin order lookup: %+v", service.orderLookup)
 	}
 }
 

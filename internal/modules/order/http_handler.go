@@ -31,6 +31,7 @@ type HTTPService interface {
 type RouteMiddleware func(http.HandlerFunc) http.HandlerFunc
 
 type HTTPHandlerOptions struct {
+	AdminMiddleware  RouteMiddleware
 	ClientMiddleware RouteMiddleware
 }
 
@@ -53,8 +54,22 @@ func NewHTTPHandlerWithOptions(service HTTPService, options HTTPHandlerOptions) 
 }
 
 func (handler *HTTPHandler) RegisterRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("/admin/orders", handler.adminOrdersRoute)
+	mux.HandleFunc("/admin/orders/", handler.adminOrderRoute)
 	mux.HandleFunc("/client/orders", handler.clientOrdersRoute)
 	mux.HandleFunc("/client/orders/", handler.clientOrderRoute)
+}
+
+func (handler *HTTPHandler) adminOrdersRoute(w http.ResponseWriter, r *http.Request) {
+	dispatchOrderMethods(w, r, map[string]http.HandlerFunc{
+		http.MethodGet: handler.tenantRoute(handler.handleListAdminOrders, handler.options.AdminMiddleware),
+	})
+}
+
+func (handler *HTTPHandler) adminOrderRoute(w http.ResponseWriter, r *http.Request) {
+	dispatchOrderMethods(w, r, map[string]http.HandlerFunc{
+		http.MethodGet: handler.tenantRoute(handler.handleGetAdminOrder, handler.options.AdminMiddleware),
+	})
 }
 
 func (handler *HTTPHandler) clientOrdersRoute(w http.ResponseWriter, r *http.Request) {
@@ -135,6 +150,56 @@ func (handler *HTTPHandler) handleCreateClientOrder(w http.ResponseWriter, r *ht
 		return
 	}
 	httpserver.WriteSuccess(w, r, http.StatusCreated, newOrderResponse(order))
+}
+
+func (handler *HTTPHandler) handleListAdminOrders(w http.ResponseWriter, r *http.Request) {
+	if !handler.ready(w, r) {
+		return
+	}
+	tenantID, ok := tenantIDFromContext(w, r)
+	if !ok {
+		return
+	}
+	if _, ok := actorFromContext(w, r); !ok {
+		return
+	}
+	filter, page, ok := orderFilterFromRequest(w, r)
+	if !ok {
+		return
+	}
+	filter.TenantID = tenantID
+	orders, err := handler.service.ListOrders(r.Context(), filter)
+	if err != nil {
+		writeOrderError(w, r, err)
+		return
+	}
+	httpserver.WriteList(w, r, http.StatusOK, newOrderResponses(orders), httpserver.NewPage(page.Limit, ""))
+}
+
+func (handler *HTTPHandler) handleGetAdminOrder(w http.ResponseWriter, r *http.Request) {
+	if !handler.ready(w, r) {
+		return
+	}
+	tenantID, ok := tenantIDFromContext(w, r)
+	if !ok {
+		return
+	}
+	if _, ok := actorFromContext(w, r); !ok {
+		return
+	}
+	orderID, ok := adminOrderIDFromPath(w, r)
+	if !ok {
+		return
+	}
+	order, err := handler.service.GetOrder(r.Context(), OrderLookup{
+		ID:       orderID,
+		TenantID: tenantID,
+	})
+	if err != nil {
+		writeOrderError(w, r, err)
+		return
+	}
+	httpserver.WriteSuccess(w, r, http.StatusOK, newOrderResponse(order))
 }
 
 func (handler *HTTPHandler) handleListClientOrders(w http.ResponseWriter, r *http.Request) {
@@ -236,8 +301,16 @@ func idempotencyKeyFromHeader(r *http.Request) IdempotencyKey {
 	return IdempotencyKey(strings.TrimSpace(r.Header.Get(IdempotencyKeyHeader)))
 }
 
+func adminOrderIDFromPath(w http.ResponseWriter, r *http.Request) (OrderID, bool) {
+	return orderIDFromPrefix(w, r, "/admin/orders/")
+}
+
 func orderIDFromPath(w http.ResponseWriter, r *http.Request) (OrderID, bool) {
-	value := strings.TrimSpace(strings.TrimPrefix(r.URL.Path, clientOrderPrefix))
+	return orderIDFromPrefix(w, r, clientOrderPrefix)
+}
+
+func orderIDFromPrefix(w http.ResponseWriter, r *http.Request, prefix string) (OrderID, bool) {
+	value := strings.TrimSpace(strings.TrimPrefix(r.URL.Path, prefix))
 	if value == "" || strings.Contains(value, "/") {
 		writeOrderError(w, r, ErrOrderIDMissing)
 		return "", false
@@ -252,6 +325,10 @@ func orderFilterFromRequest(w http.ResponseWriter, r *http.Request) (OrderFilter
 	}
 	filter := OrderFilter{Limit: page.Limit}
 	query := r.URL.Query()
+	buyerUserID := identity.UserID(strings.TrimSpace(query.Get("buyer_user_id")))
+	if buyerUserID != "" {
+		filter.BuyerUserID = buyerUserID
+	}
 	orderStatus := OrderStatus(strings.TrimSpace(query.Get("status")))
 	if orderStatus != "" {
 		if !orderStatus.Valid() {
