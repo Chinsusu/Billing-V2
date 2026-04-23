@@ -3,7 +3,7 @@
 Status: REVIEW
 Owner: Codex
 Branch: feat/invoice-domain-schema
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/90
 Risk: invoice/migration
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -37,3 +37,4 @@ Add invoice and invoice item domain models with PostgreSQL schema so paid orders
 - 2026-04-23: Task created for the next backend batch.
 - 2026-04-23: Claimed by Codex from latest `origin/main` in `/tmp/Billing-T039`.
 - 2026-04-23: Added invoice domain models, invoice tables, rollback script. Validation passed: `make fmt`, `make test`, `make build`, `make migrate-validate`.
+- 2026-04-23: Opened PR #90.
