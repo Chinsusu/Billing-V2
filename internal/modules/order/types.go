@@ -31,6 +31,7 @@ var (
 	ErrStatusTransitionInvalid    = errors.New("status transition invalid")
 	ErrExternalResourceIDMissing  = errors.New("external resource id missing")
 	ErrProviderOperationIDMissing = errors.New("provider operation id missing")
+	ErrStoreExecutorMissing       = errors.New("order store executor missing")
 )
 
 type OrderID string
