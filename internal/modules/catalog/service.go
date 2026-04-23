@@ -81,11 +81,25 @@ func (service *Service) CloneTenantPlan(ctx context.Context, input CreateTenantP
 	return service.store.CreateTenantPlan(ctx, input)
 }
 
+func (service *Service) ListProducts(ctx context.Context, filter ProductFilter) ([]Product, error) {
+	if err := service.ready(); err != nil {
+		return nil, err
+	}
+	return service.store.ListProducts(ctx, filter)
+}
+
 func (service *Service) ListMasterPlans(ctx context.Context, filter MasterPlanFilter) ([]Plan, error) {
 	if err := service.ready(); err != nil {
 		return nil, err
 	}
 	return service.store.ListMasterPlans(ctx, filter)
+}
+
+func (service *Service) ListProviderSources(ctx context.Context, filter ProviderSourceFilter) ([]ProviderSource, error) {
+	if err := service.ready(); err != nil {
+		return nil, err
+	}
+	return service.store.ListProviderSources(ctx, filter)
 }
 
 func (service *Service) ListTenantCatalog(ctx context.Context, filter TenantCatalogFilter) (TenantCatalog, error) {
