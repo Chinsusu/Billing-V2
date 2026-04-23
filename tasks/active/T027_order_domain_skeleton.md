@@ -1,9 +1,9 @@
 # T027 - Order domain skeleton
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: feat/order-domain-skeleton
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/64
 Risk: order/service/lifecycle
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -37,3 +37,4 @@ Add the first order domain skeleton for order, reservation, provisioning, and se
 ## Agent Log
 
 - 2026-04-23: Task created and claimed from latest `origin/main` in `/tmp/Billing-T027`.
+- 2026-04-23: Opened PR #64. Validation passed: `go test ./internal/modules/order`, `make fmt`, `make test`, `make build`, `make migrate-validate`.
