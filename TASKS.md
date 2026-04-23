@@ -66,6 +66,7 @@ DONE         PR merged into main
 | T023 | [tasks/active/T023_api_auth_rbac_middleware.md](tasks/active/T023_api_auth_rbac_middleware.md) | feat/api-auth-rbac-middleware | API/auth/RBAC | Add actor context and RBAC HTTP middleware, then protect catalog routes with catalog permissions. |
 | T024 | [tasks/active/T024_dev_seed_data.md](tasks/active/T024_dev_seed_data.md) | feat/dev-seed-data | seed/catalog/RBAC | Add idempotent development seed runner for RBAC permissions, demo users, catalog, and reseller catalog data. |
 | T025 | [tasks/active/T025_catalog_admin_read_api.md](tasks/active/T025_catalog_admin_read_api.md) | feat/catalog-admin-read-api | API/catalog | Add admin catalog read/list API endpoints for products, plans, and provider sources. |
+| T026 | [tasks/active/T026_catalog_admin_status_api.md](tasks/active/T026_catalog_admin_status_api.md) | feat/catalog-admin-update-api | API/catalog | Add admin catalog status update endpoints for products, plans, and provider sources. |
 
 ## Completed Tasks
 
