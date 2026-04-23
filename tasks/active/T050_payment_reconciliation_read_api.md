@@ -1,9 +1,9 @@
 # T050 - Payment reconciliation read API
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: feat/payment-reconciliation-read-api
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/114
 Risk: payment/API/admin
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -36,3 +36,4 @@ Add read APIs that let admins inspect payment transactions, wallet ledger links,
 
 - 2026-04-23: Task created for operations visibility.
 - 2026-04-23: Added admin payment reconciliation read API with filters and runtime coverage.
+- 2026-04-23: PR #114 merged after GitHub checks passed.
