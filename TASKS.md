@@ -74,6 +74,13 @@ DONE         PR merged into main
 | T031 | [tasks/active/T031_order_api_handlers.md](tasks/active/T031_order_api_handlers.md) | feat/order-api-handlers | API/order | Add client order creation HTTP handler and runtime wiring. |
 | T032 | [tasks/active/T032_order_read_api.md](tasks/active/T032_order_read_api.md) | feat/order-read-api | API/order/DB | Add tenant-scoped order list/detail read APIs for the client portal. |
 | T033 | [tasks/active/T033_admin_order_read_api.md](tasks/active/T033_admin_order_read_api.md) | feat/admin-order-read-api | API/order/admin | Add tenant-scoped admin order list/detail read APIs. |
+| T034 | [tasks/active/T034_order_status_transition_api.md](tasks/active/T034_order_status_transition_api.md) | feat/order-status-transition-api | API/order/status | Add a guarded admin API for tenant-scoped order status changes. |
+| T035 | [tasks/active/T035_order_lifecycle_events.md](tasks/active/T035_order_lifecycle_events.md) | feat/order-lifecycle-events | order/outbox | Add outbox events for order creation and status changes. |
+| T036 | [tasks/active/T036_provisioning_queue_service.md](tasks/active/T036_provisioning_queue_service.md) | feat/provisioning-queue-service | order/provisioning | Add a service that queues provisioning work for paid orders. |
+| T037 | [tasks/active/T037_provider_provisioning_worker.md](tasks/active/T037_provider_provisioning_worker.md) | feat/provider-provisioning-worker | worker/provider | Add a worker that runs provisioning jobs through provider adapters. |
+| T038 | [tasks/active/T038_service_instance_store_api.md](tasks/active/T038_service_instance_store_api.md) | feat/service-instance-store-api | service/API/DB | Add service instance store and read APIs for client/admin portals. |
+| T039 | [tasks/active/T039_invoice_domain_schema.md](tasks/active/T039_invoice_domain_schema.md) | feat/invoice-domain-schema | invoice/migration | Add invoice and invoice item domain models with PostgreSQL schema. |
+| T040 | [tasks/active/T040_payment_transaction_api.md](tasks/active/T040_payment_transaction_api.md) | feat/payment-transaction-api | payment/API/DB | Add payment transaction records and read APIs for account history. |
 
 ## Completed Tasks
 
