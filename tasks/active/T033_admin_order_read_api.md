@@ -1,9 +1,9 @@
 # T033 - Admin order read API
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: feat/admin-order-read-api
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/76
 Risk: API/order/admin
 Created: 2026-04-23
 Updated: 2026-04-23
@@ -36,3 +36,4 @@ Add tenant-scoped admin order list/detail read APIs for platform and reseller op
 ## Agent Log
 
 - 2026-04-23: Task created and claimed from latest `origin/main` in `/tmp/Billing-T033`.
+- 2026-04-23: Opened PR #76. Validation passed: `go test ./internal/modules/order ./cmd/api`, `make fmt`, `make test`, `make build`, `make migrate-validate`.
