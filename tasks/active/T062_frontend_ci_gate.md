@@ -1,6 +1,6 @@
 # T062 - Frontend CI gate
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: ci/frontend-quality-gate
 PR: #137
@@ -35,3 +35,4 @@ Add CI coverage for the runnable frontend so dependency and build regressions fa
 - 2026-04-23: Codex claimed the task and validated the current frontend commands locally before wiring CI.
 - 2026-04-23: PR #137 opened with frontend install, production audit, lint, and build steps in CI.
 - 2026-04-23: Local validation passed with `npm ci`, `npm audit --omit=dev`, `npm run lint`, `npm run build`, and `git diff --check`.
+- 2026-04-23: PR #137 merged into `main` with commit `f9c7f92969f78f765f55a73d48cdddc19e15e3e6`.
