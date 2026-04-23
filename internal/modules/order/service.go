@@ -75,6 +75,17 @@ func (service *Service) GetOrder(ctx context.Context, lookup OrderLookup) (Order
 	return service.store.GetOrder(ctx, lookup)
 }
 
+func (service *Service) TransitionOrderStatus(ctx context.Context, input TransitionOrderStatusInput) (Order, error) {
+	if err := service.ready(); err != nil {
+		return Order{}, err
+	}
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return Order{}, err
+	}
+	return service.store.TransitionOrderStatus(ctx, input)
+}
+
 func (service *Service) ready() error {
 	if service == nil || service.store == nil {
 		return ErrServiceStoreMissing

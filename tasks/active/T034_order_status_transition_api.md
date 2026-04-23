@@ -1,7 +1,7 @@
 # T034 - Order status transition API
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: feat/order-status-transition-api
 PR: -
 Risk: API/order/status
@@ -37,3 +37,4 @@ Add a tenant-scoped admin API to move an order from one status to another throug
 ## Agent Log
 
 - 2026-04-23: Task created for the next backend batch.
+- 2026-04-23: Claimed by Codex from latest `origin/main` in `/tmp/Billing-T034`.

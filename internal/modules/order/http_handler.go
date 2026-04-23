@@ -26,13 +26,15 @@ type HTTPService interface {
 	CreateOrder(ctx context.Context, input CreateOrderInput) (Order, error)
 	ListOrders(ctx context.Context, filter OrderFilter) ([]Order, error)
 	GetOrder(ctx context.Context, lookup OrderLookup) (Order, error)
+	TransitionOrderStatus(ctx context.Context, input TransitionOrderStatusInput) (Order, error)
 }
 
 type RouteMiddleware func(http.HandlerFunc) http.HandlerFunc
 
 type HTTPHandlerOptions struct {
-	AdminMiddleware  RouteMiddleware
-	ClientMiddleware RouteMiddleware
+	AdminMiddleware       RouteMiddleware
+	AdminManageMiddleware RouteMiddleware
+	ClientMiddleware      RouteMiddleware
 }
 
 type HTTPHandler struct {
@@ -40,7 +42,10 @@ type HTTPHandler struct {
 	options HTTPHandlerOptions
 }
 
-const clientOrderPrefix = "/client/orders/"
+const (
+	adminOrderPrefix  = "/admin/orders/"
+	clientOrderPrefix = "/client/orders/"
+)
 
 func NewHTTPHandler(service HTTPService) *HTTPHandler {
 	return NewHTTPHandlerWithOptions(service, HTTPHandlerOptions{})
@@ -67,6 +72,12 @@ func (handler *HTTPHandler) adminOrdersRoute(w http.ResponseWriter, r *http.Requ
 }
 
 func (handler *HTTPHandler) adminOrderRoute(w http.ResponseWriter, r *http.Request) {
+	if isAdminOrderStatusPath(r.URL.Path) {
+		dispatchOrderMethods(w, r, map[string]http.HandlerFunc{
+			http.MethodPatch: handler.tenantRoute(handler.handleTransitionAdminOrderStatus, handler.options.AdminManageMiddleware),
+		})
+		return
+	}
 	dispatchOrderMethods(w, r, map[string]http.HandlerFunc{
 		http.MethodGet: handler.tenantRoute(handler.handleGetAdminOrder, handler.options.AdminMiddleware),
 	})
@@ -302,7 +313,7 @@ func idempotencyKeyFromHeader(r *http.Request) IdempotencyKey {
 }
 
 func adminOrderIDFromPath(w http.ResponseWriter, r *http.Request) (OrderID, bool) {
-	return orderIDFromPrefix(w, r, "/admin/orders/")
+	return orderIDFromPrefix(w, r, adminOrderPrefix)
 }
 
 func orderIDFromPath(w http.ResponseWriter, r *http.Request) (OrderID, bool) {
@@ -373,6 +384,8 @@ func writeOrderError(w http.ResponseWriter, r *http.Request, err error) {
 	switch {
 	case errors.Is(err, ErrOrderNotFound):
 		httpserver.WriteError(w, r, http.StatusNotFound, "order.not_found", "Order was not found.")
+	case errors.Is(err, ErrOrderStatusConflict):
+		httpserver.WriteError(w, r, http.StatusConflict, "order.status_conflict", "Order status no longer matches the expected value.")
 	case errors.Is(err, identity.ErrActorContextMissing),
 		errors.Is(err, identity.ErrActorIDMissing),
 		errors.Is(err, identity.ErrActorTypeMissing),
@@ -411,6 +424,8 @@ func orderValidationField(err error) (httpserver.ValidationField, bool) {
 		return validationField("order_status", "order.status_invalid", "Order status is invalid."), true
 	case errors.Is(err, ErrBillingStatusInvalid):
 		return validationField("billing_status", "order.billing_status_invalid", "Billing status is invalid."), true
+	case errors.Is(err, ErrStatusTransitionInvalid):
+		return validationField("to_status", "order.status_transition_invalid", "Order status change is not allowed."), true
 	default:
 		return httpserver.ValidationField{}, false
 	}
