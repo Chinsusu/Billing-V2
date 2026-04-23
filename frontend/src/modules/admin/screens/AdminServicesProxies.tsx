@@ -1,9 +1,15 @@
 "use client";
+import { useState } from "react";
+import { TablePagination } from "@/components/ui/TablePagination";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Settings, Edit2 } from "lucide-react";
 import { PROXY_SERVICES } from "@/mocks/billingData";
 
 export function AdminServicesProxies() {
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const displayed = limit === -1 ? PROXY_SERVICES : PROXY_SERVICES.slice((page - 1) * limit, page * limit);
+
   const cols = [
     { label: "ID", align: "left" },
     { label: "Host:Port", align: "left" },
@@ -39,7 +45,7 @@ export function AdminServicesProxies() {
               </tr>
             </thead>
             <tbody className="bg-white text-gray-600">
-              {PROXY_SERVICES.map((s, i) => {
+              {displayed.map((s, i) => {
                 const now = new Date();
                 const exp = new Date(now.getTime() + s.renewsIn * 24 * 3600 * 1000);
                 const ord = new Date(exp.getTime() - 30 * 24 * 3600 * 1000);
@@ -113,6 +119,7 @@ export function AdminServicesProxies() {
             </tbody>
           </table>
         </div>
+        <TablePagination page={page} setPage={setPage} limit={limit} setLimit={setLimit} total={PROXY_SERVICES.length} />
       </div>
     </div>
   );
