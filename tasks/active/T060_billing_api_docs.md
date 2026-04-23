@@ -1,7 +1,7 @@
 # T060 - Billing API docs
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: docs/billing-api-contracts
 PR: -
 Risk: docs/API
@@ -32,3 +32,4 @@ Document the billing API routes and operational query parameters so agents and f
 ## Agent Log
 
 - 2026-04-23: Task created to stabilize API contract knowledge.
+- 2026-04-23: Codex claimed the task and started a billing API operational reference based on live handler/filter code.
