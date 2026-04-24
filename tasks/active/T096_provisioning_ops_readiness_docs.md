@@ -1,6 +1,6 @@
 # T096 - Provisioning ops readiness docs
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t096-provisioning-ops-readiness-docs
 PR: https://github.com/Chinsusu/Billing-V2/pull/218
@@ -37,3 +37,4 @@ Consolidate the provisioning operations flow into a concise operator checklist f
 - 2026-04-24: Added concise provisioning readiness checklist and linked it from docs index, manifest, and billing operations runbook.
 - 2026-04-24: Validation passed: `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`, `npm ci`, `npm audit --omit=dev`, `npm run lint`, `npm run build`.
 - 2026-04-24: Opened PR https://github.com/Chinsusu/Billing-V2/pull/218 for review.
+- 2026-04-24: PR #218 passed CI and merged into `main` at `ca55228dd7c6449054409bbafe3f476f90e1cca2`.
