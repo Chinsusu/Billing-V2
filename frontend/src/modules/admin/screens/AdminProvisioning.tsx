@@ -5,7 +5,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { canCancelJob, canMarkJobManualReview, canRetryJob, jobStatusLabel } from "@/lib/api/fulfillment";
 import { compactDateTime, recordLabel, shortID } from "@/lib/api/format";
-import type { CatalogProviderSource, Order, ProvisioningJob, ServiceInstance } from "@/lib/api/types";
+import type { CatalogProviderSource, Order, ProviderReadiness, ProvisioningJob, ServiceInstance } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { PROVISIONING_JOBS } from "@/mocks/billingData";
 import { AdminJobTimelinePanel } from "../components/AdminJobTimelinePanel";
@@ -26,6 +26,7 @@ interface ProvisioningRow {
   canRetry: boolean;
   canReview: boolean;
   canCancel: boolean;
+  readiness?: ProviderReadiness;
   job?: ProvisioningJob;
 }
 
@@ -63,9 +64,13 @@ export function AdminProvisioning() {
     () => billingApi.listAdminProviderSources({ limit: 100 }),
     `admin-provisioning-providers:${refreshKey}`,
   );
+  const readiness = useApiResource(
+    () => billingApi.listAdminProviderReadiness({ status: "active", limit: 100 }),
+    `admin-provisioning-readiness:${refreshKey}`,
+  );
   const usingLive = jobs.status === "success";
   const rows = usingLive
-    ? liveProvisioningRows(jobs.data ?? [], orders.data ?? [], services.data ?? [], providers.data ?? [])
+    ? liveProvisioningRows(jobs.data ?? [], orders.data ?? [], services.data ?? [], providers.data ?? [], readiness.data ?? [])
     : demoProvisioningRows();
   const selectedRow = rows.find((row) => row.apiId === selectedJobID) ?? null;
   const manualReview = rows.filter((row) => row.status === "manual_review");
@@ -206,6 +211,8 @@ export function AdminProvisioning() {
           serviceLabel={selectedRow?.service}
           tenantLabel={selectedRow?.tenant}
           providerLabel={selectedRow?.provider}
+          readiness={selectedRow?.readiness}
+          readinessStatus={readiness.status}
         />
       </div>
     </div>
@@ -217,6 +224,7 @@ function liveProvisioningRows(
   orders: Order[],
   services: ServiceInstance[],
   providers: CatalogProviderSource[],
+  readinessRows: ProviderReadiness[],
 ): ProvisioningRow[] {
   const ordersByID = new Map(orders.map((order) => [order.id, order]));
   const servicesByOrderID = new Map(services.map((service) => [service.order_id, service]));
@@ -225,6 +233,7 @@ function liveProvisioningRows(
     const order = ordersByID.get(job.reference_id);
     const service = servicesByOrderID.get(job.reference_id);
     const provider = job.source_id ? providersByID.get(job.source_id) : undefined;
+    const providerReadiness = readinessForJobSource(readinessRows, provider, order);
     const error = job.manual_review_reason || job.last_error_message_redacted || job.last_error_code || "-";
     return {
       id: recordLabel(job.display_id, "JOB-"),
@@ -241,9 +250,30 @@ function liveProvisioningRows(
       canRetry: canRetryJob(job.status),
       canReview: canMarkJobManualReview(job.status),
       canCancel: canCancelJob(job.status),
+      readiness: providerReadiness,
       job,
     };
   });
+}
+
+function readinessForJobSource(
+  rows: ProviderReadiness[],
+  provider: CatalogProviderSource | undefined,
+  order: Order | undefined,
+): ProviderReadiness | undefined {
+  if (!provider) return undefined;
+  const planCode = planCodeFromSnapshot(order?.plan_snapshot);
+  if (planCode) {
+    const exact = rows.find((row) => row.source_display_id === provider.display_id && row.plan_code === planCode);
+    if (exact) return exact;
+  }
+  return rows.find((row) => row.source_display_id === provider.display_id);
+}
+
+function planCodeFromSnapshot(snapshot: unknown): string | undefined {
+  if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot)) return undefined;
+  const value = (snapshot as { plan_code?: unknown }).plan_code;
+  return typeof value === "string" && value.trim() !== "" ? value : undefined;
 }
 
 function demoProvisioningRows(): ProvisioningRow[] {

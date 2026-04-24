@@ -4,9 +4,10 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { compactDateTime, recordLabel, shortID } from "@/lib/api/format";
 import type { ProvisioningJobAttempt } from "@/lib/api/jobTypes";
-import type { ProvisioningJob } from "@/lib/api/types";
+import type { ProviderReadiness, ProvisioningJob } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { AdminJobRecoveryAuditPanel } from "./AdminJobRecoveryAuditPanel";
+import { ProviderReadinessStateBadge } from "./ProviderReadinessStateBadge";
 
 interface AdminJobTimelinePanelProps {
   job: ProvisioningJob | null;
@@ -14,6 +15,8 @@ interface AdminJobTimelinePanelProps {
   serviceLabel?: string;
   tenantLabel?: string;
   providerLabel?: string;
+  readiness?: ProviderReadiness;
+  readinessStatus?: string;
 }
 
 export function AdminJobTimelinePanel({
@@ -22,6 +25,8 @@ export function AdminJobTimelinePanel({
   serviceLabel = "-",
   tenantLabel = "-",
   providerLabel = "-",
+  readiness,
+  readinessStatus = "idle",
 }: AdminJobTimelinePanelProps) {
   const attempts = useApiResource(
     () => job ? billingApi.listAdminJobAttempts(job.id, { limit: 20 }) : Promise.resolve([]),
@@ -63,6 +68,8 @@ export function AdminJobTimelinePanel({
         <Detail label="Updated" value={compactDateTime(job.updated_at)} />
       </div>
 
+      <SourceReadinessHint readiness={readiness} status={readinessStatus} providerLabel={providerLabel} />
+
       {(issue !== "-" || job.manual_review_reason) && (
         <div className="border-t border-gray-100 p-4 text-[12px]">
           <p className="m-0 text-[11px] uppercase tracking-wide text-gray-400">Recovery context</p>
@@ -87,6 +94,46 @@ export function AdminJobTimelinePanel({
         UUID {shortID(job.id)} / correlation {shortID(job.correlation_id)}
       </div>
     </aside>
+  );
+}
+
+function SourceReadinessHint({
+  readiness,
+  status,
+  providerLabel,
+}: {
+  readiness?: ProviderReadiness;
+  status: string;
+  providerLabel: string;
+}) {
+  if (status === "loading") {
+    return (
+      <div className="border-t border-gray-100 bg-gray-50 p-4 text-[12px] text-gray-400">
+        Checking source readiness...
+      </div>
+    );
+  }
+  if (!readiness) {
+    const message = status === "error"
+      ? "Source readiness unavailable."
+      : `No source readiness row matched ${providerLabel}.`;
+    return (
+      <div className="border-t border-gray-100 bg-gray-50 p-4 text-[12px] text-gray-400">
+        {message}
+      </div>
+    );
+  }
+  return (
+    <div className="border-t border-gray-100 p-4 text-[12px]">
+      <div className="flex items-center justify-between gap-3">
+        <p className="m-0 text-[11px] uppercase tracking-wide text-gray-400">Source readiness</p>
+        <ProviderReadinessStateBadge state={readiness.state} />
+      </div>
+      <p className="m-0 mt-2 text-gray-700">{readiness.reason}</p>
+      <p className="m-0 mt-2 text-[11px] text-gray-400">
+        {recordLabel(readiness.plan_display_id, "PLAN-")} / {readiness.plan_code} / {readiness.source_display_id ? recordLabel(readiness.source_display_id, "SRC-") : "No source"}
+      </p>
+    </div>
   );
 }
 
