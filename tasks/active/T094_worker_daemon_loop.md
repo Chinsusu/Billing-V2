@@ -1,9 +1,9 @@
 # T094 - Provisioning worker daemon loop
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t094-worker-daemon-loop
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/214
 Risk: backend/worker
 Created: 2026-04-24
 Updated: 2026-04-24
@@ -39,3 +39,4 @@ Add a long-running local/sandbox worker mode on top of the existing `provision-o
 - 2026-04-24: Codex claimed the task on `codex/t094-worker-daemon-loop`.
 - 2026-04-24: Added `provision-loop` with idle interval, timeout/signal cancellation, per-pass summaries, worker tests, and local operations docs.
 - 2026-04-24: Validation passed: `go test ./cmd/worker`, `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`, `npm ci`, `npm audit --omit=dev`, `npm run lint`, `npm run build`.
+- 2026-04-24: Opened PR https://github.com/Chinsusu/Billing-V2/pull/214 for review.
