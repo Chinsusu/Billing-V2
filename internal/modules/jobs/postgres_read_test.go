@@ -66,6 +66,31 @@ func TestBuildListJobsQueryRejectsMissingTenant(t *testing.T) {
 	}
 }
 
+func TestBuildJobSummaryQueryScopesTenantAndType(t *testing.T) {
+	query, args, err := buildJobSummaryQuery(SummaryFilter{TenantID: "tenant_1", Type: "provider.provision"})
+	if err != nil {
+		t.Fatalf("expected summary query: %v", err)
+	}
+	for _, clause := range []string{
+		"WITH scoped AS",
+		"tenant_id = $1",
+		"job_type = $2",
+		"COUNT(*) FILTER (WHERE status = 'queued')",
+		"COUNT(*) FILTER (WHERE status = 'failed_retryable')",
+		"MIN(created_at) FILTER (WHERE status = 'queued')",
+		"latest_failure AS",
+		"status IN ('failed_retryable', 'failed_terminal', 'manual_review')",
+		"LEFT JOIN latest_failure ON TRUE",
+	} {
+		if !strings.Contains(query, clause) {
+			t.Fatalf("expected %q in query: %s", clause, query)
+		}
+	}
+	if len(args) != 2 || args[0] != tenant.ID("tenant_1") || args[1] != Type("provider.provision") {
+		t.Fatalf("unexpected args: %#v", args)
+	}
+}
+
 func TestBuildListAttemptsQueryScopesThroughParentJob(t *testing.T) {
 	query, args, err := buildListAttemptsQuery(AttemptFilter{JobID: "job_1", TenantID: "tenant_1", Limit: 15})
 	if err != nil {

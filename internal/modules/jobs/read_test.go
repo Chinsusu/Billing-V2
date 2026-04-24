@@ -45,6 +45,22 @@ func TestValidateJobFilterRejectsBadStatus(t *testing.T) {
 	}
 }
 
+func TestNormalizeJobSummaryFilterDefaultsProvisioningType(t *testing.T) {
+	filter := normalizeSummaryFilter(SummaryFilter{TenantID: " tenant_1 "})
+
+	if filter.TenantID != tenant.ID("tenant_1") || filter.Type != Type("provider.provision") {
+		t.Fatalf("unexpected summary filter: %+v", filter)
+	}
+}
+
+func TestJobStatusCountsAttentionCount(t *testing.T) {
+	counts := JobStatusCounts{FailedRetryable: 2, FailedTerminal: 1, ManualReview: 3}
+
+	if counts.AttentionCount() != 6 {
+		t.Fatalf("unexpected attention count: %d", counts.AttentionCount())
+	}
+}
+
 func TestValidateJobLookupRequiresIDAndTenant(t *testing.T) {
 	if err := validateLookup(Lookup{TenantID: "tenant_1"}); !errors.Is(err, ErrJobIDMissing) {
 		t.Fatalf("expected job id error, got %v", err)

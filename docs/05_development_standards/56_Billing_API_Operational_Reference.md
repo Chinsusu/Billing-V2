@@ -468,6 +468,12 @@ The job read API does not expose `payload_json` or `idempotency_key`.
   - query: `display_id`, `job_type`, `status`, `reference_type`, `reference_id`, `source_id`, `limit`, `cursor`
   - response: list of `job`
 
+- `GET /admin/jobs/summary`
+  - auth: admin actor, `provisioning.job.view`
+  - query: `job_type`, default `provider.provision`
+  - response: one job summary with `job_type`, `total`, `attention_count`, `counts`, `oldest_queued_at`, `oldest_queued_age_seconds`, `latest_failure`, `generated_at`
+  - note: `latest_failure` only includes display id, status, redacted error fields, manual-review reason, and timestamps
+
 - `GET /admin/jobs/{job_id}`
   - auth: admin actor, `order.view`
   - response: one `job`

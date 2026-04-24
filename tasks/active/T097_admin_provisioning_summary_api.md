@@ -1,7 +1,7 @@
 # T097 - Admin provisioning summary API
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t097-admin-provisioning-summary-api
 PR: -
 Risk: backend/API
@@ -36,3 +36,7 @@ Expose a compact admin read model for provisioning queue health so operators do 
 ## Agent Log
 
 - 2026-04-24: Task created after T096 completed and the active board was fully DONE.
+- 2026-04-24: Codex claimed the task on `codex/t097-admin-provisioning-summary-api`.
+- 2026-04-24: Added `GET /admin/jobs/summary` with tenant-scoped job counts, attention count, oldest queued age, latest redacted failure context, and `provisioning.job.view` middleware wiring.
+- 2026-04-24: Added focused jobs API/query/unit tests and updated API/runbook docs.
+- 2026-04-24: Validation passed: `go test ./internal/modules/jobs`, `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`, `npm ci`, `npm audit --omit=dev`, `npm run lint`, `npm run build`.

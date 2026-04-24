@@ -100,6 +100,73 @@ func TestHTTPHandlerListAdminJobAttemptsUsesTenantScope(t *testing.T) {
 	}
 }
 
+func TestHTTPHandlerAdminJobSummaryUsesTenantScope(t *testing.T) {
+	service := &fakeJobsHTTPService{summary: testJobSummary()}
+	handler := registerJobsTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/admin/jobs/summary?job_type=provider.provision", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.summaryCalls != 1 {
+		t.Fatalf("expected summary once, got %d", service.summaryCalls)
+	}
+	if service.summaryFilter.TenantID != tenant.ID("tenant_1") ||
+		service.summaryFilter.Type != Type("provider.provision") {
+		t.Fatalf("unexpected summary filter: %+v", service.summaryFilter)
+	}
+	body := response.Body.String()
+	for _, expected := range []string{
+		`"job_type":"provider.provision"`,
+		`"total":9`,
+		`"attention_count":3`,
+		`"failed_retryable":1`,
+		`"manual_review":1`,
+		`"failed_terminal":1`,
+		`"oldest_queued_age_seconds":7200`,
+		`"display_id":81009`,
+		`"last_error_message_redacted":"provider timed out"`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("expected %s in summary response, got %s", expected, body)
+		}
+	}
+	if strings.Contains(body, "payload") || strings.Contains(body, "idempotency") || strings.Contains(body, "secret") {
+		t.Fatalf("summary response should not expose internal or secret fields: %s", body)
+	}
+}
+
+func TestHTTPHandlerAdminJobSummaryUsesSummaryMiddleware(t *testing.T) {
+	service := &fakeJobsHTTPService{summary: testJobSummary()}
+	mux := http.NewServeMux()
+	NewHTTPHandlerWithOptions(service, HTTPHandlerOptions{
+		AdminSummaryMiddleware: func(next http.HandlerFunc) http.HandlerFunc {
+			return func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusTeapot)
+			}
+		},
+	}).RegisterRoutes(mux)
+
+	request := httptest.NewRequest(http.MethodGet, "/admin/jobs/summary", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	response := httptest.NewRecorder()
+
+	mux.ServeHTTP(response, request)
+
+	if response.Code != http.StatusTeapot {
+		t.Fatalf("expected summary middleware status, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.summaryCalls != 0 {
+		t.Fatalf("expected middleware to stop summary service, got %d calls", service.summaryCalls)
+	}
+}
+
 func TestHTTPHandlerListResellerJobAttemptsUsesTenantScope(t *testing.T) {
 	service := &fakeJobsHTTPService{attempts: []Attempt{testReadAttempt()}}
 	handler := registerJobsTestHandler(service)
@@ -121,6 +188,24 @@ func TestHTTPHandlerListResellerJobAttemptsUsesTenantScope(t *testing.T) {
 		service.attemptFilter.TenantID != tenant.ID("tenant_2") ||
 		service.attemptFilter.Limit != 7 {
 		t.Fatalf("unexpected attempt filter: %+v", service.attemptFilter)
+	}
+}
+
+func TestHTTPHandlerSummaryMissingServiceReturnsEnvelope(t *testing.T) {
+	handler := registerJobsTestHandler(nil)
+
+	request := httptest.NewRequest(http.MethodGet, "/admin/jobs/summary", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusServiceUnavailable {
+		t.Fatalf("expected status 503, got %d: %s", response.Code, response.Body.String())
+	}
+	if !strings.Contains(response.Body.String(), "job.service_unavailable") {
+		t.Fatalf("expected service unavailable envelope, got %s", response.Body.String())
 	}
 }
 
@@ -219,6 +304,35 @@ func testReadJob() Job {
 	}
 }
 
+func testJobSummary() JobSummary {
+	return JobSummary{
+		TenantID:       "tenant_1",
+		Type:           "provider.provision",
+		Total:          9,
+		AttentionCount: 3,
+		Counts: JobStatusCounts{
+			Queued:          2,
+			Claimed:         1,
+			Running:         1,
+			Succeeded:       2,
+			FailedRetryable: 1,
+			FailedTerminal:  1,
+			ManualReview:    1,
+		},
+		OldestQueuedAt: time.Date(2026, 4, 24, 0, 0, 0, 0, time.UTC),
+		GeneratedAt:    time.Date(2026, 4, 24, 2, 0, 0, 0, time.UTC),
+		LatestFailure: &JobFailureContext{
+			ID:                       "job_9",
+			DisplayID:                81009,
+			Status:                   StatusFailedRetryable,
+			LastErrorCode:            "provider_timeout",
+			LastErrorMessageRedacted: "provider timed out",
+			CreatedAt:                time.Date(2026, 4, 24, 1, 0, 0, 0, time.UTC),
+			UpdatedAt:                time.Date(2026, 4, 24, 1, 30, 0, 0, time.UTC),
+		},
+	}
+}
+
 func testReadAttempt() Attempt {
 	return Attempt{
 		ID:                   "attempt_1",
@@ -240,15 +354,18 @@ type fakeJobsHTTPService struct {
 	job               Job
 	jobs              []Job
 	attempts          []Attempt
+	summary           JobSummary
 	retryInput        RetryJobInput
 	manualReviewInput ManualReviewJobInput
 	cancelInput       CancelJobInput
 	filter            Filter
 	lookup            Lookup
 	attemptFilter     AttemptFilter
+	summaryFilter     SummaryFilter
 	listCalls         int
 	getCalls          int
 	listAttemptCalls  int
+	summaryCalls      int
 	retryCalls        int
 	manualReviewCalls int
 	cancelCalls       int
@@ -270,6 +387,12 @@ func (service *fakeJobsHTTPService) ListAttempts(ctx context.Context, filter Att
 	service.listAttemptCalls++
 	service.attemptFilter = filter
 	return service.attempts, nil
+}
+
+func (service *fakeJobsHTTPService) SummarizeJobs(ctx context.Context, filter SummaryFilter) (JobSummary, error) {
+	service.summaryCalls++
+	service.summaryFilter = filter
+	return service.summary, nil
 }
 
 func (service *fakeJobsHTTPService) RetryJob(ctx context.Context, input RetryJobInput) (Job, error) {

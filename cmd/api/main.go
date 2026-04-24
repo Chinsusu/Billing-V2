@@ -170,6 +170,7 @@ func newJobsRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return jobs.NewHTTPHandlerWithOptions(service, jobs.HTTPHandlerOptions{
 		AdminMiddleware:             jobsAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
+		AdminSummaryMiddleware:      jobsAuthMiddleware(authorizer, rbac.PermissionProvisioningJobView, rbac.RiskLow),
 		AdminRetryMiddleware:        jobsAuthMiddleware(authorizer, rbac.PermissionProvisioningJobRetry, rbac.RiskHigh),
 		AdminManualReviewMiddleware: jobsAuthMiddleware(authorizer, rbac.PermissionManualReviewResolve, rbac.RiskHigh),
 		AdminCancelMiddleware:       jobsAuthMiddleware(authorizer, rbac.PermissionManualReviewResolve, rbac.RiskHigh),
