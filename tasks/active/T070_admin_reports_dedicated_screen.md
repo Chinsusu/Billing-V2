@@ -1,8 +1,8 @@
 # T070 - Admin reports dedicated screen
 
-Status: TODO
-Owner: -
-Branch: feat/admin-reports-dedicated-screen
+Status: REVIEW
+Owner: Codex
+Branch: codex/t070-admin-reports-screen
 PR: -
 Risk: frontend/admin
 Created: 2026-04-24
@@ -36,3 +36,5 @@ Replace the admin reports route reuse of `AdminOverview` with a dedicated report
 ## Agent Log
 
 - 2026-04-24: Task created after T066 completed and the admin frontend batch was refreshed.
+- 2026-04-24: Codex claimed the task and started building a dedicated live-backed admin reports screen.
+- 2026-04-24: Added a dedicated AdminReports screen backed by reconciliation, transactions, invoices, and audit read APIs. Local audit, lint, and build passed.

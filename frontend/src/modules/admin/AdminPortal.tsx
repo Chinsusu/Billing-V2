@@ -16,6 +16,7 @@ import { AdminTickets } from "./screens/AdminTickets";
 import { AdminSettings } from "./screens/AdminSettings";
 import { AdminAlerts } from "./screens/AdminAlerts";
 import { AdminLogs } from "./screens/AdminLogs";
+import { AdminReports } from "./screens/AdminReports";
 import { AdminServicesProxies } from "./screens/AdminServicesProxies";
 import { AdminServicesVPS } from "./screens/AdminServicesVPS";
 import { AdminServicesBandwidth } from "./screens/AdminServicesBandwidth";
@@ -87,7 +88,7 @@ const SCREENS: Record<string, ScreenConfig> = {
   },
   "admin-reports": {
     title: "Reports", breadcrumbs: ["HANetwork", "Billing", "Reports"],
-    component: <AdminOverview />,
+    component: <AdminReports />,
   },
   "admin-alerts": {
     title: "Alerts", breadcrumbs: ["HANetwork", "System", "Alerts"],
