@@ -1,9 +1,9 @@
 # T077 - Reseller billing read APIs
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t077-reseller-billing-read-api
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/177
 Risk: backend/API
 Created: 2026-04-24
 Updated: 2026-04-24
@@ -38,3 +38,4 @@ Add reseller-scoped read endpoints for invoices, transactions, wallets, ledger, 
 - 2026-04-24: Added reseller read routes for invoices, transactions, wallets, wallet ledger, and top-up requests with runtime middleware wiring and docs.
 - 2026-04-24: Split runtime protection tests out of `cmd/api/main_test.go` to keep files under 500 lines.
 - 2026-04-24: Validation passed: `go test ./...` and `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke`.
+- 2026-04-24: Opened PR #177 for review/CI.
