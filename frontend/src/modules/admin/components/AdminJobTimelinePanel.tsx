@@ -6,6 +6,7 @@ import { compactDateTime, recordLabel, shortID } from "@/lib/api/format";
 import type { ProvisioningJobAttempt } from "@/lib/api/jobTypes";
 import type { ProvisioningJob } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
+import { AdminJobRecoveryAuditPanel } from "./AdminJobRecoveryAuditPanel";
 
 interface AdminJobTimelinePanelProps {
   job: ProvisioningJob | null;
@@ -79,6 +80,8 @@ export function AdminJobTimelinePanel({
         </div>
         <AttemptTimeline attempts={attemptRows} loading={attempts.status === "loading"} error={attempts.error} />
       </div>
+
+      <AdminJobRecoveryAuditPanel job={job} />
 
       <div className="border-t border-gray-100 p-4 text-[11px] text-gray-400">
         UUID {shortID(job.id)} / correlation {shortID(job.correlation_id)}

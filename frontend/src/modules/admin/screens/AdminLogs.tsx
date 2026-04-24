@@ -27,14 +27,16 @@ const ACTOR_STYLE: Record<ActorBadge, string> = {
   provider_webhook: "bg-cyan-50 text-cyan-700",
 };
 
-const EMPTY_FILTERS: Required<AdminAuditLogQuery> = {
+type AuditLogFilters = Required<Pick<AdminAuditLogQuery, "display_id" | "actor_id" | "action" | "target_type">>;
+
+const EMPTY_FILTERS: AuditLogFilters = {
   display_id: "",
   actor_id: "",
   action: "",
   target_type: "",
 };
 
-function filterMockLogs(filters: Required<AdminAuditLogQuery>) {
+function filterMockLogs(filters: AuditLogFilters) {
   return AUDIT_LOGS.filter((log) => (
     includesFilter(log.id, filters.display_id)
     && includesFilter(log.actorName, filters.actor_id)
@@ -95,7 +97,7 @@ export function AdminLogs() {
           ? "Filters are applied to demo audit data."
           : "Demo audit data is active until the live API responds.";
 
-  function updateFilter(field: keyof AdminAuditLogQuery, value: string) {
+  function updateFilter(field: keyof AuditLogFilters, value: string) {
     setDraftFilters((current) => ({ ...current, [field]: value }));
   }
 

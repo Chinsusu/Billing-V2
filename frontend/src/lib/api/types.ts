@@ -411,11 +411,12 @@ export interface AdminTransactionQuery {
   amount_max?: string;
 }
 
-export interface AdminAuditLogQuery {
+export interface AdminAuditLogQuery extends PageQuery {
   display_id?: string;
   actor_id?: string;
   action?: string;
   target_type?: string;
+  target_id?: string;
 }
 
 export interface AdminTenantQuery extends PageQuery {
