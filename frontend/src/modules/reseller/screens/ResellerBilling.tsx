@@ -6,6 +6,7 @@ import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { INVOICES, TRANSACTIONS } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
+import { fulfillmentForOrder } from "./fulfillment";
 
 type BillingKind = "invoices" | "transactions";
 
@@ -23,39 +24,54 @@ function ResellerInvoices() {
     () => billingApi.listResellerCustomers({ limit: 100 }),
     "reseller-invoice-customers",
   );
+  const orders = useApiResource(
+    () => billingApi.listResellerOrders({ limit: 100 }),
+    "reseller-invoice-orders",
+  );
+  const services = useApiResource(
+    () => billingApi.listResellerServices({ limit: 100 }),
+    "reseller-invoice-services",
+  );
   const customerByID = new Map((customers.data ?? []).map((customer) => [customer.id, customer]));
+  const orderByID = new Map((orders.data ?? []).map((order) => [order.id, order]));
   const usingLive = invoices.status === "success";
   const rows = usingLive
     ? (invoices.data ?? []).map((invoice) => {
         const customer = customerByID.get(invoice.buyer_user_id);
+        const fulfillment = fulfillmentForOrder(invoice.order_id ? orderByID.get(invoice.order_id) : undefined, services.data ?? []);
         return {
           id: recordLabel(invoice.display_id, "INV-"),
+          order: fulfillment.orderLabel,
           customer: customer ? `${customer.full_name || customer.email} (${recordLabel(customer.display_id, "ACC-")})` : "-",
           issued: compactDateTime(invoice.issued_at),
           due: compactDateTime(invoice.due_at),
           amount: moneyMinor(invoice.total_minor, invoice.currency),
           amountMinor: invoice.total_minor,
           status: invoice.status,
+          fulfillment,
         };
       })
     : INVOICES.slice(0, 6).map((invoice) => ({
         id: invoice.id,
+        order: "-",
         customer: invoice.customer,
         issued: invoice.issued,
         due: invoice.due,
         amount: fmtMoney(invoice.amount),
         amountMinor: Math.round(invoice.amount * 100),
         status: invoice.status,
+        fulfillment: { status: invoice.status, label: invoice.status, serviceLabel: "-", jobLabel: "-", orderLabel: "-" },
       }));
   const open = rows.filter((invoice) => invoice.status !== "paid").length;
   const total = rows.reduce((sum, invoice) => sum + invoice.amountMinor, 0);
+  const extraError = orders.error ?? services.error ?? customers.error;
 
   return (
-    <BillingShell title="Invoices" records={rows.length} open={open} total={moneyMinor(total)} source={sourceText(invoices.status, usingLive)}>
-      <table className="w-full text-[13px] border-collapse min-w-[720px]">
+    <BillingShell title="Invoices" records={rows.length} open={open} total={moneyMinor(total)} source={sourceText(invoices.status, usingLive, extraError)}>
+      <table className="w-full text-[13px] border-collapse min-w-[920px]">
         <thead>
           <tr className="bg-gray-50">
-            {["Invoice", "Client", "Issued", "Due", "Amount", "Status"].map((heading) => (
+            {["Invoice", "Order", "Client", "Issued", "Due", "Amount", "Invoice", "Fulfillment", "Service / Job"].map((heading) => (
               <th key={heading} className="text-left text-[11px] font-medium uppercase text-gray-400 p-4 border-b border-gray-200">
                 {heading}
               </th>
@@ -66,15 +82,20 @@ function ResellerInvoices() {
           {rows.map((invoice) => (
             <tr key={invoice.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
               <td className="p-4 text-[12px] text-[#D50C2D] font-medium">{invoice.id}</td>
+              <td className="p-4 text-[12px] text-gray-500">{invoice.order}</td>
               <td className="p-4 font-medium text-gray-900">{invoice.customer}</td>
               <td className="p-4 text-gray-500">{invoice.issued}</td>
               <td className="p-4 text-gray-500">{invoice.due}</td>
               <td className="p-4 text-right font-medium tabular-nums">{invoice.amount}</td>
               <td className="p-4"><StatusBadge status={invoice.status} dot /></td>
+              <td className="p-4"><StatusBadge status={invoice.fulfillment.status} dot /></td>
+              <td className="p-4 text-[12px] text-gray-500">
+                {invoice.fulfillment.serviceLabel !== "-" ? invoice.fulfillment.serviceLabel : invoice.fulfillment.jobLabel}
+              </td>
             </tr>
           ))}
           {usingLive && rows.length === 0 && (
-            <tr><td colSpan={6} className="p-4 text-center text-[12px] text-gray-400">No invoices</td></tr>
+            <tr><td colSpan={9} className="p-4 text-center text-[12px] text-gray-400">No invoices</td></tr>
           )}
         </tbody>
       </table>
@@ -88,41 +109,56 @@ function ResellerTransactions() {
     () => billingApi.listResellerCustomers({ limit: 100 }),
     "reseller-transaction-customers",
   );
+  const orders = useApiResource(
+    () => billingApi.listResellerOrders({ limit: 100 }),
+    "reseller-transaction-orders",
+  );
+  const services = useApiResource(
+    () => billingApi.listResellerServices({ limit: 100 }),
+    "reseller-transaction-services",
+  );
   const customerByID = new Map((customers.data ?? []).map((customer) => [customer.id, customer]));
+  const orderByID = new Map((orders.data ?? []).map((order) => [order.id, order]));
   const usingLive = transactions.status === "success";
   const rows = usingLive
     ? (transactions.data ?? []).map((transaction) => {
         const customer = customerByID.get(transaction.account_user_id);
+        const fulfillment = fulfillmentForOrder(transaction.order_id ? orderByID.get(transaction.order_id) : undefined, services.data ?? []);
         return {
           id: recordLabel(transaction.display_id, "TX-"),
           time: compactDateTime(transaction.created_at),
           customer: customer ? `${customer.full_name || customer.email} (${recordLabel(customer.display_id, "ACC-")})` : "-",
+          order: fulfillment.orderLabel,
           method: transaction.description ?? "wallet",
           type: transaction.type,
           amount: moneyMinor(transaction.amount_minor, transaction.currency),
           amountMinor: transaction.amount_minor,
           status: transaction.status,
+          fulfillment,
         };
       })
     : TRANSACTIONS.slice(0, 8).map((transaction) => ({
         id: transaction.id,
         time: transaction.time,
         customer: transaction.customer,
+        order: "-",
         method: transaction.method,
         type: transaction.type,
         amount: fmtMoney(transaction.amount),
         amountMinor: Math.round(transaction.amount * 100),
         status: transaction.status,
+        fulfillment: { status: transaction.status, label: transaction.status, serviceLabel: "-", jobLabel: "-", orderLabel: "-" },
       }));
   const failed = rows.filter((txn) => txn.status === "failed").length;
   const total = rows.reduce((sum, txn) => sum + txn.amountMinor, 0);
+  const extraError = orders.error ?? services.error ?? customers.error;
 
   return (
-    <BillingShell title="Transactions" records={rows.length} open={failed} total={moneyMinor(total)} openLabel="Failed" source={sourceText(transactions.status, usingLive)}>
-      <table className="w-full text-[13px] border-collapse min-w-[760px]">
+    <BillingShell title="Transactions" records={rows.length} open={failed} total={moneyMinor(total)} openLabel="Failed" source={sourceText(transactions.status, usingLive, extraError)}>
+      <table className="w-full text-[13px] border-collapse min-w-[960px]">
         <thead>
           <tr className="bg-gray-50">
-            {["Transaction", "Time", "Client", "Method", "Type", "Amount", "Status"].map((heading) => (
+            {["Transaction", "Time", "Client", "Order", "Method", "Type", "Amount", "Payment", "Fulfillment"].map((heading) => (
               <th key={heading} className="text-left text-[11px] font-medium uppercase text-gray-400 p-4 border-b border-gray-200">
                 {heading}
               </th>
@@ -135,14 +171,16 @@ function ResellerTransactions() {
               <td className="p-4 text-[12px] text-[#D50C2D] font-medium">{txn.id}</td>
               <td className="p-4 text-gray-500">{txn.time}</td>
               <td className="p-4 font-medium text-gray-900">{txn.customer}</td>
+              <td className="p-4 text-[12px] text-gray-500">{txn.order}</td>
               <td className="p-4 text-gray-500">{txn.method}</td>
               <td className="p-4 text-gray-500">{txn.type}</td>
               <td className="p-4 text-right font-medium tabular-nums">{txn.amount}</td>
               <td className="p-4"><StatusBadge status={txn.status} dot /></td>
+              <td className="p-4"><StatusBadge status={txn.fulfillment.status} dot /></td>
             </tr>
           ))}
           {usingLive && rows.length === 0 && (
-            <tr><td colSpan={7} className="p-4 text-center text-[12px] text-gray-400">No transactions</td></tr>
+            <tr><td colSpan={9} className="p-4 text-center text-[12px] text-gray-400">No transactions</td></tr>
           )}
         </tbody>
       </table>
@@ -185,9 +223,10 @@ function BillingShell({
   );
 }
 
-function sourceText(status: string, usingLive: boolean) {
+function sourceText(status: string, usingLive: boolean, extraError?: string | null) {
   if (status === "error") return "Live API unavailable. Showing demo billing data.";
   if (status === "loading") return "Refreshing live billing data...";
+  if (usingLive && extraError) return "Live billing loaded. Fulfillment details may be incomplete.";
   return usingLive ? "Live reseller billing" : "Demo billing data";
 }
 
