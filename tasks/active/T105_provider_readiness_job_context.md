@@ -1,9 +1,9 @@
 # T105 - Provider readiness job context
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t105-provider-readiness-job-context
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/238
 Risk: frontend/admin-ops
 Created: 2026-04-24
 Updated: 2026-04-24
@@ -41,3 +41,4 @@ Connect provider readiness context to admin provisioning job inspection so faile
 - 2026-04-24: Reused a shared provider readiness badge in provider readiness and job detail views.
 - 2026-04-24: Browser verification passed on desktop and mobile with mocked live provisioning/readiness APIs; job detail showed ready source context without provider credentials, raw payload, or capability JSON text.
 - 2026-04-24: Validation passed: `npm ci`, `npm audit --omit=dev`, `npm run lint`, `npm run build`, `go test ./...`, and `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`.
+- 2026-04-24: Opened PR #238 and moved the task to review.
