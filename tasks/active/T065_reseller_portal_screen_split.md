@@ -1,8 +1,8 @@
 # T065 - Reseller portal dedicated screens
 
-Status: TODO
-Owner: -
-Branch: feat/reseller-portal-screen-split
+Status: IN_PROGRESS
+Owner: Codex
+Branch: codex/t065-reseller-portal-screens
 PR: -
 Risk: frontend/reseller
 Created: 2026-04-24
@@ -37,3 +37,4 @@ Replace reseller portal screen reuse with dedicated views and wire the catalog s
 ## Agent Log
 
 - 2026-04-24: Task created for reseller portal completion after the current frontend shell and admin filter work.
+- 2026-04-24: Codex claimed the task after T064 merged and started splitting reseller portal screens.
