@@ -1,6 +1,6 @@
 # T087 - Provisioning job read API
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t087-provisioning-job-read-api
 PR: https://github.com/Chinsusu/Billing-V2/pull/199
@@ -39,3 +39,4 @@ Expose read APIs for provisioning jobs so admin/reseller screens and operations 
 - 2026-04-24: Codex claimed the task after the provisioning operations batch merged and started inspecting jobs/read API patterns.
 - 2026-04-24: Added tenant-scoped admin/reseller job list and detail APIs, read store/service helpers, response docs, runtime wiring, and tests. Local backend/frontend gates passed.
 - 2026-04-24: Opened PR https://github.com/Chinsusu/Billing-V2/pull/199 for review.
+- 2026-04-24: PR #199 merged into main at 6a27925.
