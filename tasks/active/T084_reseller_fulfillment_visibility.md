@@ -1,7 +1,7 @@
 # T084 - Reseller fulfillment visibility
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t084-reseller-fulfillment-visibility
 PR: -
 Risk: frontend/reseller
@@ -34,4 +34,5 @@ Make reseller views show the fulfillment state of paid client orders and provisi
 ## Agent Log
 
 - 2026-04-24: Task created to close the reseller support visibility gap after live billing flow work.
-
+- 2026-04-24: Codex claimed the task after T082/T083 merged and started inspecting reseller order/service visibility against current read APIs.
+- 2026-04-24: Added reseller fulfillment visibility from existing order/service reads: billing and service screens now show order display IDs, fulfillment status, service display IDs or inferred provider.provision jobs, with partial-data fallback text. Local frontend/backend gates passed.

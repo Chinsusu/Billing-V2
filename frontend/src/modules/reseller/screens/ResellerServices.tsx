@@ -7,6 +7,7 @@ import type { Order, ServiceInstance } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { BANDWIDTH_SERVICES, PROXY_SERVICES, VPS_SERVICES } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
+import { fulfillmentForService } from "./fulfillment";
 
 type ResellerServiceCategory = "proxies" | "vps" | "bandwidth";
 
@@ -40,12 +41,13 @@ export function ResellerServices({ category }: ResellerServicesProps) {
   const attention = rows.filter((row) => row.status === "suspended" || row.status === "overdue").length;
   const revenue = rows.reduce((total, row) => total + row.priceMinor, 0);
   const config = CONFIG[category];
+  const extraError = orders.error ?? customers.error;
   const source = services.status === "error"
     ? "Live API unavailable. Showing demo service data."
     : services.status === "loading"
       ? "Refreshing live services..."
       : usingLive
-        ? "Live reseller services"
+        ? extraError ? "Live services loaded. Fulfillment details may be incomplete." : "Live reseller services"
         : "Demo service data";
 
   return (
@@ -62,10 +64,10 @@ export function ResellerServices({ category }: ResellerServicesProps) {
           <span className="text-[11px] text-gray-400">{source}</span>
         </div>
         <div className="overflow-x-auto max-w-full">
-          <table className="w-full text-[13px] border-collapse min-w-[760px]">
+          <table className="w-full text-[13px] border-collapse min-w-[1040px]">
             <thead>
               <tr className="bg-gray-50">
-                {["ID", "Service", "Client", "Region", "Usage", "Renewal", "Price", "Status"].map((heading) => (
+                {["Service ID", "Order", "Service", "Client", "Region", "Usage", "Renewal", "Price", "Service", "Fulfillment", "Job"].map((heading) => (
                   <th key={heading} className="text-left text-[11px] font-medium uppercase text-gray-400 p-4 border-b border-gray-200">
                     {heading}
                   </th>
@@ -76,6 +78,7 @@ export function ResellerServices({ category }: ResellerServicesProps) {
               {rows.map((row) => (
                 <tr key={row.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
                   <td className="p-4 text-[12px] text-[#D50C2D] font-medium">{row.id}</td>
+                  <td className="p-4 text-[12px] text-gray-500">{row.order}</td>
                   <td className="p-4 font-medium text-gray-900">{row.label}</td>
                   <td className="p-4 text-gray-500">{row.customer}</td>
                   <td className="p-4 text-gray-500">{row.region}</td>
@@ -83,10 +86,12 @@ export function ResellerServices({ category }: ResellerServicesProps) {
                   <td className="p-4 text-gray-500">{row.renewal}</td>
                   <td className="p-4 text-right font-medium tabular-nums">{row.price}</td>
                   <td className="p-4"><StatusBadge status={row.status} dot /></td>
+                  <td className="p-4"><StatusBadge status={row.fulfillmentStatus} dot /></td>
+                  <td className="p-4 text-[12px] text-gray-500">{row.job}</td>
                 </tr>
               ))}
               {rows.length === 0 && (
-                <tr><td colSpan={8} className="p-4 text-center text-[12px] text-gray-400">{config.empty}</td></tr>
+                <tr><td colSpan={11} className="p-4 text-center text-[12px] text-gray-400">{config.empty}</td></tr>
               )}
             </tbody>
           </table>
@@ -98,6 +103,7 @@ export function ResellerServices({ category }: ResellerServicesProps) {
 
 interface ServiceRow {
   id: string;
+  order: string;
   label: string;
   customer: string;
   region: string;
@@ -106,12 +112,15 @@ interface ServiceRow {
   price: string;
   priceMinor: number;
   status: string;
+  fulfillmentStatus: string;
+  job: string;
 }
 
 function demoServiceRows(category: ResellerServiceCategory): ServiceRow[] {
   if (category === "vps") {
     return VPS_SERVICES.filter((item) => item.tenant === "ProxyVN").map((item) => ({
       id: item.id,
+      order: "-",
       label: item.label,
       customer: item.customer,
       region: item.region,
@@ -120,11 +129,14 @@ function demoServiceRows(category: ResellerServiceCategory): ServiceRow[] {
       price: fmtMoney(item.price),
       priceMinor: Math.round(item.price * 100),
       status: item.status,
+      fulfillmentStatus: item.status,
+      job: "-",
     }));
   }
   if (category === "bandwidth") {
     return BANDWIDTH_SERVICES.filter((item) => item.tenant === "ProxyVN").map((item) => ({
       id: item.id,
+      order: "-",
       label: item.label,
       customer: item.customer,
       region: item.region,
@@ -133,10 +145,13 @@ function demoServiceRows(category: ResellerServiceCategory): ServiceRow[] {
       price: fmtMoney(item.price),
       priceMinor: Math.round(item.price * 100),
       status: item.status,
+      fulfillmentStatus: item.status,
+      job: "-",
     }));
   }
   return PROXY_SERVICES.filter((item) => item.tenant === "ProxyVN").map((item) => ({
     id: item.id,
+    order: "-",
     label: item.label,
     customer: item.customer,
     region: item.region,
@@ -145,6 +160,8 @@ function demoServiceRows(category: ResellerServiceCategory): ServiceRow[] {
     price: fmtMoney(item.price),
     priceMinor: Math.round(item.price * 100),
     status: item.status,
+    fulfillmentStatus: item.status,
+    job: "-",
   }));
 }
 
@@ -159,6 +176,7 @@ function liveServiceRows(
   return services
     .map((service) => {
       const order = ordersByID.get(service.order_id);
+      const fulfillment = fulfillmentForService(service, order);
       const text = `${snapshotText(order?.product_snapshot)} ${snapshotText(order?.plan_snapshot)} ${service.external_resource_id}`.toLowerCase();
       const detected = text.includes("vps")
         ? "vps"
@@ -168,6 +186,7 @@ function liveServiceRows(
       const customer = order?.buyer_user_id ? customerByID.get(order.buyer_user_id) : undefined;
       return {
         id: recordLabel(service.display_id, "SVC-"),
+        order: fulfillment.orderLabel,
         label: service.external_resource_id || snapshotText(order?.plan_snapshot) || recordLabel(service.display_id, "SVC-"),
         customer: customer
           ? `${customer.full_name || customer.email} (${recordLabel(customer.display_id, "ACC-")})`
@@ -178,6 +197,8 @@ function liveServiceRows(
         price: order ? moneyMinor(order.total_minor, order.currency) : "-",
         priceMinor: order?.total_minor ?? 0,
         status: service.status || service.billing_status,
+        fulfillmentStatus: fulfillment.status,
+        job: fulfillment.jobLabel,
         category: detected,
       };
     })

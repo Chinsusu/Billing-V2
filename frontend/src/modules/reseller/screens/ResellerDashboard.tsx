@@ -37,15 +37,12 @@ export function ResellerDashboard() {
     () => billingApi.listResellerWallets({ limit: 100 }),
     "reseller-dashboard-wallets",
   );
-  const topups = useApiResource(
-    () => billingApi.listResellerTopupRequests({ limit: 50 }),
-    "reseller-dashboard-topups",
-  );
   const wallet = wallets.data?.[0];
   const usingLiveRows = customers.status === "success";
   const orderCounts = new Map<string, number>();
   const serviceCounts = new Map<string, number>();
   const orderBuyers = new Map<string, string>();
+  const serviceOrderIDs = new Set((services.data ?? []).map((service) => service.order_id));
   const walletByOwner = new Map((wallets.data ?? []).map((item) => [item.owner_id, item]));
 
   if (orders.status === "success") {
@@ -88,8 +85,10 @@ export function ResellerDashboard() {
         status: client.status,
         lastLogin: client.lastLogin,
       }));
-  const pendingTopups = (topups.data ?? []).filter((request) => (
-    request.status.includes("pending") || request.status.includes("review")
+  const pendingFulfillment = (orders.data ?? []).filter((order) => (
+    order.order_status === "paid" &&
+    order.billing_status === "paid" &&
+    !serviceOrderIDs.has(order.id)
   )).length;
   const revenueMinor = (invoices.data ?? []).reduce((total, invoice) => total + invoice.total_minor, 0);
   const source = customers.status === "error"
@@ -128,9 +127,9 @@ export function ResellerDashboard() {
           sub="issued invoices"
         />
         <KpiCard
-          label="Pending top-ups"
-          value={topups.status === "success" ? String(pendingTopups) : "2"}
-          sub="awaiting admin"
+          label="Pending fulfillment"
+          value={orders.status === "success" && services.status === "success" ? String(pendingFulfillment) : "-"}
+          sub="paid orders"
         />
       </div>
 
