@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-24` after completing T074 and creating the next reseller/live workflow batch:
+Current board snapshot on `2026-04-24` after completing T100 and creating the provider readiness follow-up batch:
 
 - `TODO`: 6
 - `IN_PROGRESS`: 0
 - `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 71
+- `DONE` task files in `tasks/active/`: 97
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -59,19 +59,19 @@ Current board snapshot on `2026-04-24` after completing T074 and creating the ne
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T075 | [tasks/active/T075_reseller_customers_read_api.md](tasks/active/T075_reseller_customers_read_api.md) | codex/t075-reseller-customers-read-api | backend/API | Add reseller-scoped customer account read API with numeric display IDs. |
-| T076 | [tasks/active/T076_reseller_ops_read_api.md](tasks/active/T076_reseller_ops_read_api.md) | codex/t076-reseller-ops-read-api | backend/API | Add reseller-scoped orders and services read APIs. |
-| T077 | [tasks/active/T077_reseller_billing_read_api.md](tasks/active/T077_reseller_billing_read_api.md) | codex/t077-reseller-billing-read-api | backend/API | Add reseller-scoped billing, wallet, ledger, and top-up read APIs. |
-| T078 | [tasks/active/T078_reseller_portal_live_views.md](tasks/active/T078_reseller_portal_live_views.md) | codex/t078-reseller-portal-live-views | frontend/reseller | Wire reseller portal screens to live reseller APIs. |
-| T079 | [tasks/active/T079_checkout_payment_orchestration.md](tasks/active/T079_checkout_payment_orchestration.md) | codex/t079-checkout-payment-orchestration | backend/billing | Implement the next backend checkout step after client order creation. |
-| T080 | [tasks/active/T080_billing_flow_smoke_v2.md](tasks/active/T080_billing_flow_smoke_v2.md) | codex/t080-billing-flow-smoke-v2 | QA/smoke | Add live billing flow smoke coverage after the next endpoint surface lands. |
+| T101 | [tasks/active/T101_admin_provider_readiness_ui.md](tasks/active/T101_admin_provider_readiness_ui.md) | codex/t101-admin-provider-readiness-ui | frontend/admin-ops | Show provider readiness in the admin portal using the T100 API. |
+| T102 | [tasks/active/T102_provider_readiness_smoke_coverage.md](tasks/active/T102_provider_readiness_smoke_coverage.md) | codex/t102-provider-readiness-smoke-coverage | QA/smoke | Add smoke coverage for the provider readiness endpoint and redaction guarantees. |
+| T103 | [tasks/active/T103_catalog_admin_read_permission_split.md](tasks/active/T103_catalog_admin_read_permission_split.md) | codex/t103-catalog-admin-read-permission-split | backend/RBAC | Split admin catalog read routes from catalog mutation permissions. |
+| T104 | [tasks/active/T104_provider_readiness_seed_scenarios.md](tasks/active/T104_provider_readiness_seed_scenarios.md) | codex/t104-provider-readiness-seed-scenarios | seed/local-dev | Add local seed scenarios that demonstrate readiness states safely. |
+| T105 | [tasks/active/T105_provider_readiness_job_context.md](tasks/active/T105_provider_readiness_job_context.md) | codex/t105-provider-readiness-job-context | frontend/admin-ops | Show source readiness context in admin provisioning job detail. |
+| T106 | [tasks/active/T106_provider_readiness_runbook_examples.md](tasks/active/T106_provider_readiness_runbook_examples.md) | codex/t106-provider-readiness-runbook-examples | docs/operations | Add practical runbook examples for each readiness state. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not stay in the active queue:
 
 - `T003` to `T009`
-- `T011` to `T074`
+- `T011` to `T100`
 
 ## Removed Tasks
 
