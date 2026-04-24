@@ -1,0 +1,38 @@
+# T094 - Provisioning worker daemon loop
+
+Status: TODO
+Owner: -
+Branch: codex/t094-worker-daemon-loop
+PR: -
+Risk: backend/worker
+Created: 2026-04-24
+Updated: 2026-04-24
+
+## Summary
+
+Add a long-running local/sandbox worker mode on top of the existing `provision-once` command.
+
+## Scope
+
+- Work mainly in `cmd/worker/**/*`, worker docs, and focused worker tests.
+- Add a loop mode that repeatedly runs provisioning batches with interval, timeout, and graceful shutdown.
+- Keep `provision-once` behavior unchanged.
+- Keep the worker fake-provider friendly for local/dev.
+- Keep each file under 500 lines.
+
+## Acceptance Criteria
+
+- `cmd/worker` supports a loop command for local/sandbox provisioning workers.
+- Loop mode respects context cancellation and does not busy-spin when no jobs are claimed.
+- Logs or summaries are clear enough to diagnose claimed/succeeded/retry/manual-review counts per pass.
+- Unit tests cover command parsing and loop cancellation.
+- Backend and frontend validation commands pass.
+
+## Notes
+
+- Should follow T089 and T092.
+- Do not introduce production deployment automation in this task.
+
+## Agent Log
+
+- 2026-04-24: Task created after T092 completed and the active board was empty.
