@@ -2,7 +2,7 @@
 
 Task files reduce merge conflicts between coding agents.
 
-`TASKS.md` is only the index. Each active task owns one file under `tasks/active/`, and the assigned agent updates only that file while working.
+`TASKS.md` is only the index. Each active task owns one file under `tasks/active/`, and the assigned agent updates only that file while working. Removed or dropped tasks should be archived under `tasks/removed/`.
 
 ## Claim Flow
 
@@ -21,6 +21,16 @@ Task files reduce merge conflicts between coding agents.
 If the branch was accidentally created from another task branch, stop and recreate it from `origin/main`; cherry-pick only the commits for this task.
 
 If a task says `IN_PROGRESS` or `REVIEW` but the branch or PR no longer exists, first verify whether the work only exists locally. Do not silently reuse that branch name; reset or clean up the task only after that check.
+
+## Removed Flow
+
+When a user explicitly drops a task:
+
+- move the task file from `tasks/active/` to `tasks/removed/`
+- set `Status: REMOVED`
+- add a short log entry explaining who removed it and when
+- remove the task row from `Active Tasks` in `TASKS.md`
+- add the task to a removed/archive section in `TASKS.md` if the board needs historical context
 
 ## Review Flow
 
