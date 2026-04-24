@@ -10,14 +10,17 @@ Task files reduce merge conflicts between coding agents.
 2. Create the task branch from latest `origin/main`, not from the current branch.
 3. Open `TASKS.md` and pick a task.
 4. Open the linked task file.
-5. Claim only if `Status: TODO`.
-6. Edit only that task file:
+5. Read the task file from latest `origin/main`.
+6. Claim only if that file still says `Status: TODO`.
+7. Edit only that task file:
    - set `Status: IN_PROGRESS`
    - set `Owner`
    - set `Branch`
    - add a short log entry
 
 If the branch was accidentally created from another task branch, stop and recreate it from `origin/main`; cherry-pick only the commits for this task.
+
+If a task says `IN_PROGRESS` or `REVIEW` but the branch or PR no longer exists, treat it as a stale claim. Do not silently reuse that branch name; reset or clean up the task explicitly first.
 
 ## Review Flow
 

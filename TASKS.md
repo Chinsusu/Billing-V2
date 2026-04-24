@@ -26,83 +26,49 @@ BLOCKED      cannot continue without a decision
 DONE         PR merged into main
 ```
 
+## Board Snapshot
+
+Snapshot taken during board cleanup on `2026-04-24`:
+
+- `TODO`: 0
+- `IN_PROGRESS`: 2
+- `REVIEW`: 0
+- `BLOCKED`: 0
+- `DONE` task files in `tasks/active/`: 59
+
 ## Conflict-Safe Rules
 
 - Never update multiple unrelated task files in one PR.
 - Do not edit another agent's task file unless they ask you to take over.
-- Before claiming a task, pull latest `main` and check that the task file still says `TODO`.
+- Before claiming a task, pull latest `main` and read the task file from latest `origin/main`; claim it only if that file still says `Status: TODO`.
 - Create the work branch from latest `origin/main`, not from the current branch.
 - Do not create a branch from another agent's feature/task branch.
 - If a branch was created from the wrong base, recreate it from `origin/main` and cherry-pick only the intended commits.
 - To claim a task, edit only that task file: set `Status`, `Owner`, `Branch`, and add a short log entry.
 - To open review, edit only that task file: set `Status: REVIEW`, add the PR link, and add validation notes.
 - To mark done, edit only that task file after the PR is merged: set `Status: DONE`, add the merged PR and date.
+- If a task says `IN_PROGRESS` or `REVIEW` but its branch or PR no longer exists, treat it as a stale claim and clean it up explicitly before reusing the branch name.
 - If `TASKS.md` conflicts during rebase, keep both new task rows and do not overwrite task-file status.
 - If a task creates follow-up work, add a new task file and a new row in this index.
 
 ## Active Tasks
 
-| ID | Task File | Suggested Branch | Risk | Summary |
-| --- | --- | --- | --- | --- |
-| T003 | [tasks/active/T003_http_middleware_base.md](tasks/active/T003_http_middleware_base.md) | feat/http-middleware-base | API/logging | Add recover middleware, request logging middleware, method guard helper, and tests. |
-| T004 | [tasks/active/T004_identity_tenant_rbac_skeleton.md](tasks/active/T004_identity_tenant_rbac_skeleton.md) | feat/identity-tenant-rbac-skeleton | tenant/RBAC | Add skeleton interfaces/types for identity, tenant context, and RBAC checks without persistence. |
-| T005 | [tasks/active/T005_initial_db_migrations.md](tasks/active/T005_initial_db_migrations.md) | chore/initial-db-migrations | migration/tenant | Add initial migration files for tenants, users, roles, permissions, and audit shell after DB skeleton exists. |
-| T006 | [tasks/active/T006_outbox_job_skeleton.md](tasks/active/T006_outbox_job_skeleton.md) | feat/outbox-job-skeleton | worker/migration | Add outbox/jobs table model and worker claim interface after DB skeleton exists. |
-| T007 | [tasks/active/T007_provider_adapter_interface.md](tasks/active/T007_provider_adapter_interface.md) | feat/provider-adapter-interface | provider/credential | Add provider adapter interface, normalized provider error types, and fake adapter tests. |
-| T008 | [tasks/active/T008_local_dev_runbook.md](tasks/active/T008_local_dev_runbook.md) | docs/local-dev-runbook | docs | Add local development runbook after DB and migration commands exist. |
-| T009 | [tasks/active/T009_frontend_app_shell.md](tasks/active/T009_frontend_app_shell.md) | feat/frontend-app-shell | frontend | Build a runnable Next.js/React/TypeScript frontend app shell with package scripts, working navigation, screen registry, mock data, and build validation. |
-| T011 | [tasks/active/T011_persistence_repositories.md](tasks/active/T011_persistence_repositories.md) | feat/persistence-repositories | tenant/RBAC/audit/DB | Add PostgreSQL repository layer for tenant, identity, RBAC, and audit foundation. |
-| T012 | [tasks/active/T012_outbox_store_runner.md](tasks/active/T012_outbox_store_runner.md) | feat/outbox-store-runner | worker/outbox/retry | Add PostgreSQL job/outbox store implementations and worker runner skeleton. |
-| T013 | [tasks/active/T013_provider_registry.md](tasks/active/T013_provider_registry.md) | feat/provider-registry | provider | Add provider adapter registry and fake registry wiring for dev/test. |
-| T014 | [tasks/active/T014_api_contracts.md](tasks/active/T014_api_contracts.md) | feat/api-contracts | API | Add shared API response, validation error, and cursor pagination helpers. |
-| T015 | [tasks/active/T015_display_ids.md](tasks/active/T015_display_ids.md) | feat/display-ids | migration/API/UI | Add numeric display IDs for FE-visible records while keeping UUID primary keys. |
-| T016 | [tasks/active/T016_catalog_domain_skeleton.md](tasks/active/T016_catalog_domain_skeleton.md) | feat/catalog-domain-skeleton | catalog/pricing | Add catalog domain models, validation, and store contracts before migrations/API. |
-| T017 | [tasks/active/T017_catalog_schema_migration.md](tasks/active/T017_catalog_schema_migration.md) | feat/catalog-schema-migration | migration/catalog | Add catalog PostgreSQL tables for products, plans, provider sources, and tenant catalog clones. |
-| T018 | [tasks/active/T018_catalog_postgres_store.md](tasks/active/T018_catalog_postgres_store.md) | feat/catalog-postgres-store | catalog/DB | Add PostgreSQL store implementation for catalog products, plans, sources, and tenant catalog records. |
-| T019 | [tasks/active/T019_catalog_service_layer.md](tasks/active/T019_catalog_service_layer.md) | feat/catalog-service-layer | catalog/pricing | Add catalog service layer for admin catalog setup, tenant cloning, margin guard, and catalog list flows. |
-| T020 | [tasks/active/T020_catalog_api_handlers.md](tasks/active/T020_catalog_api_handlers.md) | feat/catalog-api-handlers | API/catalog | Add catalog HTTP handler routes and API option wiring on top of the catalog service. |
-| T021 | [tasks/active/T021_catalog_api_runtime_wiring.md](tasks/active/T021_catalog_api_runtime_wiring.md) | feat/catalog-api-runtime-wiring | API/DB/catalog | Wire catalog HTTP routes into the API runtime when database config is present. |
-| T022 | [tasks/active/T022_http_tenant_context_middleware.md](tasks/active/T022_http_tenant_context_middleware.md) | feat/http-tenant-context-middleware | API/tenant | Add HTTP tenant context middleware and make catalog tenant routes read tenant scope from request context. |
-| T023 | [tasks/active/T023_api_auth_rbac_middleware.md](tasks/active/T023_api_auth_rbac_middleware.md) | feat/api-auth-rbac-middleware | API/auth/RBAC | Add actor context and RBAC HTTP middleware, then protect catalog routes with catalog permissions. |
-| T024 | [tasks/active/T024_dev_seed_data.md](tasks/active/T024_dev_seed_data.md) | feat/dev-seed-data | seed/catalog/RBAC | Add idempotent development seed runner for RBAC permissions, demo users, catalog, and reseller catalog data. |
-| T025 | [tasks/active/T025_catalog_admin_read_api.md](tasks/active/T025_catalog_admin_read_api.md) | feat/catalog-admin-read-api | API/catalog | Add admin catalog read/list API endpoints for products, plans, and provider sources. |
-| T026 | [tasks/active/T026_catalog_admin_status_api.md](tasks/active/T026_catalog_admin_status_api.md) | feat/catalog-admin-update-api | API/catalog | Add admin catalog status update endpoints for products, plans, and provider sources. |
-| T027 | [tasks/active/T027_order_domain_skeleton.md](tasks/active/T027_order_domain_skeleton.md) | feat/order-domain-skeleton | order/service/lifecycle | Add order domain lifecycle skeleton for orders, reservations, provisioning, and services. |
-| T028 | [tasks/active/T028_order_schema_migration.md](tasks/active/T028_order_schema_migration.md) | feat/order-schema-migration | migration/order/service | Add PostgreSQL tables for order, reservation, provisioning, and service lifecycle records. |
-| T029 | [tasks/active/T029_order_postgres_store.md](tasks/active/T029_order_postgres_store.md) | feat/order-postgres-store | order/DB | Add PostgreSQL store implementation for order domain create contracts. |
-| T030 | [tasks/active/T030_order_service_layer.md](tasks/active/T030_order_service_layer.md) | feat/order-service-layer | order/service | Add order service layer methods on top of the order store contracts. |
-| T031 | [tasks/active/T031_order_api_handlers.md](tasks/active/T031_order_api_handlers.md) | feat/order-api-handlers | API/order | Add client order creation HTTP handler and runtime wiring. |
-| T032 | [tasks/active/T032_order_read_api.md](tasks/active/T032_order_read_api.md) | feat/order-read-api | API/order/DB | Add tenant-scoped order list/detail read APIs for the client portal. |
-| T033 | [tasks/active/T033_admin_order_read_api.md](tasks/active/T033_admin_order_read_api.md) | feat/admin-order-read-api | API/order/admin | Add tenant-scoped admin order list/detail read APIs. |
-| T034 | [tasks/active/T034_order_status_transition_api.md](tasks/active/T034_order_status_transition_api.md) | feat/order-status-transition-api | API/order/status | Add a guarded admin API for tenant-scoped order status changes. |
-| T035 | [tasks/active/T035_order_lifecycle_events.md](tasks/active/T035_order_lifecycle_events.md) | feat/order-lifecycle-events | order/outbox | Add outbox events for order creation and status changes. |
-| T036 | [tasks/active/T036_provisioning_queue_service.md](tasks/active/T036_provisioning_queue_service.md) | feat/provisioning-queue-service | order/provisioning | Add a service that queues provisioning work for paid orders. |
-| T037 | [tasks/active/T037_provider_provisioning_worker.md](tasks/active/T037_provider_provisioning_worker.md) | feat/provider-provisioning-worker | worker/provider | Add a worker that runs provisioning jobs through provider adapters. |
-| T038 | [tasks/active/T038_service_instance_store_api.md](tasks/active/T038_service_instance_store_api.md) | feat/service-instance-store-api | service/API/DB | Add service instance store and read APIs for client/admin portals. |
-| T039 | [tasks/active/T039_invoice_domain_schema.md](tasks/active/T039_invoice_domain_schema.md) | feat/invoice-domain-schema | invoice/migration | Add invoice and invoice item domain models with PostgreSQL schema. |
-| T040 | [tasks/active/T040_payment_transaction_api.md](tasks/active/T040_payment_transaction_api.md) | feat/payment-transaction-api | payment/API/DB | Add payment transaction records and read APIs for account history. |
-| T041 | [tasks/active/T041_wallet_domain_schema.md](tasks/active/T041_wallet_domain_schema.md) | feat/wallet-domain-schema | wallet/migration | Add wallet domain models and PostgreSQL schema for tenant-scoped balances. |
-| T042 | [tasks/active/T042_wallet_ledger_store.md](tasks/active/T042_wallet_ledger_store.md) | feat/wallet-ledger-store | wallet/ledger/DB | Add immutable wallet ledger models, schema, and store methods. |
-| T043 | [tasks/active/T043_wallet_read_api.md](tasks/active/T043_wallet_read_api.md) | feat/wallet-read-api | wallet/API/auth | Add tenant-scoped wallet and ledger read APIs for client and admin portals. |
-| T044 | [tasks/active/T044_topup_request_schema_api.md](tasks/active/T044_topup_request_schema_api.md) | feat/topup-request-schema-api | wallet/topup/API | Add top-up request records and basic create/read APIs. |
-| T045 | [tasks/active/T045_invoice_read_api.md](tasks/active/T045_invoice_read_api.md) | feat/invoice-read-api | invoice/API/auth | Add invoice and invoice item read APIs for customers and admins. |
-| T046 | [tasks/active/T046_invoice_generation_service.md](tasks/active/T046_invoice_generation_service.md) | feat/invoice-generation-service | invoice/order/money | Add invoice generation from paid orders with idempotency. |
-| T047 | [tasks/active/T047_wallet_ledger_posting_service.md](tasks/active/T047_wallet_ledger_posting_service.md) | feat/wallet-ledger-posting-service | wallet/money/DB | Add atomic wallet ledger posting that updates balances and ledger rows together. |
-| T048 | [tasks/active/T048_topup_review_approval_api.md](tasks/active/T048_topup_review_approval_api.md) | feat/topup-review-approval-api | wallet/topup/money/API | Add admin approve/reject actions for wallet top-up requests. |
-| T049 | [tasks/active/T049_invoice_wallet_payment_service.md](tasks/active/T049_invoice_wallet_payment_service.md) | feat/invoice-wallet-payment-service | invoice/wallet/payment/money | Add wallet payment service for invoices with ledger and payment records. |
-| T050 | [tasks/active/T050_payment_reconciliation_read_api.md](tasks/active/T050_payment_reconciliation_read_api.md) | feat/payment-reconciliation-read-api | payment/API/admin | Add admin reconciliation read APIs for transactions, ledger links, and invoices. |
-| T051 | [tasks/active/T051_audit_read_api.md](tasks/active/T051_audit_read_api.md) | feat/audit-read-api | audit/API/admin | Add tenant-scoped audit log read endpoints for admin troubleshooting. |
-| T052 | [tasks/active/T052_dev_seed_billing_flow.md](tasks/active/T052_dev_seed_billing_flow.md) | feat/dev-seed-billing-flow | seed/dev | Add a realistic billing seed flow across catalog, order, wallet, invoice, and payment records. |
-| T053 | [tasks/active/T053_dev_db_smoke.md](tasks/active/T053_dev_db_smoke.md) | test/dev-db-smoke | DB/seed/dev | Add a repeatable dev DB smoke command for migrations, seed data, and billing record checks. |
-| T054 | [tasks/active/T054_billing_api_integration_smoke.md](tasks/active/T054_billing_api_integration_smoke.md) | test/billing-api-integration-smoke | API/billing | Add HTTP smoke coverage for seeded wallet, order, invoice, payment, reconciliation, and audit reads. |
-| T055 | [tasks/active/T055_frontend_api_integration.md](tasks/active/T055_frontend_api_integration.md) | feat/frontend-api-integration | frontend/API | Connect frontend billing/admin screens to real backend API clients with loading and error states. |
-| T056 | [tasks/active/T056_admin_search_filters.md](tasks/active/T056_admin_search_filters.md) | feat/admin-search-filters | API/search/admin | Add display ID, customer, and amount filters for operational admin lists. |
-| T057 | [tasks/active/T057_audit_mutation_events.md](tasks/active/T057_audit_mutation_events.md) | feat/audit-mutation-events | audit/mutation | Write audit events for important top-up, invoice payment, and order status mutations. |
-| T058 | [tasks/active/T058_invoice_wallet_payment_api.md](tasks/active/T058_invoice_wallet_payment_api.md) | feat/invoice-wallet-payment-api | API/payment/money | Expose a client wallet payment endpoint for invoices with idempotency, RBAC, and audit integration. |
-| T059 | [tasks/active/T059_billing_mutation_smoke.md](tasks/active/T059_billing_mutation_smoke.md) | test/billing-mutation-smoke | test/API/audit | Add integration smoke coverage for top-up review, invoice wallet payment, order status transition, and audit visibility. |
-| T060 | [tasks/active/T060_billing_api_docs.md](tasks/active/T060_billing_api_docs.md) | docs/billing-api-contracts | docs/API | Document billing API routes, mutation inputs, filters, display IDs, and error semantics. |
-| T061 | [tasks/active/T061_frontend_admin_filters.md](tasks/active/T061_frontend_admin_filters.md) | feat/frontend-admin-filters | frontend/API | Wire admin UI list filters to backend display ID, account, status, and amount query params. |
-| T062 | [tasks/active/T062_frontend_ci_gate.md](tasks/active/T062_frontend_ci_gate.md) | ci/frontend-quality-gate | CI/frontend | Add CI checks for frontend install, build, lint, and production dependency audit. |
+Active tasks below are the only task files not currently marked `DONE`.
+
+| ID | Task File | Status | Owner | Suggested Branch | Risk | Summary | Board Note |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| T010 | [tasks/active/T010_frontend_ui_polish.md](tasks/active/T010_frontend_ui_polish.md) | IN_PROGRESS | Sonnet4.6 | feat/frontend-ui-polish | frontend | Fix and polish the frontend UI: layout issues, broken rendering, visual inconsistencies, and UX problems. | Stale claim during 2026-04-24 cleanup: no matching remote branch or PR found. Reset or re-claim explicitly before new work. |
+| T011 | [tasks/active/T011_frontend_dev_server_fix.md](tasks/active/T011_frontend_dev_server_fix.md) | IN_PROGRESS | Sonnet4.6 | fix/frontend-dev-server | frontend | Fix Next.js dev server 404/static asset issues caused by stale `.next` cache after merge. | Stale claim during 2026-04-24 cleanup: no matching remote branch or PR found. Reset or re-claim explicitly before new work. |
+
+There are no `TODO` tasks in the current board snapshot.
+
+## Done Task Files
+
+The following task files under `tasks/active/` are already `DONE` and should not stay in the active queue:
+
+- `T003` to `T009`
+- `T011_persistence_repositories`
+- `T012` to `T062`
 
 ## Completed Tasks
 
