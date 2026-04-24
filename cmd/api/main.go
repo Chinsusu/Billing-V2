@@ -98,7 +98,8 @@ func newAccountRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	service := identity.NewAdminReadService(tenant.NewPostgresStore(executor), identity.NewPostgresUserStore(executor))
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return identity.NewAdminReadHTTPHandlerWithOptions(service, identity.AdminReadHTTPHandlerOptions{
-		AdminMiddleware: accountAuthMiddleware(authorizer, rbac.PermissionTenantView, rbac.RiskLow),
+		AdminMiddleware:    accountAuthMiddleware(authorizer, rbac.PermissionTenantView, rbac.RiskLow),
+		ResellerMiddleware: accountAuthMiddleware(authorizer, rbac.PermissionTenantView, rbac.RiskLow),
 	})
 }
 

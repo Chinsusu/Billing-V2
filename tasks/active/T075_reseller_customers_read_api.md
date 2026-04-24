@@ -1,7 +1,7 @@
 # T075 - Reseller customers read API
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t075-reseller-customers-read-api
 PR: -
 Risk: backend/API
@@ -35,3 +35,6 @@ Add a reseller-scoped customer account read endpoint so reseller screens can lis
 ## Agent Log
 
 - 2026-04-24: Task created after T074 completed and the board needed the next reseller/live workflow batch.
+- 2026-04-24: Codex claimed the task and started adding the reseller customer read route from latest `main`.
+- 2026-04-24: Added `GET /reseller/customers`, reseller account middleware wiring, handler/runtime tests, and API contract documentation.
+- 2026-04-24: Validation passed: `go test ./...` and `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke`.

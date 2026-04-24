@@ -23,4 +23,13 @@ func TestNewAccountRoutesReturnsRegistrar(t *testing.T) {
 	if !strings.Contains(response.Body.String(), "tenant.context_missing") {
 		t.Fatalf("expected tenant validation response, got %s", response.Body.String())
 	}
+
+	response = httptest.NewRecorder()
+	mux.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/reseller/customers", nil))
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("expected reseller customer route to be registered, got %d", response.Code)
+	}
+	if !strings.Contains(response.Body.String(), "tenant.context_missing") {
+		t.Fatalf("expected tenant validation response, got %s", response.Body.String())
+	}
 }

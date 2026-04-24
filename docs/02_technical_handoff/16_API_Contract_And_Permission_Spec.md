@@ -238,6 +238,7 @@ auth.logout
 GET /admin/tenants
 GET /admin/accounts
 GET /admin/customers
+GET /reseller/customers
 ```
 
 Allowed:
@@ -275,6 +276,7 @@ Rules:
 - Keep UUID `id` in response for future actions.
 - Do not return password hashes, tokens, verification token hashes, or secret fields.
 - `/admin/customers` is an account read alias scoped to `user_type=client`.
+- `/reseller/customers` uses the same account response shape, is scoped to the reseller tenant context, and is also fixed to `user_type=client`.
 
 ### 5.1 Admin create reseller tenant
 
