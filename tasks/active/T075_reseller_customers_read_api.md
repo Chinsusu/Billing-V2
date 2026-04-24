@@ -1,9 +1,9 @@
 # T075 - Reseller customers read API
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t075-reseller-customers-read-api
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/173
 Risk: backend/API
 Created: 2026-04-24
 Updated: 2026-04-24
@@ -38,3 +38,4 @@ Add a reseller-scoped customer account read endpoint so reseller screens can lis
 - 2026-04-24: Codex claimed the task and started adding the reseller customer read route from latest `main`.
 - 2026-04-24: Added `GET /reseller/customers`, reseller account middleware wiring, handler/runtime tests, and API contract documentation.
 - 2026-04-24: Validation passed: `go test ./...` and `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke`.
+- 2026-04-24: Opened PR #173 for review/CI.
