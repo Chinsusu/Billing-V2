@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo } from "react";
+
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { compactDateTime, recordLabel } from "@/lib/api/format";
@@ -31,6 +33,8 @@ const CATEGORY_CONFIG: Record<ServiceCategory, { title: string; metric: string; 
 
 export function ClientServices({ category }: ClientServicesProps) {
   const services = useApiResource(billingApi.listClientServices);
+  const orders = useApiResource(billingApi.listClientOrders);
+  const ordersByID = useMemo(() => new Map((orders.data ?? []).map((order) => [order.id, order])), [orders.data]);
   const liveRows = services.status === "success"
     ? services.data?.map((service) => ({
         id: service.id,
@@ -38,7 +42,9 @@ export function ClientServices({ category }: ClientServicesProps) {
         label: recordLabel(service.display_id, "SVC-"),
         identifier: service.external_resource_id || "-",
         region: service.provider_source_id ?? "-",
-        detail: service.order_id ? recordLabel(service.order_id.slice(-6), "ORD-") : "-",
+        detail: service.order_id && ordersByID.get(service.order_id)
+          ? recordLabel(ordersByID.get(service.order_id)!.display_id, "ORD-")
+          : "-",
         expiry: compactDateTime(service.term_end),
         status: service.status,
       })) ?? []

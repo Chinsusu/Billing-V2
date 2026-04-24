@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo } from "react";
+
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { CLIENT_SERVICES } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
@@ -12,13 +14,14 @@ export function ClientDashboard() {
   const services = useApiResource(billingApi.listClientServices);
   const orders = useApiResource(billingApi.listClientOrders);
   const wallet = wallets.data?.[0];
+  const ordersByID = useMemo(() => new Map((orders.data ?? []).map((order) => [order.id, order])), [orders.data]);
   const liveServices = services.status === "success" ? services.data ?? [] : null;
   const serviceRows = liveServices
     ? liveServices.map((s) => ({
         id: s.id,
         label: recordLabel(s.display_id, "SVC-"),
         region: s.external_resource_id,
-        bandwidth: recordLabel(s.order_id.slice(-6), "ORD-"),
+        bandwidth: ordersByID.get(s.order_id) ? recordLabel(ordersByID.get(s.order_id)!.display_id, "ORD-") : "-",
         expiry: compactDateTime(s.term_end),
         status: s.status,
         note: undefined,
