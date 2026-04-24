@@ -1,9 +1,9 @@
 # T098 - Admin provisioning summary UI
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: codex/t098-admin-provisioning-summary-ui
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/223
 Risk: frontend/admin-ops
 Created: 2026-04-24
 Updated: 2026-04-24
@@ -36,3 +36,8 @@ Show provisioning queue health at the top of the admin provisioning screen using
 ## Agent Log
 
 - 2026-04-24: Task created after T096 completed and the active board was fully DONE.
+- 2026-04-24: Codex claimed the task on `codex/t098-admin-provisioning-summary-ui`.
+- 2026-04-24: Added admin provisioning health panel backed by `GET /admin/jobs/summary`, including status tiles, latest failure context, loading skeletons, and API error fallback.
+- 2026-04-24: Validation passed: `npm ci`, `npm audit --omit=dev`, `npm run lint`, `npm run build`, `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`.
+- 2026-04-24: Playwright checked the provisioning screen at desktop and mobile widths; summary fallback did not hide the queue.
+- 2026-04-24: Opened PR https://github.com/Chinsusu/Billing-V2/pull/223 for review/CI.
