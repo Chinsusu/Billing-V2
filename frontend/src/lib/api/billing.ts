@@ -24,11 +24,13 @@ import {
   Invoice,
   InvoiceWalletPayment,
   InvoiceWalletPaymentBody,
+  JobQuery,
   LedgerEntry,
   LedgerQuery,
   Order,
   PaymentReconciliation,
   PaymentTransaction,
+  ProvisioningJob,
   ServiceInstance,
   TenantCatalog,
   TenantCatalogQuery,
@@ -77,6 +79,8 @@ export const billingApi = {
     getApiData<Order[]>("/reseller/orders", "reseller", query),
   listResellerServices: (query: AdminServiceQuery = {}) =>
     getApiData<ServiceInstance[]>("/reseller/services", "reseller", query),
+  listResellerJobs: (query: JobQuery = {}) =>
+    getApiData<ProvisioningJob[]>("/reseller/jobs", "reseller", query),
   listResellerInvoices: (query: AdminInvoiceQuery = {}) =>
     getApiData<Invoice[]>("/reseller/invoices", "reseller", query),
   listResellerTransactions: (query: AdminTransactionQuery = {}) =>
@@ -110,6 +114,8 @@ export const billingApi = {
     getApiData<Order[]>("/admin/orders", "admin", query),
   listAdminServices: (query: AdminServiceQuery = {}) =>
     getApiData<ServiceInstance[]>("/admin/services", "admin", query),
+  listAdminJobs: (query: JobQuery = {}) =>
+    getApiData<ProvisioningJob[]>("/admin/jobs", "admin", query),
   listAdminWallets: (query: AdminWalletQuery = {}) =>
     getApiData<Wallet[]>("/admin/wallets", "admin", query),
   listAdminWalletLedger: (walletId: string, query: LedgerQuery = {}) =>
