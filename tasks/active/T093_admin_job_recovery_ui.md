@@ -1,6 +1,6 @@
 # T093 - Admin job recovery UI actions
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t093-admin-job-recovery-ui
 PR: https://github.com/Chinsusu/Billing-V2/pull/212
@@ -40,3 +40,4 @@ Expose the guarded provisioning job recovery actions from T091 in the admin fulf
 - 2026-04-24: Codex claimed the task on `codex/t093-admin-job-recovery-ui`.
 - 2026-04-24: Added admin-only retry, manual-review, and cancel controls for live provisioning jobs, plus plain API error messages and local validation coverage.
 - 2026-04-24: Implementation pushed for review in PR #212.
+- 2026-04-24: PR https://github.com/Chinsusu/Billing-V2/pull/212 passed CI and merged to main at `29ba0e13e268e62d163d9a44d5cfa9fe16728654`.
