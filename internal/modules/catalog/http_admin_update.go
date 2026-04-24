@@ -15,19 +15,19 @@ const (
 
 func (handler *HTTPHandler) adminCatalogProductRoute(w http.ResponseWriter, r *http.Request) {
 	dispatchCatalogMethods(w, r, map[string]http.HandlerFunc{
-		http.MethodPatch: handler.adminRoute(handler.handleUpdateProductStatus),
+		http.MethodPatch: handler.adminManageRoute(handler.handleUpdateProductStatus),
 	})
 }
 
 func (handler *HTTPHandler) adminCatalogPlanRoute(w http.ResponseWriter, r *http.Request) {
 	dispatchCatalogMethods(w, r, map[string]http.HandlerFunc{
-		http.MethodPatch: handler.adminRoute(handler.handleUpdatePlanStatus),
+		http.MethodPatch: handler.adminManageRoute(handler.handleUpdatePlanStatus),
 	})
 }
 
 func (handler *HTTPHandler) adminCatalogProviderSourceRoute(w http.ResponseWriter, r *http.Request) {
 	dispatchCatalogMethods(w, r, map[string]http.HandlerFunc{
-		http.MethodPatch: handler.adminRoute(handler.handleUpdateProviderSourceStatus),
+		http.MethodPatch: handler.adminManageRoute(handler.handleUpdateProviderSourceStatus),
 	})
 }
 

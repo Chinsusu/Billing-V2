@@ -121,7 +121,8 @@ func newCatalogRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	service := catalog.NewService(store)
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return catalog.NewHTTPHandlerWithOptions(service, catalog.HTTPHandlerOptions{
-		AdminMiddleware:          catalogAuthMiddleware(authorizer, rbac.PermissionCatalogManage, rbac.RiskHigh),
+		AdminReadMiddleware:      catalogAuthMiddleware(authorizer, rbac.PermissionCatalogView, rbac.RiskLow),
+		AdminManageMiddleware:    catalogAuthMiddleware(authorizer, rbac.PermissionCatalogManage, rbac.RiskHigh),
 		ResellerViewMiddleware:   catalogAuthMiddleware(authorizer, rbac.PermissionCatalogView, rbac.RiskLow),
 		ResellerManageMiddleware: catalogAuthMiddleware(authorizer, rbac.PermissionCatalogManage, rbac.RiskMedium),
 		ClientMiddleware:         catalogAuthMiddleware(authorizer, rbac.PermissionCatalogView, rbac.RiskLow),

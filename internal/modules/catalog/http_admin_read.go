@@ -10,22 +10,22 @@ import (
 
 func (handler *HTTPHandler) adminCatalogProductsRoute(w http.ResponseWriter, r *http.Request) {
 	dispatchCatalogMethods(w, r, map[string]http.HandlerFunc{
-		http.MethodGet:  handler.adminRoute(handler.handleListProducts),
-		http.MethodPost: handler.adminRoute(handler.handleCreateProduct),
+		http.MethodGet:  handler.adminReadRoute(handler.handleListProducts),
+		http.MethodPost: handler.adminManageRoute(handler.handleCreateProduct),
 	})
 }
 
 func (handler *HTTPHandler) adminCatalogPlansRoute(w http.ResponseWriter, r *http.Request) {
 	dispatchCatalogMethods(w, r, map[string]http.HandlerFunc{
-		http.MethodGet:  handler.adminRoute(handler.handleListAdminPlans),
-		http.MethodPost: handler.adminRoute(handler.handleCreatePlan),
+		http.MethodGet:  handler.adminReadRoute(handler.handleListAdminPlans),
+		http.MethodPost: handler.adminManageRoute(handler.handleCreatePlan),
 	})
 }
 
 func (handler *HTTPHandler) adminCatalogProviderSourcesRoute(w http.ResponseWriter, r *http.Request) {
 	dispatchCatalogMethods(w, r, map[string]http.HandlerFunc{
-		http.MethodGet:  handler.adminRoute(handler.handleListProviderSources),
-		http.MethodPost: handler.adminRoute(handler.handleCreateProviderSource),
+		http.MethodGet:  handler.adminReadRoute(handler.handleListProviderSources),
+		http.MethodPost: handler.adminManageRoute(handler.handleCreateProviderSource),
 	})
 }
 
