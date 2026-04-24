@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-24` after opening the admin frontend batch:
+Current board snapshot on `2026-04-24` after completing the admin frontend batch:
 
-- `TODO`: 4
+- `TODO`: 0
 - `IN_PROGRESS`: 0
 - `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 63
+- `DONE` task files in `tasks/active/`: 67
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -57,14 +57,7 @@ Current board snapshot on `2026-04-24` after opening the admin frontend batch:
 
 ## Active Tasks
 
-Current batch focuses on finishing the remaining admin frontend surfaces without overlapping write scope.
-
-| ID | Task File | Suggested Branch | Risk | Summary |
-| --- | --- | --- | --- | --- |
-| T067 | [tasks/active/T067_admin_service_inventory_live_views.md](tasks/active/T067_admin_service_inventory_live_views.md) | feat/admin-service-inventory-live-views | frontend/admin | Wire admin service inventory screens to live `/admin/services` read models. |
-| T068 | [tasks/active/T068_admin_catalog_provider_live_views.md](tasks/active/T068_admin_catalog_provider_live_views.md) | feat/admin-catalog-provider-live-views | frontend/API | Add admin catalog/provider read API wrappers and wire product/provider screens to live data. |
-| T069 | [tasks/active/T069_admin_topup_review_actions.md](tasks/active/T069_admin_topup_review_actions.md) | feat/admin-topup-review-actions | frontend/API | Add real admin top-up approve/reject actions backed by existing review endpoints. |
-| T070 | [tasks/active/T070_admin_reports_dedicated_screen.md](tasks/active/T070_admin_reports_dedicated_screen.md) | feat/admin-reports-dedicated-screen | frontend/admin | Replace reports route reuse with a dedicated live-backed admin reports screen. |
+No active TODO tasks are currently open. Create the next batch before assigning more agents.
 
 ## Done Task Files
 
@@ -72,7 +65,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 
 - `T003` to `T009`
 - `T011_persistence_repositories`
-- `T012` to `T066`
+- `T012` to `T070`
 
 ## Removed Tasks
 
