@@ -116,6 +116,18 @@ export interface Order {
   updated_at?: string;
 }
 
+export interface CreateClientOrderBody {
+  tenant_plan_id: string;
+  quantity: number;
+  currency: string;
+  unit_price_minor: number;
+  discount_minor: number;
+  total_minor: number;
+  product_snapshot?: ApiJson;
+  plan_snapshot?: ApiJson;
+  price_snapshot?: ApiJson;
+}
+
 export interface ServiceInstance {
   id: string;
   display_id: number;
@@ -310,6 +322,42 @@ export interface TopupRequest {
   ledger_entry_id?: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface CreateTopupRequestBody {
+  wallet_id: string;
+  amount_minor: number;
+  currency: string;
+  payment_method: string;
+  payment_reference?: string;
+}
+
+export interface InvoiceWalletPaymentBody {
+  invoice_id: string;
+  wallet_id: string;
+}
+
+export interface InvoiceWalletPayment {
+  invoice: {
+    id: string;
+    display_id: number;
+    status: string;
+    total_minor: number;
+    currency: string;
+    paid_at?: string;
+  };
+  transaction: PaymentTransaction;
+  ledger?: {
+    id: string;
+    display_id: number;
+    wallet_id: string;
+    direction: string;
+    entry_type: string;
+    status: string;
+    currency: string;
+    amount_minor: number;
+    balance_after_minor: number;
+  };
 }
 
 export interface TopupReviewBody {
