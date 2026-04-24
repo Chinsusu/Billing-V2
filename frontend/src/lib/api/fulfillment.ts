@@ -122,6 +122,18 @@ export function jobStatusLabel(status: string): string {
   }
 }
 
+export function canRetryJob(status: string): boolean {
+  return status === "failed_retryable" || status === "manual_review";
+}
+
+export function canMarkJobManualReview(status: string): boolean {
+  return status === "queued" || status === "failed_retryable" || status === "failed_terminal" || status === "manual_review";
+}
+
+export function canCancelJob(status: string): boolean {
+  return status === "queued" || status === "failed_retryable" || status === "failed_terminal" || status === "manual_review";
+}
+
 function baseOrderState(
   order: Order,
   status: string,
