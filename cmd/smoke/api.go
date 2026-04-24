@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -17,10 +18,13 @@ const (
 )
 
 type apiSmokeCheck struct {
-	Name     string
-	Path     string
-	Headers  map[string]string
-	Contains []string
+	Name                string
+	Path                string
+	Headers             map[string]string
+	Contains            []string
+	NotContains         []string
+	RedactBodyOnFailure bool
+	SummaryFields       []string
 }
 
 func runDevAPISmoke(baseURL string, timeout time.Duration) error {
@@ -41,8 +45,13 @@ func runDevAPISmoke(baseURL string, timeout time.Duration) error {
 	client := &http.Client{Timeout: timeout}
 	checks := apiSmokeChecks()
 	for _, check := range checks {
-		if err := runAPICheck(ctx, client, baseURL, check); err != nil {
+		summary, err := runAPICheck(ctx, client, baseURL, check)
+		if err != nil {
 			return err
+		}
+		if summary != "" {
+			fmt.Printf("api check passed: %s %s %s\n", check.Name, check.Path, summary)
+			continue
 		}
 		fmt.Printf("api check passed: %s %s\n", check.Name, check.Path)
 	}
@@ -50,14 +59,14 @@ func runDevAPISmoke(baseURL string, timeout time.Duration) error {
 	return nil
 }
 
-func runAPICheck(ctx context.Context, client *http.Client, baseURL string, check apiSmokeCheck) error {
+func runAPICheck(ctx context.Context, client *http.Client, baseURL string, check apiSmokeCheck) (string, error) {
 	fullURL, err := normalizedAPIURL(baseURL, check.Path)
 	if err != nil {
-		return err
+		return "", err
 	}
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, fullURL, nil)
 	if err != nil {
-		return fmt.Errorf("build request %q: %w", check.Name, err)
+		return "", fmt.Errorf("build request %q: %w", check.Name, err)
 	}
 	for key, value := range check.Headers {
 		request.Header.Set(key, value)
@@ -65,24 +74,107 @@ func runAPICheck(ctx context.Context, client *http.Client, baseURL string, check
 
 	response, err := client.Do(request)
 	if err != nil {
-		return fmt.Errorf("request %q: %w", check.Name, err)
+		return "", fmt.Errorf("request %q: %w", check.Name, err)
 	}
 	defer response.Body.Close()
 
 	body, err := io.ReadAll(io.LimitReader(response.Body, 1<<20))
 	if err != nil {
-		return fmt.Errorf("read response %q: %w", check.Name, err)
+		return "", fmt.Errorf("read response %q: %w", check.Name, err)
 	}
 	if response.StatusCode != http.StatusOK {
-		return fmt.Errorf("check %q expected HTTP 200, got %d: %s", check.Name, response.StatusCode, strings.TrimSpace(string(body)))
+		return "", fmt.Errorf("check %q expected HTTP 200, got %d: %s", check.Name, response.StatusCode, responseFailureBody(check, string(body)))
 	}
 	bodyText := string(body)
 	for _, expected := range check.Contains {
 		if !strings.Contains(bodyText, expected) {
-			return fmt.Errorf("check %q response missing %q: %s", check.Name, expected, strings.TrimSpace(bodyText))
+			return "", fmt.Errorf("check %q response missing %q: %s", check.Name, expected, responseFailureBody(check, bodyText))
+		}
+	}
+	for _, blocked := range check.NotContains {
+		if strings.Contains(bodyText, blocked) {
+			return "", fmt.Errorf("check %q response exposed blocked field %q", check.Name, blocked)
+		}
+	}
+	summary, err := apiResponseSummary(check, bodyText)
+	if err != nil {
+		return "", err
+	}
+	return summary, nil
+}
+
+func responseFailureBody(check apiSmokeCheck, bodyText string) string {
+	if check.RedactBodyOnFailure {
+		return "response body omitted for sensitive smoke check"
+	}
+	return strings.TrimSpace(bodyText)
+}
+
+func apiResponseSummary(check apiSmokeCheck, bodyText string) (string, error) {
+	if len(check.SummaryFields) == 0 {
+		return "", nil
+	}
+	var body any
+	if err := json.Unmarshal([]byte(bodyText), &body); err != nil {
+		return "", fmt.Errorf("check %q response summary is not valid JSON", check.Name)
+	}
+	values := firstJSONFields(body, check.SummaryFields)
+	if len(values) == 0 {
+		return "", fmt.Errorf("check %q response summary missing display IDs", check.Name)
+	}
+	parts := make([]string, 0, len(check.SummaryFields))
+	for _, field := range check.SummaryFields {
+		value, ok := values[field]
+		if !ok {
+			continue
+		}
+		parts = append(parts, fmt.Sprintf("%s=%s", field, formatJSONSummaryValue(value)))
+	}
+	if len(parts) == 0 {
+		return "", fmt.Errorf("check %q response summary missing display IDs", check.Name)
+	}
+	return "display_ids " + strings.Join(parts, " "), nil
+}
+
+func firstJSONFields(value any, fields []string) map[string]any {
+	switch typed := value.(type) {
+	case map[string]any:
+		matches := make(map[string]any, len(fields))
+		for _, field := range fields {
+			if value, ok := typed[field]; ok {
+				matches[field] = value
+			}
+		}
+		if len(matches) > 0 {
+			return matches
+		}
+		for _, nested := range typed {
+			if matches := firstJSONFields(nested, fields); len(matches) > 0 {
+				return matches
+			}
+		}
+	case []any:
+		for _, item := range typed {
+			if matches := firstJSONFields(item, fields); len(matches) > 0 {
+				return matches
+			}
 		}
 	}
 	return nil
+}
+
+func formatJSONSummaryValue(value any) string {
+	switch typed := value.(type) {
+	case float64:
+		if typed == float64(int64(typed)) {
+			return fmt.Sprintf("%.0f", typed)
+		}
+		return fmt.Sprintf("%g", typed)
+	case string:
+		return typed
+	default:
+		return fmt.Sprintf("%v", typed)
+	}
 }
 
 func normalizedAPIURL(baseURL string, path string) (string, error) {
@@ -128,6 +220,40 @@ func apiSmokeChecks() []apiSmokeCheck {
 		{Name: "admin transaction detail", Path: "/admin/transactions/00000000-0000-0000-0000-000000000907", Headers: admin, Contains: []string{`"type":"charge"`}},
 		{Name: "admin reconciliation list", Path: "/admin/payment-reconciliation", Headers: admin, Contains: []string{`"provider":"wallet"`, `"display_id":51001`}},
 		{Name: "admin reconciliation detail", Path: "/admin/payment-reconciliation/00000000-0000-0000-0000-000000000907", Headers: admin, Contains: []string{`"wallet_display_id":41001`}},
+		{
+			Name:    "admin provider readiness",
+			Path:    "/admin/catalog/provider-readiness?status=active&limit=20",
+			Headers: admin,
+			Contains: []string{
+				`"plan_display_id":`,
+				`"source_display_id":`,
+				`"state":`,
+				`"reason":`,
+			},
+			NotContains: []string{
+				`"capabilities"`,
+				`"capability_override"`,
+				`"capability_json"`,
+				`"capability_profile"`,
+				`"capability_snapshot"`,
+				`"access_token"`,
+				`"api_key"`,
+				`"credential"`,
+				`"credentials"`,
+				`"encrypted_payload_ref"`,
+				`"payload_json"`,
+				`"provider_account_id"`,
+				`"provider_credential"`,
+				`"provider_credentials"`,
+				`"raw_payload"`,
+				`"raw_response"`,
+				`"secret"`,
+				`"secret_version"`,
+				`"token"`,
+			},
+			RedactBodyOnFailure: true,
+			SummaryFields:       []string{"plan_display_id", "source_display_id"},
+		},
 		{Name: "admin audit list", Path: "/admin/audit-logs", Headers: admin},
 	}
 }

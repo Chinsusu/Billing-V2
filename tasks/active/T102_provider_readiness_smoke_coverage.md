@@ -1,7 +1,7 @@
 # T102 - Provider readiness smoke coverage
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t102-provider-readiness-smoke-coverage
 PR: -
 Risk: QA/smoke
@@ -35,3 +35,5 @@ Add smoke coverage that verifies the provider readiness endpoint is reachable an
 ## Agent Log
 
 - 2026-04-24: Task created in the provider readiness follow-up batch.
+- 2026-04-24: Codex claimed the task on `codex/t102-provider-readiness-smoke-coverage`.
+- 2026-04-24: Added admin provider readiness smoke coverage with display-ID summary output and redacted blocked-field checks.
