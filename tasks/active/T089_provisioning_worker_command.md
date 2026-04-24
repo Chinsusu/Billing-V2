@@ -1,6 +1,6 @@
 # T089 - Provisioning worker command
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t089-provisioning-worker-command
 PR: https://github.com/Chinsusu/Billing-V2/pull/203
@@ -39,3 +39,4 @@ Add a runnable worker command for `provider.provision` jobs so local/dev can pro
 - 2026-04-24: Codex claimed the task after T088 merged and started wiring a local run-once provisioning worker command.
 - 2026-04-24: Added `cmd/worker provision-once`, wired it to the jobs runner with fake provider defaults, made successful provisioning create/update the service instance, documented local usage, and added worker to the build gate. Validation passed: `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`, frontend audit, lint, and build.
 - 2026-04-24: Opened PR https://github.com/Chinsusu/Billing-V2/pull/203 for review and CI.
+- 2026-04-24: PR https://github.com/Chinsusu/Billing-V2/pull/203 passed CI and merged to main at `76f2ad0fc8e43226e13cdb9bf0913ca38a0487e2`.
