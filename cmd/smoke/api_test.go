@@ -34,7 +34,7 @@ func TestBillingMutationScenarioKeysIncludeRunID(t *testing.T) {
 	for _, value := range []string{
 		scenario.topupIdempotencyKey(),
 		scenario.orderIdempotencyKey(),
-		scenario.invoiceIdempotencyKey(),
+		scenario.checkoutIdempotencyKey(),
 		scenario.paymentIdempotencyKey(),
 		scenario.topupPaymentReference(),
 	} {
