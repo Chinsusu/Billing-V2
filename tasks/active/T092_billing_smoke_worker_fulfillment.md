@@ -1,6 +1,6 @@
 # T092 - Billing smoke worker fulfillment
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t092-billing-smoke-worker-fulfillment
 PR: https://github.com/Chinsusu/Billing-V2/pull/209
@@ -37,3 +37,4 @@ Extend billing smoke so it can process a paid order provisioning job through the
 - 2026-04-24: Codex claimed the task on `codex/t092-billing-smoke-worker-fulfillment`.
 - 2026-04-24: Added fake-provider worker fulfillment to `dev-billing` smoke, service visibility verification, docs, and unit coverage. Local backend/frontend validation passed.
 - 2026-04-24: Implementation pushed for review in PR #209.
+- 2026-04-24: PR https://github.com/Chinsusu/Billing-V2/pull/209 passed CI and merged to main at `12c6573f3f9fb23b17a120e5f603c60edf970662`.
