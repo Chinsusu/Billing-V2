@@ -1,0 +1,36 @@
+# T080 - Billing flow smoke v2
+
+Status: TODO
+Owner: -
+Branch: codex/t080-billing-flow-smoke-v2
+PR: -
+Risk: QA/smoke
+Created: 2026-04-24
+Updated: 2026-04-24
+
+## Summary
+
+Add a smoke test or runbook update for the live billing flow across reseller catalog, client order/top-up/payment, and read views.
+
+## Scope
+
+- Work mainly in existing smoke test locations and operational docs.
+- Cover the real API sequence available after T075-T079.
+- Keep test data deterministic and compatible with local seed data.
+- Make failures clear enough for another agent to diagnose quickly.
+
+## Acceptance Criteria
+
+- Smoke coverage exercises the current live flow instead of only static fixtures.
+- Required seed data and environment variables are documented.
+- The smoke test is included in the appropriate local validation path or has a documented command.
+- Backend and frontend validation commands still pass.
+
+## Notes
+
+- This task should wait until the endpoint surface from T075-T079 is stable.
+- Avoid brittle UI browser automation unless the API smoke path is not sufficient.
+
+## Agent Log
+
+- 2026-04-24: Task created after T074 completed and the board needed a follow-up validation task for the live flow.
