@@ -1,6 +1,6 @@
 # T070 - Admin reports dedicated screen
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t070-admin-reports-screen
 PR: https://github.com/Chinsusu/Billing-V2/pull/160
@@ -38,3 +38,4 @@ Replace the admin reports route reuse of `AdminOverview` with a dedicated report
 - 2026-04-24: Task created after T066 completed and the admin frontend batch was refreshed.
 - 2026-04-24: Codex claimed the task and started building a dedicated live-backed admin reports screen.
 - 2026-04-24: Added a dedicated AdminReports screen backed by reconciliation, transactions, invoices, and audit read APIs. Local audit, lint, and build passed.
+- 2026-04-24: PR #160 merged into `main` with commit `ffe038d2efc9226c8088a65c7580b86c4ffaf963`.
