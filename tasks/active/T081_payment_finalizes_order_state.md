@@ -1,7 +1,7 @@
 # T081 - Payment finalizes order state
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t081-payment-finalizes-order-state
 PR: -
 Risk: backend/payment/order
@@ -35,4 +35,5 @@ When a client pays an issued invoice from wallet, finalize the related order sta
 ## Agent Log
 
 - 2026-04-24: Task created after T080 showed the live checkout smoke no longer needs manual admin order status changes, but paid invoices still need order state sync.
-
+- 2026-04-24: Codex claimed the task after the T081-T086 batch was merged and started inspecting payment/order stores for a scoped state-finalization path.
+- 2026-04-24: Implemented wallet-payment order finalization in the payment transaction path, added idempotent paid-order handling, conflict mapping, API reference notes, and local validation.

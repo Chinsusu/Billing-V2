@@ -124,7 +124,7 @@ func (service *Service) PayInvoiceFromWallet(ctx context.Context, input PayInvoi
 	if service.invoiceStore == nil || service.walletService == nil {
 		return WalletInvoicePayment{}, ErrBillingDependencyMissing
 	}
-	result, err := payInvoiceFromWallet(ctx, service.store, service.invoiceStore, service.walletService, input)
+	result, err := payInvoiceFromWallet(ctx, service.store, service.invoiceStore, service.walletService, nil, input)
 	if err != nil {
 		return WalletInvoicePayment{}, err
 	}

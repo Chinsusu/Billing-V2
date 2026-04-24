@@ -365,6 +365,8 @@ func writePaymentError(w http.ResponseWriter, r *http.Request, err error) {
 		httpserver.WriteError(w, r, http.StatusConflict, "payment.invoice_not_payable", "Invoice is not payable.")
 	case errors.Is(err, ErrIdempotencyConflict):
 		httpserver.WriteError(w, r, http.StatusConflict, "payment.idempotency_conflict", "Idempotency key conflicts with another payment.")
+	case errors.Is(err, order.ErrOrderStatusConflict):
+		httpserver.WriteError(w, r, http.StatusConflict, "order.status_conflict", "Order status changed before payment completed.")
 	case errors.Is(err, ErrWalletCurrencyMismatch):
 		httpserver.WriteError(w, r, http.StatusConflict, "payment.wallet_currency_mismatch", "Wallet currency does not match invoice currency.")
 	case errors.Is(err, wallet.ErrInsufficientBalance):

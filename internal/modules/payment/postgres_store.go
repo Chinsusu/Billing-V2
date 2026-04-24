@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"github.com/Chinsusu/Billing-V2/internal/modules/invoice"
+	"github.com/Chinsusu/Billing-V2/internal/modules/order"
 	"github.com/Chinsusu/Billing-V2/internal/modules/wallet"
 	platformdb "github.com/Chinsusu/Billing-V2/internal/platform/db"
 )
@@ -56,6 +57,7 @@ func (store *PostgresStore) PayInvoiceFromWallet(ctx context.Context, input PayI
 				NewPostgresStore(tx),
 				invoice.NewPostgresStore(tx),
 				wallet.NewService(wallet.NewPostgresStore(tx)),
+				order.NewPostgresStore(tx),
 				input,
 			)
 			return runErr
@@ -70,6 +72,7 @@ func (store *PostgresStore) PayInvoiceFromWallet(ctx context.Context, input PayI
 		store,
 		invoice.NewPostgresStore(store.executor),
 		wallet.NewService(wallet.NewPostgresStore(store.executor)),
+		order.NewPostgresStore(store.executor),
 		input,
 	)
 }
