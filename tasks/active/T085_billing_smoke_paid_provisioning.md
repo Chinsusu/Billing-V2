@@ -1,9 +1,9 @@
 # T085 - Billing smoke paid provisioning
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: codex/t085-billing-smoke-paid-provisioning
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/194
 Risk: QA/smoke
 Created: 2026-04-24
 Updated: 2026-04-24
@@ -33,4 +33,7 @@ Extend the billing smoke path so it verifies the post-payment order/provisioning
 ## Agent Log
 
 - 2026-04-24: Task created after T080 updated the smoke path to use live checkout.
+- 2026-04-24: Codex claimed the task after T084 merged and started extending the billing smoke path for paid order/provisioning checks.
+- 2026-04-24: Extended dev-billing smoke to require a paid order in the payment response, verify the paid order through `/client/orders/{order_id}`, and verify exactly one `provider.provision` job in `jobs` for that order. Updated local smoke docs and passed Go/frontend gates locally.
+- 2026-04-24: Opened PR https://github.com/Chinsusu/Billing-V2/pull/194 for review.
 

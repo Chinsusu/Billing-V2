@@ -288,6 +288,8 @@ Flow duoc test:
 - smoke goi lai checkout cung idempotency key de kiem tra duplicate submit khong tao invoice moi;
 - client tra invoice bang `POST /client/invoice-wallet-payments`;
 - payment finalizes the order and creates or reuses one `provider.provision` job for that order;
+- smoke doc lai `/client/orders/{order_id}` de xac nhan order thanh `order_status=paid` va `billing_status=paid`;
+- smoke kiem tra bang `jobs` co dung mot `provider.provision` job cho order vua tra tien;
 - smoke doc lai invoice va audit log de xac nhan flow co the debug duoc.
 
 Inspect provisioning jobs when an order is paid but fulfillment is stuck:
@@ -306,6 +308,7 @@ Yeu cau:
 
 - `DB_DSN` tro toi database local/dev da seed;
 - `API_BASE_URL` mac dinh la `http://localhost:8080`, co the doi bang `-base-url`;
+- API dang chay phai dung cung database voi `DB_DSN`, vi smoke vua goi API vua doc bang `jobs`;
 - chi chay tren local hoac sandbox, khong chay voi production DSN.
 
 ## Quality gate trước PR

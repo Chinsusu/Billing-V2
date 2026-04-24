@@ -2,12 +2,15 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	platformdb "github.com/Chinsusu/Billing-V2/internal/platform/db"
 )
 
 const (
@@ -53,6 +56,11 @@ func runDevBillingMutationSmoke(dsn string, baseURL string, timeout time.Duratio
 
 	client := &http.Client{Timeout: timeout}
 	scenario := newBillingMutationScenario()
+	conn, err := platformdb.Open(ctx, platformdb.Config{DriverName: platformdb.DefaultDriverName, DSN: dsn})
+	if err != nil {
+		return fmt.Errorf("open smoke DB for provisioning checks: %w", err)
+	}
+	defer conn.Close()
 
 	topup, err := runTopupApprovalSmoke(ctx, client, baseURL, scenario)
 	if err != nil {
@@ -73,8 +81,14 @@ func runDevBillingMutationSmoke(dsn string, baseURL string, timeout time.Duratio
 		return err
 	}
 
-	paymentRecord, err := runInvoiceWalletPaymentSmoke(ctx, client, baseURL, scenario, issuedInvoice.ID)
+	paymentRecord, err := runInvoiceWalletPaymentSmoke(ctx, client, baseURL, scenario, issuedInvoice.ID, orderRecord.ID)
 	if err != nil {
+		return err
+	}
+	if err := verifyPaidOrderVisibleViaAPI(ctx, client, baseURL, orderRecord.ID, orderRecord.DisplayID); err != nil {
+		return err
+	}
+	if err := verifyProvisioningJobQueued(ctx, conn, orderRecord.ID, orderRecord.DisplayID); err != nil {
 		return err
 	}
 
@@ -235,6 +249,7 @@ func runInvoiceWalletPaymentSmoke(
 	baseURL string,
 	scenario billingMutationScenario,
 	invoiceID string,
+	orderID string,
 ) (invoiceWalletPaymentResponse, error) {
 	headers := cloneHeaders(clientHeaders())
 	headers["Idempotency-Key"] = scenario.paymentIdempotencyKey()
@@ -254,8 +269,73 @@ func runInvoiceWalletPaymentSmoke(
 	if record.Ledger == nil || record.Ledger.DisplayID <= 0 || record.Ledger.AmountMinor <= 0 {
 		return invoiceWalletPaymentResponse{}, fmt.Errorf("expected debit ledger entry with display id, got %+v", record.Ledger)
 	}
+	if record.Order == nil ||
+		record.Order.ID != orderID ||
+		record.Order.DisplayID <= 0 ||
+		record.Order.OrderStatus != "paid" ||
+		record.Order.BillingStatus != "paid" {
+		return invoiceWalletPaymentResponse{}, fmt.Errorf("expected paid order in wallet payment response, got %+v", record.Order)
+	}
 	fmt.Printf("billing mutation passed: invoice paid %s (%d)\n", record.Invoice.ID, record.Invoice.DisplayID)
 	return record, nil
+}
+
+func verifyPaidOrderVisibleViaAPI(
+	ctx context.Context,
+	client *http.Client,
+	baseURL string,
+	orderID string,
+	displayID int64,
+) error {
+	record, err := doJSON[orderResponse](ctx, client, http.MethodGet, baseURL, "/client/orders/"+url.PathEscape(orderID), clientHeaders(), nil, http.StatusOK)
+	if err != nil {
+		return err
+	}
+	if record.ID != orderID || record.DisplayID != displayID || record.OrderStatus != "paid" || record.BillingStatus != "paid" {
+		return fmt.Errorf("expected paid order via API, got %+v", record)
+	}
+	fmt.Printf("billing mutation passed: order finalized %s (%d)\n", record.ID, record.DisplayID)
+	return nil
+}
+
+func verifyProvisioningJobQueued(ctx context.Context, conn *sql.DB, orderID string, orderDisplayID int64) error {
+	var count int
+	var displayID int64
+	var status string
+	err := conn.QueryRowContext(ctx, `
+SELECT COUNT(*), COALESCE(MAX(display_id), 0), COALESCE(MAX(status::text), '')
+FROM jobs
+WHERE tenant_id = $1
+  AND job_type = 'provider.provision'
+  AND reference_type = 'order'
+  AND reference_id = $2
+  AND source_id IS NOT NULL
+  AND payload_json->>'order_id' = $2
+  AND (payload_json->>'order_display_id')::bigint = $3`,
+		demoTenantID,
+		orderID,
+		orderDisplayID,
+	).Scan(&count, &displayID, &status)
+	if err != nil {
+		return fmt.Errorf("query provisioning job for order %s: %w", orderID, err)
+	}
+	if count != 1 {
+		return fmt.Errorf("expected exactly one provider.provision job for paid order %s, got %d", orderID, count)
+	}
+	if !provisioningJobSmokeStatusOK(status) {
+		return fmt.Errorf("expected provider.provision job for order %s to be queued/running/succeeded, got %q", orderID, status)
+	}
+	fmt.Printf("billing mutation passed: provisioning job %d status=%s order=%d\n", displayID, status, orderDisplayID)
+	return nil
+}
+
+func provisioningJobSmokeStatusOK(status string) bool {
+	switch status {
+	case "queued", "claimed", "running", "succeeded":
+		return true
+	default:
+		return false
+	}
 }
 
 func verifyAuditMutation(
