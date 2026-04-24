@@ -106,6 +106,8 @@ JOIN permissions permission ON permission.permission_key IN (
     'tenant.view',
     'order.view',
     'order.manage',
+    'provisioning.job.retry',
+    'provisioning.manual_review.resolve',
     'service.view',
     'audit.view'
 )

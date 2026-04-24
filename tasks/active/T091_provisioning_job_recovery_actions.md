@@ -1,7 +1,7 @@
 # T091 - Provisioning job recovery actions
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t091-provisioning-job-recovery-actions
 PR: -
 Risk: backend/ops
@@ -35,3 +35,4 @@ Add guarded admin operations for provisioning job recovery after the read APIs a
 ## Agent Log
 
 - 2026-04-24: Task created in the provisioning operations batch after T086.
+- 2026-04-24: Codex claimed the task on `codex/t091-provisioning-job-recovery-actions`.

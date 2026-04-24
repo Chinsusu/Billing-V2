@@ -125,6 +125,33 @@ Run one local provisioning worker pass with the fake provider registry:
 go run ./cmd/worker provision-once -dsn "$DB_DSN"
 ```
 
+Retry a retryable or manual-review provisioning job after fixing the provider/source issue:
+
+```bash
+curl -s -X POST "${ADMIN_HEADERS[@]}" \
+  -H "Content-Type: application/json" \
+  "$API_BASE_URL/admin/jobs/$JOB_ID/retry" \
+  -d '{"next_attempt_at":"2026-04-24T00:00:00Z"}'
+```
+
+Move a safe stuck job to manual review with the operator reason:
+
+```bash
+curl -s -X POST "${ADMIN_HEADERS[@]}" \
+  -H "Content-Type: application/json" \
+  "$API_BASE_URL/admin/jobs/$JOB_ID/manual-review" \
+  -d '{"reason":"provider response needs manual verification"}'
+```
+
+Cancel a safe non-active job when the order should not provision:
+
+```bash
+curl -s -X POST "${ADMIN_HEADERS[@]}" \
+  -H "Content-Type: application/json" \
+  "$API_BASE_URL/admin/jobs/$JOB_ID/cancel" \
+  -d '{"reason":"order was voided before provisioning"}'
+```
+
 If the API is unavailable, inspect the database:
 
 ```bash
@@ -295,8 +322,9 @@ Recovery:
 
 - If the job is `queued`, wait for the worker or start the worker once that command exists.
 - In local/dev, run `go run ./cmd/worker provision-once -dsn "$DB_DSN"` to process claimable `provider.provision` jobs once.
-- If the job is `failed_retryable`, inspect `last_error_code` and provider source config before retrying.
-- If the job is `failed_terminal` or `manual_review`, keep the order paid and hand it to operations. Do not refund or requeue without confirming provider state.
+- If the job is `failed_retryable`, inspect `last_error_code` and provider source config before retrying with `POST /admin/jobs/$JOB_ID/retry`.
+- If the job is `manual_review`, record the reason, confirm provider state, then retry or cancel through the admin job action routes.
+- If the job is `failed_terminal`, keep the order paid and hand it to operations. Move it to manual review or cancel only after confirming provider state.
 - If no `provider.provision` job exists for a paid order, treat it as a backend defect and create a fix task. Do not pay the invoice again.
 
 ## 6. Rollback And Recovery Rules
@@ -314,7 +342,7 @@ Recovery:
 | Invoice before payment | Reuse the existing issued invoice for the same order, or create a new order if the order is no longer checkoutable. | Do not create duplicate invoices for the same live order by hand. |
 | Wallet balance | Add funds through top-up flow in local/dev, then retry payment with a new key. | Do not edit `wallets.available_balance_minor` directly. |
 | Payment transaction | Use existing posted transaction when the invoice is already paid. | Do not insert a second charge for the same invoice. |
-| Provisioning job | Fix provider source/config first, then retry through the approved worker/admin path when available. | Do not pay the invoice again to create another job. |
+| Provisioning job | Fix provider source/config first, then retry, manual-review, or cancel through the approved admin action routes. | Do not pay the invoice again to create another job. |
 | Service record | If provider created the service but no local service exists, open a backend repair task with provider evidence. | Do not invent provider resource ids without proof. |
 
 ## 7. Local Validation Commands

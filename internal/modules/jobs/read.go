@@ -38,11 +38,23 @@ type ReadStore interface {
 }
 
 type Service struct {
-	store ReadStore
+	store    ReadStore
+	recovery RecoveryStore
+	audit    AuditAppender
 }
 
 func NewService(store ReadStore) *Service {
-	return &Service{store: store}
+	service := &Service{store: store}
+	if recovery, ok := store.(RecoveryStore); ok {
+		service.recovery = recovery
+	}
+	return service
+}
+
+func NewServiceWithAudit(store ReadStore, audit AuditAppender) *Service {
+	service := NewService(store)
+	service.audit = audit
+	return service
 }
 
 func (service *Service) ListJobs(ctx context.Context, filter Filter) ([]Job, error) {
@@ -80,6 +92,16 @@ func (service *Service) ListAttempts(ctx context.Context, filter AttemptFilter) 
 
 func (service *Service) ready() error {
 	if service == nil || service.store == nil {
+		return ErrServiceStoreMissing
+	}
+	return nil
+}
+
+func (service *Service) readyRecovery() error {
+	if err := service.ready(); err != nil {
+		return err
+	}
+	if service.recovery == nil {
 		return ErrServiceStoreMissing
 	}
 	return nil
