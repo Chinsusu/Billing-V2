@@ -67,6 +67,12 @@ func TestNewRuntimeWithoutDSNLeavesDomainRoutesDisabled(t *testing.T) {
 	if walletResponse.Code != http.StatusNotFound {
 		t.Fatalf("expected wallet route to be disabled without DB_DSN, got %d", walletResponse.Code)
 	}
+
+	jobsResponse := httptest.NewRecorder()
+	runtime.api.Handler().ServeHTTP(jobsResponse, httptest.NewRequest(http.MethodGet, "/admin/jobs", nil))
+	if jobsResponse.Code != http.StatusNotFound {
+		t.Fatalf("expected jobs route to be disabled without DB_DSN, got %d", jobsResponse.Code)
+	}
 }
 
 func TestNewRuntimeWithDSNRegistersCatalogRoutes(t *testing.T) {
@@ -183,6 +189,27 @@ func TestNewRuntimeWithDSNRegistersWalletRoutes(t *testing.T) {
 	}
 }
 
+func TestNewRuntimeWithDSNRegistersJobsRoutes(t *testing.T) {
+	runtime, err := newRuntime(context.Background(), testRuntimeConfig("postgres://billing@localhost/billing"), testRuntimeLogger(), func(ctx context.Context, cfg platformdb.Config) (*sql.DB, error) {
+		return newStubDB(), nil
+	})
+	if err != nil {
+		t.Fatalf("newRuntime returned error: %v", err)
+	}
+	defer closeRuntime(t, runtime)
+
+	response := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodGet, "/admin/jobs", nil)
+	runtime.api.Handler().ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("expected registered jobs route to validate tenant context, got %d: %s", response.Code, response.Body.String())
+	}
+	if !strings.Contains(response.Body.String(), "tenant.context_missing") {
+		t.Fatalf("expected tenant validation response, got %s", response.Body.String())
+	}
+}
+
 func TestNewRuntimeReturnsDatabaseOpenError(t *testing.T) {
 	expected := errors.New("dial failed")
 	_, err := newRuntime(context.Background(), testRuntimeConfig("postgres://billing@localhost/billing"), testRuntimeLogger(), func(ctx context.Context, cfg platformdb.Config) (*sql.DB, error) {
@@ -275,6 +302,21 @@ func TestNewWalletRoutesReturnsRegistrar(t *testing.T) {
 	mux.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/client/wallets", nil))
 	if response.Code != http.StatusBadRequest {
 		t.Fatalf("expected wallet route to be registered, got %d", response.Code)
+	}
+}
+
+func TestNewJobsRoutesReturnsRegistrar(t *testing.T) {
+	registrar := newJobsRoutes(newStubDB())
+	if registrar == nil {
+		t.Fatal("expected jobs route registrar")
+	}
+
+	mux := http.NewServeMux()
+	registrar.RegisterRoutes(mux)
+	response := httptest.NewRecorder()
+	mux.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/admin/jobs", nil))
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("expected jobs route to be registered, got %d", response.Code)
 	}
 }
 

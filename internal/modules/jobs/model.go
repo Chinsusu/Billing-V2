@@ -25,6 +25,7 @@ var (
 	ErrPriorityInvalid       = errors.New("job priority invalid")
 	ErrAttemptNumberInvalid  = errors.New("attempt number invalid")
 	ErrAttemptResultInvalid  = errors.New("attempt result invalid")
+	ErrServiceStoreMissing   = errors.New("jobs service store missing")
 	ErrOutboxEventNotFound   = errors.New("outbox event not found")
 	ErrOutboxEventIDMissing  = errors.New("outbox event id missing")
 	ErrOutboxStatusInvalid   = errors.New("outbox status invalid")

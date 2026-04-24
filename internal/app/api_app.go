@@ -22,6 +22,7 @@ type APIOptions struct {
 	CatalogRoutes  RouteRegistrar
 	CheckoutRoutes RouteRegistrar
 	InvoiceRoutes  RouteRegistrar
+	JobsRoutes     RouteRegistrar
 	OrderRoutes    RouteRegistrar
 	PaymentRoutes  RouteRegistrar
 	WalletRoutes   RouteRegistrar
@@ -72,6 +73,9 @@ func NewAPIWithOptions(cfg config.Config, log *logger.Logger, options APIOptions
 	}
 	if options.InvoiceRoutes != nil {
 		options.InvoiceRoutes.RegisterRoutes(mux)
+	}
+	if options.JobsRoutes != nil {
+		options.JobsRoutes.RegisterRoutes(mux)
 	}
 	if options.OrderRoutes != nil {
 		options.OrderRoutes.RegisterRoutes(mux)
