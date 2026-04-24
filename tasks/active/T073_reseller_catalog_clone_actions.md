@@ -1,6 +1,6 @@
 # T073 - Reseller catalog clone actions
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t073-reseller-catalog-clone-actions
 PR: https://github.com/Chinsusu/Billing-V2/pull/168
@@ -39,3 +39,4 @@ Add reseller catalog actions that clone master products/plans into the reseller 
 - 2026-04-24: Codex claimed the task after T072 completed and started wiring reseller catalog clone actions.
 - 2026-04-24: Added frontend clone product/plan API wrappers and wired ResellerCatalog to add missing master plans with editable selling price, live refresh, and error/success feedback. Local frontend audit, lint, and build passed.
 - 2026-04-24: Opened PR #168 for review.
+- 2026-04-24: PR #168 merged into `main` with commit `f2658d4150543be47ddcbc45f53e279bd2df6a93`.
