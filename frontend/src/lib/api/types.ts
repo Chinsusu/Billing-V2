@@ -9,20 +9,33 @@ export interface ApiEnvelope<T> {
 
 export type ApiQueryValue = string | number | null | undefined;
 export type ApiQuery = object;
+export type ApiJson = unknown;
+
+export interface PageQuery {
+  limit?: string | number;
+  cursor?: string;
+}
 
 export interface Wallet {
   id: string;
   display_id: number;
+  tenant_id?: string;
+  owner_type?: string;
   owner_id: string;
   currency: string;
   status: string;
   available_balance_minor: number;
   locked_balance_minor: number;
+  metadata?: ApiJson;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface LedgerEntry {
   id: string;
   display_id: number;
+  wallet_id?: string;
+  tenant_id?: string;
   direction: string;
   amount_minor: number;
   currency: string;
@@ -30,6 +43,10 @@ export interface LedgerEntry {
   status: string;
   balance_after_minor: number;
   reference_type: string;
+  reference_id?: string;
+  created_by?: string;
+  reason?: string;
+  correlation_id?: string;
   created_at: string;
 }
 
@@ -82,23 +99,38 @@ export interface PaymentReconciliation {
 export interface Order {
   id: string;
   display_id: number;
+  tenant_id?: string;
+  buyer_user_id?: string;
   tenant_plan_id: string;
   quantity: number;
   currency: string;
+  unit_price_minor?: number;
+  discount_minor?: number;
   total_minor: number;
   order_status: string;
   billing_status: string;
+  product_snapshot?: ApiJson;
+  plan_snapshot?: ApiJson;
+  price_snapshot?: ApiJson;
   created_at: string;
+  updated_at?: string;
 }
 
 export interface ServiceInstance {
   id: string;
   display_id: number;
+  tenant_id?: string;
   order_id: string;
+  tenant_plan_id?: string;
+  provider_source_id?: string;
   external_resource_id: string;
   status: string;
   billing_status: string;
+  suspension_reason?: string;
+  term_start?: string;
   term_end: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface AuditLog {
@@ -111,6 +143,100 @@ export interface AuditLog {
   target_id: string;
   correlation_id: string;
   created_at: string;
+}
+
+export interface BillingCycle {
+  type: string;
+  value: number;
+}
+
+export interface CatalogProduct {
+  id: string;
+  display_id: number;
+  product_type: string;
+  name: string;
+  description: string;
+  status: string;
+  display_order: number;
+  created_by?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CatalogPlan {
+  id: string;
+  display_id: number;
+  product_id: string;
+  plan_code: string;
+  name: string;
+  specs: ApiJson;
+  billing_cycle: BillingCycle;
+  base_cost_minor: number;
+  suggested_price_minor: number;
+  reseller_min_price_minor: number;
+  currency: string;
+  status: string;
+  version: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TenantCatalogProduct {
+  id: string;
+  display_id: number;
+  tenant_id?: string;
+  master_product_id: string;
+  name_override: string;
+  description_override: string;
+  status: string;
+  clone_version: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TenantCatalogPlan {
+  id: string;
+  display_id: number;
+  tenant_id?: string;
+  tenant_product_id: string;
+  master_plan_id: string;
+  selling_price_minor: number;
+  reseller_cost_minor?: number;
+  currency: string;
+  margin_policy?: ApiJson;
+  visibility: string;
+  status: string;
+  clone_version: number;
+  product_snapshot?: ApiJson;
+  plan_snapshot?: ApiJson;
+  price_snapshot?: ApiJson;
+  capability_snapshot?: ApiJson;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TenantCatalog {
+  products: TenantCatalogProduct[];
+  plans: TenantCatalogPlan[];
+}
+
+export interface TopupRequest {
+  id: string;
+  display_id: number;
+  tenant_id: string;
+  wallet_id: string;
+  requested_by: string;
+  amount_minor: number;
+  currency: string;
+  payment_method: string;
+  payment_reference?: string;
+  status: string;
+  reviewed_by?: string;
+  reviewed_at?: string;
+  review_note?: string;
+  ledger_entry_id?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface AdminInvoiceQuery {
@@ -134,4 +260,56 @@ export interface AdminAuditLogQuery {
   actor_id?: string;
   action?: string;
   target_type?: string;
+}
+
+export interface AdminOrderQuery extends PageQuery {
+  buyer_user_id?: string;
+  display_id?: string;
+  status?: string;
+  billing_status?: string;
+  amount_min?: string;
+  amount_max?: string;
+}
+
+export interface AdminServiceQuery extends PageQuery {
+  buyer_user_id?: string;
+  display_id?: string;
+  order_id?: string;
+  order_display_id?: string;
+  status?: string;
+}
+
+export interface AdminWalletQuery extends PageQuery {
+  display_id?: string;
+  owner_type?: string;
+  owner_id?: string;
+  status?: string;
+}
+
+export interface LedgerQuery extends PageQuery {
+  display_id?: string;
+  direction?: string;
+  entry_type?: string;
+  status?: string;
+  amount_min?: string;
+  amount_max?: string;
+}
+
+export interface TopupRequestQuery extends PageQuery {
+  wallet_id?: string;
+  requested_by?: string;
+  display_id?: string;
+  payment_method?: string;
+  status?: string;
+  amount_min?: string;
+  amount_max?: string;
+}
+
+export interface CatalogQuery extends PageQuery {
+  product_type?: string;
+  status?: string;
+}
+
+export interface TenantCatalogQuery extends CatalogQuery {
+  visibility?: string;
 }
