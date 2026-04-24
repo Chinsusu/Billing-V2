@@ -1,6 +1,6 @@
 # T068 - Admin catalog and provider live views
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t068-admin-catalog-provider-live
 PR: https://github.com/Chinsusu/Billing-V2/pull/156
@@ -40,3 +40,4 @@ Expose admin catalog/provider-source read APIs through the frontend API client a
 - 2026-04-24: Task created after T066 completed and the admin frontend batch was refreshed.
 - 2026-04-24: Codex claimed the task and started wiring admin catalog/provider screens to live API data.
 - 2026-04-24: Added admin catalog/provider-source frontend API wrappers and wired product/provider screens to live data with explicit fallback states. Local audit, lint, and build passed.
+- 2026-04-24: PR #156 merged into `main` with commit `4ed31eb0625a3ce33c2c99f3561c07c0659b475b`.
