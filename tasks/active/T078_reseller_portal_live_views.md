@@ -1,6 +1,6 @@
 # T078 - Reseller portal live views
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t078-reseller-portal-live-views
 PR: https://github.com/Chinsusu/Billing-V2/pull/179
@@ -40,3 +40,4 @@ Wire reseller portal screens to live reseller APIs for customers, services, bill
 - 2026-04-24: Wired reseller clients, services, billing, wallet, and dashboard screens to live reseller APIs with explicit demo fallback and numeric display IDs.
 - 2026-04-24: Validation passed: `npm audit --omit=dev`, `npm run lint`, `npm run build`.
 - 2026-04-24: Opened PR https://github.com/Chinsusu/Billing-V2/pull/179 for review and CI.
+- 2026-04-24: PR #179 merged into `main` with commit `e63b845379865fd8413a3244efb141d080b408bf`.
