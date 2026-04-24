@@ -104,6 +104,7 @@ Operation error:
 
 | Route group | Permission |
 |---|---|
+| Admin catalog and provider readiness | `catalog.manage` |
 | Client orders | `order.create` |
 | Client checkout | `order.create` |
 | Admin order read | `order.view` |
@@ -197,6 +198,15 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 `id`, `display_id`, `job_id`, `worker_id`, `attempt_number`, `started_at`, `finished_at`, `result`, `error_code`, `error_message_redacted`, `duration_ms`, `correlation_id`
 
 ## 4. Route Reference
+
+### 4.0 Catalog Operations
+
+- `GET /admin/catalog/provider-readiness`
+  - auth: admin actor, `catalog.manage`
+  - query: `product_type`, `status`, `limit`, `cursor`
+  - response: list of provider readiness rows with `plan_display_id`, `plan_code`, `plan_name`, `product_type`, `plan_status`, optional `plan_source_display_id`, optional `source_display_id`, `source_name`, `source_type`, `source_status`, `inventory_mode`, `state`, and `reason`
+  - states: `ready`, `inactive_source`, `missing_plan_source`, `unsupported_capability`, `fake_provider_only`
+  - note: this route does not expose provider credentials, raw provider payloads, or capability JSON
 
 ### 4.1 Orders
 

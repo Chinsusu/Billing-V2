@@ -135,6 +135,13 @@ func (service *Service) ListProviderSources(ctx context.Context, filter Provider
 	return service.store.ListProviderSources(ctx, filter)
 }
 
+func (service *Service) ListProviderSourceReadiness(ctx context.Context, filter ProviderSourceReadinessFilter) ([]ProviderSourceReadiness, error) {
+	if err := service.ready(); err != nil {
+		return nil, err
+	}
+	return service.store.ListProviderSourceReadiness(ctx, filter)
+}
+
 func (service *Service) ListTenantCatalog(ctx context.Context, filter TenantCatalogFilter) (TenantCatalog, error) {
 	if err := service.ready(); err != nil {
 		return TenantCatalog{}, err

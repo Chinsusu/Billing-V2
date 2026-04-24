@@ -25,6 +25,12 @@ type ProviderSourceFilter struct {
 	Limit  int
 }
 
+type ProviderSourceReadinessFilter struct {
+	ProductType ProductType
+	PlanStatus  PlanStatus
+	Limit       int
+}
+
 type TenantCatalogFilter struct {
 	TenantID    tenant.ID
 	ProductType ProductType
@@ -51,5 +57,6 @@ type Store interface {
 	ListProducts(ctx context.Context, filter ProductFilter) ([]Product, error)
 	ListMasterPlans(ctx context.Context, filter MasterPlanFilter) ([]Plan, error)
 	ListProviderSources(ctx context.Context, filter ProviderSourceFilter) ([]ProviderSource, error)
+	ListProviderSourceReadiness(ctx context.Context, filter ProviderSourceReadinessFilter) ([]ProviderSourceReadiness, error)
 	ListTenantCatalog(ctx context.Context, filter TenantCatalogFilter) (TenantCatalog, error)
 }
