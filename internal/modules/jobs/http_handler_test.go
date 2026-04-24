@@ -124,6 +124,50 @@ func TestHTTPHandlerListResellerJobAttemptsUsesTenantScope(t *testing.T) {
 	}
 }
 
+func TestHTTPHandlerRetryAdminJobUsesTenantScope(t *testing.T) {
+	service := &fakeJobsHTTPService{job: testReadJob()}
+	handler := registerJobsTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodPost, "/admin/jobs/job_1/retry", strings.NewReader(`{"next_attempt_at":"2026-04-24T02:00:00Z"}`))
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.retryCalls != 1 {
+		t.Fatalf("expected retry once, got %d", service.retryCalls)
+	}
+	if service.retryInput.ID != ID("job_1") ||
+		service.retryInput.TenantID != tenant.ID("tenant_1") ||
+		service.retryInput.ActorID != identity.UserID("admin_1") ||
+		!service.retryInput.NextAttemptAt.Equal(time.Date(2026, 4, 24, 2, 0, 0, 0, time.UTC)) {
+		t.Fatalf("unexpected retry input: %+v", service.retryInput)
+	}
+}
+
+func TestHTTPHandlerDoesNotExposeResellerRecoveryActions(t *testing.T) {
+	service := &fakeJobsHTTPService{job: testReadJob()}
+	handler := registerJobsTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodPost, "/reseller/jobs/job_1/retry", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("reseller_1", "tenant_1", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusMethodNotAllowed {
+		t.Fatalf("expected status 405, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.retryCalls != 0 {
+		t.Fatalf("expected no retry call, got %d", service.retryCalls)
+	}
+}
+
 func TestHTTPHandlerRejectsBadJobStatus(t *testing.T) {
 	service := &fakeJobsHTTPService{}
 	handler := registerJobsTestHandler(service)
@@ -193,15 +237,21 @@ func testReadAttempt() Attempt {
 }
 
 type fakeJobsHTTPService struct {
-	job              Job
-	jobs             []Job
-	attempts         []Attempt
-	filter           Filter
-	lookup           Lookup
-	attemptFilter    AttemptFilter
-	listCalls        int
-	getCalls         int
-	listAttemptCalls int
+	job               Job
+	jobs              []Job
+	attempts          []Attempt
+	retryInput        RetryJobInput
+	manualReviewInput ManualReviewJobInput
+	cancelInput       CancelJobInput
+	filter            Filter
+	lookup            Lookup
+	attemptFilter     AttemptFilter
+	listCalls         int
+	getCalls          int
+	listAttemptCalls  int
+	retryCalls        int
+	manualReviewCalls int
+	cancelCalls       int
 }
 
 func (service *fakeJobsHTTPService) ListJobs(ctx context.Context, filter Filter) ([]Job, error) {
@@ -220,4 +270,22 @@ func (service *fakeJobsHTTPService) ListAttempts(ctx context.Context, filter Att
 	service.listAttemptCalls++
 	service.attemptFilter = filter
 	return service.attempts, nil
+}
+
+func (service *fakeJobsHTTPService) RetryJob(ctx context.Context, input RetryJobInput) (Job, error) {
+	service.retryCalls++
+	service.retryInput = input
+	return service.job, nil
+}
+
+func (service *fakeJobsHTTPService) MarkManualReview(ctx context.Context, input ManualReviewJobInput) (Job, error) {
+	service.manualReviewCalls++
+	service.manualReviewInput = input
+	return service.job, nil
+}
+
+func (service *fakeJobsHTTPService) CancelJob(ctx context.Context, input CancelJobInput) (Job, error) {
+	service.cancelCalls++
+	service.cancelInput = input
+	return service.job, nil
 }

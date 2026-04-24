@@ -109,6 +109,8 @@ Operation error:
 | Admin order read | `order.view` |
 | Admin order status mutation | `order.manage` |
 | Admin and reseller job read | `order.view` |
+| Admin job retry | `provisioning.job.retry` |
+| Admin job manual review or cancel | `provisioning.manual_review.resolve` |
 | Client and admin services | `service.view` |
 | Client and admin invoices | `wallet.view` |
 | Client and admin wallets | `wallet.view` |
@@ -476,6 +478,24 @@ The job read API does not expose `payload_json` or `idempotency_key`.
   - response: list of `job_attempt`
   - note: attempts are scoped through the parent job tenant
 
+- `POST /admin/jobs/{job_id}/retry`
+  - auth: admin actor, `provisioning.job.retry`
+  - body: optional `next_attempt_at` as RFC3339; empty body retries now
+  - response: one `job`
+  - note: only `failed_retryable` and `manual_review` jobs can be requeued
+
+- `POST /admin/jobs/{job_id}/manual-review`
+  - auth: admin actor, `provisioning.manual_review.resolve`
+  - body: `reason`
+  - response: one `job`
+  - note: active worker states and completed jobs return `job.status_conflict`
+
+- `POST /admin/jobs/{job_id}/cancel`
+  - auth: admin actor, `provisioning.manual_review.resolve`
+  - body: optional `reason`
+  - response: one `job`
+  - note: only safe non-active jobs can be cancelled; succeeded jobs return `job.status_conflict`
+
 - `GET /reseller/jobs`
   - auth: reseller actor, `order.view`
   - query: `display_id`, `job_type`, `status`, `reference_type`, `reference_id`, `source_id`, `limit`, `cursor`
@@ -549,7 +569,7 @@ Route-specific errors that frontend and agents should expect:
 - top-up: `wallet.topup_not_found`, `wallet.topup_status_conflict`, `wallet.payment_method_invalid`
 - checkout: `checkout.order_not_checkoutable`
 - payment: `payment.transaction_not_found`, `payment.invoice_not_payable`, `payment.idempotency_conflict`, `payment.wallet_currency_mismatch`, `wallet.insufficient_balance`, `order.status_conflict`, `order.provisioning_source_not_found`
-- jobs: `job.not_found`, `job.status_invalid`
+- jobs: `job.not_found`, `job.status_invalid`, `job.status_conflict`, `job.manual_review_reason_missing`
 - audit: `audit.created_time_invalid`
 
 ## 7. Practical Notes For Frontend And Agents

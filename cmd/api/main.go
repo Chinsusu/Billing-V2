@@ -166,11 +166,14 @@ func newInvoiceRoutes(executor platformdb.Executor) app.RouteRegistrar {
 
 func newJobsRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	store := jobs.NewPostgresStore(executor)
-	service := jobs.NewService(store)
+	service := jobs.NewServiceWithAudit(store, audit.NewService(audit.NewPostgresStore(executor)))
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return jobs.NewHTTPHandlerWithOptions(service, jobs.HTTPHandlerOptions{
-		AdminMiddleware:    jobsAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
-		ResellerMiddleware: jobsAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
+		AdminMiddleware:             jobsAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
+		AdminRetryMiddleware:        jobsAuthMiddleware(authorizer, rbac.PermissionProvisioningJobRetry, rbac.RiskHigh),
+		AdminManualReviewMiddleware: jobsAuthMiddleware(authorizer, rbac.PermissionManualReviewResolve, rbac.RiskHigh),
+		AdminCancelMiddleware:       jobsAuthMiddleware(authorizer, rbac.PermissionManualReviewResolve, rbac.RiskHigh),
+		ResellerMiddleware:          jobsAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
 	})
 }
 

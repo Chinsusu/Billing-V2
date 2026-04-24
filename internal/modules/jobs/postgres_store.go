@@ -18,7 +18,10 @@ type PostgresStore struct {
 	executor platformdb.Executor
 }
 
-var _ QueueStore = (*PostgresStore)(nil)
+var (
+	_ QueueStore    = (*PostgresStore)(nil)
+	_ RecoveryStore = (*PostgresStore)(nil)
+)
 
 func NewPostgresStore(executor platformdb.Executor) *PostgresStore {
 	return &PostgresStore{executor: executor}

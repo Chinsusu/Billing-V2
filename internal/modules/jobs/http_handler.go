@@ -16,13 +16,19 @@ type HTTPService interface {
 	ListJobs(ctx context.Context, filter Filter) ([]Job, error)
 	GetJob(ctx context.Context, lookup Lookup) (Job, error)
 	ListAttempts(ctx context.Context, filter AttemptFilter) ([]Attempt, error)
+	RetryJob(ctx context.Context, input RetryJobInput) (Job, error)
+	MarkManualReview(ctx context.Context, input ManualReviewJobInput) (Job, error)
+	CancelJob(ctx context.Context, input CancelJobInput) (Job, error)
 }
 
 type RouteMiddleware func(http.HandlerFunc) http.HandlerFunc
 
 type HTTPHandlerOptions struct {
-	AdminMiddleware    RouteMiddleware
-	ResellerMiddleware RouteMiddleware
+	AdminMiddleware             RouteMiddleware
+	AdminRetryMiddleware        RouteMiddleware
+	AdminManualReviewMiddleware RouteMiddleware
+	AdminCancelMiddleware       RouteMiddleware
+	ResellerMiddleware          RouteMiddleware
 }
 
 type HTTPHandler struct {
@@ -57,6 +63,10 @@ func (handler *HTTPHandler) adminJobsRoute(w http.ResponseWriter, r *http.Reques
 }
 
 func (handler *HTTPHandler) adminJobRoute(w http.ResponseWriter, r *http.Request) {
+	if jobRecoveryActionPath(r.URL.Path, adminJobPrefix) {
+		handler.adminJobRecoveryRoute(w, r)
+		return
+	}
 	if jobAttemptsPath(r.URL.Path, adminJobPrefix) {
 		dispatchJobMethods(w, r, map[string]http.HandlerFunc{
 			http.MethodGet: handler.tenantRoute(handler.handleListAdminJobAttempts, handler.options.AdminMiddleware),
@@ -326,6 +336,8 @@ func writeJobError(w http.ResponseWriter, r *http.Request, err error) {
 	switch {
 	case errors.Is(err, ErrJobNotFound):
 		httpserver.WriteError(w, r, http.StatusNotFound, "job.not_found", "Job was not found.")
+	case errors.Is(err, ErrJobStatusConflict):
+		httpserver.WriteError(w, r, http.StatusConflict, "job.status_conflict", "Job status does not allow this action.")
 	case errors.Is(err, identity.ErrActorContextMissing),
 		errors.Is(err, identity.ErrActorIDMissing),
 		errors.Is(err, identity.ErrActorTypeMissing),
@@ -348,6 +360,8 @@ func jobValidationField(err error) (httpserver.ValidationField, bool) {
 		return validationField("job_id", "job.job_id_missing", "Job id is required."), true
 	case errors.Is(err, ErrStatusInvalid):
 		return validationField("status", "job.status_invalid", "Job status is invalid."), true
+	case errors.Is(err, ErrManualReviewReasonMissing):
+		return validationField("reason", "job.manual_review_reason_missing", "Manual review reason is required."), true
 	default:
 		return httpserver.ValidationField{}, false
 	}
