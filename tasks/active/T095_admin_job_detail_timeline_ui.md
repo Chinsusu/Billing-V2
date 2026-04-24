@@ -1,6 +1,6 @@
 # T095 - Admin job detail timeline UI
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t095-admin-job-detail-timeline-ui
 PR: https://github.com/Chinsusu/Billing-V2/pull/216
@@ -39,3 +39,4 @@ Give admins a focused view of a provisioning job, its attempts, latest error, an
 - 2026-04-24: Added admin job timeline panel, admin attempts API helper, and live queue selection from the provisioning table.
 - 2026-04-24: Validation passed: `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`, `npm ci`, `npm audit --omit=dev`, `npm run lint`, `npm run build`.
 - 2026-04-24: Opened PR https://github.com/Chinsusu/Billing-V2/pull/216 for review.
+- 2026-04-24: PR #216 passed CI and merged into `main` at `f22b55818d5c376e75d3f49e02cd2878aef32344`.
