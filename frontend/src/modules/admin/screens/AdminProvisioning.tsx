@@ -8,6 +8,7 @@ import { compactDateTime, recordLabel, shortID } from "@/lib/api/format";
 import type { CatalogProviderSource, Order, ProvisioningJob, ServiceInstance } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { PROVISIONING_JOBS } from "@/mocks/billingData";
+import { AdminJobTimelinePanel } from "../components/AdminJobTimelinePanel";
 
 interface ProvisioningRow {
   id: string;
@@ -24,6 +25,7 @@ interface ProvisioningRow {
   canRetry: boolean;
   canReview: boolean;
   canCancel: boolean;
+  job?: ProvisioningJob;
 }
 
 type JobAction = "retry" | "manual-review" | "cancel";
@@ -39,6 +41,7 @@ export function AdminProvisioning() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [manualReasons, setManualReasons] = useState<Record<string, string>>({});
   const [actionState, setActionState] = useState<ActionState | null>(null);
+  const [selectedJobID, setSelectedJobID] = useState<string | null>(null);
   const jobs = useApiResource(
     () => billingApi.listAdminJobs({ job_type: "provider.provision", limit: 100 }),
     `admin-provisioning-jobs:${refreshKey}`,
@@ -59,6 +62,7 @@ export function AdminProvisioning() {
   const rows = usingLive
     ? liveProvisioningRows(jobs.data ?? [], orders.data ?? [], services.data ?? [], providers.data ?? [])
     : demoProvisioningRows();
+  const selectedRow = rows.find((row) => row.apiId === selectedJobID) ?? null;
   const manualReview = rows.filter((row) => row.status === "manual_review");
   const failed = rows.filter((row) => row.status === "failed_retryable" || row.status === "failed_terminal" || row.status === "failed").length;
   const extraError = orders.error ?? services.error ?? providers.error;
@@ -122,56 +126,76 @@ export function AdminProvisioning() {
         </div>
       )}
 
-      <div className="bg-white border border-gray-200 rounded">
-        <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-3">
-          <h3 className="text-[13px] font-medium text-gray-900 m-0">Provisioning queue</h3>
-          <span className="text-[11px] text-gray-400">{source}</span>
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="min-w-0 bg-white border border-gray-200 rounded">
+          <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-3">
+            <h3 className="text-[13px] font-medium text-gray-900 m-0">Provisioning queue</h3>
+            <span className="text-[11px] text-gray-400">{source}</span>
+          </div>
+          <div className="overflow-x-auto max-w-full">
+            <table className="w-full text-[13px] border-collapse min-w-[1060px]">
+              <thead>
+                <tr className="bg-gray-50">
+                  {["Job ID", "Order", "Service", "Tenant", "Provider", "Status", "Attempt", "Created", "Error", "Actions"].map((heading) => (
+                    <th key={heading} className="text-left text-[11px] font-medium uppercase tracking-wide text-gray-400 p-4 border-b border-gray-200">
+                      {heading}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row) => {
+                  const rowState = row.apiId && actionState?.id === row.apiId ? actionState : null;
+                  const running = rowState?.status === "running";
+                  const selected = row.apiId === selectedJobID;
+                  return (
+                    <tr key={row.id} className={`hover:bg-gray-50 border-b border-gray-100 last:border-0 ${row.status === "manual_review" ? "bg-amber-50/40" : ""} ${selected ? "bg-red-50/50" : ""}`}>
+                      <td className="p-4 text-[12px] text-[#D50C2D] font-medium">
+                        {row.live && row.apiId ? (
+                          <button
+                            type="button"
+                            onClick={() => setSelectedJobID(row.apiId as string)}
+                            className="text-left font-medium text-[#D50C2D] underline-offset-2 hover:underline"
+                          >
+                            {row.id}
+                          </button>
+                        ) : row.id}
+                      </td>
+                      <td className="p-4 text-[12px] text-gray-500">{row.order}</td>
+                      <td className="p-4 text-gray-700">{row.service}</td>
+                      <td className="p-4 text-gray-500">{row.tenant}</td>
+                      <td className="p-4 text-gray-500">{row.provider}</td>
+                      <td className="p-4"><StatusBadge status={row.status} dot /></td>
+                      <td className="p-4 text-center tabular-nums">{row.attempt}</td>
+                      <td className="p-4 text-gray-400 tabular-nums">{row.created}</td>
+                      <td className="p-4 text-[11px] text-red-600 max-w-[220px] truncate">{row.error}</td>
+                      <td className="p-4">
+                        <JobRecoveryControls
+                          row={row}
+                          reason={row.apiId ? manualReasons[row.apiId] ?? "" : ""}
+                          running={running}
+                          state={rowState}
+                          onReasonChange={updateManualReason}
+                          onAction={runJobAction}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+                {rows.length === 0 && (
+                  <tr><td colSpan={10} className="p-4 text-center text-[12px] text-gray-400">No provisioning jobs</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div className="overflow-x-auto max-w-full">
-          <table className="w-full text-[13px] border-collapse min-w-[1060px]">
-            <thead>
-              <tr className="bg-gray-50">
-                {["Job ID", "Order", "Service", "Tenant", "Provider", "Status", "Attempt", "Created", "Error", "Actions"].map((heading) => (
-                  <th key={heading} className="text-left text-[11px] font-medium uppercase tracking-wide text-gray-400 p-4 border-b border-gray-200">
-                    {heading}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => {
-                const rowState = row.apiId && actionState?.id === row.apiId ? actionState : null;
-                const running = rowState?.status === "running";
-                return (
-                  <tr key={row.id} className={`hover:bg-gray-50 border-b border-gray-100 last:border-0 ${row.status === "manual_review" ? "bg-amber-50/40" : ""}`}>
-                    <td className="p-4 text-[12px] text-[#D50C2D] font-medium">{row.id}</td>
-                    <td className="p-4 text-[12px] text-gray-500">{row.order}</td>
-                    <td className="p-4 text-gray-700">{row.service}</td>
-                    <td className="p-4 text-gray-500">{row.tenant}</td>
-                    <td className="p-4 text-gray-500">{row.provider}</td>
-                    <td className="p-4"><StatusBadge status={row.status} dot /></td>
-                    <td className="p-4 text-center tabular-nums">{row.attempt}</td>
-                    <td className="p-4 text-gray-400 tabular-nums">{row.created}</td>
-                    <td className="p-4 text-[11px] text-red-600 max-w-[220px] truncate">{row.error}</td>
-                    <td className="p-4">
-                      <JobRecoveryControls
-                        row={row}
-                        reason={row.apiId ? manualReasons[row.apiId] ?? "" : ""}
-                        running={running}
-                        state={rowState}
-                        onReasonChange={updateManualReason}
-                        onAction={runJobAction}
-                      />
-                    </td>
-                  </tr>
-                );
-              })}
-              {rows.length === 0 && (
-                <tr><td colSpan={10} className="p-4 text-center text-[12px] text-gray-400">No provisioning jobs</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <AdminJobTimelinePanel
+          job={selectedRow?.job ?? null}
+          orderLabel={selectedRow?.order}
+          serviceLabel={selectedRow?.service}
+          tenantLabel={selectedRow?.tenant}
+          providerLabel={selectedRow?.provider}
+        />
       </div>
     </div>
   );
@@ -206,6 +230,7 @@ function liveProvisioningRows(
       canRetry: canRetryJob(job.status),
       canReview: canMarkJobManualReview(job.status),
       canCancel: canCancelJob(job.status),
+      job,
     };
   });
 }
