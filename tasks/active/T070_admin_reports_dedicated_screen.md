@@ -3,7 +3,7 @@
 Status: REVIEW
 Owner: Codex
 Branch: codex/t070-admin-reports-screen
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/160
 Risk: frontend/admin
 Created: 2026-04-24
 Updated: 2026-04-24
