@@ -19,7 +19,8 @@ type AdminReadHTTPService interface {
 type AdminReadRouteMiddleware func(http.HandlerFunc) http.HandlerFunc
 
 type AdminReadHTTPHandlerOptions struct {
-	AdminMiddleware AdminReadRouteMiddleware
+	AdminMiddleware    AdminReadRouteMiddleware
+	ResellerMiddleware AdminReadRouteMiddleware
 }
 
 type AdminReadHTTPHandler struct {
@@ -43,10 +44,17 @@ func (handler *AdminReadHTTPHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/customers", middleware.RequireMethod(http.MethodGet, handler.adminTenantRoute(func(w http.ResponseWriter, r *http.Request) {
 		handler.handleListAdminUsers(w, r, UserTypeClient)
 	})))
+	mux.HandleFunc("/reseller/customers", middleware.RequireMethod(http.MethodGet, handler.resellerTenantRoute(func(w http.ResponseWriter, r *http.Request) {
+		handler.handleListAdminUsers(w, r, UserTypeClient)
+	})))
 }
 
 func (handler *AdminReadHTTPHandler) adminTenantRoute(next http.HandlerFunc) http.HandlerFunc {
 	return identityTenantContext(requireIdentityTenantContext(applyAdminReadMiddleware(next, handler.options.AdminMiddleware)))
+}
+
+func (handler *AdminReadHTTPHandler) resellerTenantRoute(next http.HandlerFunc) http.HandlerFunc {
+	return identityTenantContext(requireIdentityTenantContext(applyAdminReadMiddleware(next, handler.options.ResellerMiddleware)))
 }
 
 func identityTenantContext(next http.HandlerFunc) http.HandlerFunc {

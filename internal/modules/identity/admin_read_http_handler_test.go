@@ -117,6 +117,48 @@ func TestAdminReadHTTPHandlerCustomersDefaultsToClientType(t *testing.T) {
 	}
 }
 
+func TestAdminReadHTTPHandlerResellerCustomersUsesTenantScopeAndFilters(t *testing.T) {
+	service := &fakeAdminReadService{
+		users: []UserSummary{{
+			User: User{
+				ID:              "user_2",
+				DisplayID:       20002,
+				TenantID:        "reseller_tenant",
+				Email:           "buyer@example.com",
+				FullName:        "Buyer Two",
+				Type:            UserTypeClient,
+				Status:          UserStatusActive,
+				TwoFactorStatus: TwoFactorStatusDisabled,
+			},
+			TenantName: "Demo Reseller",
+			TenantSlug: "demo-reseller",
+		}},
+	}
+	handler := registerAdminReadTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/reseller/customers?status=active&email=buyer@example.com&display_id=20002&limit=10", nil)
+	request.Header.Set(tenant.HeaderTenantID, " reseller_tenant ")
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.listUserCalls != 1 {
+		t.Fatalf("expected list users once, got %d", service.listUserCalls)
+	}
+	if service.userFilter.TenantID != "reseller_tenant" || service.userFilter.Type != UserTypeClient ||
+		service.userFilter.Status != UserStatusActive || service.userFilter.Email != "buyer@example.com" ||
+		service.userFilter.DisplayID != 20002 || service.userFilter.Limit != 10 {
+		t.Fatalf("unexpected user filter: %+v", service.userFilter)
+	}
+	body := response.Body.String()
+	if !strings.Contains(body, `"display_id":20002`) || !strings.Contains(body, `"email":"buyer@example.com"`) {
+		t.Fatalf("expected reseller customer fields in response, got %s", body)
+	}
+}
+
 func TestAdminReadHTTPHandlerRejectsBadUserStatus(t *testing.T) {
 	service := &fakeAdminReadService{}
 	handler := registerAdminReadTestHandler(service)
@@ -150,6 +192,31 @@ func TestAdminReadHTTPHandlerAdminMiddlewareRunsBeforeService(t *testing.T) {
 	}).RegisterRoutes(mux)
 
 	request := httptest.NewRequest(http.MethodGet, "/admin/accounts", nil)
+	request.Header.Set(tenant.HeaderTenantID, "tenant_scope")
+	response := httptest.NewRecorder()
+
+	mux.ServeHTTP(response, request)
+
+	if response.Code != http.StatusForbidden {
+		t.Fatalf("expected status 403, got %d", response.Code)
+	}
+	if service.listUserCalls != 0 {
+		t.Fatalf("expected service not to run, got %d calls", service.listUserCalls)
+	}
+}
+
+func TestAdminReadHTTPHandlerResellerMiddlewareRunsBeforeService(t *testing.T) {
+	service := &fakeAdminReadService{}
+	mux := http.NewServeMux()
+	NewAdminReadHTTPHandlerWithOptions(service, AdminReadHTTPHandlerOptions{
+		ResellerMiddleware: func(next http.HandlerFunc) http.HandlerFunc {
+			return func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusForbidden)
+			}
+		},
+	}).RegisterRoutes(mux)
+
+	request := httptest.NewRequest(http.MethodGet, "/reseller/customers", nil)
 	request.Header.Set(tenant.HeaderTenantID, "tenant_scope")
 	response := httptest.NewRecorder()
 
