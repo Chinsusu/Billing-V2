@@ -1,8 +1,8 @@
 # T068 - Admin catalog and provider live views
 
-Status: TODO
-Owner: -
-Branch: feat/admin-catalog-provider-live-views
+Status: REVIEW
+Owner: Codex
+Branch: codex/t068-admin-catalog-provider-live
 PR: -
 Risk: frontend/API
 Created: 2026-04-24
@@ -38,3 +38,5 @@ Expose admin catalog/provider-source read APIs through the frontend API client a
 ## Agent Log
 
 - 2026-04-24: Task created after T066 completed and the admin frontend batch was refreshed.
+- 2026-04-24: Codex claimed the task and started wiring admin catalog/provider screens to live API data.
+- 2026-04-24: Added admin catalog/provider-source frontend API wrappers and wired product/provider screens to live data with explicit fallback states. Local audit, lint, and build passed.
