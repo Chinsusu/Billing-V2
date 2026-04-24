@@ -66,6 +66,22 @@ export const billingApi = {
     getApiData<TenantCatalog>("/reseller/catalog", "reseller", query),
   listResellerMasterPlans: (query: CatalogQuery = {}) =>
     getApiData<CatalogPlan[]>("/reseller/catalog/master-plans", "reseller", query),
+  listResellerCustomers: (query: AdminAccountQuery = {}) =>
+    getApiData<AdminAccount[]>("/reseller/customers", "reseller", query),
+  listResellerOrders: (query: AdminOrderQuery = {}) =>
+    getApiData<Order[]>("/reseller/orders", "reseller", query),
+  listResellerServices: (query: AdminServiceQuery = {}) =>
+    getApiData<ServiceInstance[]>("/reseller/services", "reseller", query),
+  listResellerInvoices: (query: AdminInvoiceQuery = {}) =>
+    getApiData<Invoice[]>("/reseller/invoices", "reseller", query),
+  listResellerTransactions: (query: AdminTransactionQuery = {}) =>
+    getApiData<PaymentTransaction[]>("/reseller/transactions", "reseller", query),
+  listResellerWallets: (query: AdminWalletQuery = {}) =>
+    getApiData<Wallet[]>("/reseller/wallets", "reseller", query),
+  listResellerWalletLedger: (walletId: string, query: LedgerQuery = {}) =>
+    getApiData<LedgerEntry[]>(`/reseller/wallets/${walletId}/ledger`, "reseller", query),
+  listResellerTopupRequests: (query: TopupRequestQuery = {}) =>
+    getApiData<TopupRequest[]>("/reseller/topup-requests", "reseller", query),
   cloneResellerCatalogProduct: (body: CloneTenantProductBody) =>
     postApiData<TenantCatalogProduct>("/reseller/catalog/products/clone", "reseller", body),
   cloneResellerCatalogPlan: (body: CloneTenantPlanBody) =>
