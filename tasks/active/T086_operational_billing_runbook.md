@@ -1,9 +1,9 @@
 # T086 - Operational billing runbook
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: codex/t086-operational-billing-runbook
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/196
 Risk: docs/ops
 Created: 2026-04-24
 Updated: 2026-04-24
@@ -33,3 +33,6 @@ Document the end-to-end billing operations flow, common failure modes, and rollb
 ## Agent Log
 
 - 2026-04-24: Task created after the checkout/payment/smoke batch to keep operational docs aligned with the live flow.
+- 2026-04-24: Codex claimed the task after T085 merged and started drafting the operational billing runbook from current API routes and smoke commands.
+- 2026-04-24: Added the billing operations runbook with normal flow, inspection commands, common failure handling, and rollback/recovery rules. Linked it from the local runbook and passed Go/frontend gates locally.
+- 2026-04-24: Opened PR https://github.com/Chinsusu/Billing-V2/pull/196 for review.

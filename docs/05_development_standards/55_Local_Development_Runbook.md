@@ -304,6 +304,8 @@ LIMIT 20;
 
 If payment returns `order.provisioning_source_not_found`, check that the order's tenant plan points to a master plan with an active `plan_sources` row and an active `provider_sources` row.
 
+For deeper billing operations checks, use `docs/05_development_standards/57_Billing_Operations_Runbook.md`.
+
 Yeu cau:
 
 - `DB_DSN` tro toi database local/dev da seed;
