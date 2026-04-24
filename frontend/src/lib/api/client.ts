@@ -7,6 +7,10 @@ export class BillingApiError extends Error {
   }
 }
 
+export interface PostApiOptions {
+  idempotencyKey?: string;
+}
+
 function hasQueryValue(value: ApiQueryValue): boolean {
   return value !== undefined && value !== null && String(value).trim() !== "";
 }
@@ -29,6 +33,13 @@ function buildApiPath(path: string, query?: ApiQuery): string {
   return `${path}?${queryString}`;
 }
 
+export function newIdempotencyKey(action: string): string {
+  const label = action.trim().toLowerCase().replace(/[^a-z0-9_-]+/g, "-") || "mutation";
+  const randomID = globalThis.crypto?.randomUUID?.();
+  const fallbackID = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  return `${label}:${randomID ?? fallbackID}`;
+}
+
 export async function getApiData<T>(path: string, actor: ApiActor, query?: ApiQuery): Promise<T> {
   if (!apiEnabled()) {
     throw new BillingApiError("API is not configured.");
@@ -46,16 +57,23 @@ export async function getApiData<T>(path: string, actor: ApiActor, query?: ApiQu
   return envelope.data;
 }
 
-export async function postApiData<T>(path: string, actor: ApiActor, body: ApiJson = {}): Promise<T> {
+export async function postApiData<T>(
+  path: string,
+  actor: ApiActor,
+  body: ApiJson = {},
+  options: PostApiOptions = {},
+): Promise<T> {
   if (!apiEnabled()) {
     throw new BillingApiError("API is not configured.");
   }
+  const headers = new Headers(actorHeaders(actor));
+  headers.set("Content-Type", "application/json");
+  if (options.idempotencyKey) {
+    headers.set("Idempotency-Key", options.idempotencyKey);
+  }
   const response = await fetch(apiBaseUrl() + path, {
     method: "POST",
-    headers: {
-      ...actorHeaders(actor),
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify(body ?? {}),
     cache: "no-store",
   });

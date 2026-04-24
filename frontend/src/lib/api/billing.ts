@@ -1,4 +1,4 @@
-import { getApiData, postApiData } from "./client";
+import { getApiData, newIdempotencyKey, postApiData } from "./client";
 import {
   AdminAccount,
   AdminAccountQuery,
@@ -18,7 +18,11 @@ import {
   CatalogProduct,
   CloneTenantPlanBody,
   CloneTenantProductBody,
+  CreateClientOrderBody,
+  CreateTopupRequestBody,
   Invoice,
+  InvoiceWalletPayment,
+  InvoiceWalletPaymentBody,
   LedgerEntry,
   LedgerQuery,
   Order,
@@ -47,6 +51,16 @@ export const billingApi = {
   listClientTransactions: () => getApiData<PaymentTransaction[]>("/client/transactions", "client"),
   listClientTopupRequests: (query: TopupRequestQuery = {}) =>
     getApiData<TopupRequest[]>("/client/topup-requests", "client", query),
+  createClientOrder: (body: CreateClientOrderBody, idempotencyKey = newIdempotencyKey("client-order")) =>
+    postApiData<Order>("/client/orders", "client", body, { idempotencyKey }),
+  createClientTopupRequest: (
+    body: CreateTopupRequestBody,
+    idempotencyKey = newIdempotencyKey("client-topup"),
+  ) => postApiData<TopupRequest>("/client/topup-requests", "client", body, { idempotencyKey }),
+  payClientInvoiceFromWallet: (
+    body: InvoiceWalletPaymentBody,
+    idempotencyKey = newIdempotencyKey("client-invoice-wallet-payment"),
+  ) => postApiData<InvoiceWalletPayment>("/client/invoice-wallet-payments", "client", body, { idempotencyKey }),
 
   listResellerCatalog: (query: TenantCatalogQuery = {}) =>
     getApiData<TenantCatalog>("/reseller/catalog", "reseller", query),
