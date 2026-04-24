@@ -1,6 +1,6 @@
 # T064 - Client portal dedicated screens
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t064-client-portal-screens
 PR: https://github.com/Chinsusu/Billing-V2/pull/147
@@ -40,3 +40,4 @@ Replace client portal screen reuse with dedicated screens so each navigation ite
 - 2026-04-24: Codex claimed the task after T063 merged and started splitting client portal screens.
 - 2026-04-24: PR #147 opened with dedicated client service, invoice, transaction, and settings screens.
 - 2026-04-24: Validation passed in `frontend`: `npm audit --omit=dev`, `npm run lint`, and `npm run build`.
+- 2026-04-24: PR #147 merged into `main` with commit `24432636e877da1101a1b9ccd8ba9535279245c2`.
