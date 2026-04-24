@@ -2,12 +2,12 @@
 
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
+import { fulfillmentForOrder, fulfillmentForService } from "@/lib/api/fulfillment";
 import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
-import type { Order, ServiceInstance } from "@/lib/api/types";
+import type { Order, ProvisioningJob, ServiceInstance } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { BANDWIDTH_SERVICES, PROXY_SERVICES, VPS_SERVICES } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
-import { fulfillmentForService } from "./fulfillment";
 
 type ResellerServiceCategory = "proxies" | "vps" | "bandwidth";
 
@@ -34,14 +34,25 @@ export function ResellerServices({ category }: ResellerServicesProps) {
     () => billingApi.listResellerCustomers({ limit: 100 }),
     "reseller-service-customers",
   );
+  const jobs = useApiResource(
+    () => billingApi.listResellerJobs({ job_type: "provider.provision", limit: 100 }),
+    "reseller-service-jobs",
+  );
   const usingLive = services.status === "success";
   const rows = usingLive
-    ? liveServiceRows(category, services.data ?? [], orders.data ?? [], customers.data ?? [])
+    ? liveServiceRows(category, services.data ?? [], orders.data ?? [], customers.data ?? [], jobs.data ?? [], jobs.status === "error")
     : demoServiceRows(category);
-  const attention = rows.filter((row) => row.status === "suspended" || row.status === "overdue").length;
+  const attention = rows.filter((row) =>
+    row.status === "suspended" ||
+    row.status === "overdue" ||
+    row.fulfillmentStatus === "manual_review" ||
+    row.fulfillmentStatus === "failed_retryable" ||
+    row.fulfillmentStatus === "failed_terminal" ||
+    row.fulfillmentStatus === "unknown"
+  ).length;
   const revenue = rows.reduce((total, row) => total + row.priceMinor, 0);
   const config = CONFIG[category];
-  const extraError = orders.error ?? customers.error;
+  const extraError = orders.error ?? customers.error ?? jobs.error;
   const source = services.status === "error"
     ? "Live API unavailable. Showing demo service data."
     : services.status === "loading"
@@ -76,7 +87,7 @@ export function ResellerServices({ category }: ResellerServicesProps) {
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={row.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
+                <tr key={`${row.id}:${row.order}`} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
                   <td className="p-4 text-[12px] text-[#D50C2D] font-medium">{row.id}</td>
                   <td className="p-4 text-[12px] text-gray-500">{row.order}</td>
                   <td className="p-4 font-medium text-gray-900">{row.label}</td>
@@ -170,19 +181,16 @@ function liveServiceRows(
   services: ServiceInstance[],
   orders: Order[],
   customers: { id: string; display_id: number; full_name: string; email: string }[],
+  jobs: ProvisioningJob[],
+  jobsUnavailable: boolean,
 ): ServiceRow[] {
   const ordersByID = new Map(orders.map((order) => [order.id, order]));
   const customerByID = new Map(customers.map((customer) => [customer.id, customer]));
-  return services
+  const serviceRows = services
     .map((service) => {
       const order = ordersByID.get(service.order_id);
-      const fulfillment = fulfillmentForService(service, order);
-      const text = `${snapshotText(order?.product_snapshot)} ${snapshotText(order?.plan_snapshot)} ${service.external_resource_id}`.toLowerCase();
-      const detected = text.includes("vps")
-        ? "vps"
-        : text.includes("bandwidth")
-          ? "bandwidth"
-          : "proxies";
+      const fulfillment = fulfillmentForService(service, order, { jobs, jobsUnavailable });
+      const detected = detectedCategory(`${snapshotText(order?.product_snapshot)} ${snapshotText(order?.plan_snapshot)} ${service.external_resource_id}`);
       const customer = order?.buyer_user_id ? customerByID.get(order.buyer_user_id) : undefined;
       return {
         id: recordLabel(service.display_id, "SVC-"),
@@ -201,8 +209,41 @@ function liveServiceRows(
         job: fulfillment.jobLabel,
         category: detected,
       };
-    })
+    });
+  const serviceOrderIDs = new Set(services.map((service) => service.order_id));
+  const pendingRows = orders
+    .filter((order) => order.order_status === "paid" && order.billing_status === "paid" && !serviceOrderIDs.has(order.id))
+    .map((order) => {
+      const fulfillment = fulfillmentForOrder(order, [], { jobs, jobsUnavailable });
+      const customer = order.buyer_user_id ? customerByID.get(order.buyer_user_id) : undefined;
+      const detected = detectedCategory(`${snapshotText(order.product_snapshot)} ${snapshotText(order.plan_snapshot)}`);
+      return {
+        id: "-",
+        order: fulfillment.orderLabel,
+        label: snapshotText(order.plan_snapshot) || fulfillment.label,
+        customer: customer
+          ? `${customer.full_name || customer.email} (${recordLabel(customer.display_id, "ACC-")})`
+          : "-",
+        region: snapshotText(order.product_snapshot, ["location", "region"]) || "-",
+        usage: `${recordLabel(order.display_id, "ORD-")} x ${order.quantity}`,
+        renewal: "-",
+        price: moneyMinor(order.total_minor, order.currency),
+        priceMinor: order.total_minor,
+        status: "pending",
+        fulfillmentStatus: fulfillment.status,
+        job: fulfillment.jobLabel,
+        category: detected,
+      };
+    });
+  return [...serviceRows, ...pendingRows]
     .filter((row) => row.category === category || (category === "proxies" && row.category !== "vps" && row.category !== "bandwidth"));
+}
+
+function detectedCategory(text: string): ResellerServiceCategory {
+  const value = text.toLowerCase();
+  if (value.includes("vps")) return "vps";
+  if (value.includes("bandwidth")) return "bandwidth";
+  return "proxies";
 }
 
 function snapshotText(value: unknown, keys = ["name", "plan_code", "product_type", "description"]): string {

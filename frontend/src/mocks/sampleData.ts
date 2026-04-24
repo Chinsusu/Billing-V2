@@ -10,16 +10,18 @@ export const STATUS_LABEL: Record<string, string> = {
   active: "Active", running: "Running", paid: "Paid", open: "Open",
   pending: "Pending", overdue: "Overdue", failed: "Failed",
   suspended: "Suspended", stopped: "Stopped", provisioning: "Provisioning",
-  manual_review: "Manual Review", queued: "Queued",
+  manual_review: "Manual Review", queued: "Queued", claimed: "Claimed",
+  succeeded: "Succeeded", failed_retryable: "Retryable", failed_terminal: "Terminal Failed",
+  cancelled: "Cancelled", unknown: "Unknown",
   pending_verification: "Pending", approved: "Approved", rejected: "Rejected",
 };
 
 export const STATUS_VARIANT: Record<string, "ok" | "warn" | "danger" | "info" | "muted"> = {
-  active: "ok", running: "ok", paid: "ok", approved: "ok",
-  open: "info", provisioning: "info",
-  pending: "warn", manual_review: "warn", pending_verification: "warn", queued: "warn",
-  overdue: "danger", failed: "danger", rejected: "danger",
-  suspended: "muted", stopped: "muted",
+  active: "ok", running: "info", paid: "ok", approved: "ok", succeeded: "ok",
+  open: "info", provisioning: "info", claimed: "info",
+  pending: "warn", manual_review: "warn", pending_verification: "warn", queued: "warn", failed_retryable: "warn",
+  overdue: "danger", failed: "danger", rejected: "danger", failed_terminal: "danger",
+  suspended: "muted", stopped: "muted", cancelled: "muted", unknown: "muted",
 };
 
 export function fmtMoney(v: number): string {

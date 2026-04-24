@@ -149,6 +149,27 @@ export interface ServiceInstance {
   updated_at?: string;
 }
 
+export interface ProvisioningJob {
+  id: string;
+  display_id: number;
+  tenant_id?: string;
+  job_type: string;
+  reference_type: string;
+  reference_id: string;
+  source_id?: string;
+  status: string;
+  priority: number;
+  attempt_count: number;
+  max_attempts: number;
+  next_attempt_at?: string; locked_by?: string; locked_until?: string;
+  last_error_code?: string;
+  last_error_message_redacted?: string;
+  manual_review_reason?: string;
+  correlation_id?: string;
+  created_at: string;
+  updated_at?: string; finished_at?: string;
+}
+
 export interface AuditLog {
   id: string;
   display_id: number;
@@ -426,6 +447,11 @@ export interface AdminServiceQuery extends PageQuery {
   order_id?: string;
   order_display_id?: string;
   status?: string;
+}
+
+export interface JobQuery extends PageQuery {
+  display_id?: string; job_type?: string; status?: string;
+  reference_type?: string; reference_id?: string; source_id?: string;
 }
 
 export interface AdminWalletQuery extends PageQuery {

@@ -2,11 +2,11 @@
 
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
+import { fulfillmentForOrder } from "@/lib/api/fulfillment";
 import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { INVOICES, TRANSACTIONS } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
-import { fulfillmentForOrder } from "./fulfillment";
 
 type BillingKind = "invoices" | "transactions";
 
@@ -32,13 +32,20 @@ function ResellerInvoices() {
     () => billingApi.listResellerServices({ limit: 100 }),
     "reseller-invoice-services",
   );
+  const jobs = useApiResource(
+    () => billingApi.listResellerJobs({ job_type: "provider.provision", limit: 100 }),
+    "reseller-invoice-jobs",
+  );
   const customerByID = new Map((customers.data ?? []).map((customer) => [customer.id, customer]));
   const orderByID = new Map((orders.data ?? []).map((order) => [order.id, order]));
   const usingLive = invoices.status === "success";
   const rows = usingLive
     ? (invoices.data ?? []).map((invoice) => {
         const customer = customerByID.get(invoice.buyer_user_id);
-        const fulfillment = fulfillmentForOrder(invoice.order_id ? orderByID.get(invoice.order_id) : undefined, services.data ?? []);
+        const fulfillment = fulfillmentForOrder(invoice.order_id ? orderByID.get(invoice.order_id) : undefined, services.data ?? [], {
+          jobs: jobs.data ?? [],
+          jobsUnavailable: jobs.status === "error",
+        });
         return {
           id: recordLabel(invoice.display_id, "INV-"),
           order: fulfillment.orderLabel,
@@ -64,7 +71,7 @@ function ResellerInvoices() {
       }));
   const open = rows.filter((invoice) => invoice.status !== "paid").length;
   const total = rows.reduce((sum, invoice) => sum + invoice.amountMinor, 0);
-  const extraError = orders.error ?? services.error ?? customers.error;
+  const extraError = orders.error ?? services.error ?? customers.error ?? jobs.error;
 
   return (
     <BillingShell title="Invoices" records={rows.length} open={open} total={moneyMinor(total)} source={sourceText(invoices.status, usingLive, extraError)}>
@@ -117,13 +124,20 @@ function ResellerTransactions() {
     () => billingApi.listResellerServices({ limit: 100 }),
     "reseller-transaction-services",
   );
+  const jobs = useApiResource(
+    () => billingApi.listResellerJobs({ job_type: "provider.provision", limit: 100 }),
+    "reseller-transaction-jobs",
+  );
   const customerByID = new Map((customers.data ?? []).map((customer) => [customer.id, customer]));
   const orderByID = new Map((orders.data ?? []).map((order) => [order.id, order]));
   const usingLive = transactions.status === "success";
   const rows = usingLive
     ? (transactions.data ?? []).map((transaction) => {
         const customer = customerByID.get(transaction.account_user_id);
-        const fulfillment = fulfillmentForOrder(transaction.order_id ? orderByID.get(transaction.order_id) : undefined, services.data ?? []);
+        const fulfillment = fulfillmentForOrder(transaction.order_id ? orderByID.get(transaction.order_id) : undefined, services.data ?? [], {
+          jobs: jobs.data ?? [],
+          jobsUnavailable: jobs.status === "error",
+        });
         return {
           id: recordLabel(transaction.display_id, "TX-"),
           time: compactDateTime(transaction.created_at),
@@ -151,7 +165,7 @@ function ResellerTransactions() {
       }));
   const failed = rows.filter((txn) => txn.status === "failed").length;
   const total = rows.reduce((sum, txn) => sum + txn.amountMinor, 0);
-  const extraError = orders.error ?? services.error ?? customers.error;
+  const extraError = orders.error ?? services.error ?? customers.error ?? jobs.error;
 
   return (
     <BillingShell title="Transactions" records={rows.length} open={failed} total={moneyMinor(total)} openLabel="Failed" source={sourceText(transactions.status, usingLive, extraError)}>
