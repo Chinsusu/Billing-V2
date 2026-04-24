@@ -1,7 +1,7 @@
 # T071 - Admin accounts read API
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t071-admin-accounts-read-api
 PR: -
 Risk: backend/API
@@ -37,3 +37,5 @@ Add small admin read APIs for tenants and account users so admin account screens
 ## Agent Log
 
 - 2026-04-24: Task created after closing stale PR #80 and refreshing the board for the next live workflow batch.
+- 2026-04-24: Codex claimed the task and started adding admin tenant/account read APIs from latest main.
+- 2026-04-24: Added tenant/account read stores, admin read routes, app/runtime wiring, seed permission support, API docs, and route tests. Local `go test ./...` and backend builds passed using the installed Go toolchain.

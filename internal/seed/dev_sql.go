@@ -103,6 +103,7 @@ JOIN permissions permission ON permission.permission_key IN (
     'provider.view',
     'wallet.view',
     'wallet.topup.approve',
+    'tenant.view',
     'order.view',
     'order.manage',
     'service.view',

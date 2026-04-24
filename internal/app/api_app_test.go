@@ -68,6 +68,7 @@ func TestHealthEndpointRejectsUnsupportedMethod(t *testing.T) {
 
 func TestNewAPIWithOptionsRegistersOptionalRoutes(t *testing.T) {
 	api, err := NewAPIWithOptions(testAPIConfig(), logger.New(&bytes.Buffer{}, config.LogLevelDebug), APIOptions{
+		AccountRoutes: testAccountRouteRegistrar{},
 		CatalogRoutes: testRouteRegistrar{},
 		InvoiceRoutes: testInvoiceRouteRegistrar{},
 		OrderRoutes:   testOrderRouteRegistrar{},
@@ -85,6 +86,12 @@ func TestNewAPIWithOptionsRegistersOptionalRoutes(t *testing.T) {
 
 	if response.Code != http.StatusNoContent {
 		t.Fatalf("expected status 204, got %d", response.Code)
+	}
+
+	accountResponse := httptest.NewRecorder()
+	api.Handler().ServeHTTP(accountResponse, httptest.NewRequest(http.MethodGet, "/account-test", nil))
+	if accountResponse.Code != http.StatusNoContent {
+		t.Fatalf("expected account route status 204, got %d", accountResponse.Code)
 	}
 
 	paymentResponse := httptest.NewRecorder()
@@ -110,6 +117,12 @@ type testRouteRegistrar struct{}
 
 func (testRouteRegistrar) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/catalog-test", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusNoContent) })
+}
+
+type testAccountRouteRegistrar struct{}
+
+func (testAccountRouteRegistrar) RegisterRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("/account-test", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusNoContent) })
 }
 
 type testOrderRouteRegistrar struct{}

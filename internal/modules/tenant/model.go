@@ -68,6 +68,21 @@ type Tenant struct {
 	UpdatedAt        time.Time
 }
 
+type ListTenantsFilter struct {
+	ScopeTenantID ID
+	ParentID      ID
+	Type          Type
+	Status        Status
+	DisplayID     int64
+	Limit         int
+}
+
+type TenantSummary struct {
+	Tenant        Tenant
+	PrimaryDomain string
+	UserCount     int64
+}
+
 type CreateTenantInput struct {
 	ParentID         ID
 	Type             Type

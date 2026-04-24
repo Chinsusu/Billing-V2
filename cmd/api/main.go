@@ -17,6 +17,7 @@ import (
 	"github.com/Chinsusu/Billing-V2/internal/modules/order"
 	"github.com/Chinsusu/Billing-V2/internal/modules/payment"
 	"github.com/Chinsusu/Billing-V2/internal/modules/rbac"
+	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
 	"github.com/Chinsusu/Billing-V2/internal/modules/wallet"
 	"github.com/Chinsusu/Billing-V2/internal/platform/config"
 	platformdb "github.com/Chinsusu/Billing-V2/internal/platform/db"
@@ -73,6 +74,7 @@ func newRuntime(ctx context.Context, cfg config.Config, log *logger.Logger, open
 			return nil, fmt.Errorf("open api database: %w", err)
 		}
 		cleanup = conn.Close
+		options.AccountRoutes = newAccountRoutes(conn)
 		options.AuditRoutes = newAuditRoutes(conn)
 		options.CatalogRoutes = newCatalogRoutes(conn)
 		options.InvoiceRoutes = newInvoiceRoutes(conn)
@@ -90,6 +92,14 @@ func newRuntime(ctx context.Context, cfg config.Config, log *logger.Logger, open
 		api:     api,
 		cleanup: cleanup,
 	}, nil
+}
+
+func newAccountRoutes(executor platformdb.Executor) app.RouteRegistrar {
+	service := identity.NewAdminReadService(tenant.NewPostgresStore(executor), identity.NewPostgresUserStore(executor))
+	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
+	return identity.NewAdminReadHTTPHandlerWithOptions(service, identity.AdminReadHTTPHandlerOptions{
+		AdminMiddleware: accountAuthMiddleware(authorizer, rbac.PermissionTenantView, rbac.RiskLow),
+	})
 }
 
 func newAuditRoutes(executor platformdb.Executor) app.RouteRegistrar {
@@ -177,6 +187,31 @@ func chainAuditMiddleware(middlewares ...audit.RouteMiddleware) audit.RouteMiddl
 }
 
 func wrapAuditMiddleware(middleware func(http.Handler) http.Handler) audit.RouteMiddleware {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		return middleware(http.HandlerFunc(next)).ServeHTTP
+	}
+}
+
+func accountAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) identity.AdminReadRouteMiddleware {
+	return chainAccountMiddleware(
+		wrapAccountMiddleware(identity.HeaderActorMiddleware),
+		identity.AdminReadRouteMiddleware(rbac.RequirePermission(authorizer, permission, risk)),
+	)
+}
+
+func chainAccountMiddleware(middlewares ...identity.AdminReadRouteMiddleware) identity.AdminReadRouteMiddleware {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		for index := len(middlewares) - 1; index >= 0; index-- {
+			if middlewares[index] == nil {
+				continue
+			}
+			next = middlewares[index](next)
+		}
+		return next
+	}
+}
+
+func wrapAccountMiddleware(middleware func(http.Handler) http.Handler) identity.AdminReadRouteMiddleware {
 	return func(next http.HandlerFunc) http.HandlerFunc {
 		return middleware(http.HandlerFunc(next)).ServeHTTP
 	}
