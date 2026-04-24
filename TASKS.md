@@ -30,9 +30,9 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Snapshot taken during board cleanup on `2026-04-24`:
+Current board snapshot on `2026-04-24` after opening the next batch:
 
-- `TODO`: 0
+- `TODO`: 4
 - `IN_PROGRESS`: 0
 - `REVIEW`: 0
 - `BLOCKED`: 0
@@ -57,7 +57,14 @@ Snapshot taken during board cleanup on `2026-04-24`:
 
 ## Active Tasks
 
-There are no active tasks in the current board snapshot.
+Current batch focuses on finishing the next portal/frontend slice without overlapping write scope.
+
+| ID | Task File | Suggested Branch | Risk | Summary |
+| --- | --- | --- | --- | --- |
+| T063 | [tasks/active/T063_frontend_api_surface_expansion.md](tasks/active/T063_frontend_api_surface_expansion.md) | feat/frontend-api-surface-expansion | frontend/API | Expand shared frontend API types, actors, and wrappers for the next portal batch. |
+| T064 | [tasks/active/T064_client_portal_screen_split.md](tasks/active/T064_client_portal_screen_split.md) | feat/client-portal-screen-split | frontend/client | Replace client portal screen reuse with dedicated screens and live billing views. |
+| T065 | [tasks/active/T065_reseller_portal_screen_split.md](tasks/active/T065_reseller_portal_screen_split.md) | feat/reseller-portal-screen-split | frontend/reseller | Replace reseller portal screen reuse and wire the catalog view to live reseller catalog APIs. |
+| T066 | [tasks/active/T066_admin_ops_read_models.md](tasks/active/T066_admin_ops_read_models.md) | feat/admin-ops-read-models | frontend/admin | Wire admin top-up and overview read surfaces to live backend data where endpoints already exist. |
 
 ## Done Task Files
 
