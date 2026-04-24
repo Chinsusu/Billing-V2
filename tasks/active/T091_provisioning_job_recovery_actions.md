@@ -1,9 +1,9 @@
 # T091 - Provisioning job recovery actions
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t091-provisioning-job-recovery-actions
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/207
 Risk: backend/ops
 Created: 2026-04-24
 Updated: 2026-04-24
@@ -36,3 +36,4 @@ Add guarded admin operations for provisioning job recovery after the read APIs a
 
 - 2026-04-24: Task created in the provisioning operations batch after T086.
 - 2026-04-24: Codex claimed the task on `codex/t091-provisioning-job-recovery-actions`.
+- 2026-04-24: Implementation pushed for review in PR #207.
