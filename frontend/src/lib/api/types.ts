@@ -351,6 +351,12 @@ export interface InvoiceWalletPayment {
     paid_at?: string;
   };
   transaction: PaymentTransaction;
+  order?: {
+    id: string;
+    display_id: number;
+    order_status: string;
+    billing_status: string;
+  };
   ledger?: {
     id: string;
     display_id: number;
