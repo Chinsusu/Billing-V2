@@ -1,6 +1,6 @@
 # T066 - Admin ops read models
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t066-admin-ops-read-models
 PR: https://github.com/Chinsusu/Billing-V2/pull/151
@@ -39,3 +39,4 @@ Wire the admin operational billing surfaces to live read models where backend en
 - 2026-04-24: Task created for the next admin frontend batch after invoices, transactions, and logs filters were completed.
 - 2026-04-24: Codex claimed the task and started wiring admin read models to live API data.
 - 2026-04-24: Admin top-ups and overview now consume live read APIs with explicit demo fallback states. Local audit, lint, and build passed.
+- 2026-04-24: PR #151 merged into `main` with commit `35d4957372a15419df5aa8361e25bcb90b1b73a2`.
