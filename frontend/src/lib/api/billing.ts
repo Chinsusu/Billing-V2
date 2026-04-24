@@ -1,4 +1,5 @@
 import { getApiData, newIdempotencyKey, postApiData } from "./client";
+import type { JobAttemptQuery, ProvisioningJobAttempt } from "./jobTypes";
 import {
   AdminAccount,
   AdminAccountQuery,
@@ -116,6 +117,8 @@ export const billingApi = {
     getApiData<ServiceInstance[]>("/admin/services", "admin", query),
   listAdminJobs: (query: JobQuery = {}) =>
     getApiData<ProvisioningJob[]>("/admin/jobs", "admin", query),
+  listAdminJobAttempts: (id: string, query: JobAttemptQuery = {}) =>
+    getApiData<ProvisioningJobAttempt[]>(`/admin/jobs/${encodeURIComponent(id)}/attempts`, "admin", query),
   retryAdminJob: (id: string, body: { next_attempt_at?: string } = {}) =>
     postApiData<ProvisioningJob>(`/admin/jobs/${encodeURIComponent(id)}/retry`, "admin", body),
   markAdminJobManualReview: (id: string, body: { reason: string }) =>
