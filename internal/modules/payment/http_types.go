@@ -78,6 +78,7 @@ type invoiceWalletPaymentResponse struct {
 	Invoice     invoiceWalletPaymentInvoiceResponse `json:"invoice"`
 	Transaction transactionResponse                 `json:"transaction"`
 	Ledger      *invoiceWalletPaymentLedgerResponse `json:"ledger,omitempty"`
+	Order       *invoiceWalletPaymentOrderResponse  `json:"order,omitempty"`
 }
 
 type invoiceWalletPaymentInvoiceResponse struct {
@@ -99,6 +100,13 @@ type invoiceWalletPaymentLedgerResponse struct {
 	Currency          string               `json:"currency"`
 	AmountMinor       int64                `json:"amount_minor"`
 	BalanceAfterMinor int64                `json:"balance_after_minor"`
+}
+
+type invoiceWalletPaymentOrderResponse struct {
+	ID            order.OrderID       `json:"id"`
+	DisplayID     int64               `json:"display_id"`
+	OrderStatus   order.OrderStatus   `json:"order_status"`
+	BillingStatus order.BillingStatus `json:"billing_status"`
 }
 
 func newInvoiceWalletPaymentResponse(result WalletInvoicePayment) invoiceWalletPaymentResponse {
@@ -125,6 +133,14 @@ func newInvoiceWalletPaymentResponse(result WalletInvoicePayment) invoiceWalletP
 			Currency:          result.LedgerEntry.Currency,
 			AmountMinor:       result.LedgerEntry.AmountMinor,
 			BalanceAfterMinor: result.LedgerEntry.BalanceAfterMinor,
+		}
+	}
+	if !result.Order.ID.Empty() {
+		response.Order = &invoiceWalletPaymentOrderResponse{
+			ID:            result.Order.ID,
+			DisplayID:     result.Order.DisplayID,
+			OrderStatus:   result.Order.OrderStatus,
+			BillingStatus: result.Order.BillingStatus,
 		}
 	}
 	return response

@@ -8,6 +8,7 @@ import (
 
 	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
 	"github.com/Chinsusu/Billing-V2/internal/modules/invoice"
+	"github.com/Chinsusu/Billing-V2/internal/modules/order"
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
 	"github.com/Chinsusu/Billing-V2/internal/modules/wallet"
 )
@@ -22,6 +23,10 @@ type InvoicePaymentStore interface {
 type WalletPaymentService interface {
 	GetWallet(ctx context.Context, lookup wallet.WalletLookup) (wallet.Wallet, error)
 	PostLedgerEntry(ctx context.Context, input wallet.PostLedgerEntryInput) (wallet.LedgerEntry, error)
+}
+
+type OrderPaymentFinalizer interface {
+	FinalizePayment(ctx context.Context, input order.FinalizePaymentInput) (order.Order, error)
 }
 
 type WalletInvoicePaymentStore interface {
@@ -40,6 +45,7 @@ type WalletInvoicePayment struct {
 	Invoice               invoice.InvoiceDetail
 	Transaction           Transaction
 	LedgerEntry           wallet.LedgerEntry
+	Order                 order.Order
 	PreviousInvoiceStatus invoice.Status
 }
 
@@ -73,6 +79,7 @@ func payInvoiceFromWallet(
 	transactionStore Store,
 	invoiceStore InvoicePaymentStore,
 	walletService WalletPaymentService,
+	orderFinalizer OrderPaymentFinalizer,
 	input PayInvoiceFromWalletInput,
 ) (WalletInvoicePayment, error) {
 	detail, err := invoiceStore.GetInvoice(ctx, invoice.InvoiceLookup{ID: input.InvoiceID, TenantID: input.TenantID})
@@ -94,7 +101,11 @@ func payInvoiceFromWallet(
 		if err := ensureTransactionMatchesInvoice(transaction, detail.Invoice); err != nil {
 			return WalletInvoicePayment{}, err
 		}
-		return WalletInvoicePayment{Invoice: detail, Transaction: transaction}, nil
+		paidOrder, err := finalizeWalletPaymentOrder(ctx, orderFinalizer, detail.Invoice)
+		if err != nil {
+			return WalletInvoicePayment{}, err
+		}
+		return WalletInvoicePayment{Invoice: detail, Transaction: transaction, Order: paidOrder}, nil
 	}
 	if !invoicePayableStatus(detail.Invoice.Status) {
 		return WalletInvoicePayment{}, ErrInvoiceNotPayable
@@ -156,12 +167,32 @@ func payInvoiceFromWallet(
 	if err != nil {
 		return WalletInvoicePayment{}, err
 	}
+	paidOrder, err := finalizeWalletPaymentOrder(ctx, orderFinalizer, paidInvoice.Invoice)
+	if err != nil {
+		return WalletInvoicePayment{}, err
+	}
 	return WalletInvoicePayment{
 		Invoice:               paidInvoice,
 		Transaction:           transaction,
 		LedgerEntry:           ledgerEntry,
+		Order:                 paidOrder,
 		PreviousInvoiceStatus: detail.Invoice.Status,
 	}, nil
+}
+
+func finalizeWalletPaymentOrder(
+	ctx context.Context,
+	finalizer OrderPaymentFinalizer,
+	record invoice.Invoice,
+) (order.Order, error) {
+	if finalizer == nil || record.OrderID.Empty() {
+		return order.Order{}, nil
+	}
+	return finalizer.FinalizePayment(ctx, order.FinalizePaymentInput{
+		ID:          record.OrderID,
+		TenantID:    record.TenantID,
+		BuyerUserID: record.BuyerUserID,
+	})
 }
 
 func invoicePayableStatus(status invoice.Status) bool {

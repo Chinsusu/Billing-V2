@@ -47,6 +47,38 @@ func TestPayInvoiceFromWalletPaysIssuedInvoice(t *testing.T) {
 	}
 }
 
+func TestPayInvoiceFromWalletFinalizesRelatedOrder(t *testing.T) {
+	invoiceStore := &fakePaymentInvoiceStore{detail: walletPaymentInvoice(invoice.StatusIssued)}
+	walletService := &fakePaymentWalletService{record: walletPaymentWallet(2500, "USD")}
+	transactionStore := &fakeWalletPaymentTransactionStore{}
+	orderFinalizer := &fakeOrderPaymentFinalizer{record: walletPaymentOrder()}
+
+	result, err := payInvoiceFromWallet(
+		context.Background(),
+		transactionStore,
+		invoiceStore,
+		walletService,
+		orderFinalizer,
+		walletPaymentInput(),
+	)
+	if err != nil {
+		t.Fatalf("expected payment result: %v", err)
+	}
+	if orderFinalizer.calls != 1 {
+		t.Fatalf("expected one order finalization, got %d", orderFinalizer.calls)
+	}
+	if orderFinalizer.input.ID != order.OrderID("order-1") ||
+		orderFinalizer.input.TenantID != tenant.ID("tenant-1") ||
+		orderFinalizer.input.BuyerUserID != identity.UserID("buyer-1") {
+		t.Fatalf("unexpected order finalization input: %+v", orderFinalizer.input)
+	}
+	if result.Order.ID != order.OrderID("order-1") ||
+		result.Order.OrderStatus != order.OrderStatusPaid ||
+		result.Order.BillingStatus != order.BillingStatusPaid {
+		t.Fatalf("expected paid order result, got %+v", result.Order)
+	}
+}
+
 func TestPayInvoiceFromWalletReturnsPaidDuplicateByIdempotency(t *testing.T) {
 	invoiceStore := &fakePaymentInvoiceStore{detail: walletPaymentInvoice(invoice.StatusPaid)}
 	transactionStore := &fakeWalletPaymentTransactionStore{existing: walletPaymentTransaction()}
@@ -68,6 +100,79 @@ func TestPayInvoiceFromWalletReturnsPaidDuplicateByIdempotency(t *testing.T) {
 	}
 	if auditLog.calls != 0 {
 		t.Fatalf("expected no duplicate audit event, got %d", auditLog.calls)
+	}
+}
+
+func TestPayInvoiceFromWalletFinalizesOrderForPaidDuplicate(t *testing.T) {
+	invoiceStore := &fakePaymentInvoiceStore{detail: walletPaymentInvoice(invoice.StatusPaid)}
+	transactionStore := &fakeWalletPaymentTransactionStore{existing: walletPaymentTransaction()}
+	orderFinalizer := &fakeOrderPaymentFinalizer{record: walletPaymentOrder()}
+
+	result, err := payInvoiceFromWallet(
+		context.Background(),
+		transactionStore,
+		invoiceStore,
+		&fakePaymentWalletService{},
+		orderFinalizer,
+		walletPaymentInput(),
+	)
+	if err != nil {
+		t.Fatalf("expected duplicate result: %v", err)
+	}
+	if transactionStore.lookupCalls != 1 || transactionStore.createCalls != 0 || invoiceStore.markPaidCalls != 0 {
+		t.Fatalf("expected duplicate lookup only, got lookups=%d creates=%d paid=%d", transactionStore.lookupCalls, transactionStore.createCalls, invoiceStore.markPaidCalls)
+	}
+	if orderFinalizer.calls != 1 || result.Order.ID != order.OrderID("order-1") {
+		t.Fatalf("expected duplicate order finalization, calls=%d order=%+v", orderFinalizer.calls, result.Order)
+	}
+}
+
+func TestPayInvoiceFromWalletSkipsOrderFinalizationWhenInvoiceHasNoOrder(t *testing.T) {
+	detail := walletPaymentInvoice(invoice.StatusIssued)
+	detail.Invoice.OrderID = ""
+	invoiceStore := &fakePaymentInvoiceStore{detail: detail}
+	walletService := &fakePaymentWalletService{record: walletPaymentWallet(2500, "USD")}
+	transactionStore := &fakeWalletPaymentTransactionStore{}
+	orderFinalizer := &fakeOrderPaymentFinalizer{record: walletPaymentOrder()}
+
+	result, err := payInvoiceFromWallet(
+		context.Background(),
+		transactionStore,
+		invoiceStore,
+		walletService,
+		orderFinalizer,
+		walletPaymentInput(),
+	)
+	if err != nil {
+		t.Fatalf("expected payment without order: %v", err)
+	}
+	if orderFinalizer.calls != 0 {
+		t.Fatalf("expected no order finalization, got %d", orderFinalizer.calls)
+	}
+	if !result.Order.ID.Empty() || result.Transaction.OrderID != "" {
+		t.Fatalf("expected no order in result, got order=%+v transaction=%+v", result.Order, result.Transaction)
+	}
+}
+
+func TestPayInvoiceFromWalletReturnsOrderFinalizationConflict(t *testing.T) {
+	invoiceStore := &fakePaymentInvoiceStore{detail: walletPaymentInvoice(invoice.StatusIssued)}
+	walletService := &fakePaymentWalletService{record: walletPaymentWallet(2500, "USD")}
+	transactionStore := &fakeWalletPaymentTransactionStore{}
+	orderFinalizer := &fakeOrderPaymentFinalizer{err: order.ErrOrderStatusConflict}
+
+	_, err := payInvoiceFromWallet(
+		context.Background(),
+		transactionStore,
+		invoiceStore,
+		walletService,
+		orderFinalizer,
+		walletPaymentInput(),
+	)
+	if !errors.Is(err, order.ErrOrderStatusConflict) {
+		t.Fatalf("expected order conflict, got %v", err)
+	}
+	if orderFinalizer.calls != 1 {
+		t.Fatalf("expected order finalization attempt, got %d", orderFinalizer.calls)
 	}
 }
 
@@ -244,6 +349,17 @@ func walletPaymentTransaction() Transaction {
 	}
 }
 
+func walletPaymentOrder() order.Order {
+	return order.Order{
+		ID:            order.OrderID("order-1"),
+		DisplayID:     40001,
+		TenantID:      tenant.ID("tenant-1"),
+		BuyerUserID:   identity.UserID("buyer-1"),
+		OrderStatus:   order.OrderStatusPaid,
+		BillingStatus: order.BillingStatusPaid,
+	}
+}
+
 type fakeWalletPaymentTransactionStore struct {
 	existing    Transaction
 	getErr      error
@@ -255,7 +371,17 @@ type fakeWalletPaymentTransactionStore struct {
 func (store *fakeWalletPaymentTransactionStore) CreateTransaction(ctx context.Context, input CreateTransactionInput) (Transaction, error) {
 	store.createCalls++
 	store.createInput = input.Normalize()
-	return walletPaymentTransaction(), nil
+	transaction := walletPaymentTransaction()
+	transaction.TenantID = store.createInput.TenantID
+	transaction.AccountUserID = store.createInput.AccountUserID
+	transaction.OrderID = store.createInput.OrderID
+	transaction.InvoiceID = store.createInput.InvoiceID
+	transaction.Type = store.createInput.Type
+	transaction.Status = store.createInput.Status
+	transaction.Currency = store.createInput.Currency
+	transaction.AmountMinor = store.createInput.AmountMinor
+	transaction.IdempotencyKey = store.createInput.IdempotencyKey
+	return transaction, nil
 }
 
 func (store *fakeWalletPaymentTransactionStore) ListTransactions(ctx context.Context, filter TransactionFilter) ([]Transaction, error) {
@@ -335,4 +461,20 @@ func (appender *fakePaymentAuditAppender) Append(ctx context.Context, input audi
 		return audit.Log{}, appender.err
 	}
 	return audit.Log{Action: input.Action}, nil
+}
+
+type fakeOrderPaymentFinalizer struct {
+	record order.Order
+	input  order.FinalizePaymentInput
+	err    error
+	calls  int
+}
+
+func (finalizer *fakeOrderPaymentFinalizer) FinalizePayment(ctx context.Context, input order.FinalizePaymentInput) (order.Order, error) {
+	finalizer.calls++
+	finalizer.input = input.Normalize()
+	if finalizer.err != nil {
+		return order.Order{}, finalizer.err
+	}
+	return finalizer.record, nil
 }
