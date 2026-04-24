@@ -7,6 +7,14 @@ export class BillingApiError extends Error {
   }
 }
 
+interface ApiErrorBody {
+  error?: {
+    code?: string;
+    message?: string;
+    fields?: Array<{ message?: string }>;
+  };
+}
+
 export interface PostApiOptions {
   idempotencyKey?: string;
 }
@@ -51,7 +59,7 @@ export async function getApiData<T>(path: string, actor: ApiActor, query?: ApiQu
   });
   const body = await response.text();
   if (!response.ok) {
-    throw new BillingApiError(body || response.statusText, response.status);
+    throw new BillingApiError(apiErrorMessage(body, response.statusText), response.status);
   }
   const envelope = JSON.parse(body) as ApiEnvelope<T>;
   return envelope.data;
@@ -79,8 +87,21 @@ export async function postApiData<T>(
   });
   const responseBody = await response.text();
   if (!response.ok) {
-    throw new BillingApiError(responseBody || response.statusText, response.status);
+    throw new BillingApiError(apiErrorMessage(responseBody, response.statusText), response.status);
   }
   const envelope = JSON.parse(responseBody) as ApiEnvelope<T>;
   return envelope.data;
+}
+
+function apiErrorMessage(body: string, fallback: string): string {
+  if (!body) {
+    return fallback;
+  }
+  try {
+    const parsed = JSON.parse(body) as ApiErrorBody;
+    const fieldMessage = parsed.error?.fields?.find((field) => field.message)?.message;
+    return fieldMessage ?? parsed.error?.message ?? fallback;
+  } catch {
+    return body;
+  }
 }

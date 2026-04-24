@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
-import { jobStatusLabel } from "@/lib/api/fulfillment";
+import { canCancelJob, canMarkJobManualReview, canRetryJob, jobStatusLabel } from "@/lib/api/fulfillment";
 import { compactDateTime, recordLabel, shortID } from "@/lib/api/format";
 import type { CatalogProviderSource, Order, ProvisioningJob, ServiceInstance } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
@@ -10,6 +11,8 @@ import { PROVISIONING_JOBS } from "@/mocks/billingData";
 
 interface ProvisioningRow {
   id: string;
+  apiId?: string;
+  live: boolean;
   order: string;
   service: string;
   tenant: string;
@@ -18,24 +21,39 @@ interface ProvisioningRow {
   attempt: string;
   created: string;
   error: string;
+  canRetry: boolean;
+  canReview: boolean;
+  canCancel: boolean;
+}
+
+type JobAction = "retry" | "manual-review" | "cancel";
+
+interface ActionState {
+  id: string;
+  action: JobAction;
+  status: "running" | "success" | "error";
+  message: string;
 }
 
 export function AdminProvisioning() {
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [manualReasons, setManualReasons] = useState<Record<string, string>>({});
+  const [actionState, setActionState] = useState<ActionState | null>(null);
   const jobs = useApiResource(
     () => billingApi.listAdminJobs({ job_type: "provider.provision", limit: 100 }),
-    "admin-provisioning-jobs",
+    `admin-provisioning-jobs:${refreshKey}`,
   );
   const orders = useApiResource(
     () => billingApi.listAdminOrders({ limit: 100 }),
-    "admin-provisioning-orders",
+    `admin-provisioning-orders:${refreshKey}`,
   );
   const services = useApiResource(
     () => billingApi.listAdminServices({ limit: 100 }),
-    "admin-provisioning-services",
+    `admin-provisioning-services:${refreshKey}`,
   );
   const providers = useApiResource(
     () => billingApi.listAdminProviderSources({ limit: 100 }),
-    "admin-provisioning-providers",
+    `admin-provisioning-providers:${refreshKey}`,
   );
   const usingLive = jobs.status === "success";
   const rows = usingLive
@@ -44,13 +62,56 @@ export function AdminProvisioning() {
   const manualReview = rows.filter((row) => row.status === "manual_review");
   const failed = rows.filter((row) => row.status === "failed_retryable" || row.status === "failed_terminal" || row.status === "failed").length;
   const extraError = orders.error ?? services.error ?? providers.error;
-  const source = jobs.status === "error"
-    ? "Live job API unavailable. Showing demo queue data."
-    : jobs.status === "loading"
-      ? "Refreshing live provisioning jobs..."
-      : usingLive
-        ? extraError ? "Live jobs loaded. Order or service links may be incomplete." : "Live provisioning jobs"
-        : "Demo provisioning jobs";
+  let source = "Demo provisioning jobs";
+  if (jobs.status === "error") {
+    source = "Live job API unavailable. Showing demo queue data.";
+  } else if (jobs.status === "loading") {
+    source = "Refreshing live provisioning jobs...";
+  } else if (usingLive) {
+    source = extraError ? "Live jobs loaded. Order or service links may be incomplete." : "Live provisioning jobs";
+  }
+
+  function updateManualReason(jobID: string, reason: string) {
+    setManualReasons((current) => ({ ...current, [jobID]: reason }));
+  }
+
+  async function runJobAction(row: ProvisioningRow, action: JobAction) {
+    if (!row.apiId) return;
+    const reason = (manualReasons[row.apiId] ?? "").trim();
+    if (action === "manual-review" && reason === "") {
+      setActionState({
+        id: row.apiId,
+        action,
+        status: "error",
+        message: "Manual review reason is required.",
+      });
+      return;
+    }
+    if (action !== "manual-review" && !window.confirm(jobActionConfirmText(row, action))) {
+      return;
+    }
+
+    setActionState({ id: row.apiId, action, status: "running", message: "Submitting..." });
+    try {
+      if (action === "retry") {
+        await billingApi.retryAdminJob(row.apiId);
+      } else if (action === "manual-review") {
+        await billingApi.markAdminJobManualReview(row.apiId, { reason });
+        setManualReasons((current) => ({ ...current, [row.apiId as string]: "" }));
+      } else {
+        await billingApi.cancelAdminJob(row.apiId, { reason: reason || undefined });
+      }
+      setActionState({ id: row.apiId, action, status: "success", message: "Updated" });
+      setRefreshKey((current) => current + 1);
+    } catch (error: unknown) {
+      setActionState({
+        id: row.apiId,
+        action,
+        status: "error",
+        message: jobActionErrorMessage(error),
+      });
+    }
+  }
 
   return (
     <div className="p-4 flex flex-col gap-4">
@@ -70,7 +131,7 @@ export function AdminProvisioning() {
           <table className="w-full text-[13px] border-collapse min-w-[1060px]">
             <thead>
               <tr className="bg-gray-50">
-                {["Job ID", "Order", "Service", "Tenant", "Provider", "Status", "Attempt", "Created", "Error"].map((heading) => (
+                {["Job ID", "Order", "Service", "Tenant", "Provider", "Status", "Attempt", "Created", "Error", "Actions"].map((heading) => (
                   <th key={heading} className="text-left text-[11px] font-medium uppercase tracking-wide text-gray-400 p-4 border-b border-gray-200">
                     {heading}
                   </th>
@@ -78,21 +139,35 @@ export function AdminProvisioning() {
               </tr>
             </thead>
             <tbody>
-              {rows.map((row) => (
-                <tr key={row.id} className={`hover:bg-gray-50 border-b border-gray-100 last:border-0 ${row.status === "manual_review" ? "bg-amber-50/40" : ""}`}>
-                  <td className="p-4 text-[12px] text-[#D50C2D] font-medium">{row.id}</td>
-                  <td className="p-4 text-[12px] text-gray-500">{row.order}</td>
-                  <td className="p-4 text-gray-700">{row.service}</td>
-                  <td className="p-4 text-gray-500">{row.tenant}</td>
-                  <td className="p-4 text-gray-500">{row.provider}</td>
-                  <td className="p-4"><StatusBadge status={row.status} dot /></td>
-                  <td className="p-4 text-center tabular-nums">{row.attempt}</td>
-                  <td className="p-4 text-gray-400 tabular-nums">{row.created}</td>
-                  <td className="p-4 text-[11px] text-red-600 max-w-[220px] truncate">{row.error}</td>
-                </tr>
-              ))}
+              {rows.map((row) => {
+                const rowState = row.apiId && actionState?.id === row.apiId ? actionState : null;
+                const running = rowState?.status === "running";
+                return (
+                  <tr key={row.id} className={`hover:bg-gray-50 border-b border-gray-100 last:border-0 ${row.status === "manual_review" ? "bg-amber-50/40" : ""}`}>
+                    <td className="p-4 text-[12px] text-[#D50C2D] font-medium">{row.id}</td>
+                    <td className="p-4 text-[12px] text-gray-500">{row.order}</td>
+                    <td className="p-4 text-gray-700">{row.service}</td>
+                    <td className="p-4 text-gray-500">{row.tenant}</td>
+                    <td className="p-4 text-gray-500">{row.provider}</td>
+                    <td className="p-4"><StatusBadge status={row.status} dot /></td>
+                    <td className="p-4 text-center tabular-nums">{row.attempt}</td>
+                    <td className="p-4 text-gray-400 tabular-nums">{row.created}</td>
+                    <td className="p-4 text-[11px] text-red-600 max-w-[220px] truncate">{row.error}</td>
+                    <td className="p-4">
+                      <JobRecoveryControls
+                        row={row}
+                        reason={row.apiId ? manualReasons[row.apiId] ?? "" : ""}
+                        running={running}
+                        state={rowState}
+                        onReasonChange={updateManualReason}
+                        onAction={runJobAction}
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
               {rows.length === 0 && (
-                <tr><td colSpan={9} className="p-4 text-center text-[12px] text-gray-400">No provisioning jobs</td></tr>
+                <tr><td colSpan={10} className="p-4 text-center text-[12px] text-gray-400">No provisioning jobs</td></tr>
               )}
             </tbody>
           </table>
@@ -118,6 +193,8 @@ function liveProvisioningRows(
     const error = job.manual_review_reason || job.last_error_message_redacted || job.last_error_code || "-";
     return {
       id: recordLabel(job.display_id, "JOB-"),
+      apiId: job.id,
+      live: true,
       order: order ? recordLabel(order.display_id, "ORD-") : shortID(job.reference_id),
       service: service ? recordLabel(service.display_id, "SVC-") : jobStatusLabel(job.status),
       tenant: order?.tenant_id ? shortID(order.tenant_id) : shortID(job.tenant_id),
@@ -126,6 +203,9 @@ function liveProvisioningRows(
       attempt: `${job.attempt_count}/${job.max_attempts}`,
       created: compactDateTime(job.created_at),
       error,
+      canRetry: canRetryJob(job.status),
+      canReview: canMarkJobManualReview(job.status),
+      canCancel: canCancelJob(job.status),
     };
   });
 }
@@ -133,6 +213,7 @@ function liveProvisioningRows(
 function demoProvisioningRows(): ProvisioningRow[] {
   return PROVISIONING_JOBS.map((job) => ({
     id: job.id,
+    live: false,
     order: job.order,
     service: job.service,
     tenant: job.tenant,
@@ -141,5 +222,85 @@ function demoProvisioningRows(): ProvisioningRow[] {
     attempt: String(job.attempt),
     created: job.age,
     error: job.error || "-",
+    canRetry: false,
+    canReview: false,
+    canCancel: false,
   }));
+}
+
+interface JobRecoveryControlsProps {
+  row: ProvisioningRow;
+  reason: string;
+  running: boolean;
+  state: ActionState | null;
+  onReasonChange: (jobID: string, reason: string) => void;
+  onAction: (row: ProvisioningRow, action: JobAction) => void;
+}
+
+function JobRecoveryControls({ row, reason, running, state, onReasonChange, onAction }: JobRecoveryControlsProps) {
+  if (!row.live || !row.apiId) {
+    return <span className="text-[11px] text-gray-400">Demo read-only</span>;
+  }
+  const hasAction = row.canRetry || row.canReview || row.canCancel;
+  if (!hasAction) {
+    return <span className="text-[11px] text-gray-400">No action</span>;
+  }
+  return (
+    <div className="flex min-w-[290px] flex-col gap-2">
+      {row.canReview && (
+        <input
+          value={reason}
+          onChange={(event) => onReasonChange(row.apiId as string, event.target.value)}
+          disabled={running}
+          placeholder="Review reason"
+          className="h-8 rounded-md border border-gray-200 px-2 text-[12px] text-gray-700 outline-none focus:border-[#D50C2D]"
+        />
+      )}
+      <div className="flex flex-wrap gap-2">
+        {row.canRetry && (
+          <button
+            disabled={running}
+            onClick={() => onAction(row, "retry")}
+            className="inline-flex h-8 items-center justify-center rounded-md border border-emerald-600 bg-emerald-600 px-3 text-[12px] font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Retry
+          </button>
+        )}
+        {row.canReview && (
+          <button
+            disabled={running}
+            onClick={() => onAction(row, "manual-review")}
+            className="inline-flex h-8 items-center justify-center rounded-md border border-amber-200 bg-white px-3 text-[12px] font-medium text-amber-700 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Review
+          </button>
+        )}
+        {row.canCancel && (
+          <button
+            disabled={running}
+            onClick={() => onAction(row, "cancel")}
+            className="inline-flex h-8 items-center justify-center rounded-md border border-red-200 bg-white px-3 text-[12px] font-medium text-red-600 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Cancel
+          </button>
+        )}
+      </div>
+      {state && (
+        <div className={`text-[11px] ${state.status === "error" ? "text-red-500" : "text-gray-400"}`}>
+          {state.message}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function jobActionConfirmText(row: ProvisioningRow, action: JobAction): string {
+  if (action === "retry") {
+    return `Retry ${row.id} now?`;
+  }
+  return `Cancel ${row.id}?`;
+}
+
+function jobActionErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : "Job action failed.";
 }

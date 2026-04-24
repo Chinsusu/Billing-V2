@@ -116,6 +116,12 @@ export const billingApi = {
     getApiData<ServiceInstance[]>("/admin/services", "admin", query),
   listAdminJobs: (query: JobQuery = {}) =>
     getApiData<ProvisioningJob[]>("/admin/jobs", "admin", query),
+  retryAdminJob: (id: string, body: { next_attempt_at?: string } = {}) =>
+    postApiData<ProvisioningJob>(`/admin/jobs/${encodeURIComponent(id)}/retry`, "admin", body),
+  markAdminJobManualReview: (id: string, body: { reason: string }) =>
+    postApiData<ProvisioningJob>(`/admin/jobs/${encodeURIComponent(id)}/manual-review`, "admin", body),
+  cancelAdminJob: (id: string, body: { reason?: string } = {}) =>
+    postApiData<ProvisioningJob>(`/admin/jobs/${encodeURIComponent(id)}/cancel`, "admin", body),
   listAdminWallets: (query: AdminWalletQuery = {}) =>
     getApiData<Wallet[]>("/admin/wallets", "admin", query),
   listAdminWalletLedger: (walletId: string, query: LedgerQuery = {}) =>
