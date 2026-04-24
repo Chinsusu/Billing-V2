@@ -1,9 +1,9 @@
 # T074 - Client billing action flows
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t074-client-billing-action-flows
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/170
 Risk: frontend/client
 Created: 2026-04-24
 Updated: 2026-04-24
@@ -43,3 +43,4 @@ Add basic client-side billing actions for ordering, requesting top-ups, and payi
 - 2026-04-24: Codex claimed the task after T073 completed and started wiring client billing mutations.
 - 2026-04-24: Added shared idempotency-key support, client order/top-up/wallet-payment API wrappers, live order/pay actions in ClientShop, and a real top-up form in ClientWallet.
 - 2026-04-24: Validation passed: `npm audit --omit=dev`, `npm run lint`, `npm run build`.
+- 2026-04-24: Opened PR #170 for review/CI.
