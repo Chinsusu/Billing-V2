@@ -1,9 +1,9 @@
 # T099 - Admin job recovery audit UI
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: codex/t099-admin-job-recovery-audit-ui
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/225
 Risk: frontend/admin-ops
 Created: 2026-04-24
 Updated: 2026-04-24
@@ -37,3 +37,7 @@ Add recovery action audit context to the admin job detail panel so operators can
 ## Agent Log
 
 - 2026-04-24: Task created after T096 completed and the active board was fully DONE.
+- 2026-04-24: Codex claimed the task on `codex/t099-admin-job-recovery-audit-ui`.
+- 2026-04-24: Added the admin job recovery audit panel, wired job-target audit filtering, and kept existing audit screen filters typed separately from pageable API query params.
+- 2026-04-24: Validation passed: `npm ci`, `npm audit --omit=dev`, `npm run lint`, `npm run build`, `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`, plus mocked Playwright desktop/mobile checks for the recovery audit panel.
+- 2026-04-24: Opened PR https://github.com/Chinsusu/Billing-V2/pull/225 for review/CI.
