@@ -1,9 +1,9 @@
 # T065 - Reseller portal dedicated screens
 
-Status: TODO
-Owner: -
-Branch: feat/reseller-portal-screen-split
-PR: -
+Status: REVIEW
+Owner: Codex
+Branch: codex/t065-reseller-portal-screens
+PR: https://github.com/Chinsusu/Billing-V2/pull/149
 Risk: frontend/reseller
 Created: 2026-04-24
 Updated: 2026-04-24
@@ -37,3 +37,6 @@ Replace reseller portal screen reuse with dedicated views and wire the catalog s
 ## Agent Log
 
 - 2026-04-24: Task created for reseller portal completion after the current frontend shell and admin filter work.
+- 2026-04-24: Codex claimed the task after T064 merged and started splitting reseller portal screens.
+- 2026-04-24: PR #149 opened with dedicated reseller service, ticket, billing, report screens and live reseller catalog API wiring.
+- 2026-04-24: Validation passed in `frontend`: `npm audit --omit=dev`, `npm run lint`, and `npm run build`.

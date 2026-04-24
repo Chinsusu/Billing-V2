@@ -6,8 +6,11 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ResellerDashboard } from "./screens/ResellerDashboard";
 import { ResellerClients } from "./screens/ResellerClients";
 import { ResellerCatalog } from "./screens/ResellerCatalog";
-import { ResellerWallet } from "./screens/ResellerWallet";
+import { ResellerBilling } from "./screens/ResellerBilling";
+import { ResellerReports } from "./screens/ResellerReports";
+import { ResellerServices } from "./screens/ResellerServices";
 import { ResellerSettings } from "./screens/ResellerSettings";
+import { ResellerTickets } from "./screens/ResellerTickets";
 
 interface ScreenConfig {
   title: string;
@@ -29,27 +32,27 @@ const SCREENS: Record<string, ScreenConfig> = {
   },
   "reseller-tickets": {
     title: "Support tickets", breadcrumbs: ["ProxyVN", "Customers", "Tickets"],
-    component: <ResellerClients />,
+    component: <ResellerTickets />,
   },
   "reseller-services-proxies": {
     title: "Proxies", breadcrumbs: ["ProxyVN", "Services", "Proxies"],
-    component: <ResellerClients />,
+    component: <ResellerServices category="proxies" />,
   },
   "reseller-services-vps": {
     title: "VPS", breadcrumbs: ["ProxyVN", "Services", "VPS"],
-    component: <ResellerClients />,
+    component: <ResellerServices category="vps" />,
   },
   "reseller-services-bandwidth": {
     title: "Bandwidth", breadcrumbs: ["ProxyVN", "Services", "Bandwidth"],
-    component: <ResellerClients />,
+    component: <ResellerServices category="bandwidth" />,
   },
   "reseller-invoices": {
     title: "Invoices", breadcrumbs: ["ProxyVN", "Billing", "Invoices"],
-    component: <ResellerWallet />,
+    component: <ResellerBilling kind="invoices" />,
   },
   "reseller-transactions": {
     title: "Transactions", breadcrumbs: ["ProxyVN", "Billing", "Transactions"],
-    component: <ResellerWallet />,
+    component: <ResellerBilling kind="transactions" />,
   },
   "reseller-products": {
     title: "Products & Pricing", breadcrumbs: ["ProxyVN", "Billing", "Products"],
@@ -57,7 +60,7 @@ const SCREENS: Record<string, ScreenConfig> = {
   },
   "reseller-reports": {
     title: "Reports", breadcrumbs: ["ProxyVN", "Billing", "Reports"],
-    component: <ResellerDashboard />,
+    component: <ResellerReports />,
   },
   "reseller-settings": {
     title: "Settings", breadcrumbs: ["ProxyVN", "Settings"],
