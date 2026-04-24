@@ -35,6 +35,7 @@ func TestDevStatementsIncludeRBACAndCatalogData(t *testing.T) {
 	required := []string{
 		"catalog.view",
 		"catalog.manage",
+		"tenant.view",
 		"order.manage",
 		"platform_admin",
 		"demo-reseller",

@@ -232,6 +232,50 @@ auth.logout
 
 ## 5. Tenant and domain APIs
 
+### 5.0 Admin tenant/account read APIs
+
+```text
+GET /admin/tenants
+GET /admin/accounts
+GET /admin/customers
+```
+
+Allowed:
+```text
+reseller_owner or staff with tenant.view inside the current tenant context
+platform_staff with tenant.view or platform-level access
+```
+
+Query:
+```text
+limit
+display_id
+type
+status
+email          # accounts/customers only
+parent_tenant_id # tenants only
+```
+
+Response:
+```text
+id              # UUID for internal action targets
+display_id      # numeric ID for UI tables
+tenant_type / user_type
+name / full_name
+slug / email
+status
+primary_domain  # tenants only when available
+tenant_name      # accounts/customers only
+created_at
+updated_at
+```
+
+Rules:
+- Use numeric `display_id` for admin table display.
+- Keep UUID `id` in response for future actions.
+- Do not return password hashes, tokens, verification token hashes, or secret fields.
+- `/admin/customers` is an account read alias scoped to `user_type=client`.
+
 ### 5.1 Admin create reseller tenant
 
 ```text

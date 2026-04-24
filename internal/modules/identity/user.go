@@ -88,6 +88,21 @@ type User struct {
 	UpdatedAt        time.Time
 }
 
+type UserListFilter struct {
+	TenantID  tenant.ID
+	Type      UserType
+	Status    UserStatus
+	DisplayID int64
+	Email     string
+	Limit     int
+}
+
+type UserSummary struct {
+	User       User
+	TenantName string
+	TenantSlug string
+}
+
 type CreateUserInput struct {
 	TenantID        tenant.ID
 	Email           string
@@ -138,4 +153,5 @@ type UserStore interface {
 	CreateUser(ctx context.Context, input CreateUserInput) (User, error)
 	GetUserByID(ctx context.Context, tenantID tenant.ID, userID UserID) (User, error)
 	FindUserByEmail(ctx context.Context, tenantID tenant.ID, email string) (User, error)
+	ListUsers(ctx context.Context, filter UserListFilter) ([]UserSummary, error)
 }

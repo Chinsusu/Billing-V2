@@ -17,6 +17,7 @@ type RouteRegistrar interface {
 }
 
 type APIOptions struct {
+	AccountRoutes RouteRegistrar
 	AuditRoutes   RouteRegistrar
 	CatalogRoutes RouteRegistrar
 	InvoiceRoutes RouteRegistrar
@@ -56,6 +57,9 @@ func NewAPIWithOptions(cfg config.Config, log *logger.Logger, options APIOptions
 	}
 	mux.HandleFunc("/healthz", middleware.RequireMethod(http.MethodGet, api.handleHealth))
 	mux.HandleFunc("/readyz", middleware.RequireMethod(http.MethodGet, api.handleReady))
+	if options.AccountRoutes != nil {
+		options.AccountRoutes.RegisterRoutes(mux)
+	}
 	if options.AuditRoutes != nil {
 		options.AuditRoutes.RegisterRoutes(mux)
 	}
