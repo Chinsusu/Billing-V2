@@ -1,7 +1,7 @@
 # T072 - Admin accounts live views
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t072-admin-accounts-live-views
 PR: -
 Risk: frontend/admin
@@ -36,3 +36,5 @@ Wire the admin tenants and customers screens to live account read APIs and remov
 ## Agent Log
 
 - 2026-04-24: Task created after closing stale PR #80 and refreshing the board for the next live workflow batch.
+- 2026-04-24: Codex claimed the task after T071 merged and started wiring admin account screens to live APIs.
+- 2026-04-24: Added admin tenant/account frontend API wrappers and wired AdminTenants/AdminCustomers to live data with explicit demo fallback states. Local frontend audit, lint, and build passed.

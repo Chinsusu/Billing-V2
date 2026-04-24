@@ -145,6 +145,40 @@ export interface AuditLog {
   created_at: string;
 }
 
+export interface AdminTenant {
+  id: string;
+  display_id: number;
+  parent_tenant_id?: string;
+  tenant_type: string;
+  name: string;
+  slug: string;
+  status: string;
+  default_currency: string;
+  timezone: string;
+  owner_user_id?: string;
+  primary_domain?: string;
+  user_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AdminAccount {
+  id: string;
+  display_id: number;
+  tenant_id: string;
+  tenant_name: string;
+  tenant_slug: string;
+  email: string;
+  email_verified_at?: string;
+  full_name: string;
+  user_type: string;
+  status: string;
+  two_factor_status: string;
+  last_login_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface BillingCycle {
   type: string;
   value: number;
@@ -279,6 +313,20 @@ export interface AdminAuditLogQuery {
   actor_id?: string;
   action?: string;
   target_type?: string;
+}
+
+export interface AdminTenantQuery extends PageQuery {
+  display_id?: string;
+  parent_tenant_id?: string;
+  type?: string;
+  status?: string;
+}
+
+export interface AdminAccountQuery extends PageQuery {
+  display_id?: string;
+  type?: string;
+  status?: string;
+  email?: string;
 }
 
 export interface AdminOrderQuery extends PageQuery {
