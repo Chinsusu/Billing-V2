@@ -1,6 +1,6 @@
 # T090 - Fulfillment job UI
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t090-fulfillment-job-ui
 PR: https://github.com/Chinsusu/Billing-V2/pull/205
@@ -38,3 +38,4 @@ Use the provisioning job read API to show real fulfillment job state in admin/re
 - 2026-04-24: Codex claimed the task after T089 merged and started wiring real provisioning job state into admin/reseller fulfillment UI.
 - 2026-04-24: Added shared frontend job types/API helpers, live admin provisioning queue rows, reseller fulfillment job labels, pending paid-order rows, and explicit unavailable-state text when job API data is missing. Validation passed: frontend lint/build/audit plus backend test/build gates.
 - 2026-04-24: Opened PR https://github.com/Chinsusu/Billing-V2/pull/205 for review and CI.
+- 2026-04-24: PR https://github.com/Chinsusu/Billing-V2/pull/205 passed CI and merged to main at `70970aadded0bbc8bb8e16a344723946854bed87`.
