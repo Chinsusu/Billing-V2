@@ -1,8 +1,8 @@
 # T066 - Admin ops read models
 
-Status: TODO
-Owner: -
-Branch: feat/admin-ops-read-models
+Status: REVIEW
+Owner: Codex
+Branch: codex/t066-admin-ops-read-models
 PR: -
 Risk: frontend/admin
 Created: 2026-04-24
@@ -37,3 +37,5 @@ Wire the admin operational billing surfaces to live read models where backend en
 ## Agent Log
 
 - 2026-04-24: Task created for the next admin frontend batch after invoices, transactions, and logs filters were completed.
+- 2026-04-24: Codex claimed the task and started wiring admin read models to live API data.
+- 2026-04-24: Admin top-ups and overview now consume live read APIs with explicit demo fallback states. Local audit, lint, and build passed.
