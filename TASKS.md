@@ -30,9 +30,9 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-24` after completing the admin frontend batch:
+Current board snapshot on `2026-04-24` after closing stale PR #80 and creating the next live workflow batch:
 
-- `TODO`: 0
+- `TODO`: 4
 - `IN_PROGRESS`: 0
 - `REVIEW`: 0
 - `BLOCKED`: 0
@@ -57,7 +57,12 @@ Current board snapshot on `2026-04-24` after completing the admin frontend batch
 
 ## Active Tasks
 
-No active TODO tasks are currently open. Create the next batch before assigning more agents.
+| ID | Task File | Suggested Branch | Area | Summary |
+| --- | --- | --- | --- | --- |
+| T071 | [tasks/active/T071_admin_accounts_read_api.md](tasks/active/T071_admin_accounts_read_api.md) | codex/t071-admin-accounts-read-api | backend/API | Add admin tenant/account read APIs that expose numeric display IDs for the admin account screens. |
+| T072 | [tasks/active/T072_admin_accounts_live_views.md](tasks/active/T072_admin_accounts_live_views.md) | codex/t072-admin-accounts-live-views | frontend/admin | Wire admin tenants and customers screens to the live account read APIs. |
+| T073 | [tasks/active/T073_reseller_catalog_clone_actions.md](tasks/active/T073_reseller_catalog_clone_actions.md) | codex/t073-reseller-catalog-clone-actions | frontend/reseller | Add reseller catalog clone actions using the existing reseller catalog mutation endpoints. |
+| T074 | [tasks/active/T074_client_billing_action_flows.md](tasks/active/T074_client_billing_action_flows.md) | codex/t074-client-billing-action-flows | frontend/client | Add client order, top-up, and wallet invoice payment actions against existing billing endpoints. |
 
 ## Done Task Files
 
