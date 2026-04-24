@@ -1,9 +1,9 @@
 # T103 - Catalog admin read permission split
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: codex/t103-catalog-admin-read-permission-split
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/234
 Risk: backend/RBAC
 Created: 2026-04-24
 Updated: 2026-04-24
@@ -36,3 +36,7 @@ Split admin catalog read routes from catalog mutation routes so provider readine
 ## Agent Log
 
 - 2026-04-24: Task created in the provider readiness follow-up batch.
+- 2026-04-24: Codex claimed the task on `codex/t103-catalog-admin-read-permission-split`.
+- 2026-04-24: Split admin catalog GET/provider readiness routes onto `catalog.view` while keeping create/update routes on `catalog.manage`; updated permission docs and middleware-selection tests.
+- 2026-04-24: Validation passed: `go test ./internal/modules/catalog`, `go test ./cmd/api`, `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`, `npm ci`, `npm audit --omit=dev`, `npm run lint`, and `npm run build`.
+- 2026-04-24: Opened PR #234 for review.

@@ -73,6 +73,71 @@ func TestHTTPHandlerAdminMiddlewareRunsBeforeService(t *testing.T) {
 	}
 }
 
+func TestHTTPHandlerAdminReadRoutesUseReadMiddleware(t *testing.T) {
+	service := &fakeCatalogHTTPService{}
+	mux := http.NewServeMux()
+	NewHTTPHandlerWithOptions(service, HTTPHandlerOptions{
+		AdminReadMiddleware:   statusCodeMiddleware(http.StatusTeapot),
+		AdminManageMiddleware: statusCodeMiddleware(http.StatusConflict),
+	}).RegisterRoutes(mux)
+
+	for _, test := range []struct {
+		name   string
+		method string
+		path   string
+	}{
+		{name: "products", method: http.MethodGet, path: "/admin/catalog/products"},
+		{name: "plans", method: http.MethodGet, path: "/admin/catalog/plans"},
+		{name: "provider sources", method: http.MethodGet, path: "/admin/catalog/provider-sources"},
+		{name: "provider readiness", method: http.MethodGet, path: "/admin/catalog/provider-readiness"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			request := httptest.NewRequest(test.method, test.path, nil)
+			response := httptest.NewRecorder()
+
+			mux.ServeHTTP(response, request)
+
+			if response.Code != http.StatusTeapot {
+				t.Fatalf("expected read middleware status, got %d", response.Code)
+			}
+		})
+	}
+}
+
+func TestHTTPHandlerAdminMutationRoutesUseManageMiddleware(t *testing.T) {
+	service := &fakeCatalogHTTPService{}
+	mux := http.NewServeMux()
+	NewHTTPHandlerWithOptions(service, HTTPHandlerOptions{
+		AdminReadMiddleware:   statusCodeMiddleware(http.StatusTeapot),
+		AdminManageMiddleware: statusCodeMiddleware(http.StatusConflict),
+	}).RegisterRoutes(mux)
+
+	for _, test := range []struct {
+		name   string
+		method string
+		path   string
+	}{
+		{name: "create product", method: http.MethodPost, path: "/admin/catalog/products"},
+		{name: "create plan", method: http.MethodPost, path: "/admin/catalog/plans"},
+		{name: "create provider source", method: http.MethodPost, path: "/admin/catalog/provider-sources"},
+		{name: "create plan source", method: http.MethodPost, path: "/admin/catalog/plan-sources"},
+		{name: "update product", method: http.MethodPatch, path: "/admin/catalog/products/product_1"},
+		{name: "update plan", method: http.MethodPatch, path: "/admin/catalog/plans/plan_1"},
+		{name: "update provider source", method: http.MethodPatch, path: "/admin/catalog/provider-sources/source_1"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			request := httptest.NewRequest(test.method, test.path, nil)
+			response := httptest.NewRecorder()
+
+			mux.ServeHTTP(response, request)
+
+			if response.Code != http.StatusConflict {
+				t.Fatalf("expected manage middleware status, got %d", response.Code)
+			}
+		})
+	}
+}
+
 func TestHTTPHandlerClientCatalogRequiresTenant(t *testing.T) {
 	service := &fakeCatalogHTTPService{}
 	handler := registerCatalogTestHandler(service)
@@ -167,6 +232,14 @@ func registerCatalogTestHandler(service HTTPService) http.Handler {
 	mux := http.NewServeMux()
 	NewHTTPHandler(service).RegisterRoutes(mux)
 	return mux
+}
+
+func statusCodeMiddleware(statusCode int) RouteMiddleware {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(statusCode)
+		}
+	}
 }
 
 type fakeCatalogHTTPService struct {

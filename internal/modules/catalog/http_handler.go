@@ -40,6 +40,8 @@ type HTTPService interface {
 type RouteMiddleware func(http.HandlerFunc) http.HandlerFunc
 
 type HTTPHandlerOptions struct {
+	AdminReadMiddleware      RouteMiddleware
+	AdminManageMiddleware    RouteMiddleware
 	AdminMiddleware          RouteMiddleware
 	ResellerViewMiddleware   RouteMiddleware
 	ResellerManageMiddleware RouteMiddleware
@@ -83,8 +85,19 @@ func applyRouteMiddleware(next http.HandlerFunc, routeMiddleware RouteMiddleware
 	return routeMiddleware(next)
 }
 
-func (handler *HTTPHandler) adminRoute(next http.HandlerFunc) http.HandlerFunc {
-	return applyRouteMiddleware(next, handler.options.AdminMiddleware)
+func (handler *HTTPHandler) adminReadRoute(next http.HandlerFunc) http.HandlerFunc {
+	return applyRouteMiddleware(next, firstRouteMiddleware(handler.options.AdminReadMiddleware, handler.options.AdminMiddleware))
+}
+
+func (handler *HTTPHandler) adminManageRoute(next http.HandlerFunc) http.HandlerFunc {
+	return applyRouteMiddleware(next, firstRouteMiddleware(handler.options.AdminManageMiddleware, handler.options.AdminMiddleware))
+}
+
+func firstRouteMiddleware(primary RouteMiddleware, fallback RouteMiddleware) RouteMiddleware {
+	if primary != nil {
+		return primary
+	}
+	return fallback
 }
 
 func (handler *HTTPHandler) tenantRoute(next http.HandlerFunc, routeMiddleware RouteMiddleware) http.HandlerFunc {
@@ -98,8 +111,8 @@ func (handler *HTTPHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/catalog/plans/", handler.adminCatalogPlanRoute)
 	mux.HandleFunc("/admin/catalog/provider-sources", handler.adminCatalogProviderSourcesRoute)
 	mux.HandleFunc("/admin/catalog/provider-sources/", handler.adminCatalogProviderSourceRoute)
-	mux.HandleFunc("/admin/catalog/provider-readiness", middleware.RequireMethod(http.MethodGet, handler.adminRoute(handler.handleListProviderSourceReadiness)))
-	mux.HandleFunc("/admin/catalog/plan-sources", middleware.RequireMethod(http.MethodPost, handler.adminRoute(handler.handleCreatePlanSource)))
+	mux.HandleFunc("/admin/catalog/provider-readiness", middleware.RequireMethod(http.MethodGet, handler.adminReadRoute(handler.handleListProviderSourceReadiness)))
+	mux.HandleFunc("/admin/catalog/plan-sources", middleware.RequireMethod(http.MethodPost, handler.adminManageRoute(handler.handleCreatePlanSource)))
 	mux.HandleFunc("/reseller/catalog/master-plans", middleware.RequireMethod(http.MethodGet, handler.tenantRoute(handler.handleListMasterPlans, handler.options.ResellerViewMiddleware)))
 	mux.HandleFunc("/reseller/catalog/products/clone", middleware.RequireMethod(http.MethodPost, handler.tenantRoute(handler.handleCloneTenantProduct, handler.options.ResellerManageMiddleware)))
 	mux.HandleFunc("/reseller/catalog/plans/clone", middleware.RequireMethod(http.MethodPost, handler.tenantRoute(handler.handleCloneTenantPlan, handler.options.ResellerManageMiddleware)))
