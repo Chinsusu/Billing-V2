@@ -1,6 +1,6 @@
 # T071 - Admin accounts read API
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t071-admin-accounts-read-api
 PR: https://github.com/Chinsusu/Billing-V2/pull/164
@@ -40,3 +40,4 @@ Add small admin read APIs for tenants and account users so admin account screens
 - 2026-04-24: Codex claimed the task and started adding admin tenant/account read APIs from latest main.
 - 2026-04-24: Added tenant/account read stores, admin read routes, app/runtime wiring, seed permission support, API docs, and route tests. Local `go test ./...` and backend builds passed using the installed Go toolchain.
 - 2026-04-24: Opened PR #164 for review.
+- 2026-04-24: PR #164 merged into `main` with commit `8cafbfea7a09c3c5b6560965ff23326ac8e81f70`.
