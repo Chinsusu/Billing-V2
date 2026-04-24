@@ -72,6 +72,7 @@ func TestNewAPIWithOptionsRegistersOptionalRoutes(t *testing.T) {
 		CatalogRoutes:  testRouteRegistrar{},
 		CheckoutRoutes: testCheckoutRouteRegistrar{},
 		InvoiceRoutes:  testInvoiceRouteRegistrar{},
+		JobsRoutes:     testJobsRouteRegistrar{},
 		OrderRoutes:    testOrderRouteRegistrar{},
 		PaymentRoutes:  testPaymentRouteRegistrar{},
 		WalletRoutes:   testWalletRouteRegistrar{},
@@ -118,6 +119,12 @@ func TestNewAPIWithOptionsRegistersOptionalRoutes(t *testing.T) {
 	if walletResponse.Code != http.StatusNoContent {
 		t.Fatalf("expected wallet route status 204, got %d", walletResponse.Code)
 	}
+
+	jobsResponse := httptest.NewRecorder()
+	api.Handler().ServeHTTP(jobsResponse, httptest.NewRequest(http.MethodGet, "/jobs-test", nil))
+	if jobsResponse.Code != http.StatusNoContent {
+		t.Fatalf("expected jobs route status 204, got %d", jobsResponse.Code)
+	}
 }
 
 type testRouteRegistrar struct{}
@@ -160,6 +167,12 @@ type testWalletRouteRegistrar struct{}
 
 func (testWalletRouteRegistrar) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/wallet-test", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusNoContent) })
+}
+
+type testJobsRouteRegistrar struct{}
+
+func (testJobsRouteRegistrar) RegisterRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("/jobs-test", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusNoContent) })
 }
 
 func newTestAPI(t *testing.T) *API {

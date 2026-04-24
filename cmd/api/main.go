@@ -15,6 +15,7 @@ import (
 	"github.com/Chinsusu/Billing-V2/internal/modules/checkout"
 	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
 	"github.com/Chinsusu/Billing-V2/internal/modules/invoice"
+	"github.com/Chinsusu/Billing-V2/internal/modules/jobs"
 	"github.com/Chinsusu/Billing-V2/internal/modules/order"
 	"github.com/Chinsusu/Billing-V2/internal/modules/payment"
 	"github.com/Chinsusu/Billing-V2/internal/modules/rbac"
@@ -80,6 +81,7 @@ func newRuntime(ctx context.Context, cfg config.Config, log *logger.Logger, open
 		options.CatalogRoutes = newCatalogRoutes(conn)
 		options.CheckoutRoutes = newCheckoutRoutes(conn)
 		options.InvoiceRoutes = newInvoiceRoutes(conn)
+		options.JobsRoutes = newJobsRoutes(conn)
 		options.OrderRoutes = newOrderRoutes(conn)
 		options.PaymentRoutes = newPaymentRoutes(conn)
 		options.WalletRoutes = newWalletRoutes(conn)
@@ -159,6 +161,16 @@ func newInvoiceRoutes(executor platformdb.Executor) app.RouteRegistrar {
 		AdminMiddleware:    invoiceAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
 		ResellerMiddleware: invoiceAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
 		ClientMiddleware:   invoiceAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
+	})
+}
+
+func newJobsRoutes(executor platformdb.Executor) app.RouteRegistrar {
+	store := jobs.NewPostgresStore(executor)
+	service := jobs.NewService(store)
+	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
+	return jobs.NewHTTPHandlerWithOptions(service, jobs.HTTPHandlerOptions{
+		AdminMiddleware:    jobsAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
+		ResellerMiddleware: jobsAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
 	})
 }
 
@@ -305,6 +317,31 @@ func chainInvoiceMiddleware(middlewares ...invoice.RouteMiddleware) invoice.Rout
 }
 
 func wrapInvoiceMiddleware(middleware func(http.Handler) http.Handler) invoice.RouteMiddleware {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		return middleware(http.HandlerFunc(next)).ServeHTTP
+	}
+}
+
+func jobsAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) jobs.RouteMiddleware {
+	return chainJobsMiddleware(
+		wrapJobsMiddleware(identity.HeaderActorMiddleware),
+		jobs.RouteMiddleware(rbac.RequirePermission(authorizer, permission, risk)),
+	)
+}
+
+func chainJobsMiddleware(middlewares ...jobs.RouteMiddleware) jobs.RouteMiddleware {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		for index := len(middlewares) - 1; index >= 0; index-- {
+			if middlewares[index] == nil {
+				continue
+			}
+			next = middlewares[index](next)
+		}
+		return next
+	}
+}
+
+func wrapJobsMiddleware(middleware func(http.Handler) http.Handler) jobs.RouteMiddleware {
 	return func(next http.HandlerFunc) http.HandlerFunc {
 		return middleware(http.HandlerFunc(next)).ServeHTTP
 	}

@@ -108,6 +108,7 @@ Operation error:
 | Client checkout | `order.create` |
 | Admin order read | `order.view` |
 | Admin order status mutation | `order.manage` |
+| Admin and reseller job read | `order.view` |
 | Client and admin services | `service.view` |
 | Client and admin invoices | `wallet.view` |
 | Client and admin wallets | `wallet.view` |
@@ -180,6 +181,14 @@ Audit list item fields:
 Audit detail adds:
 
 `before_snapshot_redacted`, `after_snapshot_redacted`, `metadata_redacted`, `user_agent`
+
+### 3.8 Job
+
+`job` response fields:
+
+`id`, `display_id`, `tenant_id`, `job_type`, `reference_type`, `reference_id`, `source_id`, `status`, `priority`, `attempt_count`, `max_attempts`, `next_attempt_at`, `locked_by`, `locked_until`, `last_error_code`, `last_error_message_redacted`, `manual_review_reason`, `correlation_id`, `created_at`, `updated_at`, `finished_at`
+
+The job read API does not expose `payload_json` or `idempotency_key`.
 
 ## 4. Route Reference
 
@@ -446,6 +455,28 @@ Audit detail adds:
   - auth: admin actor, `audit.view`
   - response: one audit log detail
 
+### 4.9 Jobs
+
+- `GET /admin/jobs`
+  - auth: admin actor, `order.view`
+  - query: `display_id`, `job_type`, `status`, `reference_type`, `reference_id`, `source_id`, `limit`, `cursor`
+  - response: list of `job`
+
+- `GET /admin/jobs/{job_id}`
+  - auth: admin actor, `order.view`
+  - response: one `job`
+
+- `GET /reseller/jobs`
+  - auth: reseller actor, `order.view`
+  - query: `display_id`, `job_type`, `status`, `reference_type`, `reference_id`, `source_id`, `limit`, `cursor`
+  - response: list of `job`
+  - note: tenant scope is forced to the current reseller tenant
+
+- `GET /reseller/jobs/{job_id}`
+  - auth: reseller actor, `order.view`
+  - response: one `job`
+  - note: tenant scope is forced to the current reseller tenant
+
 ## 5. Filter and Enum Reference
 
 ### 5.1 Order and service status values
@@ -472,6 +503,10 @@ Audit detail adds:
 - transaction `type`: `charge`, `refund`, `adjustment`
 - transaction `status`: `pending`, `posted`, `failed`, `voided`
 
+### 5.5 Job values
+
+- job `status`: `queued`, `claimed`, `running`, `succeeded`, `failed_retryable`, `failed_terminal`, `manual_review`, `cancelled`
+
 ## 6. Common Error Codes
 
 Shared errors:
@@ -497,6 +532,7 @@ Route-specific errors that frontend and agents should expect:
 - top-up: `wallet.topup_not_found`, `wallet.topup_status_conflict`, `wallet.payment_method_invalid`
 - checkout: `checkout.order_not_checkoutable`
 - payment: `payment.transaction_not_found`, `payment.invoice_not_payable`, `payment.idempotency_conflict`, `payment.wallet_currency_mismatch`, `wallet.insufficient_balance`, `order.status_conflict`, `order.provisioning_source_not_found`
+- jobs: `job.not_found`, `job.status_invalid`
 - audit: `audit.created_time_invalid`
 
 ## 7. Practical Notes For Frontend And Agents

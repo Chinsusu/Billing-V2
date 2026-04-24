@@ -1,7 +1,7 @@
 # T087 - Provisioning job read API
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t087-provisioning-job-read-api
 PR: -
 Risk: backend/API
@@ -36,3 +36,5 @@ Expose read APIs for provisioning jobs so admin/reseller screens and operations 
 ## Agent Log
 
 - 2026-04-24: Task created in the provisioning operations batch after T086.
+- 2026-04-24: Codex claimed the task after the provisioning operations batch merged and started inspecting jobs/read API patterns.
+- 2026-04-24: Added tenant-scoped admin/reseller job list and detail APIs, read store/service helpers, response docs, runtime wiring, and tests. Local backend/frontend gates passed.
