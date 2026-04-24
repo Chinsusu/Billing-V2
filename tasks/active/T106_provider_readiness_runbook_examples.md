@@ -1,7 +1,7 @@
 # T106 - Provider readiness runbook examples
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t106-provider-readiness-runbook-examples
 PR: -
 Risk: docs/operations
@@ -34,3 +34,6 @@ Add practical provider readiness examples to the operations docs so agents know 
 ## Agent Log
 
 - 2026-04-24: Task created in the provider readiness follow-up batch.
+- 2026-04-24: Codex claimed the task on `codex/t106-provider-readiness-runbook-examples`.
+- 2026-04-24: Added provider readiness examples and operator actions for `ready`, `inactive_source`, `missing_plan_source`, `unsupported_capability`, and `fake_provider_only`.
+- 2026-04-24: Validation passed: `npm ci`, `npm audit --omit=dev`, `npm run lint`, `npm run build`, `go test ./...`, and `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`.
