@@ -46,13 +46,13 @@ ADMIN_HEADERS=(
 )
 ```
 
-Run the deterministic smoke before deeper checks:
+Run the deterministic smoke before deeper checks. It creates and pays a new order, runs the fake-provider provisioning worker against the same database, and verifies that the service is visible.
 
 ```bash
 go run ./cmd/smoke -dsn "$DB_DSN" -base-url "$API_BASE_URL" dev-billing
 ```
 
-The smoke must use the same database as the running API. It creates a top-up, creates an order, checks out an invoice, pays it from the wallet, verifies the paid order, and checks the `provider.provision` job.
+The smoke must use the same database as the running API. It creates a top-up, creates an order, checks out an invoice, pays it from the wallet, verifies the paid order, processes the `provider.provision` job with the fake worker, and checks the resulting service.
 
 ## 3. Normal Flow
 

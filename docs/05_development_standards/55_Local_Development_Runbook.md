@@ -290,6 +290,8 @@ Flow duoc test:
 - payment finalizes the order and creates or reuses one `provider.provision` job for that order;
 - smoke doc lai `/client/orders/{order_id}` de xac nhan order thanh `order_status=paid` va `billing_status=paid`;
 - smoke kiem tra bang `jobs` co dung mot `provider.provision` job cho order vua tra tien;
+- smoke chay fake-provider provisioning worker trong process de xu ly job vua tao;
+- smoke doc lai `/client/services?order_id=...` de xac nhan service `active/paid` duoc tao dung order;
 - smoke doc lai invoice va audit log de xac nhan flow co the debug duoc.
 
 Inspect provisioning jobs when an order is paid but fulfillment is stuck:
@@ -310,7 +312,8 @@ Yeu cau:
 
 - `DB_DSN` tro toi database local/dev da seed;
 - `API_BASE_URL` mac dinh la `http://localhost:8080`, co the doi bang `-base-url`;
-- API dang chay phai dung cung database voi `DB_DSN`, vi smoke vua goi API vua doc bang `jobs`;
+- API dang chay phai dung cung database voi `DB_DSN`, vi smoke vua goi API vua doc bang `jobs` va chay worker tren cung database;
+- provider local dung fake registry, khong can provider credential that;
 - chi chay tren local hoac sandbox, khong chay voi production DSN.
 
 ## Quality gate trước PR

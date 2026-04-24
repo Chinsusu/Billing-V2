@@ -91,6 +91,10 @@ func runDevBillingMutationSmoke(dsn string, baseURL string, timeout time.Duratio
 	if err := verifyProvisioningJobQueued(ctx, conn, orderRecord.ID, orderRecord.DisplayID); err != nil {
 		return err
 	}
+	serviceRecord, err := runProvisioningFulfillmentSmoke(ctx, conn, client, baseURL, scenario, orderRecord.ID, orderRecord.DisplayID)
+	if err != nil {
+		return err
+	}
 
 	checks := []auditMutationCheck{
 		{
@@ -114,12 +118,13 @@ func runDevBillingMutationSmoke(dsn string, baseURL string, timeout time.Duratio
 		}
 	}
 
-	fmt.Printf("dev billing smoke passed: topup=%d order=%d invoice=%d transaction=%d ledger=%d\n",
+	fmt.Printf("dev billing smoke passed: topup=%d order=%d invoice=%d transaction=%d ledger=%d service=%d\n",
 		topup.DisplayID,
 		orderRecord.DisplayID,
 		paymentRecord.Invoice.DisplayID,
 		paymentRecord.Transaction.DisplayID,
 		paymentLedgerDisplayID(paymentRecord),
+		serviceRecord.DisplayID,
 	)
 	return nil
 }
