@@ -1,6 +1,6 @@
 # T081 - Payment finalizes order state
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t081-payment-finalizes-order-state
 PR: https://github.com/Chinsusu/Billing-V2/pull/186
@@ -38,3 +38,4 @@ When a client pays an issued invoice from wallet, finalize the related order sta
 - 2026-04-24: Codex claimed the task after the T081-T086 batch was merged and started inspecting payment/order stores for a scoped state-finalization path.
 - 2026-04-24: Implemented wallet-payment order finalization in the payment transaction path, added idempotent paid-order handling, conflict mapping, API reference notes, and local validation.
 - 2026-04-24: Opened PR https://github.com/Chinsusu/Billing-V2/pull/186 and moved the task to REVIEW.
+- 2026-04-24: PR https://github.com/Chinsusu/Billing-V2/pull/186 passed CI and merged to main at 1a1d7de.
