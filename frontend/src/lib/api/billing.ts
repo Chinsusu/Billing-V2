@@ -7,6 +7,7 @@ import {
   AdminInvoiceQuery,
   AdminOrderQuery,
   AdminProviderSourceQuery,
+  AdminProviderReadinessQuery,
   AdminServiceQuery,
   AdminTenant,
   AdminTenantQuery,
@@ -31,6 +32,7 @@ import {
   Order,
   PaymentReconciliation,
   PaymentTransaction,
+  ProviderReadiness,
   ProvisioningJob,
   ServiceInstance,
   TenantCatalog,
@@ -111,6 +113,8 @@ export const billingApi = {
     getApiData<CatalogPlan[]>("/admin/catalog/plans", "admin", query),
   listAdminProviderSources: (query: AdminProviderSourceQuery = {}) =>
     getApiData<CatalogProviderSource[]>("/admin/catalog/provider-sources", "admin", query),
+  listAdminProviderReadiness: (query: AdminProviderReadinessQuery = {}) =>
+    getApiData<ProviderReadiness[]>("/admin/catalog/provider-readiness", "admin", query),
   listAdminOrders: (query: AdminOrderQuery = {}) =>
     getApiData<Order[]>("/admin/orders", "admin", query),
   listAdminServices: (query: AdminServiceQuery = {}) =>
