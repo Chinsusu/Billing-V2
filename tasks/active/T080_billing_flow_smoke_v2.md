@@ -1,6 +1,6 @@
 # T080 - Billing flow smoke v2
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t080-billing-flow-smoke-v2
 PR: https://github.com/Chinsusu/Billing-V2/pull/183
@@ -39,3 +39,4 @@ Add a smoke test or runbook update for the live billing flow across reseller cat
 - 2026-04-24: Added `make smoke-dev-billing` and documented the required local/dev seed/API environment in the local runbook.
 - 2026-04-24: Validation passed: `go test ./...`, backend builds, `npm audit --omit=dev`, `npm run lint`, `npm run build`.
 - 2026-04-24: Opened PR https://github.com/Chinsusu/Billing-V2/pull/183 for review and CI.
+- 2026-04-24: PR #183 merged into `main` with commit `1c6744948a3de82ca5fd81177fb8d2872b30aed0`.
