@@ -3,12 +3,15 @@ import {
   AdminAuditLogQuery,
   AdminInvoiceQuery,
   AdminOrderQuery,
+  AdminProviderSourceQuery,
   AdminServiceQuery,
   AdminTransactionQuery,
   AdminWalletQuery,
   AuditLog,
   CatalogPlan,
+  CatalogProviderSource,
   CatalogQuery,
+  CatalogProduct,
   Invoice,
   LedgerEntry,
   LedgerQuery,
@@ -43,6 +46,12 @@ export const billingApi = {
 
   listAdminInvoices: (query: AdminInvoiceQuery = {}) =>
     getApiData<Invoice[]>("/admin/invoices", "admin", query),
+  listAdminCatalogProducts: (query: CatalogQuery = {}) =>
+    getApiData<CatalogProduct[]>("/admin/catalog/products", "admin", query),
+  listAdminCatalogPlans: (query: CatalogQuery = {}) =>
+    getApiData<CatalogPlan[]>("/admin/catalog/plans", "admin", query),
+  listAdminProviderSources: (query: AdminProviderSourceQuery = {}) =>
+    getApiData<CatalogProviderSource[]>("/admin/catalog/provider-sources", "admin", query),
   listAdminOrders: (query: AdminOrderQuery = {}) =>
     getApiData<Order[]>("/admin/orders", "admin", query),
   listAdminServices: (query: AdminServiceQuery = {}) =>

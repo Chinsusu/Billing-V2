@@ -181,6 +181,21 @@ export interface CatalogPlan {
   updated_at: string;
 }
 
+export interface CatalogProviderSource {
+  id: string;
+  display_id: number;
+  source_type: string;
+  name: string;
+  provider_account_id: string;
+  location: string;
+  status: string;
+  capability_profile?: ApiJson;
+  inventory_mode: string;
+  risk_level: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface TenantCatalogProduct {
   id: string;
   display_id: number;
@@ -307,6 +322,11 @@ export interface TopupRequestQuery extends PageQuery {
 
 export interface CatalogQuery extends PageQuery {
   product_type?: string;
+  status?: string;
+}
+
+export interface AdminProviderSourceQuery extends PageQuery {
+  source_type?: string;
   status?: string;
 }
 
