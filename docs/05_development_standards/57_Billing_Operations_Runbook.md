@@ -125,6 +125,14 @@ Run one local provisioning worker pass with the fake provider registry:
 go run ./cmd/worker provision-once -dsn "$DB_DSN"
 ```
 
+Run the local/sandbox worker as a loop when you want it to keep polling claimable jobs. The loop prints one summary per pass and waits on `-interval` after an idle pass, so it does not spin when there is no work.
+
+```bash
+go run ./cmd/worker provision-loop -dsn "$DB_DSN" -interval 5s -batch-size 10
+```
+
+Stop the loop with `Ctrl+C`, or use `-timeout` for a bounded sandbox run. Keep `APP_ENV` set to `local`, `dev`, or another non-production value.
+
 Retry a retryable or manual-review provisioning job after fixing the provider/source issue:
 
 ```bash
@@ -320,8 +328,8 @@ WHERE ord.order_id = '$ORDER_ID';"
 
 Recovery:
 
-- If the job is `queued`, wait for the worker or start the worker once that command exists.
-- In local/dev, run `go run ./cmd/worker provision-once -dsn "$DB_DSN"` to process claimable `provider.provision` jobs once.
+- If the job is `queued`, wait for the worker or start the local/sandbox worker.
+- In local/dev, run `go run ./cmd/worker provision-once -dsn "$DB_DSN"` to process claimable `provider.provision` jobs once, or `go run ./cmd/worker provision-loop -dsn "$DB_DSN" -interval 5s` while testing repeated fulfillment.
 - If the job is `failed_retryable`, inspect `last_error_code` and provider source config before retrying with `POST /admin/jobs/$JOB_ID/retry`.
 - If the job is `manual_review`, record the reason, confirm provider state, then retry or cancel through the admin job action routes.
 - If the job is `failed_terminal`, keep the order paid and hand it to operations. Move it to manual review or cancel only after confirming provider state.

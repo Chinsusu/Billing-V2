@@ -5,6 +5,7 @@ import (
 	"context"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/Chinsusu/Billing-V2/internal/modules/jobs"
 )
@@ -79,6 +80,58 @@ func TestRunProvisionOnceRequiresDSN(t *testing.T) {
 	}
 }
 
+func TestRunProvisionLoopAcceptsCommandAfterFlagsAndPrintsPassSummary(t *testing.T) {
+	t.Setenv("APP_ENV", "local")
+	var output bytes.Buffer
+	calls := 0
+	factory := &fakeRunnerFactory{
+		runner: fakeProvisionRunner{
+			summary: jobs.RunSummary{Claimed: 0},
+			calls:   &calls,
+		},
+	}
+
+	err := runWithDependencies([]string{
+		"-dsn", "postgres://billing:billing@localhost:5432/billing?sslmode=disable",
+		"-worker-id", "loop-test",
+		"-timeout", "25ms",
+		"-interval", "100ms",
+		"provision-loop",
+	}, workerDependencies{stdout: &output, newRunner: factory.newRunner})
+	if err != nil {
+		t.Fatalf("expected provision loop success: %v", err)
+	}
+	if !factory.called {
+		t.Fatal("expected runner factory call")
+	}
+	if factory.cfg.WorkerID != "loop-test" || factory.cfg.Interval != 100*time.Millisecond {
+		t.Fatalf("unexpected worker config: %+v", factory.cfg)
+	}
+	if !strings.Contains(output.String(), "provision-loop pass=1 claimed=0") {
+		t.Fatalf("unexpected output: %s", output.String())
+	}
+	if calls != 1 {
+		t.Fatalf("expected one idle pass before timeout, got %d", calls)
+	}
+}
+
+func TestRunProvisionLoopRejectsInvalidInterval(t *testing.T) {
+	t.Setenv("APP_ENV", "local")
+	factory := &fakeRunnerFactory{runner: fakeProvisionRunner{}}
+
+	err := runWithDependencies([]string{
+		"provision-loop",
+		"-dsn", "postgres://billing:billing@localhost:5432/billing?sslmode=disable",
+		"-interval", "0",
+	}, workerDependencies{newRunner: factory.newRunner})
+	if err == nil || !strings.Contains(err.Error(), "worker interval must be positive") {
+		t.Fatalf("expected interval error, got %v", err)
+	}
+	if factory.called {
+		t.Fatal("runner factory should not be called with invalid interval")
+	}
+}
+
 func TestRunRejectsUnknownCommand(t *testing.T) {
 	err := runWithDependencies([]string{"unknown"}, workerDependencies{newRunner: (&fakeRunnerFactory{}).newRunner})
 	if err == nil || !strings.Contains(err.Error(), "unknown command") {
@@ -105,9 +158,13 @@ func (factory *fakeRunnerFactory) newRunner(ctx context.Context, cfg workerConfi
 type fakeProvisionRunner struct {
 	summary jobs.RunSummary
 	err     error
+	calls   *int
 }
 
 func (runner fakeProvisionRunner) RunOnce(ctx context.Context) (jobs.RunSummary, error) {
+	if runner.calls != nil {
+		*runner.calls++
+	}
 	if runner.err != nil {
 		return jobs.RunSummary{}, runner.err
 	}

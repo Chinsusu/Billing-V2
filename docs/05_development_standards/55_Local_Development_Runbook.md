@@ -316,6 +316,26 @@ Yeu cau:
 - provider local dung fake registry, khong can provider credential that;
 - chi chay tren local hoac sandbox, khong chay voi production DSN.
 
+## Local provisioning worker
+
+Khi can xu ly job `provider.provision` tren database local/dev, dung worker fake-provider trong `cmd/worker`.
+
+Chay mot pass de claim va xu ly batch hien tai:
+
+```bash
+go run ./cmd/worker provision-once -dsn "$DB_DSN"
+```
+
+Chay loop local/sandbox de tiep tuc polling job moi:
+
+```bash
+go run ./cmd/worker provision-loop -dsn "$DB_DSN" -interval 5s -batch-size 10
+```
+
+Loop se in summary tung pass theo cac count `claimed`, `succeeded`, `retried`, `manual_review`, `terminal_failed`, va `cancelled`. Khi khong claim duoc job nao, worker cho het `-interval` truoc khi thu lai de tranh busy-spin. Dung `Ctrl+C` de dung loop, hoac them `-timeout 5m` cho run gioi han.
+
+Khong chay worker local voi `APP_ENV=prod` hoac `APP_ENV=production`. Provider local dung fake registry, khong can provider credential that.
+
 ## Quality gate trước PR
 
 Chạy format:
