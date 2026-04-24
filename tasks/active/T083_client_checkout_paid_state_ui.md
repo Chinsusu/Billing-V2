@@ -1,9 +1,9 @@
 # T083 - Client checkout paid state UI
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t083-client-checkout-paid-state-ui
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/190
 Risk: frontend/client
 Created: 2026-04-24
 Updated: 2026-04-24
@@ -37,3 +37,4 @@ Polish the client checkout UI around order, checkout invoice, wallet payment, an
 - 2026-04-24: Task created after T079 added checkout API wiring and T081 was planned for paid order state consistency.
 - 2026-04-24: Codex claimed the task after T081/T082 merged and started inspecting the client checkout UI and API wrappers.
 - 2026-04-24: Added checkout status panel, refreshed client order/invoice/wallet/transaction/service data after payment, switched client references to numeric display IDs where available, and passed local frontend/backend gates.
+- 2026-04-24: Opened PR https://github.com/Chinsusu/Billing-V2/pull/190 and moved the task to REVIEW.
