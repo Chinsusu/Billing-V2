@@ -1,6 +1,6 @@
 # T067 - Admin service inventory live views
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t067-admin-service-inventory
 PR: https://github.com/Chinsusu/Billing-V2/pull/154
@@ -38,3 +38,4 @@ Replace the admin service inventory demo tables with live `/admin/services` read
 - 2026-04-24: Task created after T066 completed and the admin frontend batch was refreshed.
 - 2026-04-24: Codex claimed the task and started wiring admin service inventory screens to live API data.
 - 2026-04-24: Admin proxy, VPS, and bandwidth service screens now use live admin service reads with explicit demo fallback states. Local audit, lint, and build passed.
+- 2026-04-24: PR #154 merged into `main` with commit `130666379404e88b3b459a898d1aa0e37691e10e`.
