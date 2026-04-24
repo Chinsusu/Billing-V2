@@ -2,8 +2,13 @@ package jobs
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
+	"time"
 )
+
+const attemptColumns = `attempt.job_attempt_id, attempt.display_id, attempt.job_id, attempt.worker_id, attempt.attempt_number, attempt.started_at, attempt.finished_at, attempt.result, attempt.error_code, attempt.error_message_redacted, attempt.duration_ms, attempt.correlation_id`
 
 func (store *PostgresStore) ListJobs(ctx context.Context, filter Filter) ([]Job, error) {
 	if err := store.ready(); err != nil {
@@ -30,6 +35,40 @@ func (store *PostgresStore) GetJob(ctx context.Context, lookup Lookup) (Job, err
 		return Job{}, err
 	}
 	return scanJob(store.executor.QueryRowContext(ctx, query, args...))
+}
+
+func (store *PostgresStore) ListAttempts(ctx context.Context, filter AttemptFilter) ([]Attempt, error) {
+	if err := store.ready(); err != nil {
+		return nil, err
+	}
+	if err := store.ensureAttemptJobVisible(ctx, filter); err != nil {
+		return nil, err
+	}
+	query, args, err := buildListAttemptsQuery(filter)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := store.executor.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("list job attempts: %w", err)
+	}
+	defer rows.Close()
+	return scanAttempts(rows)
+}
+
+func (store *PostgresStore) ensureAttemptJobVisible(ctx context.Context, filter AttemptFilter) error {
+	query, args, err := buildAttemptJobVisibleQuery(filter)
+	if err != nil {
+		return err
+	}
+	var exists int
+	if err := store.executor.QueryRowContext(ctx, query, args...).Scan(&exists); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrJobNotFound
+		}
+		return fmt.Errorf("read job for attempts: %w", err)
+	}
+	return nil
 }
 
 func buildListJobsQuery(filter Filter) (string, []interface{}, error) {
@@ -79,4 +118,70 @@ func buildGetJobQuery(lookup Lookup) (string, []interface{}, error) {
 FROM jobs
 WHERE job_id = $1
   AND tenant_id = $2`, []interface{}{lookup.ID, lookup.TenantID}, nil
+}
+
+func buildAttemptJobVisibleQuery(filter AttemptFilter) (string, []interface{}, error) {
+	filter = normalizeAttemptFilter(filter)
+	if err := validateAttemptFilter(filter); err != nil {
+		return "", nil, err
+	}
+	return `SELECT 1
+FROM jobs
+WHERE job_id = $1
+  AND tenant_id = $2`, []interface{}{filter.JobID, filter.TenantID}, nil
+}
+
+func buildListAttemptsQuery(filter AttemptFilter) (string, []interface{}, error) {
+	filter = normalizeAttemptFilter(filter)
+	if err := validateAttemptFilter(filter); err != nil {
+		return "", nil, err
+	}
+	return `SELECT ` + attemptColumns + `
+FROM job_attempts attempt
+JOIN jobs job ON job.job_id = attempt.job_id
+WHERE attempt.job_id = $1
+  AND job.tenant_id = $2
+ORDER BY attempt.attempt_number DESC
+LIMIT $3`, []interface{}{filter.JobID, filter.TenantID, filter.Limit}, nil
+}
+
+func scanAttempts(rows *sql.Rows) ([]Attempt, error) {
+	attempts := make([]Attempt, 0)
+	for rows.Next() {
+		attempt, err := scanAttempt(rows)
+		if err != nil {
+			return nil, err
+		}
+		attempts = append(attempts, attempt)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("read job attempts: %w", err)
+	}
+	return attempts, nil
+}
+
+func scanAttempt(row rowScanner) (Attempt, error) {
+	var attempt Attempt
+	var id, jobID, workerID, result, correlationID string
+	var finishedAt sql.NullTime
+	var errorCode, errorMessage sql.NullString
+	var durationMillis sql.NullInt64
+	if err := row.Scan(
+		&id, &attempt.DisplayID, &jobID, &workerID, &attempt.AttemptNumber, &attempt.StartedAt, &finishedAt, &result,
+		&errorCode, &errorMessage, &durationMillis, &correlationID,
+	); err != nil {
+		return Attempt{}, fmt.Errorf("scan job attempt: %w", err)
+	}
+	attempt.ID = AttemptID(id)
+	attempt.JobID = ID(jobID)
+	attempt.WorkerID = WorkerID(workerID)
+	attempt.FinishedAt = finishedAt.Time
+	attempt.Result = AttemptResult(result)
+	attempt.ErrorCode = errorCode.String
+	attempt.ErrorMessageRedacted = errorMessage.String
+	if durationMillis.Valid {
+		attempt.Duration = time.Duration(durationMillis.Int64) * time.Millisecond
+	}
+	attempt.CorrelationID = CorrelationID(correlationID)
+	return attempt, nil
 }

@@ -113,6 +113,12 @@ Provisioning job:
 curl -s "${ADMIN_HEADERS[@]}" "$API_BASE_URL/admin/jobs?job_type=provider.provision&reference_type=order&reference_id=$ORDER_ID&limit=20"
 ```
 
+Provisioning job attempts after selecting a `JOB_ID` from the job response:
+
+```bash
+curl -s "${ADMIN_HEADERS[@]}" "$API_BASE_URL/admin/jobs/$JOB_ID/attempts?limit=20"
+```
+
 If the API is unavailable, inspect the database:
 
 ```bash
@@ -254,6 +260,7 @@ Inspect:
 ```bash
 curl -s "${CLIENT_HEADERS[@]}" "$API_BASE_URL/client/orders/$ORDER_ID"
 curl -s "${CLIENT_HEADERS[@]}" "$API_BASE_URL/client/services?order_id=$ORDER_ID&limit=20"
+curl -s "${ADMIN_HEADERS[@]}" "$API_BASE_URL/admin/jobs/$JOB_ID/attempts?limit=20"
 psql "$DB_DSN" -c "
 SELECT display_id, source_id, status, attempt_count, max_attempts,
        last_error_code, last_error_message_redacted, manual_review_reason, updated_at

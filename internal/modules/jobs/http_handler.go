@@ -15,6 +15,7 @@ import (
 type HTTPService interface {
 	ListJobs(ctx context.Context, filter Filter) ([]Job, error)
 	GetJob(ctx context.Context, lookup Lookup) (Job, error)
+	ListAttempts(ctx context.Context, filter AttemptFilter) ([]Attempt, error)
 }
 
 type RouteMiddleware func(http.HandlerFunc) http.HandlerFunc
@@ -56,6 +57,12 @@ func (handler *HTTPHandler) adminJobsRoute(w http.ResponseWriter, r *http.Reques
 }
 
 func (handler *HTTPHandler) adminJobRoute(w http.ResponseWriter, r *http.Request) {
+	if jobAttemptsPath(r.URL.Path, adminJobPrefix) {
+		dispatchJobMethods(w, r, map[string]http.HandlerFunc{
+			http.MethodGet: handler.tenantRoute(handler.handleListAdminJobAttempts, handler.options.AdminMiddleware),
+		})
+		return
+	}
 	dispatchJobMethods(w, r, map[string]http.HandlerFunc{
 		http.MethodGet: handler.tenantRoute(handler.handleGetAdminJob, handler.options.AdminMiddleware),
 	})
@@ -68,6 +75,12 @@ func (handler *HTTPHandler) resellerJobsRoute(w http.ResponseWriter, r *http.Req
 }
 
 func (handler *HTTPHandler) resellerJobRoute(w http.ResponseWriter, r *http.Request) {
+	if jobAttemptsPath(r.URL.Path, resellerJobPrefix) {
+		dispatchJobMethods(w, r, map[string]http.HandlerFunc{
+			http.MethodGet: handler.tenantRoute(handler.handleListResellerJobAttempts, handler.options.ResellerMiddleware),
+		})
+		return
+	}
 	dispatchJobMethods(w, r, map[string]http.HandlerFunc{
 		http.MethodGet: handler.tenantRoute(handler.handleGetResellerJob, handler.options.ResellerMiddleware),
 	})
@@ -148,6 +161,14 @@ func (handler *HTTPHandler) handleGetResellerJob(w http.ResponseWriter, r *http.
 	handler.handleGetJob(w, r, resellerJobPrefix)
 }
 
+func (handler *HTTPHandler) handleListAdminJobAttempts(w http.ResponseWriter, r *http.Request) {
+	handler.handleListJobAttempts(w, r, adminJobPrefix)
+}
+
+func (handler *HTTPHandler) handleListResellerJobAttempts(w http.ResponseWriter, r *http.Request) {
+	handler.handleListJobAttempts(w, r, resellerJobPrefix)
+}
+
 func (handler *HTTPHandler) handleGetJob(w http.ResponseWriter, r *http.Request, prefix string) {
 	if !handler.ready(w, r) {
 		return
@@ -169,6 +190,37 @@ func (handler *HTTPHandler) handleGetJob(w http.ResponseWriter, r *http.Request,
 		return
 	}
 	httpserver.WriteSuccess(w, r, http.StatusOK, newJobResponse(job))
+}
+
+func (handler *HTTPHandler) handleListJobAttempts(w http.ResponseWriter, r *http.Request, prefix string) {
+	if !handler.ready(w, r) {
+		return
+	}
+	tenantID, ok := jobTenantIDFromContext(w, r)
+	if !ok {
+		return
+	}
+	if _, ok := jobActorFromContext(w, r); !ok {
+		return
+	}
+	page, ok := jobPageFromRequest(w, r)
+	if !ok {
+		return
+	}
+	jobID, ok := jobIDFromAttemptsPath(w, r, prefix)
+	if !ok {
+		return
+	}
+	attempts, err := handler.service.ListAttempts(r.Context(), AttemptFilter{
+		JobID:    jobID,
+		TenantID: tenantID,
+		Limit:    page.Limit,
+	})
+	if err != nil {
+		writeJobError(w, r, err)
+		return
+	}
+	httpserver.WriteList(w, r, http.StatusOK, newAttemptResponses(attempts), httpserver.NewPage(page.Limit, ""))
 }
 
 func (handler *HTTPHandler) ready(w http.ResponseWriter, r *http.Request) bool {
@@ -208,6 +260,22 @@ func jobFilterFromRequest(w http.ResponseWriter, r *http.Request) (Filter, https
 
 func jobIDFromPrefix(w http.ResponseWriter, r *http.Request, prefix string) (ID, bool) {
 	value := strings.TrimSpace(strings.TrimPrefix(r.URL.Path, prefix))
+	if value == "" || strings.Contains(value, "/") {
+		writeJobError(w, r, ErrJobIDMissing)
+		return "", false
+	}
+	return ID(value), true
+}
+
+func jobAttemptsPath(path string, prefix string) bool {
+	value := strings.TrimSpace(strings.TrimPrefix(path, prefix))
+	return strings.HasSuffix(value, "/attempts")
+}
+
+func jobIDFromAttemptsPath(w http.ResponseWriter, r *http.Request, prefix string) (ID, bool) {
+	value := strings.TrimSpace(strings.TrimPrefix(r.URL.Path, prefix))
+	value = strings.TrimSuffix(value, "/attempts")
+	value = strings.TrimSpace(value)
 	if value == "" || strings.Contains(value, "/") {
 		writeJobError(w, r, ErrJobIDMissing)
 		return "", false

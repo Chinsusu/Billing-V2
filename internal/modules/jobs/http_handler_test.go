@@ -70,6 +70,60 @@ func TestHTTPHandlerGetResellerJobUsesTenantScope(t *testing.T) {
 	}
 }
 
+func TestHTTPHandlerListAdminJobAttemptsUsesTenantScope(t *testing.T) {
+	service := &fakeJobsHTTPService{attempts: []Attempt{testReadAttempt()}}
+	handler := registerJobsTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/admin/jobs/job_1/attempts?limit=10", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.listAttemptCalls != 1 {
+		t.Fatalf("expected list attempts once, got %d", service.listAttemptCalls)
+	}
+	if service.attemptFilter.JobID != ID("job_1") ||
+		service.attemptFilter.TenantID != tenant.ID("tenant_1") ||
+		service.attemptFilter.Limit != 10 {
+		t.Fatalf("unexpected attempt filter: %+v", service.attemptFilter)
+	}
+	body := response.Body.String()
+	for _, expected := range []string{`"display_id":82001`, `"worker_id":"worker_1"`, `"duration_ms":2500`} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("expected %s in attempt response, got %s", expected, body)
+		}
+	}
+}
+
+func TestHTTPHandlerListResellerJobAttemptsUsesTenantScope(t *testing.T) {
+	service := &fakeJobsHTTPService{attempts: []Attempt{testReadAttempt()}}
+	handler := registerJobsTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/reseller/jobs/job_1/attempts?limit=7", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_2")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("reseller_1", "tenant_2", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.listAttemptCalls != 1 {
+		t.Fatalf("expected list attempts once, got %d", service.listAttemptCalls)
+	}
+	if service.attemptFilter.JobID != ID("job_1") ||
+		service.attemptFilter.TenantID != tenant.ID("tenant_2") ||
+		service.attemptFilter.Limit != 7 {
+		t.Fatalf("unexpected attempt filter: %+v", service.attemptFilter)
+	}
+}
+
 func TestHTTPHandlerRejectsBadJobStatus(t *testing.T) {
 	service := &fakeJobsHTTPService{}
 	handler := registerJobsTestHandler(service)
@@ -121,13 +175,33 @@ func testReadJob() Job {
 	}
 }
 
+func testReadAttempt() Attempt {
+	return Attempt{
+		ID:                   "attempt_1",
+		DisplayID:            82001,
+		JobID:                "job_1",
+		WorkerID:             "worker_1",
+		AttemptNumber:        2,
+		StartedAt:            time.Date(2026, 4, 24, 1, 0, 0, 0, time.UTC),
+		FinishedAt:           time.Date(2026, 4, 24, 1, 0, 2, 500000000, time.UTC),
+		Result:               AttemptResultFailedRetryable,
+		ErrorCode:            "provider_timeout",
+		ErrorMessageRedacted: "provider timed out",
+		Duration:             2500 * time.Millisecond,
+		CorrelationID:        "correlation_1",
+	}
+}
+
 type fakeJobsHTTPService struct {
-	job       Job
-	jobs      []Job
-	filter    Filter
-	lookup    Lookup
-	listCalls int
-	getCalls  int
+	job              Job
+	jobs             []Job
+	attempts         []Attempt
+	filter           Filter
+	lookup           Lookup
+	attemptFilter    AttemptFilter
+	listCalls        int
+	getCalls         int
+	listAttemptCalls int
 }
 
 func (service *fakeJobsHTTPService) ListJobs(ctx context.Context, filter Filter) ([]Job, error) {
@@ -140,4 +214,10 @@ func (service *fakeJobsHTTPService) GetJob(ctx context.Context, lookup Lookup) (
 	service.getCalls++
 	service.lookup = lookup
 	return service.job, nil
+}
+
+func (service *fakeJobsHTTPService) ListAttempts(ctx context.Context, filter AttemptFilter) ([]Attempt, error) {
+	service.listAttemptCalls++
+	service.attemptFilter = filter
+	return service.attempts, nil
 }

@@ -65,3 +65,45 @@ func TestBuildListJobsQueryRejectsMissingTenant(t *testing.T) {
 		t.Fatalf("expected tenant error, got %v", err)
 	}
 }
+
+func TestBuildListAttemptsQueryScopesThroughParentJob(t *testing.T) {
+	query, args, err := buildListAttemptsQuery(AttemptFilter{JobID: "job_1", TenantID: "tenant_1", Limit: 15})
+	if err != nil {
+		t.Fatalf("expected attempts query: %v", err)
+	}
+	for _, clause := range []string{
+		"FROM job_attempts attempt",
+		"JOIN jobs job ON job.job_id = attempt.job_id",
+		"attempt.job_id = $1",
+		"job.tenant_id = $2",
+		"ORDER BY attempt.attempt_number DESC",
+		"LIMIT $3",
+	} {
+		if !strings.Contains(query, clause) {
+			t.Fatalf("expected %q in query: %s", clause, query)
+		}
+	}
+	if len(args) != 3 || args[0] != ID("job_1") || args[1] != tenant.ID("tenant_1") || args[2] != 15 {
+		t.Fatalf("unexpected args: %#v", args)
+	}
+}
+
+func TestBuildAttemptJobVisibleQueryScopesTenant(t *testing.T) {
+	query, args, err := buildAttemptJobVisibleQuery(AttemptFilter{JobID: "job_1", TenantID: "tenant_1", Limit: 15})
+	if err != nil {
+		t.Fatalf("expected parent job query: %v", err)
+	}
+	for _, clause := range []string{
+		"SELECT 1",
+		"FROM jobs",
+		"job_id = $1",
+		"tenant_id = $2",
+	} {
+		if !strings.Contains(query, clause) {
+			t.Fatalf("expected %q in query: %s", clause, query)
+		}
+	}
+	if len(args) != 2 || args[0] != ID("job_1") || args[1] != tenant.ID("tenant_1") {
+		t.Fatalf("unexpected args: %#v", args)
+	}
+}

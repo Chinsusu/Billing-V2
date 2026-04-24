@@ -63,3 +63,43 @@ func newJobResponses(jobs []Job) []jobResponse {
 	}
 	return responses
 }
+
+type attemptResponse struct {
+	ID                   AttemptID     `json:"id"`
+	DisplayID            int64         `json:"display_id"`
+	JobID                ID            `json:"job_id"`
+	WorkerID             WorkerID      `json:"worker_id"`
+	AttemptNumber        int           `json:"attempt_number"`
+	StartedAt            time.Time     `json:"started_at"`
+	FinishedAt           time.Time     `json:"finished_at,omitempty"`
+	Result               AttemptResult `json:"result"`
+	ErrorCode            string        `json:"error_code,omitempty"`
+	ErrorMessageRedacted string        `json:"error_message_redacted,omitempty"`
+	DurationMilliseconds int64         `json:"duration_ms,omitempty"`
+	CorrelationID        CorrelationID `json:"correlation_id"`
+}
+
+func newAttemptResponse(attempt Attempt) attemptResponse {
+	return attemptResponse{
+		ID:                   attempt.ID,
+		DisplayID:            attempt.DisplayID,
+		JobID:                attempt.JobID,
+		WorkerID:             attempt.WorkerID,
+		AttemptNumber:        attempt.AttemptNumber,
+		StartedAt:            attempt.StartedAt,
+		FinishedAt:           attempt.FinishedAt,
+		Result:               attempt.Result,
+		ErrorCode:            attempt.ErrorCode,
+		ErrorMessageRedacted: attempt.ErrorMessageRedacted,
+		DurationMilliseconds: attempt.Duration.Milliseconds(),
+		CorrelationID:        attempt.CorrelationID,
+	}
+}
+
+func newAttemptResponses(attempts []Attempt) []attemptResponse {
+	responses := make([]attemptResponse, 0, len(attempts))
+	for _, attempt := range attempts {
+		responses = append(responses, newAttemptResponse(attempt))
+	}
+	return responses
+}

@@ -190,6 +190,10 @@ Audit detail adds:
 
 The job read API does not expose `payload_json` or `idempotency_key`.
 
+`job_attempt` response fields:
+
+`id`, `display_id`, `job_id`, `worker_id`, `attempt_number`, `started_at`, `finished_at`, `result`, `error_code`, `error_message_redacted`, `duration_ms`, `correlation_id`
+
 ## 4. Route Reference
 
 ### 4.1 Orders
@@ -466,6 +470,12 @@ The job read API does not expose `payload_json` or `idempotency_key`.
   - auth: admin actor, `order.view`
   - response: one `job`
 
+- `GET /admin/jobs/{job_id}/attempts`
+  - auth: admin actor, `order.view`
+  - query: `limit`, `cursor`
+  - response: list of `job_attempt`
+  - note: attempts are scoped through the parent job tenant
+
 - `GET /reseller/jobs`
   - auth: reseller actor, `order.view`
   - query: `display_id`, `job_type`, `status`, `reference_type`, `reference_id`, `source_id`, `limit`, `cursor`
@@ -476,6 +486,12 @@ The job read API does not expose `payload_json` or `idempotency_key`.
   - auth: reseller actor, `order.view`
   - response: one `job`
   - note: tenant scope is forced to the current reseller tenant
+
+- `GET /reseller/jobs/{job_id}/attempts`
+  - auth: reseller actor, `order.view`
+  - query: `limit`, `cursor`
+  - response: list of `job_attempt`
+  - note: attempts are scoped through the parent job tenant
 
 ## 5. Filter and Enum Reference
 
@@ -506,6 +522,7 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 ### 5.5 Job values
 
 - job `status`: `queued`, `claimed`, `running`, `succeeded`, `failed_retryable`, `failed_terminal`, `manual_review`, `cancelled`
+- job attempt `result`: `succeeded`, `failed_retryable`, `failed_terminal`, `manual_review`, `cancelled`
 
 ## 6. Common Error Codes
 
