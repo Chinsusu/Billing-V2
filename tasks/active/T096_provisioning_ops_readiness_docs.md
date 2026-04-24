@@ -1,7 +1,7 @@
 # T096 - Provisioning ops readiness docs
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t096-provisioning-ops-readiness-docs
 PR: -
 Risk: docs/ops
@@ -33,3 +33,6 @@ Consolidate the provisioning operations flow into a concise operator checklist f
 ## Agent Log
 
 - 2026-04-24: Task created after T092 completed and the active board was empty.
+- 2026-04-24: Codex claimed the task on `codex/t096-provisioning-ops-readiness-docs`.
+- 2026-04-24: Added concise provisioning readiness checklist and linked it from docs index, manifest, and billing operations runbook.
+- 2026-04-24: Validation passed: `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`, `npm ci`, `npm audit --omit=dev`, `npm run lint`, `npm run build`.

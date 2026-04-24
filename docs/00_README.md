@@ -102,6 +102,9 @@ Bản v1.10 bổ sung local development runbook để dev mới có thể setup 
 - `05_development_standards/53_Frontend_App_Shell_And_UI_Implementation_Standard.md`
 - `05_development_standards/54_Multi_Agent_Task_Board_Conflict_Workflow.md`
 - `05_development_standards/55_Local_Development_Runbook.md`
+- `05_development_standards/56_Billing_API_Operational_Reference.md`
+- `05_development_standards/57_Billing_Operations_Runbook.md`
+- `05_development_standards/58_Provisioning_Ops_Readiness_Checklist.md`
 
 ### Tài liệu tổng hợp và ghi chú
 - `VPS_Proxy_Project_Master_Document.md`
@@ -140,6 +143,9 @@ Bản v1.10 bổ sung local development runbook để dev mới có thể setup 
 17. `05_development_standards/52_Database_Migration_Seed_Data_Workflow.md`
 18. `05_development_standards/54_Multi_Agent_Task_Board_Conflict_Workflow.md`
 19. `05_development_standards/55_Local_Development_Runbook.md`
+20. `05_development_standards/56_Billing_API_Operational_Reference.md`
+21. `05_development_standards/57_Billing_Operations_Runbook.md`
+22. `05_development_standards/58_Provisioning_Ops_Readiness_Checklist.md`
 
 ### Cho frontend
 1. `02_technical_handoff/16_API_Contract_And_Permission_Spec.md`
@@ -154,6 +160,7 @@ Bản v1.10 bổ sung local development runbook để dev mới có thể setup 
 10. `05_development_standards/53_Frontend_App_Shell_And_UI_Implementation_Standard.md`
 11. `05_development_standards/54_Multi_Agent_Task_Board_Conflict_Workflow.md`
 12. `05_development_standards/55_Local_Development_Runbook.md`
+13. `05_development_standards/56_Billing_API_Operational_Reference.md`
 
 ### Cho QA
 1. `01_product_foundation/12_API_Data_Model_Acceptance_Criteria.md`
@@ -168,6 +175,8 @@ Bản v1.10 bổ sung local development runbook để dev mới có thể setup 
 10. `05_development_standards/49_Testing_Strategy_And_Quality_Gates.md`
 11. `05_development_standards/54_Multi_Agent_Task_Board_Conflict_Workflow.md`
 12. `05_development_standards/55_Local_Development_Runbook.md`
+13. `05_development_standards/57_Billing_Operations_Runbook.md`
+14. `05_development_standards/58_Provisioning_Ops_Readiness_Checklist.md`
 
 ### Cho DevOps/Ops
 1. `02_technical_handoff/14_System_Architecture_Blueprint.md`
@@ -183,6 +192,9 @@ Bản v1.10 bổ sung local development runbook để dev mới có thể setup 
 11. `05_development_standards/52_Database_Migration_Seed_Data_Workflow.md`
 12. `05_development_standards/54_Multi_Agent_Task_Board_Conflict_Workflow.md`
 13. `05_development_standards/55_Local_Development_Runbook.md`
+14. `05_development_standards/56_Billing_API_Operational_Reference.md`
+15. `05_development_standards/57_Billing_Operations_Runbook.md`
+16. `05_development_standards/58_Provisioning_Ops_Readiness_Checklist.md`
 
 ## 10 luật nền phải giữ
 1. Không provision nếu tiền chưa được debit/lock hợp lệ.
@@ -371,3 +383,17 @@ This package adds the local development runbook layer `55`:
 ```
 
 The v1.10 layer defines local backend setup, safe `.env` handling, API run commands, health/readiness checks, migration runner usage, PostgreSQL local notes, and PR validation gates.
+
+## v1.11 Billing operations and provisioning readiness addendum
+
+**Date:** 2026-04-24
+
+This package adds the billing operations reference layer `56-58`:
+
+```text
+05_development_standards/56_Billing_API_Operational_Reference.md
+05_development_standards/57_Billing_Operations_Runbook.md
+05_development_standards/58_Provisioning_Ops_Readiness_Checklist.md
+```
+
+The v1.11 layer defines billing API routes, paid-order fulfillment checks, provisioning worker run modes, job recovery actions, smoke verification, and local/sandbox no-go rules for money and provider-state safety.

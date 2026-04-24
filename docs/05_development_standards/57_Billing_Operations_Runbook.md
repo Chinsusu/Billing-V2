@@ -10,6 +10,7 @@ Related references:
 
 - `docs/05_development_standards/55_Local_Development_Runbook.md`
 - `docs/05_development_standards/56_Billing_API_Operational_Reference.md`
+- `docs/05_development_standards/58_Provisioning_Ops_Readiness_Checklist.md`
 - `cmd/smoke dev-billing`
 
 ## 2. Required Context
