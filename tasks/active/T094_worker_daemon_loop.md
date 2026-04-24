@@ -1,7 +1,7 @@
 # T094 - Provisioning worker daemon loop
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t094-worker-daemon-loop
 PR: -
 Risk: backend/worker
@@ -36,3 +36,6 @@ Add a long-running local/sandbox worker mode on top of the existing `provision-o
 ## Agent Log
 
 - 2026-04-24: Task created after T092 completed and the active board was empty.
+- 2026-04-24: Codex claimed the task on `codex/t094-worker-daemon-loop`.
+- 2026-04-24: Added `provision-loop` with idle interval, timeout/signal cancellation, per-pass summaries, worker tests, and local operations docs.
+- 2026-04-24: Validation passed: `go test ./cmd/worker`, `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`, `npm ci`, `npm audit --omit=dev`, `npm run lint`, `npm run build`.

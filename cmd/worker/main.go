@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/signal"
 	"strings"
 	"time"
 
@@ -16,7 +17,11 @@ import (
 	platformdb "github.com/Chinsusu/Billing-V2/internal/platform/db"
 )
 
-const defaultWorkerCommand = "provision-once"
+const (
+	commandProvisionOnce = "provision-once"
+	commandProvisionLoop = "provision-loop"
+	defaultWorkerCommand = commandProvisionOnce
+)
 
 type workerConfig struct {
 	DSN       string
@@ -24,6 +29,7 @@ type workerConfig struct {
 	Timeout   time.Duration
 	BatchSize int
 	LockFor   time.Duration
+	Interval  time.Duration
 }
 
 type provisionRunner interface {
@@ -74,10 +80,12 @@ func runWithDependencies(args []string, deps workerDependencies) error {
 		command = defaultWorkerCommand
 	}
 	switch command {
-	case defaultWorkerCommand:
+	case commandProvisionOnce:
 		return runProvisionOnce(cfg, deps)
+	case commandProvisionLoop:
+		return runProvisionLoop(cfg, deps)
 	default:
-		return fmt.Errorf("unknown command %q; use %s", command, defaultWorkerCommand)
+		return fmt.Errorf("unknown command %q; use %s or %s", command, commandProvisionOnce, commandProvisionLoop)
 	}
 }
 
@@ -100,6 +108,7 @@ func parseConfig(args []string) (workerConfig, []string, error) {
 	flags.DurationVar(&cfg.Timeout, "timeout", 60*time.Second, "worker command timeout")
 	flags.IntVar(&cfg.BatchSize, "batch-size", 1, "maximum jobs to claim once")
 	flags.DurationVar(&cfg.LockFor, "lock-for", time.Minute, "job lock duration")
+	flags.DurationVar(&cfg.Interval, "interval", 5*time.Second, "idle wait interval for provision-loop")
 	if err := flags.Parse(args); err != nil {
 		return workerConfig{}, nil, err
 	}
@@ -109,17 +118,11 @@ func parseConfig(args []string) (workerConfig, []string, error) {
 }
 
 func runProvisionOnce(cfg workerConfig, deps workerDependencies) error {
-	if err := guardLocalWorkerEnvironment(); err != nil {
+	if err := validateWorkerConfig(cfg, commandProvisionOnce); err != nil {
 		return err
 	}
-	if cfg.DSN == "" {
-		return fmt.Errorf("DB_DSN or -dsn is required for %s", defaultWorkerCommand)
-	}
-	if cfg.WorkerID == "" {
-		return fmt.Errorf("worker id is required")
-	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), cfg.Timeout)
+	ctx, cancel := workerCommandContext(cfg.Timeout)
 	defer cancel()
 
 	runner, cleanup, err := deps.newRunner(ctx, cfg)
@@ -136,6 +139,67 @@ func runProvisionOnce(cfg workerConfig, deps workerDependencies) error {
 	}
 	writeSummary(deps.stdout, summary)
 	return nil
+}
+
+func runProvisionLoop(cfg workerConfig, deps workerDependencies) error {
+	if err := validateWorkerConfig(cfg, commandProvisionLoop); err != nil {
+		return err
+	}
+	if cfg.Interval <= 0 {
+		return fmt.Errorf("worker interval must be positive")
+	}
+
+	ctx, cancel := workerCommandContext(cfg.Timeout)
+	defer cancel()
+
+	runner, cleanup, err := deps.newRunner(ctx, cfg)
+	if err != nil {
+		return err
+	}
+	if cleanup != nil {
+		defer cleanup()
+	}
+
+	for pass := 1; ; pass++ {
+		if err := ctx.Err(); err != nil {
+			return nil
+		}
+		summary, err := runner.RunOnce(ctx)
+		if err != nil {
+			if ctx.Err() != nil {
+				return nil
+			}
+			return err
+		}
+		writeLoopSummary(deps.stdout, pass, summary)
+		if summary.Claimed == 0 {
+			if err := waitWorkerInterval(ctx, cfg.Interval); err != nil {
+				return nil
+			}
+		}
+	}
+}
+
+func validateWorkerConfig(cfg workerConfig, command string) error {
+	if err := guardLocalWorkerEnvironment(); err != nil {
+		return err
+	}
+	if cfg.DSN == "" {
+		return fmt.Errorf("DB_DSN or -dsn is required for %s", command)
+	}
+	if cfg.WorkerID == "" {
+		return fmt.Errorf("worker id is required")
+	}
+	return nil
+}
+
+func workerCommandContext(timeout time.Duration) (context.Context, context.CancelFunc) {
+	signalCtx, stopSignals := signal.NotifyContext(context.Background(), os.Interrupt)
+	ctx, cancelTimeout := context.WithTimeout(signalCtx, timeout)
+	return ctx, func() {
+		cancelTimeout()
+		stopSignals()
+	}
 }
 
 func newProvisioningRunner(ctx context.Context, cfg workerConfig) (provisionRunner, func() error, error) {
@@ -178,6 +242,31 @@ func writeSummary(w io.Writer, summary jobs.RunSummary) {
 		summary.TerminalFailed,
 		summary.Cancelled,
 	)
+}
+
+func writeLoopSummary(w io.Writer, pass int, summary jobs.RunSummary) {
+	fmt.Fprintf(
+		w,
+		"provision-loop pass=%d claimed=%d succeeded=%d retried=%d manual_review=%d terminal_failed=%d cancelled=%d\n",
+		pass,
+		summary.Claimed,
+		summary.Succeeded,
+		summary.Retried,
+		summary.ManualReview,
+		summary.TerminalFailed,
+		summary.Cancelled,
+	)
+}
+
+func waitWorkerInterval(ctx context.Context, interval time.Duration) error {
+	timer := time.NewTimer(interval)
+	defer timer.Stop()
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-timer.C:
+		return nil
+	}
 }
 
 func guardLocalWorkerEnvironment() error {
