@@ -21,6 +21,7 @@ type fakeCatalogStore struct {
 	updateSourceStatusInput   UpdateProviderSourceStatusInput
 	listProductsFilter        ProductFilter
 	listProviderSourcesFilter ProviderSourceFilter
+	readinessFilter           ProviderSourceReadinessFilter
 	listTenantCatalogCalled   bool
 }
 
@@ -81,6 +82,11 @@ func (store *fakeCatalogStore) ListProducts(_ context.Context, filter ProductFil
 func (store *fakeCatalogStore) ListProviderSources(_ context.Context, filter ProviderSourceFilter) ([]ProviderSource, error) {
 	store.listProviderSourcesFilter = filter
 	return []ProviderSource{{ID: ProviderSourceID("source-1")}}, nil
+}
+
+func (store *fakeCatalogStore) ListProviderSourceReadiness(_ context.Context, filter ProviderSourceReadinessFilter) ([]ProviderSourceReadiness, error) {
+	store.readinessFilter = filter
+	return []ProviderSourceReadiness{{PlanDisplayID: 10001, SourceDisplayID: 10002, State: ProviderSourceReadinessReady}}, nil
 }
 
 func (store *fakeCatalogStore) ListTenantCatalog(_ context.Context, _ TenantCatalogFilter) (TenantCatalog, error) {
@@ -233,5 +239,18 @@ func TestListProviderSourcesDelegatesToStore(t *testing.T) {
 	}
 	if store.listProviderSourcesFilter.Type != provider.TypeManual || store.listProviderSourcesFilter.Status != ProviderSourceStatusActive || store.listProviderSourcesFilter.Limit != 10 {
 		t.Fatalf("unexpected provider source filter: %+v", store.listProviderSourcesFilter)
+	}
+}
+
+func TestListProviderSourceReadinessDelegatesToStore(t *testing.T) {
+	store := &fakeCatalogStore{}
+	service := NewService(store)
+
+	_, err := service.ListProviderSourceReadiness(context.Background(), ProviderSourceReadinessFilter{ProductType: ProductTypeVPS, PlanStatus: PlanStatusActive, Limit: 10})
+	if err != nil {
+		t.Fatalf("expected list provider readiness: %v", err)
+	}
+	if store.readinessFilter.ProductType != ProductTypeVPS || store.readinessFilter.PlanStatus != PlanStatusActive || store.readinessFilter.Limit != 10 {
+		t.Fatalf("unexpected readiness filter: %+v", store.readinessFilter)
 	}
 }

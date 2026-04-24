@@ -56,6 +56,54 @@ func TestHTTPHandlerListProviderSourcesUsesQueryFilters(t *testing.T) {
 	}
 }
 
+func TestHTTPHandlerListProviderSourceReadinessUsesQueryFilters(t *testing.T) {
+	service := &fakeCatalogHTTPService{
+		sourceReadiness: []ProviderSourceReadiness{{
+			PlanDisplayID:       10001,
+			PlanCode:            "vps-s",
+			PlanName:            "VPS Small",
+			ProductType:         ProductTypeVPS,
+			PlanStatus:          PlanStatusActive,
+			PlanSourceDisplayID: 10003,
+			PlanSourceStatus:    PlanSourceStatusActive,
+			SourceDisplayID:     10002,
+			SourceName:          "Hetzner Falkenstein",
+			SourceType:          provider.TypeHetzner,
+			SourceStatus:        ProviderSourceStatusActive,
+			InventoryMode:       InventoryModeProviderLive,
+			State:               ProviderSourceReadinessReady,
+			Reason:              "Source is active and supports automatic provisioning.",
+		}},
+	}
+	handler := registerCatalogTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/admin/catalog/provider-readiness?product_type=vps&status=active&limit=7", nil)
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.listReadinessCalls != 1 {
+		t.Fatalf("expected list readiness once, got %d", service.listReadinessCalls)
+	}
+	if service.readinessFilter.ProductType != ProductTypeVPS || service.readinessFilter.PlanStatus != PlanStatusActive || service.readinessFilter.Limit != 7 {
+		t.Fatalf("unexpected readiness filter: %+v", service.readinessFilter)
+	}
+	body := response.Body.String()
+	for _, expected := range []string{`"plan_display_id":10001`, `"source_display_id":10002`, `"state":"ready"`} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("expected %s in response, got %s", expected, body)
+		}
+	}
+	for _, blocked := range []string{"capability_profile", "provider_account_id"} {
+		if strings.Contains(body, blocked) {
+			t.Fatalf("response should not expose %s: %s", blocked, body)
+		}
+	}
+}
+
 func TestHTTPHandlerAdminProductsStillSupportsPost(t *testing.T) {
 	service := &fakeCatalogHTTPService{
 		product: Product{ID: "product_1", Type: ProductTypeVPS, Name: "VPS", Status: ProductStatusDraft, CreatedBy: "actor_1"},

@@ -35,7 +35,29 @@ Rules:
 - Use local fake provider unless a sandbox provider is explicitly approved.
 - Do not paste provider credentials, wallet secrets, or production DSNs into task files, PRs, logs, or docs.
 
-## 3. Green Path Checklist
+## 3. Provider Source Readiness
+
+Before paid-order provisioning tests, inspect active plan/source readiness through the API instead of reading catalog tables by hand:
+
+```bash
+curl -s "$API_BASE_URL/admin/catalog/provider-readiness?status=active&limit=100" \
+  -H "X-Tenant-Id: $TENANT_ID" \
+  -H "X-Actor-Id: $ADMIN_ID" \
+  -H "X-Actor-Type: reseller_owner" \
+  -H "X-Actor-Tenant-Id: $TENANT_ID"
+```
+
+States:
+
+- `ready`: active plan source, active provider source, and automatic provisioning capability match the product type.
+- `inactive_source`: the plan source or provider source is not active.
+- `missing_plan_source`: the active plan has no provider source link.
+- `unsupported_capability`: the source cannot auto-provision the plan product type.
+- `fake_provider_only`: local fake/manual path can run smoke, but this is not production provider readiness.
+
+The response uses plan/source display IDs first and does not expose provider credentials, raw provider payloads, or capability JSON.
+
+## 4. Green Path Checklist
 
 Run the deterministic smoke first:
 
@@ -56,7 +78,7 @@ Expected result:
 
 If this smoke fails, stop and inspect the failed step before retrying payment or provisioning.
 
-## 4. Worker Run Modes
+## 5. Worker Run Modes
 
 Run one pass:
 
@@ -72,7 +94,7 @@ go run ./cmd/worker provision-loop -dsn "$DB_DSN" -interval 5s -batch-size 10
 
 Use `provision-once` when checking a known stuck job. Use `provision-loop` while testing repeated local fulfillment. Stop loop mode with `Ctrl+C`, or add `-timeout 5m` for a bounded run.
 
-## 5. Inspect A Paid Order
+## 6. Inspect A Paid Order
 
 Use display IDs in human discussion, but UUIDs in API paths and filters.
 
@@ -116,7 +138,7 @@ curl -s "$API_BASE_URL/admin/jobs/$JOB_ID/attempts?limit=20" \
 
 The attempts view must show redacted errors only. If an error includes a secret or raw provider credential, stop and open a security fix task.
 
-## 6. Recovery Decision Table
+## 7. Recovery Decision Table
 
 | Situation | Do | Do not |
 |---|---|---|
@@ -127,7 +149,7 @@ The attempts view must show redacted errors only. If an error includes a secret 
 | No job exists for a paid order | Open a backend defect task with order/invoice/job evidence. | Do not create a second invoice or second payment. |
 | Provider created a resource but service is missing | Open a repair task with provider evidence and job attempts. | Do not invent `external_resource_id`. |
 
-## 7. Recovery Actions
+## 8. Recovery Actions
 
 Retry after provider-state check:
 
@@ -165,7 +187,7 @@ curl -s -X POST "$API_BASE_URL/admin/jobs/$JOB_ID/cancel" \
   -d '{"reason":"order should not provision after provider-state check"}'
 ```
 
-## 8. Hard No-Go Rules
+## 9. Hard No-Go Rules
 
 - Do not pay an invoice twice to create another job.
 - Do not edit wallet ledger, payment transaction, invoice, or wallet balance rows by hand.
@@ -174,7 +196,7 @@ curl -s -X POST "$API_BASE_URL/admin/jobs/$JOB_ID/cancel" \
 - Do not run local worker commands against production.
 - Do not expose provider credentials or raw provider responses in UI, API errors, logs, tasks, or PRs.
 
-## 9. Ready For Handoff
+## 10. Ready For Handoff
 
 Before handoff, record:
 

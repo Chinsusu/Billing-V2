@@ -33,6 +33,7 @@ type HTTPService interface {
 	ListProducts(ctx context.Context, filter ProductFilter) ([]Product, error)
 	ListMasterPlans(ctx context.Context, filter MasterPlanFilter) ([]Plan, error)
 	ListProviderSources(ctx context.Context, filter ProviderSourceFilter) ([]ProviderSource, error)
+	ListProviderSourceReadiness(ctx context.Context, filter ProviderSourceReadinessFilter) ([]ProviderSourceReadiness, error)
 	ListTenantCatalog(ctx context.Context, filter TenantCatalogFilter) (TenantCatalog, error)
 }
 
@@ -97,6 +98,7 @@ func (handler *HTTPHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/catalog/plans/", handler.adminCatalogPlanRoute)
 	mux.HandleFunc("/admin/catalog/provider-sources", handler.adminCatalogProviderSourcesRoute)
 	mux.HandleFunc("/admin/catalog/provider-sources/", handler.adminCatalogProviderSourceRoute)
+	mux.HandleFunc("/admin/catalog/provider-readiness", middleware.RequireMethod(http.MethodGet, handler.adminRoute(handler.handleListProviderSourceReadiness)))
 	mux.HandleFunc("/admin/catalog/plan-sources", middleware.RequireMethod(http.MethodPost, handler.adminRoute(handler.handleCreatePlanSource)))
 	mux.HandleFunc("/reseller/catalog/master-plans", middleware.RequireMethod(http.MethodGet, handler.tenantRoute(handler.handleListMasterPlans, handler.options.ResellerViewMiddleware)))
 	mux.HandleFunc("/reseller/catalog/products/clone", middleware.RequireMethod(http.MethodPost, handler.tenantRoute(handler.handleCloneTenantProduct, handler.options.ResellerManageMiddleware)))

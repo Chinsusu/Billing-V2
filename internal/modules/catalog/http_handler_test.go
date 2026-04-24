@@ -188,6 +188,9 @@ type fakeCatalogHTTPService struct {
 	providerSources                 []ProviderSource
 	sourceFilter                    ProviderSourceFilter
 	listSourceCalls                 int
+	sourceReadiness                 []ProviderSourceReadiness
+	readinessFilter                 ProviderSourceReadinessFilter
+	listReadinessCalls              int
 	tenantCatalog                   TenantCatalog
 	tenantCatalogFilter             TenantCatalogFilter
 	listTenantCatalogCalls          int
@@ -251,6 +254,12 @@ func (service *fakeCatalogHTTPService) ListProviderSources(ctx context.Context, 
 	service.listSourceCalls++
 	service.sourceFilter = filter
 	return service.providerSources, nil
+}
+
+func (service *fakeCatalogHTTPService) ListProviderSourceReadiness(ctx context.Context, filter ProviderSourceReadinessFilter) ([]ProviderSourceReadiness, error) {
+	service.listReadinessCalls++
+	service.readinessFilter = filter
+	return service.sourceReadiness, nil
 }
 
 func (service *fakeCatalogHTTPService) ListTenantCatalog(ctx context.Context, filter TenantCatalogFilter) (TenantCatalog, error) {
