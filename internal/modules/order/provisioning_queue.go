@@ -21,14 +21,34 @@ type ProvisioningOrderStore interface {
 	GetOrder(ctx context.Context, lookup OrderLookup) (Order, error)
 }
 
+type ProvisioningSourceResolver interface {
+	ResolveOrderProvisioningSource(ctx context.Context, input ResolveOrderProvisioningSourceInput) (ProvisioningSource, error)
+}
+
 type ProvisioningQueueService struct {
-	orders ProvisioningOrderStore
-	queue  jobs.QueueStore
+	orders  ProvisioningOrderStore
+	queue   jobs.QueueStore
+	sources ProvisioningSourceResolver
 }
 
 type QueueProvisioningInput struct {
 	OrderID          OrderID
 	TenantID         tenant.ID
+	ProviderSourceID catalog.ProviderSourceID
+	ProviderType     provider.Type
+}
+
+type QueuePaidOrderProvisioningInput struct {
+	OrderID  OrderID
+	TenantID tenant.ID
+}
+
+type ResolveOrderProvisioningSourceInput struct {
+	TenantID     tenant.ID
+	TenantPlanID catalog.TenantPlanID
+}
+
+type ProvisioningSource struct {
 	ProviderSourceID catalog.ProviderSourceID
 	ProviderType     provider.Type
 }
@@ -49,6 +69,14 @@ func NewProvisioningQueueService(orders ProvisioningOrderStore, queue jobs.Queue
 	return &ProvisioningQueueService{orders: orders, queue: queue}
 }
 
+func NewProvisioningQueueServiceWithSourceResolver(
+	orders ProvisioningOrderStore,
+	queue jobs.QueueStore,
+	sources ProvisioningSourceResolver,
+) *ProvisioningQueueService {
+	return &ProvisioningQueueService{orders: orders, queue: queue, sources: sources}
+}
+
 func (service *ProvisioningQueueService) QueueOrderProvisioning(ctx context.Context, input QueueProvisioningInput) (jobs.Job, error) {
 	if err := service.ready(); err != nil {
 		return jobs.Job{}, err
@@ -61,22 +89,65 @@ func (service *ProvisioningQueueService) QueueOrderProvisioning(ctx context.Cont
 	if err != nil {
 		return jobs.Job{}, err
 	}
-	if order.OrderStatus != OrderStatusPaid || order.BillingStatus != BillingStatusPaid {
-		return jobs.Job{}, ErrProvisioningQueueNotPaid
+	return service.queueProvisioningJob(ctx, order, input.ProviderSourceID, input.ProviderType)
+}
+
+func (service *ProvisioningQueueService) QueuePaidOrderProvisioning(ctx context.Context, input QueuePaidOrderProvisioningInput) (jobs.Job, error) {
+	if err := service.ready(); err != nil {
+		return jobs.Job{}, err
 	}
-	payload, err := provisioningQueuePayloadJSON(order, input.ProviderSourceID, input.ProviderType)
+	if service.sources == nil {
+		return jobs.Job{}, ErrProvisioningSourceNotFound
+	}
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return jobs.Job{}, err
+	}
+	order, err := service.orders.GetOrder(ctx, OrderLookup{ID: input.OrderID, TenantID: input.TenantID})
+	if err != nil {
+		return jobs.Job{}, err
+	}
+	if err := ensureProvisionableOrder(order); err != nil {
+		return jobs.Job{}, err
+	}
+	source, err := service.sources.ResolveOrderProvisioningSource(ctx, ResolveOrderProvisioningSourceInput{
+		TenantID:     order.TenantID,
+		TenantPlanID: order.TenantPlanID,
+	})
+	if err != nil {
+		return jobs.Job{}, err
+	}
+	return service.queueProvisioningJob(ctx, order, source.ProviderSourceID, source.ProviderType)
+}
+
+func (service *ProvisioningQueueService) queueProvisioningJob(
+	ctx context.Context,
+	order Order,
+	providerSourceID catalog.ProviderSourceID,
+	providerType provider.Type,
+) (jobs.Job, error) {
+	if err := ensureProvisionableOrder(order); err != nil {
+		return jobs.Job{}, err
+	}
+	if providerSourceID.Empty() {
+		return jobs.Job{}, ErrProviderSourceIDMissing
+	}
+	if providerType == "" {
+		return jobs.Job{}, ErrProviderTypeMissing
+	}
+	payload, err := provisioningQueuePayloadJSON(order, providerSourceID, providerType)
 	if err != nil {
 		return jobs.Job{}, err
 	}
 	return service.queue.CreateJob(ctx, jobs.CreateJobInput{
-		TenantID:       input.TenantID,
+		TenantID:       order.TenantID,
 		Type:           ProvisioningJobType,
 		ReferenceType:  ProvisioningReferenceType,
 		ReferenceID:    jobs.ReferenceID(order.ID),
-		SourceID:       jobs.SourceID(input.ProviderSourceID),
+		SourceID:       jobs.SourceID(providerSourceID),
 		PayloadJSON:    payload,
 		Priority:       defaultProvisionPriority,
-		IdempotencyKey: provisioningQueueKey(input),
+		IdempotencyKey: provisioningQueueKey(order.TenantID, order.ID, providerSourceID),
 		MaxAttempts:    5,
 		CorrelationID:  jobs.CorrelationID(order.ID),
 	})
@@ -117,8 +188,49 @@ func (input QueueProvisioningInput) Validate() error {
 	return nil
 }
 
-func provisioningQueueKey(input QueueProvisioningInput) string {
-	return "provisioning:" + string(input.TenantID) + ":" + string(input.OrderID) + ":" + string(input.ProviderSourceID)
+func (input QueuePaidOrderProvisioningInput) Normalize() QueuePaidOrderProvisioningInput {
+	return QueuePaidOrderProvisioningInput{
+		OrderID:  OrderID(trim(string(input.OrderID))),
+		TenantID: tenant.ID(trim(string(input.TenantID))),
+	}
+}
+
+func (input QueuePaidOrderProvisioningInput) Validate() error {
+	if input.OrderID.Empty() {
+		return ErrOrderIDMissing
+	}
+	if input.TenantID.Empty() {
+		return tenant.ErrTenantIDMissing
+	}
+	return nil
+}
+
+func (input ResolveOrderProvisioningSourceInput) Normalize() ResolveOrderProvisioningSourceInput {
+	return ResolveOrderProvisioningSourceInput{
+		TenantID:     tenant.ID(trim(string(input.TenantID))),
+		TenantPlanID: catalog.TenantPlanID(trim(string(input.TenantPlanID))),
+	}
+}
+
+func (input ResolveOrderProvisioningSourceInput) Validate() error {
+	if input.TenantID.Empty() {
+		return tenant.ErrTenantIDMissing
+	}
+	if input.TenantPlanID.Empty() {
+		return ErrTenantPlanIDMissing
+	}
+	return nil
+}
+
+func ensureProvisionableOrder(order Order) error {
+	if order.OrderStatus != OrderStatusPaid || order.BillingStatus != BillingStatusPaid {
+		return ErrProvisioningQueueNotPaid
+	}
+	return nil
+}
+
+func provisioningQueueKey(tenantID tenant.ID, orderID OrderID, providerSourceID catalog.ProviderSourceID) string {
+	return "provisioning:" + string(tenantID) + ":" + string(orderID) + ":" + string(providerSourceID)
 }
 
 func provisioningQueuePayloadJSON(order Order, providerSourceID catalog.ProviderSourceID, providerType provider.Type) (json.RawMessage, error) {

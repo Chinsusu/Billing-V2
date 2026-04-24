@@ -188,6 +188,26 @@ func TestHTTPHandlerCreateClientInvoiceWalletPaymentMapsOrderConflict(t *testing
 	}
 }
 
+func TestHTTPHandlerCreateClientInvoiceWalletPaymentMapsProvisioningSourceError(t *testing.T) {
+	service := &fakePaymentHTTPService{payErr: order.ErrProvisioningSourceNotFound}
+	handler := registerPaymentTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodPost, "/client/invoice-wallet-payments", strings.NewReader(`{"invoice_id":"invoice_1","wallet_id":"wallet_1"}`))
+	request.Header.Set(IdempotencyKeyHeader, "pay-key-1")
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("account_1", "tenant_1", identity.ActorTypeClient)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusConflict {
+		t.Fatalf("expected status 409, got %d: %s", response.Code, response.Body.String())
+	}
+	if !strings.Contains(response.Body.String(), "order.provisioning_source_not_found") {
+		t.Fatalf("expected provisioning source response, got %s", response.Body.String())
+	}
+}
+
 func TestHTTPHandlerGetAdminTransactionUsesTenantScopeOnly(t *testing.T) {
 	service := &fakePaymentHTTPService{
 		transaction: Transaction{

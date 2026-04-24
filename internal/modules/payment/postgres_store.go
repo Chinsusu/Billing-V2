@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"github.com/Chinsusu/Billing-V2/internal/modules/invoice"
+	"github.com/Chinsusu/Billing-V2/internal/modules/jobs"
 	"github.com/Chinsusu/Billing-V2/internal/modules/order"
 	"github.com/Chinsusu/Billing-V2/internal/modules/wallet"
 	platformdb "github.com/Chinsusu/Billing-V2/internal/platform/db"
@@ -51,13 +52,14 @@ func (store *PostgresStore) PayInvoiceFromWallet(ctx context.Context, input PayI
 	if conn, ok := store.executor.(*sql.DB); ok {
 		var result WalletInvoicePayment
 		err := platformdb.WithTx(ctx, conn, func(ctx context.Context, tx *sql.Tx) error {
+			orderStore := order.NewPostgresStore(tx)
 			var runErr error
 			result, runErr = payInvoiceFromWallet(
 				ctx,
 				NewPostgresStore(tx),
 				invoice.NewPostgresStore(tx),
 				wallet.NewService(wallet.NewPostgresStore(tx)),
-				order.NewPostgresStore(tx),
+				orderPaymentFinalizer(orderStore, jobs.NewPostgresStore(tx)),
 				input,
 			)
 			return runErr
@@ -67,14 +69,20 @@ func (store *PostgresStore) PayInvoiceFromWallet(ctx context.Context, input PayI
 		}
 		return result, nil
 	}
+	orderStore := order.NewPostgresStore(store.executor)
 	return payInvoiceFromWallet(
 		ctx,
 		store,
 		invoice.NewPostgresStore(store.executor),
 		wallet.NewService(wallet.NewPostgresStore(store.executor)),
-		order.NewPostgresStore(store.executor),
+		orderPaymentFinalizer(orderStore, jobs.NewPostgresStore(store.executor)),
 		input,
 	)
+}
+
+func orderPaymentFinalizer(orderStore *order.PostgresStore, jobStore *jobs.PostgresStore) OrderPaymentFinalizer {
+	provisioning := order.NewProvisioningQueueServiceWithSourceResolver(orderStore, jobStore, orderStore)
+	return order.NewPaymentFinalizationService(orderStore, provisioning)
 }
 
 func createTransactionArgs(input CreateTransactionInput) ([]interface{}, error) {

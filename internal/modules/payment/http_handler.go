@@ -367,6 +367,8 @@ func writePaymentError(w http.ResponseWriter, r *http.Request, err error) {
 		httpserver.WriteError(w, r, http.StatusConflict, "payment.idempotency_conflict", "Idempotency key conflicts with another payment.")
 	case errors.Is(err, order.ErrOrderStatusConflict):
 		httpserver.WriteError(w, r, http.StatusConflict, "order.status_conflict", "Order status changed before payment completed.")
+	case errors.Is(err, order.ErrProvisioningSourceNotFound):
+		httpserver.WriteError(w, r, http.StatusConflict, "order.provisioning_source_not_found", "No active provisioning source is available for this order.")
 	case errors.Is(err, ErrWalletCurrencyMismatch):
 		httpserver.WriteError(w, r, http.StatusConflict, "payment.wallet_currency_mismatch", "Wallet currency does not match invoice currency.")
 	case errors.Is(err, wallet.ErrInsufficientBalance):
