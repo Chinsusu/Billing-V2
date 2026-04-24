@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-24` after opening the next batch:
+Current board snapshot on `2026-04-24` after opening the admin frontend batch:
 
 - `TODO`: 4
 - `IN_PROGRESS`: 0
 - `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 59
+- `DONE` task files in `tasks/active/`: 63
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -57,14 +57,14 @@ Current board snapshot on `2026-04-24` after opening the next batch:
 
 ## Active Tasks
 
-Current batch focuses on finishing the next portal/frontend slice without overlapping write scope.
+Current batch focuses on finishing the remaining admin frontend surfaces without overlapping write scope.
 
 | ID | Task File | Suggested Branch | Risk | Summary |
 | --- | --- | --- | --- | --- |
-| T063 | [tasks/active/T063_frontend_api_surface_expansion.md](tasks/active/T063_frontend_api_surface_expansion.md) | feat/frontend-api-surface-expansion | frontend/API | Expand shared frontend API types, actors, and wrappers for the next portal batch. |
-| T064 | [tasks/active/T064_client_portal_screen_split.md](tasks/active/T064_client_portal_screen_split.md) | feat/client-portal-screen-split | frontend/client | Replace client portal screen reuse with dedicated screens and live billing views. |
-| T065 | [tasks/active/T065_reseller_portal_screen_split.md](tasks/active/T065_reseller_portal_screen_split.md) | feat/reseller-portal-screen-split | frontend/reseller | Replace reseller portal screen reuse and wire the catalog view to live reseller catalog APIs. |
-| T066 | [tasks/active/T066_admin_ops_read_models.md](tasks/active/T066_admin_ops_read_models.md) | feat/admin-ops-read-models | frontend/admin | Wire admin top-up and overview read surfaces to live backend data where endpoints already exist. |
+| T067 | [tasks/active/T067_admin_service_inventory_live_views.md](tasks/active/T067_admin_service_inventory_live_views.md) | feat/admin-service-inventory-live-views | frontend/admin | Wire admin service inventory screens to live `/admin/services` read models. |
+| T068 | [tasks/active/T068_admin_catalog_provider_live_views.md](tasks/active/T068_admin_catalog_provider_live_views.md) | feat/admin-catalog-provider-live-views | frontend/API | Add admin catalog/provider read API wrappers and wire product/provider screens to live data. |
+| T069 | [tasks/active/T069_admin_topup_review_actions.md](tasks/active/T069_admin_topup_review_actions.md) | feat/admin-topup-review-actions | frontend/API | Add real admin top-up approve/reject actions backed by existing review endpoints. |
+| T070 | [tasks/active/T070_admin_reports_dedicated_screen.md](tasks/active/T070_admin_reports_dedicated_screen.md) | feat/admin-reports-dedicated-screen | frontend/admin | Replace reports route reuse with a dedicated live-backed admin reports screen. |
 
 ## Done Task Files
 
@@ -72,7 +72,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 
 - `T003` to `T009`
 - `T011_persistence_repositories`
-- `T012` to `T062`
+- `T012` to `T066`
 
 ## Removed Tasks
 
