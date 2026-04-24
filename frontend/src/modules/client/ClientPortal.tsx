@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { ClientDashboard } from "./screens/ClientDashboard";
-import { ClientShop } from "./screens/ClientShop";
-import { ClientWallet } from "./screens/ClientWallet";
+import { ClientInvoices } from "./screens/ClientInvoices";
 import { ClientPlaceholder } from "./screens/ClientPlaceholder";
+import { ClientServices } from "./screens/ClientServices";
+import { ClientSettings } from "./screens/ClientSettings";
+import { ClientTransactions } from "./screens/ClientTransactions";
 
 interface ScreenConfig {
   title: string;
@@ -26,28 +28,28 @@ const SCREENS: Record<string, ScreenConfig> = {
   },
   "client-services-proxies": {
     title: "Proxies", breadcrumbs: ["ProxyVN", "Services", "Proxies"],
-    component: <ClientDashboard />,
+    component: <ClientServices category="proxies" />,
   },
   "client-services-vps": {
     title: "VPS", breadcrumbs: ["ProxyVN", "Services", "VPS"],
-    component: <ClientDashboard />,
+    component: <ClientServices category="vps" />,
   },
   "client-services-bandwidth": {
     title: "Bandwidth", breadcrumbs: ["ProxyVN", "Services", "Bandwidth"],
-    component: <ClientDashboard />,
+    component: <ClientServices category="bandwidth" />,
   },
   "client-invoices": {
     title: "Invoices", breadcrumbs: ["ProxyVN", "Billing", "Invoices"],
-    component: <ClientShop />,
+    component: <ClientInvoices />,
   },
   "client-transactions": {
     title: "Transactions", breadcrumbs: ["ProxyVN", "Billing", "Transactions"],
     meta: <span className="text-[11px] text-gray-400">$128.40</span>,
-    component: <ClientWallet />,
+    component: <ClientTransactions />,
   },
   "client-settings": {
     title: "Settings", breadcrumbs: ["ProxyVN", "Settings"],
-    component: <ClientPlaceholder title="Settings" />,
+    component: <ClientSettings />,
   },
 };
 

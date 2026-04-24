@@ -1,8 +1,8 @@
 # T064 - Client portal dedicated screens
 
-Status: TODO
-Owner: -
-Branch: feat/client-portal-screen-split
+Status: IN_PROGRESS
+Owner: Codex
+Branch: codex/t064-client-portal-screens
 PR: -
 Risk: frontend/client
 Created: 2026-04-24
@@ -37,3 +37,4 @@ Replace client portal screen reuse with dedicated screens so each navigation ite
 ## Agent Log
 
 - 2026-04-24: Task created for client portal screen cleanup after the shared API integration batch.
+- 2026-04-24: Codex claimed the task after T063 merged and started splitting client portal screens.
