@@ -16,6 +16,8 @@ import {
   CatalogProviderSource,
   CatalogQuery,
   CatalogProduct,
+  CloneTenantPlanBody,
+  CloneTenantProductBody,
   Invoice,
   LedgerEntry,
   LedgerQuery,
@@ -25,6 +27,8 @@ import {
   ServiceInstance,
   TenantCatalog,
   TenantCatalogQuery,
+  TenantCatalogPlan,
+  TenantCatalogProduct,
   TopupRequest,
   TopupRequestQuery,
   TopupReviewBody,
@@ -48,6 +52,10 @@ export const billingApi = {
     getApiData<TenantCatalog>("/reseller/catalog", "reseller", query),
   listResellerMasterPlans: (query: CatalogQuery = {}) =>
     getApiData<CatalogPlan[]>("/reseller/catalog/master-plans", "reseller", query),
+  cloneResellerCatalogProduct: (body: CloneTenantProductBody) =>
+    postApiData<TenantCatalogProduct>("/reseller/catalog/products/clone", "reseller", body),
+  cloneResellerCatalogPlan: (body: CloneTenantPlanBody) =>
+    postApiData<TenantCatalogPlan>("/reseller/catalog/plans/clone", "reseller", body),
 
   listAdminInvoices: (query: AdminInvoiceQuery = {}) =>
     getApiData<Invoice[]>("/admin/invoices", "admin", query),

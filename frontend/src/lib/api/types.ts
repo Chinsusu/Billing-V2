@@ -269,6 +269,30 @@ export interface TenantCatalog {
   plans: TenantCatalogPlan[];
 }
 
+export interface CloneTenantProductBody {
+  master_product_id: string;
+  name_override?: string;
+  description_override?: string;
+  status: string;
+  clone_version?: number;
+}
+
+export interface CloneTenantPlanBody {
+  tenant_product_id: string;
+  master_plan_id: string;
+  selling_price_minor: number;
+  reseller_cost_minor: number;
+  currency: string;
+  margin_policy?: ApiJson;
+  visibility: string;
+  status: string;
+  clone_version?: number;
+  product_snapshot?: ApiJson;
+  plan_snapshot?: ApiJson;
+  price_snapshot?: ApiJson;
+  capability_snapshot?: ApiJson;
+}
+
 export interface TopupRequest {
   id: string;
   display_id: number;
