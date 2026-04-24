@@ -34,11 +34,13 @@ type HTTPService interface {
 type RouteMiddleware func(http.HandlerFunc) http.HandlerFunc
 
 type HTTPHandlerOptions struct {
-	AdminMiddleware         RouteMiddleware
-	AdminManageMiddleware   RouteMiddleware
-	AdminServiceMiddleware  RouteMiddleware
-	ClientMiddleware        RouteMiddleware
-	ClientServiceMiddleware RouteMiddleware
+	AdminMiddleware           RouteMiddleware
+	AdminManageMiddleware     RouteMiddleware
+	AdminServiceMiddleware    RouteMiddleware
+	ResellerMiddleware        RouteMiddleware
+	ResellerServiceMiddleware RouteMiddleware
+	ClientMiddleware          RouteMiddleware
+	ClientServiceMiddleware   RouteMiddleware
 }
 
 type HTTPHandler struct {
@@ -69,6 +71,8 @@ func (handler *HTTPHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/orders/", handler.adminOrderRoute)
 	mux.HandleFunc("/admin/services", handler.adminServicesRoute)
 	mux.HandleFunc("/admin/services/", handler.adminServiceRoute)
+	mux.HandleFunc("/reseller/orders", handler.resellerOrdersRoute)
+	mux.HandleFunc("/reseller/services", handler.resellerServicesRoute)
 	mux.HandleFunc("/client/orders", handler.clientOrdersRoute)
 	mux.HandleFunc("/client/orders/", handler.clientOrderRoute)
 	mux.HandleFunc("/client/services", handler.clientServicesRoute)
@@ -90,6 +94,12 @@ func (handler *HTTPHandler) adminOrderRoute(w http.ResponseWriter, r *http.Reque
 	}
 	dispatchOrderMethods(w, r, map[string]http.HandlerFunc{
 		http.MethodGet: handler.tenantRoute(handler.handleGetAdminOrder, handler.options.AdminMiddleware),
+	})
+}
+
+func (handler *HTTPHandler) resellerOrdersRoute(w http.ResponseWriter, r *http.Request) {
+	dispatchOrderMethods(w, r, map[string]http.HandlerFunc{
+		http.MethodGet: handler.tenantRoute(handler.handleListAdminOrders, handler.options.ResellerMiddleware),
 	})
 }
 

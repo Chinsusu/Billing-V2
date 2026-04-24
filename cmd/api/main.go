@@ -129,11 +129,13 @@ func newOrderRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	service := order.NewServiceWithAudit(store, audit.NewService(audit.NewPostgresStore(executor)))
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return order.NewHTTPHandlerWithOptions(service, order.HTTPHandlerOptions{
-		AdminMiddleware:         orderAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
-		AdminManageMiddleware:   orderAuthMiddleware(authorizer, rbac.PermissionOrderManage, rbac.RiskHigh),
-		AdminServiceMiddleware:  orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
-		ClientMiddleware:        orderAuthMiddleware(authorizer, rbac.PermissionOrderCreate, rbac.RiskMedium),
-		ClientServiceMiddleware: orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
+		AdminMiddleware:           orderAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
+		AdminManageMiddleware:     orderAuthMiddleware(authorizer, rbac.PermissionOrderManage, rbac.RiskHigh),
+		AdminServiceMiddleware:    orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
+		ResellerMiddleware:        orderAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
+		ResellerServiceMiddleware: orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
+		ClientMiddleware:          orderAuthMiddleware(authorizer, rbac.PermissionOrderCreate, rbac.RiskMedium),
+		ClientServiceMiddleware:   orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
 	})
 }
 
