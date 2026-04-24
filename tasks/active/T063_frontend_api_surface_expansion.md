@@ -1,6 +1,6 @@
 # T063 - Frontend API surface expansion
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t063-frontend-api-surface
 PR: https://github.com/Chinsusu/Billing-V2/pull/145
@@ -46,3 +46,4 @@ Expand the shared frontend API layer for the next portal batch without mixing sc
 - 2026-04-24: Codex claimed the task and started expanding the shared frontend API surface.
 - 2026-04-24: PR #145 opened with reseller actor support, shared catalog/top-up/order/service/wallet types, and wrappers for current client/reseller/admin read endpoints.
 - 2026-04-24: Validation passed in `frontend`: `npm ci`, `npm audit --omit=dev`, `npm run lint`, and `npm run build` using Node portable prepended to PATH.
+- 2026-04-24: PR #145 merged into `main` with commit `24c6e7c63ce92844d1ad49af7872bf4559b3c6ff`.
