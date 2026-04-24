@@ -14,6 +14,7 @@ import {
   AuditLog,
   CatalogPlan,
   CatalogProviderSource,
+  CheckoutClientOrderBody,
   CatalogQuery,
   CatalogProduct,
   CloneTenantPlanBody,
@@ -53,6 +54,10 @@ export const billingApi = {
     getApiData<TopupRequest[]>("/client/topup-requests", "client", query),
   createClientOrder: (body: CreateClientOrderBody, idempotencyKey = newIdempotencyKey("client-order")) =>
     postApiData<Order>("/client/orders", "client", body, { idempotencyKey }),
+  checkoutClientOrder: (
+    body: CheckoutClientOrderBody,
+    idempotencyKey = newIdempotencyKey("client-checkout"),
+  ) => postApiData<Invoice>("/client/checkouts", "client", body, { idempotencyKey }),
   createClientTopupRequest: (
     body: CreateTopupRequestBody,
     idempotencyKey = newIdempotencyKey("client-topup"),

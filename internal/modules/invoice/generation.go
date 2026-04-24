@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
 	"github.com/Chinsusu/Billing-V2/internal/modules/order"
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
 )
@@ -23,6 +24,13 @@ type OrderReader interface {
 
 type GenerateInvoiceInput struct {
 	TenantID       tenant.ID
+	OrderID        order.OrderID
+	IdempotencyKey IdempotencyKey
+}
+
+type IssueInvoiceForOrderInput struct {
+	TenantID       tenant.ID
+	BuyerUserID    identity.UserID
 	OrderID        order.OrderID
 	IdempotencyKey IdempotencyKey
 }
@@ -75,6 +83,38 @@ func (service *Service) GenerateInvoiceForOrder(ctx context.Context, input Gener
 	return service.store.CreateInvoiceFromOrder(ctx, createInput)
 }
 
+func (service *Service) IssueInvoiceForOrder(ctx context.Context, input IssueInvoiceForOrderInput) (InvoiceDetail, error) {
+	if err := service.ready(); err != nil {
+		return InvoiceDetail{}, err
+	}
+	if service.orderReader == nil {
+		return InvoiceDetail{}, ErrOrderReaderMissing
+	}
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return InvoiceDetail{}, err
+	}
+	sourceOrder, err := service.orderReader.GetOrder(ctx, order.OrderLookup{
+		ID:          input.OrderID,
+		TenantID:    input.TenantID,
+		BuyerUserID: input.BuyerUserID,
+	})
+	if err != nil {
+		return InvoiceDetail{}, err
+	}
+	if sourceOrder.TenantID != input.TenantID || sourceOrder.BuyerUserID != input.BuyerUserID {
+		return InvoiceDetail{}, tenant.ErrAccessDenied
+	}
+	if sourceOrder.OrderStatus != order.OrderStatusPendingPayment || sourceOrder.BillingStatus != order.BillingStatusUnpaid {
+		return InvoiceDetail{}, ErrOrderNotCheckoutable
+	}
+	createInput, err := newCreateInvoiceFromOrderInput(sourceOrder, input.IdempotencyKey)
+	if err != nil {
+		return InvoiceDetail{}, err
+	}
+	return service.store.CreateInvoiceFromOrder(ctx, createInput)
+}
+
 func (input GenerateInvoiceInput) Normalize() GenerateInvoiceInput {
 	output := input
 	output.IdempotencyKey = IdempotencyKey(trim(string(output.IdempotencyKey)))
@@ -84,6 +124,28 @@ func (input GenerateInvoiceInput) Normalize() GenerateInvoiceInput {
 func (input GenerateInvoiceInput) Validate() error {
 	if input.TenantID.Empty() {
 		return tenant.ErrTenantIDMissing
+	}
+	if input.OrderID.Empty() {
+		return order.ErrOrderIDMissing
+	}
+	if input.IdempotencyKey == "" {
+		return ErrIdempotencyKeyMissing
+	}
+	return nil
+}
+
+func (input IssueInvoiceForOrderInput) Normalize() IssueInvoiceForOrderInput {
+	output := input
+	output.IdempotencyKey = IdempotencyKey(trim(string(output.IdempotencyKey)))
+	return output
+}
+
+func (input IssueInvoiceForOrderInput) Validate() error {
+	if input.TenantID.Empty() {
+		return tenant.ErrTenantIDMissing
+	}
+	if input.BuyerUserID == "" {
+		return ErrBuyerIDMissing
 	}
 	if input.OrderID.Empty() {
 		return order.ErrOrderIDMissing

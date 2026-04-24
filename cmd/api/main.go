@@ -12,6 +12,7 @@ import (
 	"github.com/Chinsusu/Billing-V2/internal/app"
 	"github.com/Chinsusu/Billing-V2/internal/modules/audit"
 	"github.com/Chinsusu/Billing-V2/internal/modules/catalog"
+	"github.com/Chinsusu/Billing-V2/internal/modules/checkout"
 	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
 	"github.com/Chinsusu/Billing-V2/internal/modules/invoice"
 	"github.com/Chinsusu/Billing-V2/internal/modules/order"
@@ -77,6 +78,7 @@ func newRuntime(ctx context.Context, cfg config.Config, log *logger.Logger, open
 		options.AccountRoutes = newAccountRoutes(conn)
 		options.AuditRoutes = newAuditRoutes(conn)
 		options.CatalogRoutes = newCatalogRoutes(conn)
+		options.CheckoutRoutes = newCheckoutRoutes(conn)
 		options.InvoiceRoutes = newInvoiceRoutes(conn)
 		options.OrderRoutes = newOrderRoutes(conn)
 		options.PaymentRoutes = newPaymentRoutes(conn)
@@ -121,6 +123,16 @@ func newCatalogRoutes(executor platformdb.Executor) app.RouteRegistrar {
 		ResellerViewMiddleware:   catalogAuthMiddleware(authorizer, rbac.PermissionCatalogView, rbac.RiskLow),
 		ResellerManageMiddleware: catalogAuthMiddleware(authorizer, rbac.PermissionCatalogManage, rbac.RiskMedium),
 		ClientMiddleware:         catalogAuthMiddleware(authorizer, rbac.PermissionCatalogView, rbac.RiskLow),
+	})
+}
+
+func newCheckoutRoutes(executor platformdb.Executor) app.RouteRegistrar {
+	orderStore := order.NewPostgresStore(executor)
+	invoiceStore := invoice.NewPostgresStore(executor)
+	service := checkout.NewService(invoice.NewServiceWithOrderReader(invoiceStore, orderStore))
+	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
+	return checkout.NewHTTPHandlerWithOptions(service, checkout.HTTPHandlerOptions{
+		ClientMiddleware: checkoutAuthMiddleware(authorizer, rbac.PermissionOrderCreate, rbac.RiskMedium),
 	})
 }
 
@@ -243,6 +255,31 @@ func chainOrderMiddleware(middlewares ...order.RouteMiddleware) order.RouteMiddl
 }
 
 func wrapOrderMiddleware(middleware func(http.Handler) http.Handler) order.RouteMiddleware {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		return middleware(http.HandlerFunc(next)).ServeHTTP
+	}
+}
+
+func checkoutAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) checkout.RouteMiddleware {
+	return chainCheckoutMiddleware(
+		wrapCheckoutMiddleware(identity.HeaderActorMiddleware),
+		checkout.RouteMiddleware(rbac.RequirePermission(authorizer, permission, risk)),
+	)
+}
+
+func chainCheckoutMiddleware(middlewares ...checkout.RouteMiddleware) checkout.RouteMiddleware {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		for index := len(middlewares) - 1; index >= 0; index-- {
+			if middlewares[index] == nil {
+				continue
+			}
+			next = middlewares[index](next)
+		}
+		return next
+	}
+}
+
+func wrapCheckoutMiddleware(middleware func(http.Handler) http.Handler) checkout.RouteMiddleware {
 	return func(next http.HandlerFunc) http.HandlerFunc {
 		return middleware(http.HandlerFunc(next)).ServeHTTP
 	}

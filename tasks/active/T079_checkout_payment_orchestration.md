@@ -1,7 +1,7 @@
 # T079 - Checkout payment orchestration
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t079-checkout-payment-orchestration
 PR: -
 Risk: backend/billing
@@ -35,3 +35,7 @@ Define and implement the next backend step that turns a client order into a paya
 ## Agent Log
 
 - 2026-04-24: Task created after T074 exposed the UI action surface and the backend checkout flow became the next gap.
+- 2026-04-24: Codex claimed the task after T078 completed and started reading order, invoice, wallet, and payment modules.
+- 2026-04-24: Added `POST /client/checkouts` to issue an invoice for the current actor's pending unpaid order without trusting tenant IDs from the body.
+- 2026-04-24: Wired frontend order flow to call checkout after order creation and return a payable invoice ID.
+- 2026-04-24: Validation passed: `go test ./...`, backend builds, `npm audit --omit=dev`, `npm run lint`, `npm run build`.

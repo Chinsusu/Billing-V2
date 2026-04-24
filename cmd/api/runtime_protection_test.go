@@ -27,6 +27,10 @@ func TestNewRuntimeWithDSNProtectsClientOrderRoutes(t *testing.T) {
 	assertRuntimeRejectsMissingActor(t, http.MethodPost, "/client/orders", `{"tenant_plan_id":"tenant_plan_1"}`)
 }
 
+func TestNewRuntimeWithDSNProtectsClientCheckoutRoutes(t *testing.T) {
+	assertRuntimeRejectsMissingActor(t, http.MethodPost, "/client/checkouts", `{"order_id":"order_1"}`)
+}
+
 func TestNewRuntimeWithDSNProtectsAdminOrderRoutes(t *testing.T) {
 	assertRuntimeRejectsMissingActor(t, http.MethodGet, "/admin/orders", "")
 }

@@ -128,6 +128,10 @@ export interface CreateClientOrderBody {
   price_snapshot?: ApiJson;
 }
 
+export interface CheckoutClientOrderBody {
+  order_id: string;
+}
+
 export interface ServiceInstance {
   id: string;
   display_id: number;
