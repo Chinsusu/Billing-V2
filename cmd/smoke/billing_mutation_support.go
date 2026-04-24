@@ -94,6 +94,12 @@ type invoiceWalletPaymentResponse struct {
 		DisplayID   int64  `json:"display_id"`
 		AmountMinor int64  `json:"amount_minor"`
 	} `json:"ledger,omitempty"`
+	Order *struct {
+		ID            string `json:"id"`
+		DisplayID     int64  `json:"display_id"`
+		OrderStatus   string `json:"order_status"`
+		BillingStatus string `json:"billing_status"`
+	} `json:"order,omitempty"`
 }
 
 type auditSummaryResponse struct {

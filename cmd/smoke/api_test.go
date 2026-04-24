@@ -46,3 +46,16 @@ func TestBillingMutationScenarioKeysIncludeRunID(t *testing.T) {
 		}
 	}
 }
+
+func TestProvisioningJobSmokeStatusOK(t *testing.T) {
+	for _, status := range []string{"queued", "claimed", "running", "succeeded"} {
+		if !provisioningJobSmokeStatusOK(status) {
+			t.Fatalf("expected %q to be accepted", status)
+		}
+	}
+	for _, status := range []string{"", "failed_retryable", "failed_terminal", "manual_review", "cancelled"} {
+		if provisioningJobSmokeStatusOK(status) {
+			t.Fatalf("expected %q to be rejected", status)
+		}
+	}
+}
