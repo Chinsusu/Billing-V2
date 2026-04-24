@@ -1,6 +1,6 @@
 # T069 - Admin top-up review actions
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t069-admin-topup-review-actions
 PR: https://github.com/Chinsusu/Billing-V2/pull/158
@@ -40,3 +40,4 @@ Turn the admin top-up review queue from read-only display into real approve/reje
 - 2026-04-24: Task created after T066 completed and the admin frontend batch was refreshed.
 - 2026-04-24: Codex claimed the task and started wiring real admin top-up review actions.
 - 2026-04-24: Added frontend POST helpers and wired AdminTopups approve/reject actions for live reviewable top-ups. Local audit, lint, and build passed.
+- 2026-04-24: PR #158 merged into `main` with commit `924774d5fdcfe0792112e40d7855e1a9610f7250`.
