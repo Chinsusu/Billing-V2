@@ -19,6 +19,7 @@ var (
 
 type ProvisioningResultRecorder interface {
 	RecordProvisioningResult(ctx context.Context, input RecordProvisioningResultInput) (ProvisioningJob, error)
+	CreateServiceInstance(ctx context.Context, input CreateServiceInstanceInput) (ServiceInstance, error)
 }
 
 type ProviderProvisioningHandler struct {
@@ -106,6 +107,11 @@ func (handler *ProviderProvisioningHandler) record(ctx context.Context, job jobs
 	if err != nil {
 		return jobs.Completion{}, err
 	}
+	if status == ProvisioningStatusProvisioned {
+		if _, err := handler.Recorder.CreateServiceInstance(ctx, serviceInstanceFromProvisioningResult(payload, result, handler.now())); err != nil {
+			return jobs.Completion{}, err
+		}
+	}
 	return completionFromProviderResult(result, handler.now()), nil
 }
 
@@ -181,6 +187,34 @@ func jobRetrySafety(safety provider.RetrySafety) jobs.RetrySafety {
 	default:
 		return jobs.RetrySafetyManualReviewRequired
 	}
+}
+
+func serviceInstanceFromProvisioningResult(payload ProvisioningQueuePayload, result provider.OperationResult, fallback time.Time) CreateServiceInstanceInput {
+	termStart := result.ObservedAt
+	if termStart.IsZero() {
+		termStart = fallback
+	}
+	return CreateServiceInstanceInput{
+		TenantID:           payload.TenantID,
+		OrderID:            payload.OrderID,
+		TenantPlanID:       payload.TenantPlanID,
+		ProviderSourceID:   payload.ProviderSourceID,
+		ExternalResourceID: provisioningExternalResourceID(payload, result),
+		Status:             ServiceStatusActive,
+		BillingStatus:      BillingStatusPaid,
+		TermStart:          termStart,
+		TermEnd:            termStart.AddDate(0, 1, 0),
+	}
+}
+
+func provisioningExternalResourceID(payload ProvisioningQueuePayload, result provider.OperationResult) provider.ExternalResourceID {
+	if result.ExternalResourceID != "" {
+		return result.ExternalResourceID
+	}
+	if result.ServiceIdentifier != "" {
+		return provider.ExternalResourceID(result.ServiceIdentifier)
+	}
+	return provider.ExternalResourceID("local-" + string(payload.OrderID))
 }
 
 func (handler *ProviderProvisioningHandler) now() time.Time {

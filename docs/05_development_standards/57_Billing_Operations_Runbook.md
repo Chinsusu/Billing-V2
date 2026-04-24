@@ -119,6 +119,12 @@ Provisioning job attempts after selecting a `JOB_ID` from the job response:
 curl -s "${ADMIN_HEADERS[@]}" "$API_BASE_URL/admin/jobs/$JOB_ID/attempts?limit=20"
 ```
 
+Run one local provisioning worker pass with the fake provider registry:
+
+```bash
+go run ./cmd/worker provision-once -dsn "$DB_DSN"
+```
+
 If the API is unavailable, inspect the database:
 
 ```bash
@@ -288,6 +294,7 @@ WHERE ord.order_id = '$ORDER_ID';"
 Recovery:
 
 - If the job is `queued`, wait for the worker or start the worker once that command exists.
+- In local/dev, run `go run ./cmd/worker provision-once -dsn "$DB_DSN"` to process claimable `provider.provision` jobs once.
 - If the job is `failed_retryable`, inspect `last_error_code` and provider source config before retrying.
 - If the job is `failed_terminal` or `manual_review`, keep the order paid and hand it to operations. Do not refund or requeue without confirming provider state.
 - If no `provider.provision` job exists for a paid order, treat it as a backend defect and create a fix task. Do not pay the invoice again.
@@ -316,7 +323,7 @@ For code or runbook changes around this flow, run:
 
 ```bash
 go test ./...
-go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke
+go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker
 cd frontend
 npm audit --omit=dev
 npm run lint

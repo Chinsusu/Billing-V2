@@ -77,6 +77,17 @@ RETURNING ` + provisioningJobColumns
 const createServiceInstanceSQL = `
 INSERT INTO service_instances (tenant_id, order_id, tenant_plan_id, provider_source_id, external_resource_id, status, billing_status, suspension_reason, term_start, term_end)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+ON CONFLICT (order_id)
+DO UPDATE SET
+    tenant_plan_id = EXCLUDED.tenant_plan_id,
+    provider_source_id = EXCLUDED.provider_source_id,
+    external_resource_id = EXCLUDED.external_resource_id,
+    status = EXCLUDED.status,
+    billing_status = EXCLUDED.billing_status,
+    suspension_reason = EXCLUDED.suspension_reason,
+    term_start = EXCLUDED.term_start,
+    term_end = EXCLUDED.term_end,
+    updated_at = NOW()
 RETURNING ` + serviceInstanceColumns
 
 func (store *PostgresStore) CreateOrder(ctx context.Context, input CreateOrderInput) (Order, error) {
