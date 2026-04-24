@@ -56,6 +56,24 @@ func (store *PostgresStore) ListAttempts(ctx context.Context, filter AttemptFilt
 	return scanAttempts(rows)
 }
 
+func (store *PostgresStore) SummarizeJobs(ctx context.Context, filter SummaryFilter) (JobSummary, error) {
+	if err := store.ready(); err != nil {
+		return JobSummary{}, err
+	}
+	filter = normalizeSummaryFilter(filter)
+	query, args, err := buildJobSummaryQuery(filter)
+	if err != nil {
+		return JobSummary{}, err
+	}
+	summary, err := scanJobSummary(store.executor.QueryRowContext(ctx, query, args...))
+	if err != nil {
+		return JobSummary{}, err
+	}
+	summary.TenantID = filter.TenantID
+	summary.Type = filter.Type
+	return summary, nil
+}
+
 func (store *PostgresStore) ensureAttemptJobVisible(ctx context.Context, filter AttemptFilter) error {
 	query, args, err := buildAttemptJobVisibleQuery(filter)
 	if err != nil {
@@ -69,6 +87,48 @@ func (store *PostgresStore) ensureAttemptJobVisible(ctx context.Context, filter 
 		return fmt.Errorf("read job for attempts: %w", err)
 	}
 	return nil
+}
+
+func buildJobSummaryQuery(filter SummaryFilter) (string, []interface{}, error) {
+	filter = normalizeSummaryFilter(filter)
+	if err := validateSummaryFilter(filter); err != nil {
+		return "", nil, err
+	}
+	return `WITH scoped AS (
+    SELECT job_id, display_id, status, last_error_code, last_error_message_redacted, manual_review_reason, created_at, updated_at
+    FROM jobs
+    WHERE tenant_id = $1
+      AND job_type = $2
+),
+counts AS (
+    SELECT COUNT(*) AS total,
+           COUNT(*) FILTER (WHERE status = 'queued') AS queued,
+           COUNT(*) FILTER (WHERE status = 'claimed') AS claimed,
+           COUNT(*) FILTER (WHERE status = 'running') AS running,
+           COUNT(*) FILTER (WHERE status = 'succeeded') AS succeeded,
+           COUNT(*) FILTER (WHERE status = 'failed_retryable') AS failed_retryable,
+           COUNT(*) FILTER (WHERE status = 'failed_terminal') AS failed_terminal,
+           COUNT(*) FILTER (WHERE status = 'manual_review') AS manual_review,
+           COUNT(*) FILTER (WHERE status = 'cancelled') AS cancelled,
+           MIN(created_at) FILTER (WHERE status = 'queued') AS oldest_queued_at,
+           NOW() AS generated_at
+    FROM scoped
+),
+latest_failure AS (
+    SELECT job_id, display_id, status, last_error_code, last_error_message_redacted, manual_review_reason, created_at, updated_at
+    FROM scoped
+    WHERE status IN ('failed_retryable', 'failed_terminal', 'manual_review')
+    ORDER BY updated_at DESC, created_at DESC
+    LIMIT 1
+)
+SELECT counts.total, counts.queued, counts.claimed, counts.running, counts.succeeded,
+       counts.failed_retryable, counts.failed_terminal, counts.manual_review, counts.cancelled,
+       counts.oldest_queued_at, counts.generated_at,
+       latest_failure.job_id, latest_failure.display_id, latest_failure.status,
+       latest_failure.last_error_code, latest_failure.last_error_message_redacted,
+       latest_failure.manual_review_reason, latest_failure.created_at, latest_failure.updated_at
+FROM counts
+LEFT JOIN latest_failure ON TRUE`, []interface{}{filter.TenantID, filter.Type}, nil
 }
 
 func buildListJobsQuery(filter Filter) (string, []interface{}, error) {
@@ -143,6 +203,52 @@ WHERE attempt.job_id = $1
   AND job.tenant_id = $2
 ORDER BY attempt.attempt_number DESC
 LIMIT $3`, []interface{}{filter.JobID, filter.TenantID, filter.Limit}, nil
+}
+
+func scanJobSummary(row rowScanner) (JobSummary, error) {
+	var summary JobSummary
+	var oldestQueuedAt, generatedAt, failureCreatedAt, failureUpdatedAt sql.NullTime
+	var failureID, failureStatus, failureErrorCode, failureErrorMessage, failureManualReason sql.NullString
+	var failureDisplayID sql.NullInt64
+	if err := row.Scan(
+		&summary.Total,
+		&summary.Counts.Queued,
+		&summary.Counts.Claimed,
+		&summary.Counts.Running,
+		&summary.Counts.Succeeded,
+		&summary.Counts.FailedRetryable,
+		&summary.Counts.FailedTerminal,
+		&summary.Counts.ManualReview,
+		&summary.Counts.Cancelled,
+		&oldestQueuedAt,
+		&generatedAt,
+		&failureID,
+		&failureDisplayID,
+		&failureStatus,
+		&failureErrorCode,
+		&failureErrorMessage,
+		&failureManualReason,
+		&failureCreatedAt,
+		&failureUpdatedAt,
+	); err != nil {
+		return JobSummary{}, fmt.Errorf("scan job summary: %w", err)
+	}
+	summary.AttentionCount = summary.Counts.AttentionCount()
+	summary.OldestQueuedAt = oldestQueuedAt.Time
+	summary.GeneratedAt = generatedAt.Time
+	if failureID.Valid {
+		summary.LatestFailure = &JobFailureContext{
+			ID:                       ID(failureID.String),
+			DisplayID:                failureDisplayID.Int64,
+			Status:                   Status(failureStatus.String),
+			LastErrorCode:            failureErrorCode.String,
+			LastErrorMessageRedacted: failureErrorMessage.String,
+			ManualReviewReason:       failureManualReason.String,
+			CreatedAt:                failureCreatedAt.Time,
+			UpdatedAt:                failureUpdatedAt.Time,
+		}
+	}
+	return summary, nil
 }
 
 func scanAttempts(rows *sql.Rows) ([]Attempt, error) {

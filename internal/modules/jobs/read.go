@@ -2,12 +2,14 @@ package jobs
 
 import (
 	"context"
+	"time"
 
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
 )
 
 const defaultJobListLimit = 100
 const maxJobListLimit = 500
+const defaultJobSummaryType Type = "provider.provision"
 
 type Filter struct {
 	TenantID      tenant.ID
@@ -31,10 +33,56 @@ type AttemptFilter struct {
 	Limit    int
 }
 
+type SummaryFilter struct {
+	TenantID tenant.ID
+	Type     Type
+}
+
+type JobStatusCounts struct {
+	Queued          int
+	Claimed         int
+	Running         int
+	Succeeded       int
+	FailedRetryable int
+	FailedTerminal  int
+	ManualReview    int
+	Cancelled       int
+}
+
+func (counts JobStatusCounts) AttentionCount() int {
+	return counts.FailedRetryable + counts.FailedTerminal + counts.ManualReview
+}
+
+type JobFailureContext struct {
+	ID                       ID
+	DisplayID                int64
+	Status                   Status
+	LastErrorCode            string
+	LastErrorMessageRedacted string
+	ManualReviewReason       string
+	CreatedAt                time.Time
+	UpdatedAt                time.Time
+}
+
+type JobSummary struct {
+	TenantID       tenant.ID
+	Type           Type
+	Total          int
+	AttentionCount int
+	Counts         JobStatusCounts
+	OldestQueuedAt time.Time
+	GeneratedAt    time.Time
+	LatestFailure  *JobFailureContext
+}
+
 type ReadStore interface {
 	ListJobs(ctx context.Context, filter Filter) ([]Job, error)
 	GetJob(ctx context.Context, lookup Lookup) (Job, error)
 	ListAttempts(ctx context.Context, filter AttemptFilter) ([]Attempt, error)
+}
+
+type SummaryStore interface {
+	SummarizeJobs(ctx context.Context, filter SummaryFilter) (JobSummary, error)
 }
 
 type Service struct {
@@ -90,6 +138,21 @@ func (service *Service) ListAttempts(ctx context.Context, filter AttemptFilter) 
 	return service.store.ListAttempts(ctx, filter)
 }
 
+func (service *Service) SummarizeJobs(ctx context.Context, filter SummaryFilter) (JobSummary, error) {
+	if err := service.ready(); err != nil {
+		return JobSummary{}, err
+	}
+	summaryStore, ok := service.store.(SummaryStore)
+	if !ok {
+		return JobSummary{}, ErrServiceStoreMissing
+	}
+	filter = normalizeSummaryFilter(filter)
+	if err := validateSummaryFilter(filter); err != nil {
+		return JobSummary{}, err
+	}
+	return summaryStore.SummarizeJobs(ctx, filter)
+}
+
 func (service *Service) ready() error {
 	if service == nil || service.store == nil {
 		return ErrServiceStoreMissing
@@ -103,6 +166,22 @@ func (service *Service) readyRecovery() error {
 	}
 	if service.recovery == nil {
 		return ErrServiceStoreMissing
+	}
+	return nil
+}
+
+func normalizeSummaryFilter(filter SummaryFilter) SummaryFilter {
+	filter.TenantID = tenant.ID(trimJobString(string(filter.TenantID)))
+	filter.Type = Type(trimJobString(string(filter.Type)))
+	if filter.Type == "" {
+		filter.Type = defaultJobSummaryType
+	}
+	return filter
+}
+
+func validateSummaryFilter(filter SummaryFilter) error {
+	if filter.TenantID.Empty() {
+		return tenant.ErrTenantIDMissing
 	}
 	return nil
 }

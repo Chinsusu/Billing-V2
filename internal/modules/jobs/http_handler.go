@@ -16,6 +16,7 @@ type HTTPService interface {
 	ListJobs(ctx context.Context, filter Filter) ([]Job, error)
 	GetJob(ctx context.Context, lookup Lookup) (Job, error)
 	ListAttempts(ctx context.Context, filter AttemptFilter) ([]Attempt, error)
+	SummarizeJobs(ctx context.Context, filter SummaryFilter) (JobSummary, error)
 	RetryJob(ctx context.Context, input RetryJobInput) (Job, error)
 	MarkManualReview(ctx context.Context, input ManualReviewJobInput) (Job, error)
 	CancelJob(ctx context.Context, input CancelJobInput) (Job, error)
@@ -25,6 +26,7 @@ type RouteMiddleware func(http.HandlerFunc) http.HandlerFunc
 
 type HTTPHandlerOptions struct {
 	AdminMiddleware             RouteMiddleware
+	AdminSummaryMiddleware      RouteMiddleware
 	AdminRetryMiddleware        RouteMiddleware
 	AdminManualReviewMiddleware RouteMiddleware
 	AdminCancelMiddleware       RouteMiddleware
@@ -51,6 +53,7 @@ func NewHTTPHandlerWithOptions(service HTTPService, options HTTPHandlerOptions) 
 
 func (handler *HTTPHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/jobs", handler.adminJobsRoute)
+	mux.HandleFunc("/admin/jobs/summary", handler.adminJobSummaryRoute)
 	mux.HandleFunc("/admin/jobs/", handler.adminJobRoute)
 	mux.HandleFunc("/reseller/jobs", handler.resellerJobsRoute)
 	mux.HandleFunc("/reseller/jobs/", handler.resellerJobRoute)
@@ -59,6 +62,12 @@ func (handler *HTTPHandler) RegisterRoutes(mux *http.ServeMux) {
 func (handler *HTTPHandler) adminJobsRoute(w http.ResponseWriter, r *http.Request) {
 	dispatchJobMethods(w, r, map[string]http.HandlerFunc{
 		http.MethodGet: handler.tenantRoute(handler.handleListJobs, handler.options.AdminMiddleware),
+	})
+}
+
+func (handler *HTTPHandler) adminJobSummaryRoute(w http.ResponseWriter, r *http.Request) {
+	dispatchJobMethods(w, r, map[string]http.HandlerFunc{
+		http.MethodGet: handler.tenantRoute(handler.handleAdminJobSummary, handler.options.AdminSummaryMiddleware),
 	})
 }
 
@@ -161,6 +170,27 @@ func (handler *HTTPHandler) handleListJobs(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	httpserver.WriteList(w, r, http.StatusOK, newJobResponses(jobs), httpserver.NewPage(page.Limit, ""))
+}
+
+func (handler *HTTPHandler) handleAdminJobSummary(w http.ResponseWriter, r *http.Request) {
+	if !handler.ready(w, r) {
+		return
+	}
+	tenantID, ok := jobTenantIDFromContext(w, r)
+	if !ok {
+		return
+	}
+	if _, ok := jobActorFromContext(w, r); !ok {
+		return
+	}
+	filter := jobSummaryFilterFromRequest(r)
+	filter.TenantID = tenantID
+	summary, err := handler.service.SummarizeJobs(r.Context(), filter)
+	if err != nil {
+		writeJobError(w, r, err)
+		return
+	}
+	httpserver.WriteSuccess(w, r, http.StatusOK, newJobSummaryResponse(summary))
 }
 
 func (handler *HTTPHandler) handleGetAdminJob(w http.ResponseWriter, r *http.Request) {
@@ -266,6 +296,11 @@ func jobFilterFromRequest(w http.ResponseWriter, r *http.Request) (Filter, https
 	filter.ReferenceID = ReferenceID(strings.TrimSpace(query.Get("reference_id")))
 	filter.SourceID = SourceID(strings.TrimSpace(query.Get("source_id")))
 	return filter, page, true
+}
+
+func jobSummaryFilterFromRequest(r *http.Request) SummaryFilter {
+	jobType := Type(strings.TrimSpace(r.URL.Query().Get("job_type")))
+	return normalizeSummaryFilter(SummaryFilter{Type: jobType})
 }
 
 func jobIDFromPrefix(w http.ResponseWriter, r *http.Request, prefix string) (ID, bool) {

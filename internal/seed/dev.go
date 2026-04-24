@@ -57,6 +57,7 @@ VALUES
     ('order.manage', 'order', 'high'),
     ('service.view', 'service', 'low'),
     ('service.credential.reveal', 'service', 'critical'),
+    ('provisioning.job.view', 'provisioning', 'low'),
     ('provisioning.job.retry', 'provisioning', 'high'),
     ('provisioning.manual_review.resolve', 'provisioning', 'high'),
     ('provider.view', 'provider', 'low'),

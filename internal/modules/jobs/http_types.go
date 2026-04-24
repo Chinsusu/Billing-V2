@@ -79,6 +79,92 @@ type attemptResponse struct {
 	CorrelationID        CorrelationID `json:"correlation_id"`
 }
 
+type jobSummaryResponse struct {
+	Type                   Type                       `json:"job_type"`
+	Total                  int                        `json:"total"`
+	AttentionCount         int                        `json:"attention_count"`
+	Counts                 jobSummaryCountsResponse   `json:"counts"`
+	OldestQueuedAt         *time.Time                 `json:"oldest_queued_at,omitempty"`
+	OldestQueuedAgeSeconds int64                      `json:"oldest_queued_age_seconds,omitempty"`
+	LatestFailure          *jobSummaryFailureResponse `json:"latest_failure,omitempty"`
+	GeneratedAt            time.Time                  `json:"generated_at"`
+}
+
+type jobSummaryCountsResponse struct {
+	Queued          int `json:"queued"`
+	Claimed         int `json:"claimed"`
+	Running         int `json:"running"`
+	Succeeded       int `json:"succeeded"`
+	FailedRetryable int `json:"failed_retryable"`
+	FailedTerminal  int `json:"failed_terminal"`
+	ManualReview    int `json:"manual_review"`
+	Cancelled       int `json:"cancelled"`
+}
+
+type jobSummaryFailureResponse struct {
+	ID                       ID        `json:"id"`
+	DisplayID                int64     `json:"display_id"`
+	Status                   Status    `json:"status"`
+	LastErrorCode            string    `json:"last_error_code,omitempty"`
+	LastErrorMessageRedacted string    `json:"last_error_message_redacted,omitempty"`
+	ManualReviewReason       string    `json:"manual_review_reason,omitempty"`
+	CreatedAt                time.Time `json:"created_at"`
+	UpdatedAt                time.Time `json:"updated_at"`
+}
+
+func newJobSummaryResponse(summary JobSummary) jobSummaryResponse {
+	var oldestQueuedAt *time.Time
+	if !summary.OldestQueuedAt.IsZero() {
+		oldestQueuedAt = &summary.OldestQueuedAt
+	}
+	return jobSummaryResponse{
+		Type:           summary.Type,
+		Total:          summary.Total,
+		AttentionCount: summary.AttentionCount,
+		Counts: jobSummaryCountsResponse{
+			Queued:          summary.Counts.Queued,
+			Claimed:         summary.Counts.Claimed,
+			Running:         summary.Counts.Running,
+			Succeeded:       summary.Counts.Succeeded,
+			FailedRetryable: summary.Counts.FailedRetryable,
+			FailedTerminal:  summary.Counts.FailedTerminal,
+			ManualReview:    summary.Counts.ManualReview,
+			Cancelled:       summary.Counts.Cancelled,
+		},
+		OldestQueuedAt:         oldestQueuedAt,
+		OldestQueuedAgeSeconds: oldestQueuedAgeSeconds(summary),
+		LatestFailure:          newJobSummaryFailureResponse(summary.LatestFailure),
+		GeneratedAt:            summary.GeneratedAt,
+	}
+}
+
+func newJobSummaryFailureResponse(failure *JobFailureContext) *jobSummaryFailureResponse {
+	if failure == nil {
+		return nil
+	}
+	return &jobSummaryFailureResponse{
+		ID:                       failure.ID,
+		DisplayID:                failure.DisplayID,
+		Status:                   failure.Status,
+		LastErrorCode:            failure.LastErrorCode,
+		LastErrorMessageRedacted: failure.LastErrorMessageRedacted,
+		ManualReviewReason:       failure.ManualReviewReason,
+		CreatedAt:                failure.CreatedAt,
+		UpdatedAt:                failure.UpdatedAt,
+	}
+}
+
+func oldestQueuedAgeSeconds(summary JobSummary) int64 {
+	if summary.OldestQueuedAt.IsZero() || summary.GeneratedAt.IsZero() {
+		return 0
+	}
+	seconds := int64(summary.GeneratedAt.Sub(summary.OldestQueuedAt).Seconds())
+	if seconds < 0 {
+		return 0
+	}
+	return seconds
+}
+
 func newAttemptResponse(attempt Attempt) attemptResponse {
 	return attemptResponse{
 		ID:                   attempt.ID,

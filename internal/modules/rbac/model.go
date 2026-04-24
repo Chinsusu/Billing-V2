@@ -28,6 +28,7 @@ const (
 	PermissionOrderManage           Permission = "order.manage"
 	PermissionServiceView           Permission = "service.view"
 	PermissionServiceReveal         Permission = "service.credential.reveal"
+	PermissionProvisioningJobView   Permission = "provisioning.job.view"
 	PermissionProvisioningJobRetry  Permission = "provisioning.job.retry"
 	PermissionManualReviewResolve   Permission = "provisioning.manual_review.resolve"
 	PermissionProviderView          Permission = "provider.view"

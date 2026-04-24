@@ -95,6 +95,12 @@ curl -s "$API_BASE_URL/client/services?order_id=$ORDER_ID&limit=20" \
 Admin job checks:
 
 ```bash
+curl -s "$API_BASE_URL/admin/jobs/summary?job_type=provider.provision" \
+  -H "X-Tenant-Id: $TENANT_ID" \
+  -H "X-Actor-Id: $ADMIN_ID" \
+  -H "X-Actor-Type: reseller_owner" \
+  -H "X-Actor-Tenant-Id: $TENANT_ID"
+
 curl -s "$API_BASE_URL/admin/jobs?job_type=provider.provision&reference_type=order&reference_id=$ORDER_ID&limit=20" \
   -H "X-Tenant-Id: $TENANT_ID" \
   -H "X-Actor-Id: $ADMIN_ID" \
