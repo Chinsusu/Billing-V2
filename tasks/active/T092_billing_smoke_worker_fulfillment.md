@@ -1,7 +1,7 @@
 # T092 - Billing smoke worker fulfillment
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t092-billing-smoke-worker-fulfillment
 PR: -
 Risk: QA/smoke
@@ -34,3 +34,5 @@ Extend billing smoke so it can process a paid order provisioning job through the
 ## Agent Log
 
 - 2026-04-24: Task created in the provisioning operations batch after T086.
+- 2026-04-24: Codex claimed the task on `codex/t092-billing-smoke-worker-fulfillment`.
+- 2026-04-24: Added fake-provider worker fulfillment to `dev-billing` smoke, service visibility verification, docs, and unit coverage. Local backend/frontend validation passed.
