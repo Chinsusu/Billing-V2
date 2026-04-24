@@ -1,6 +1,6 @@
 # T088 - Provisioning job attempts read API
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t088-provisioning-job-attempts-read-api
 PR: https://github.com/Chinsusu/Billing-V2/pull/201
@@ -39,3 +39,4 @@ Expose job attempt history so operations can understand why a provisioning job r
 - 2026-04-24: Codex claimed the task after T087 merged and started extending the jobs read API with tenant-scoped attempt history.
 - 2026-04-24: Added admin/reseller job attempt list routes, tenant-scoped parent job checks, redacted attempt responses, query/unit tests, and operational docs. Validation passed: `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke`, frontend audit, lint, and build.
 - 2026-04-24: Opened PR https://github.com/Chinsusu/Billing-V2/pull/201 for review and CI.
+- 2026-04-24: PR https://github.com/Chinsusu/Billing-V2/pull/201 passed CI and merged to main at `bebe90c22ac20a739194371462c5fb67306527e3`.
