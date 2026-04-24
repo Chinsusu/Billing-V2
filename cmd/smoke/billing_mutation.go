@@ -8,11 +8,6 @@ import (
 	"net/url"
 	"strings"
 	"time"
-
-	"github.com/Chinsusu/Billing-V2/internal/modules/invoice"
-	"github.com/Chinsusu/Billing-V2/internal/modules/order"
-	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
-	platformdb "github.com/Chinsusu/Billing-V2/internal/platform/db"
 )
 
 const (
@@ -22,10 +17,8 @@ const (
 	smokeOrderAmount   = int64(1400)
 	smokeOrderCurrency = "USD"
 	auditActionTopup   = "wallet.topup.approved"
-	auditActionOrder   = "order.status_changed"
 	auditActionInvoice = "invoice.wallet_paid"
 	auditTargetTopup   = "topup_request"
-	auditTargetOrder   = "order"
 	auditTargetInvoice = "invoice"
 )
 
@@ -58,12 +51,6 @@ func runDevBillingMutationSmoke(dsn string, baseURL string, timeout time.Duratio
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	conn, err := platformdb.Open(ctx, platformdb.Config{DriverName: platformdb.DefaultDriverName, DSN: dsn})
-	if err != nil {
-		return err
-	}
-	defer conn.Close()
-
 	client := &http.Client{Timeout: timeout}
 	scenario := newBillingMutationScenario()
 
@@ -72,25 +59,21 @@ func runDevBillingMutationSmoke(dsn string, baseURL string, timeout time.Duratio
 		return err
 	}
 
-	orderRecord, err := runOrderStatusSmoke(ctx, client, baseURL, scenario)
+	orderRecord, err := runOrderCreateSmoke(ctx, client, baseURL, scenario)
 	if err != nil {
 		return err
 	}
 
-	issuedInvoice, err := generateInvoiceForSmokeOrder(ctx, conn, scenario, orderRecord.ID)
+	issuedInvoice, err := runCheckoutInvoiceSmoke(ctx, client, baseURL, scenario, orderRecord.ID)
 	if err != nil {
 		return err
 	}
-	if issuedInvoice.Invoice.DisplayID <= 0 || issuedInvoice.Invoice.Status != invoice.StatusIssued {
-		return fmt.Errorf("expected issued invoice with display id, got %+v", issuedInvoice.Invoice)
-	}
-	fmt.Printf("billing mutation passed: invoice generated %s (%d)\n", issuedInvoice.Invoice.ID, issuedInvoice.Invoice.DisplayID)
 
-	if err := verifyIssuedInvoiceVisibleViaAPI(ctx, client, baseURL, orderRecord.ID, string(issuedInvoice.Invoice.ID)); err != nil {
+	if err := verifyIssuedInvoiceVisibleViaAPI(ctx, client, baseURL, orderRecord.ID, issuedInvoice.ID); err != nil {
 		return err
 	}
 
-	paymentRecord, err := runInvoiceWalletPaymentSmoke(ctx, client, baseURL, scenario, string(issuedInvoice.Invoice.ID))
+	paymentRecord, err := runInvoiceWalletPaymentSmoke(ctx, client, baseURL, scenario, issuedInvoice.ID)
 	if err != nil {
 		return err
 	}
@@ -102,13 +85,6 @@ func runDevBillingMutationSmoke(dsn string, baseURL string, timeout time.Duratio
 			TargetID:         topup.ID,
 			MetadataContains: fmt.Sprintf(`"display_id":%d`, topup.DisplayID),
 			AfterContains:    `"status":"approved"`,
-		},
-		{
-			Action:           auditActionOrder,
-			TargetType:       auditTargetOrder,
-			TargetID:         orderRecord.ID,
-			MetadataContains: fmt.Sprintf(`"display_id":%d`, orderRecord.DisplayID),
-			AfterContains:    `"order_status":"paid"`,
 		},
 		{
 			Action:           auditActionInvoice,
@@ -169,7 +145,7 @@ func runTopupApprovalSmoke(
 	return approved, nil
 }
 
-func runOrderStatusSmoke(
+func runOrderCreateSmoke(
 	ctx context.Context,
 	client *http.Client,
 	baseURL string,
@@ -194,36 +170,40 @@ func runOrderStatusSmoke(
 	if created.DisplayID <= 0 || created.OrderStatus != "pending_payment" || created.BillingStatus != "unpaid" {
 		return orderResponse{}, fmt.Errorf("expected pending unpaid order, got %+v", created)
 	}
-
-	paid, err := doJSON[orderResponse](ctx, client, http.MethodPatch, baseURL, "/admin/orders/"+created.ID+"/status", adminHeaders(), transitionOrderStatusBody{
-		FromStatus:    "pending_payment",
-		ToStatus:      "paid",
-		BillingStatus: "paid",
-	}, http.StatusOK)
-	if err != nil {
-		return orderResponse{}, err
-	}
-	if paid.OrderStatus != "paid" || paid.BillingStatus != "paid" || paid.DisplayID <= 0 {
-		return orderResponse{}, fmt.Errorf("expected paid order, got %+v", paid)
-	}
-	fmt.Printf("billing mutation passed: order paid %s (%d)\n", paid.ID, paid.DisplayID)
-	return paid, nil
+	fmt.Printf("billing mutation passed: order created %s (%d)\n", created.ID, created.DisplayID)
+	return created, nil
 }
 
-func generateInvoiceForSmokeOrder(
+func runCheckoutInvoiceSmoke(
 	ctx context.Context,
-	conn platformdb.Executor,
+	client *http.Client,
+	baseURL string,
 	scenario billingMutationScenario,
 	orderID string,
-) (invoice.InvoiceDetail, error) {
-	orderStore := order.NewPostgresStore(conn)
-	invoiceStore := invoice.NewPostgresStore(conn)
-	service := invoice.NewServiceWithOrderReader(invoiceStore, orderStore)
-	return service.GenerateInvoiceForOrder(ctx, invoice.GenerateInvoiceInput{
-		TenantID:       tenant.ID(demoTenantID),
-		OrderID:        order.OrderID(orderID),
-		IdempotencyKey: invoice.IdempotencyKey(scenario.invoiceIdempotencyKey()),
-	})
+) (invoiceSummaryResponse, error) {
+	headers := cloneHeaders(clientHeaders())
+	headers["Idempotency-Key"] = scenario.checkoutIdempotencyKey()
+	created, err := doJSON[invoiceSummaryResponse](ctx, client, http.MethodPost, baseURL, "/client/checkouts", headers, checkoutOrderBody{
+		OrderID: orderID,
+	}, http.StatusCreated)
+	if err != nil {
+		return invoiceSummaryResponse{}, err
+	}
+	if created.DisplayID <= 0 || created.Status != "issued" || created.OrderID != orderID {
+		return invoiceSummaryResponse{}, fmt.Errorf("expected issued checkout invoice, got %+v", created)
+	}
+
+	duplicate, err := doJSON[invoiceSummaryResponse](ctx, client, http.MethodPost, baseURL, "/client/checkouts", headers, checkoutOrderBody{
+		OrderID: orderID,
+	}, http.StatusCreated)
+	if err != nil {
+		return invoiceSummaryResponse{}, err
+	}
+	if duplicate.ID != created.ID || duplicate.DisplayID != created.DisplayID {
+		return invoiceSummaryResponse{}, fmt.Errorf("expected idempotent checkout invoice, got first=%+v duplicate=%+v", created, duplicate)
+	}
+	fmt.Printf("billing mutation passed: checkout invoice issued %s (%d)\n", created.ID, created.DisplayID)
+	return created, nil
 }
 
 func verifyIssuedInvoiceVisibleViaAPI(

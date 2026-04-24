@@ -266,6 +266,35 @@ customer@local.billing   Client/read checks
 
 Các check bao gồm health, readiness, wallet, ledger, order, service, invoice, payment transaction, payment reconciliation, top-up request và audit list. Lệnh chỉ dùng header local/dev, không dùng token hoặc credential thật.
 
+## Smoke test billing mutation flow
+
+Sau khi `make smoke-dev-db` pass va API dang chay voi cung `DB_DSN`, chay mutation smoke de kiem tra billing flow that:
+
+```bash
+make smoke-dev-billing
+```
+
+Lenh nay tuong duong:
+
+```bash
+go run ./cmd/smoke dev-billing
+```
+
+Flow duoc test:
+
+- client tao top-up request, admin approve top-up;
+- client tao order voi `Idempotency-Key`;
+- client goi `POST /client/checkouts` voi `order_id` de lay invoice `issued`;
+- smoke goi lai checkout cung idempotency key de kiem tra duplicate submit khong tao invoice moi;
+- client tra invoice bang `POST /client/invoice-wallet-payments`;
+- smoke doc lai invoice va audit log de xac nhan flow co the debug duoc.
+
+Yeu cau:
+
+- `DB_DSN` tro toi database local/dev da seed;
+- `API_BASE_URL` mac dinh la `http://localhost:8080`, co the doi bang `-base-url`;
+- chi chay tren local hoac sandbox, khong chay voi production DSN.
+
 ## Quality gate trước PR
 
 Chạy format:

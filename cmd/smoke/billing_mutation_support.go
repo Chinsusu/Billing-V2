@@ -34,12 +34,6 @@ type reviewTopupBody struct {
 	ReviewNote string `json:"review_note"`
 }
 
-type transitionOrderStatusBody struct {
-	FromStatus    string `json:"from_status"`
-	ToStatus      string `json:"to_status"`
-	BillingStatus string `json:"billing_status"`
-}
-
 type createOrderBody struct {
 	TenantPlanID    string          `json:"tenant_plan_id"`
 	Quantity        int             `json:"quantity"`
@@ -50,6 +44,10 @@ type createOrderBody struct {
 	ProductSnapshot json.RawMessage `json:"product_snapshot"`
 	PlanSnapshot    json.RawMessage `json:"plan_snapshot"`
 	PriceSnapshot   json.RawMessage `json:"price_snapshot"`
+}
+
+type checkoutOrderBody struct {
+	OrderID string `json:"order_id"`
 }
 
 type invoiceWalletPaymentBody struct {
@@ -143,8 +141,8 @@ func (scenario billingMutationScenario) orderIdempotencyKey() string {
 	return "smoke-order-" + scenario.RunID
 }
 
-func (scenario billingMutationScenario) invoiceIdempotencyKey() string {
-	return "smoke-invoice-" + scenario.RunID
+func (scenario billingMutationScenario) checkoutIdempotencyKey() string {
+	return "smoke-checkout-" + scenario.RunID
 }
 
 func (scenario billingMutationScenario) paymentIdempotencyKey() string {
