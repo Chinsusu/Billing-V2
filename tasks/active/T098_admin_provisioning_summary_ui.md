@@ -1,6 +1,6 @@
 # T098 - Admin provisioning summary UI
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t098-admin-provisioning-summary-ui
 PR: https://github.com/Chinsusu/Billing-V2/pull/223
@@ -41,3 +41,4 @@ Show provisioning queue health at the top of the admin provisioning screen using
 - 2026-04-24: Validation passed: `npm ci`, `npm audit --omit=dev`, `npm run lint`, `npm run build`, `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`.
 - 2026-04-24: Playwright checked the provisioning screen at desktop and mobile widths; summary fallback did not hide the queue.
 - 2026-04-24: Opened PR https://github.com/Chinsusu/Billing-V2/pull/223 for review/CI.
+- 2026-04-24: PR #223 merged into `main` at `555d18efe8e84bcd949417deca087a943cc591df`.
