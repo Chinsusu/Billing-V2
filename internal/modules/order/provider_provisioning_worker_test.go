@@ -54,6 +54,11 @@ func TestProviderProvisioningHandlerRecordsSuccess(t *testing.T) {
 	if recorder.input.Status != ProvisioningStatusProvisioned || recorder.input.AttemptNumber != 2 {
 		t.Fatalf("unexpected recorded provisioning result: %+v", recorder.input)
 	}
+	if recorder.serviceInput.ExternalResourceID != provider.ExternalResourceID("external-1") ||
+		recorder.serviceInput.TenantPlanID != catalog.TenantPlanID("44444444-4444-4444-4444-444444444444") ||
+		!recorder.serviceInput.TermEnd.After(recorder.serviceInput.TermStart) {
+		t.Fatalf("unexpected service create input: %+v", recorder.serviceInput)
+	}
 }
 
 func TestProviderProvisioningHandlerRecordsRetryableProviderError(t *testing.T) {
@@ -120,6 +125,27 @@ func TestProviderProvisioningHandlerRejectsInvalidPayload(t *testing.T) {
 	}
 }
 
+func TestProviderProvisioningHandlerCreatesDeterministicLocalServiceID(t *testing.T) {
+	now := fixedProvisioningWorkerTime()
+	registry, err := provider.NewFakeRegistry(provider.TypeManual)
+	if err != nil {
+		t.Fatalf("expected registry: %v", err)
+	}
+	recorder := &fakeProvisioningResultRecorder{}
+	handler := &ProviderProvisioningHandler{Registry: registry, Recorder: recorder, Now: func() time.Time { return now }}
+
+	completion, err := handler.Handle(context.Background(), provisioningWorkerJob())
+	if err != nil {
+		t.Fatalf("expected handler success: %v", err)
+	}
+	if completion.Status != jobs.StatusSucceeded {
+		t.Fatalf("expected succeeded completion, got %+v", completion)
+	}
+	if recorder.serviceInput.ExternalResourceID != provider.ExternalResourceID("local-11111111-1111-1111-1111-111111111111") {
+		t.Fatalf("unexpected local resource id: %+v", recorder.serviceInput)
+	}
+}
+
 func TestProviderProvisioningHandlerRequiresRecorder(t *testing.T) {
 	registry, err := provider.NewFakeRegistry(provider.TypeManual)
 	if err != nil {
@@ -165,8 +191,9 @@ func provisioningWorkerJob() jobs.Job {
 }
 
 type fakeProvisioningResultRecorder struct {
-	input RecordProvisioningResultInput
-	err   error
+	input        RecordProvisioningResultInput
+	serviceInput CreateServiceInstanceInput
+	err          error
 }
 
 func (recorder *fakeProvisioningResultRecorder) RecordProvisioningResult(_ context.Context, input RecordProvisioningResultInput) (ProvisioningJob, error) {
@@ -175,6 +202,14 @@ func (recorder *fakeProvisioningResultRecorder) RecordProvisioningResult(_ conte
 		return ProvisioningJob{}, recorder.err
 	}
 	return ProvisioningJob{OrderID: input.OrderID, Status: input.Status}, nil
+}
+
+func (recorder *fakeProvisioningResultRecorder) CreateServiceInstance(_ context.Context, input CreateServiceInstanceInput) (ServiceInstance, error) {
+	recorder.serviceInput = input
+	if recorder.err != nil {
+		return ServiceInstance{}, recorder.err
+	}
+	return ServiceInstance{OrderID: input.OrderID, Status: input.Status, BillingStatus: input.BillingStatus}, nil
 }
 
 type fakeWorkerJobStore struct{}

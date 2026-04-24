@@ -156,3 +156,16 @@ func TestCreateServiceInstanceArgsUsesNullableSuspensionReason(t *testing.T) {
 		t.Fatalf("unexpected service args: %#v", args)
 	}
 }
+
+func TestCreateServiceInstanceSQLUpsertsByOrder(t *testing.T) {
+	for _, clause := range []string{
+		"INSERT INTO service_instances",
+		"ON CONFLICT (order_id)",
+		"external_resource_id = EXCLUDED.external_resource_id",
+		"RETURNING",
+	} {
+		if !strings.Contains(createServiceInstanceSQL, clause) {
+			t.Fatalf("expected %q in service instance SQL: %s", clause, createServiceInstanceSQL)
+		}
+	}
+}
