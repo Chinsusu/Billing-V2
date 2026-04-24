@@ -1,10 +1,14 @@
 import { getApiData, postApiData } from "./client";
 import {
+  AdminAccount,
+  AdminAccountQuery,
   AdminAuditLogQuery,
   AdminInvoiceQuery,
   AdminOrderQuery,
   AdminProviderSourceQuery,
   AdminServiceQuery,
+  AdminTenant,
+  AdminTenantQuery,
   AdminTransactionQuery,
   AdminWalletQuery,
   AuditLog,
@@ -47,6 +51,12 @@ export const billingApi = {
 
   listAdminInvoices: (query: AdminInvoiceQuery = {}) =>
     getApiData<Invoice[]>("/admin/invoices", "admin", query),
+  listAdminTenants: (query: AdminTenantQuery = {}) =>
+    getApiData<AdminTenant[]>("/admin/tenants", "admin", query),
+  listAdminAccounts: (query: AdminAccountQuery = {}) =>
+    getApiData<AdminAccount[]>("/admin/accounts", "admin", query),
+  listAdminCustomers: (query: AdminAccountQuery = {}) =>
+    getApiData<AdminAccount[]>("/admin/customers", "admin", query),
   listAdminCatalogProducts: (query: CatalogQuery = {}) =>
     getApiData<CatalogProduct[]>("/admin/catalog/products", "admin", query),
   listAdminCatalogPlans: (query: CatalogQuery = {}) =>
