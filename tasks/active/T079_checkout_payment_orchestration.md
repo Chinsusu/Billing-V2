@@ -1,9 +1,9 @@
 # T079 - Checkout payment orchestration
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t079-checkout-payment-orchestration
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/181
 Risk: backend/billing
 Created: 2026-04-24
 Updated: 2026-04-24
@@ -39,3 +39,4 @@ Define and implement the next backend step that turns a client order into a paya
 - 2026-04-24: Added `POST /client/checkouts` to issue an invoice for the current actor's pending unpaid order without trusting tenant IDs from the body.
 - 2026-04-24: Wired frontend order flow to call checkout after order creation and return a payable invoice ID.
 - 2026-04-24: Validation passed: `go test ./...`, backend builds, `npm audit --omit=dev`, `npm run lint`, `npm run build`.
+- 2026-04-24: Opened PR https://github.com/Chinsusu/Billing-V2/pull/181 for review and CI.
