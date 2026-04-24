@@ -32,6 +32,7 @@ var (
 	ErrStatusTransitionInvalid    = errors.New("status transition invalid")
 	ErrOrderStatusConflict        = errors.New("order status conflict")
 	ErrProvisioningQueueNotPaid   = errors.New("provisioning queue requires paid order")
+	ErrProvisioningSourceNotFound = errors.New("provisioning source not found")
 	ErrExternalResourceIDMissing  = errors.New("external resource id missing")
 	ErrProviderOperationIDMissing = errors.New("provider operation id missing")
 	ErrStoreExecutorMissing       = errors.New("order store executor missing")

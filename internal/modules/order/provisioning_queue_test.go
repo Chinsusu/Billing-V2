@@ -53,6 +53,36 @@ func TestProvisioningQueueServiceQueuesPaidOrder(t *testing.T) {
 	}
 }
 
+func TestProvisioningQueueServiceQueuesPaidOrderFromResolvedSource(t *testing.T) {
+	orderStore := &fakeProvisioningOrderStore{order: paidProvisioningOrder()}
+	sourceResolver := &fakeProvisioningSourceResolver{
+		source: ProvisioningSource{
+			ProviderSourceID: catalog.ProviderSourceID("source-1"),
+			ProviderType:     provider.TypeManual,
+		},
+	}
+	queue := &fakeProvisioningJobQueue{}
+	service := NewProvisioningQueueServiceWithSourceResolver(orderStore, queue, sourceResolver)
+
+	job, err := service.QueuePaidOrderProvisioning(context.Background(), QueuePaidOrderProvisioningInput{
+		OrderID:  " order-1 ",
+		TenantID: tenant.ID(" tenant-1 "),
+	})
+	if err != nil {
+		t.Fatalf("expected paid order queue: %v", err)
+	}
+	if job.ReferenceID != jobs.ReferenceID("order-1") || job.SourceID != jobs.SourceID("source-1") {
+		t.Fatalf("unexpected queued job: %+v", job)
+	}
+	if sourceResolver.input.TenantID != tenant.ID("tenant-1") ||
+		sourceResolver.input.TenantPlanID != catalog.TenantPlanID("tenant-plan-1") {
+		t.Fatalf("unexpected source lookup: %+v", sourceResolver.input)
+	}
+	if len(queue.jobsByKey) != 1 {
+		t.Fatalf("expected one unique queued job, got %d", len(queue.jobsByKey))
+	}
+}
+
 func TestProvisioningQueueServiceRejectsUnpaidStatuses(t *testing.T) {
 	cases := []struct {
 		name          string
@@ -84,6 +114,25 @@ func TestProvisioningQueueServiceRejectsUnpaidStatuses(t *testing.T) {
 	}
 }
 
+func TestProvisioningQueueServiceRejectsUnpaidPaidOrderQueue(t *testing.T) {
+	record := paidProvisioningOrder()
+	record.OrderStatus = OrderStatusPendingPayment
+	record.BillingStatus = BillingStatusUnpaid
+	service := NewProvisioningQueueServiceWithSourceResolver(
+		&fakeProvisioningOrderStore{order: record},
+		&fakeProvisioningJobQueue{},
+		&fakeProvisioningSourceResolver{},
+	)
+
+	_, err := service.QueuePaidOrderProvisioning(context.Background(), QueuePaidOrderProvisioningInput{
+		OrderID:  "order-1",
+		TenantID: tenant.ID("tenant-1"),
+	})
+	if !errors.Is(err, ErrProvisioningQueueNotPaid) {
+		t.Fatalf("expected not-paid error, got %v", err)
+	}
+}
+
 func TestProvisioningQueueServiceIsIdempotentForDuplicateRequests(t *testing.T) {
 	queue := &fakeProvisioningJobQueue{}
 	service := NewProvisioningQueueService(&fakeProvisioningOrderStore{order: paidProvisioningOrder()}, queue)
@@ -93,6 +142,32 @@ func TestProvisioningQueueServiceIsIdempotentForDuplicateRequests(t *testing.T) 
 		t.Fatalf("expected first queue: %v", err)
 	}
 	second, err := service.QueueOrderProvisioning(context.Background(), validQueueProvisioningInput())
+	if err != nil {
+		t.Fatalf("expected second queue: %v", err)
+	}
+	if first.ID != second.ID {
+		t.Fatalf("expected duplicate queue to return same job, got %q and %q", first.ID, second.ID)
+	}
+	if len(queue.jobsByKey) != 1 {
+		t.Fatalf("expected one unique queued job, got %d", len(queue.jobsByKey))
+	}
+}
+
+func TestProvisioningQueueServiceIsIdempotentForDuplicatePaidOrderQueue(t *testing.T) {
+	queue := &fakeProvisioningJobQueue{}
+	service := NewProvisioningQueueServiceWithSourceResolver(
+		&fakeProvisioningOrderStore{order: paidProvisioningOrder()},
+		queue,
+		&fakeProvisioningSourceResolver{
+			source: ProvisioningSource{ProviderSourceID: "source-1", ProviderType: provider.TypeManual},
+		},
+	)
+
+	first, err := service.QueuePaidOrderProvisioning(context.Background(), validQueuePaidOrderProvisioningInput())
+	if err != nil {
+		t.Fatalf("expected first queue: %v", err)
+	}
+	second, err := service.QueuePaidOrderProvisioning(context.Background(), validQueuePaidOrderProvisioningInput())
 	if err != nil {
 		t.Fatalf("expected second queue: %v", err)
 	}
@@ -116,6 +191,15 @@ func TestProvisioningQueueServiceRequiresProviderSource(t *testing.T) {
 	}
 }
 
+func TestProvisioningQueueServiceRequiresSourceResolverForPaidOrderQueue(t *testing.T) {
+	service := NewProvisioningQueueService(&fakeProvisioningOrderStore{order: paidProvisioningOrder()}, &fakeProvisioningJobQueue{})
+
+	_, err := service.QueuePaidOrderProvisioning(context.Background(), validQueuePaidOrderProvisioningInput())
+	if !errors.Is(err, ErrProvisioningSourceNotFound) {
+		t.Fatalf("expected source resolver error, got %v", err)
+	}
+}
+
 func TestProvisioningQueueServiceRequiresProviderType(t *testing.T) {
 	service := NewProvisioningQueueService(&fakeProvisioningOrderStore{order: paidProvisioningOrder()}, &fakeProvisioningJobQueue{})
 
@@ -129,12 +213,32 @@ func TestProvisioningQueueServiceRequiresProviderType(t *testing.T) {
 	}
 }
 
+func TestResolveOrderProvisioningSourceInputValidate(t *testing.T) {
+	input := ResolveOrderProvisioningSourceInput{
+		TenantID:     tenant.ID(" tenant-1 "),
+		TenantPlanID: catalog.TenantPlanID(" tenant-plan-1 "),
+	}.Normalize()
+	if input.TenantID != tenant.ID("tenant-1") || input.TenantPlanID != catalog.TenantPlanID("tenant-plan-1") {
+		t.Fatalf("unexpected normalized input: %+v", input)
+	}
+	if err := input.Validate(); err != nil {
+		t.Fatalf("expected valid source lookup: %v", err)
+	}
+}
+
 func validQueueProvisioningInput() QueueProvisioningInput {
 	return QueueProvisioningInput{
 		OrderID:          "order-1",
 		TenantID:         tenant.ID("tenant-1"),
 		ProviderSourceID: catalog.ProviderSourceID("source-1"),
 		ProviderType:     provider.TypeManual,
+	}
+}
+
+func validQueuePaidOrderProvisioningInput() QueuePaidOrderProvisioningInput {
+	return QueuePaidOrderProvisioningInput{
+		OrderID:  "order-1",
+		TenantID: tenant.ID("tenant-1"),
 	}
 }
 
@@ -170,6 +274,20 @@ type fakeProvisioningJobQueue struct {
 	createCalls int
 	inputs      []jobs.CreateJobInput
 	jobsByKey   map[string]jobs.Job
+}
+
+type fakeProvisioningSourceResolver struct {
+	source ProvisioningSource
+	input  ResolveOrderProvisioningSourceInput
+	err    error
+}
+
+func (resolver *fakeProvisioningSourceResolver) ResolveOrderProvisioningSource(_ context.Context, input ResolveOrderProvisioningSourceInput) (ProvisioningSource, error) {
+	resolver.input = input.Normalize()
+	if resolver.err != nil {
+		return ProvisioningSource{}, resolver.err
+	}
+	return resolver.source, nil
 }
 
 func (queue *fakeProvisioningJobQueue) CreateJob(_ context.Context, input jobs.CreateJobInput) (jobs.Job, error) {

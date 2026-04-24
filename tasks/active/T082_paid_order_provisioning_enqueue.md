@@ -1,7 +1,7 @@
 # T082 - Paid order provisioning enqueue
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t082-paid-order-provisioning-enqueue
 PR: -
 Risk: backend/provisioning
@@ -35,4 +35,5 @@ After an order becomes paid, enqueue the existing provisioning path so paid clie
 ## Agent Log
 
 - 2026-04-24: Task created as the next backend step after checkout/payment/order state consistency.
-
+- 2026-04-24: Codex claimed the task after T081 merged and started inspecting the existing order provisioning queue and worker wiring.
+- 2026-04-24: Implemented paid-order provisioning enqueue after payment finalization, active source resolution from tenant plan, idempotent job reuse, payment error mapping, docs, and local validation.

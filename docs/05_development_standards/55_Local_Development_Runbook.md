@@ -287,7 +287,20 @@ Flow duoc test:
 - client goi `POST /client/checkouts` voi `order_id` de lay invoice `issued`;
 - smoke goi lai checkout cung idempotency key de kiem tra duplicate submit khong tao invoice moi;
 - client tra invoice bang `POST /client/invoice-wallet-payments`;
+- payment finalizes the order and creates or reuses one `provider.provision` job for that order;
 - smoke doc lai invoice va audit log de xac nhan flow co the debug duoc.
+
+Inspect provisioning jobs when an order is paid but fulfillment is stuck:
+
+```sql
+SELECT display_id, job_type, reference_type, reference_id, source_id, status, attempt_count, last_error_code, updated_at
+FROM jobs
+WHERE job_type = 'provider.provision'
+ORDER BY created_at DESC
+LIMIT 20;
+```
+
+If payment returns `order.provisioning_source_not_found`, check that the order's tenant plan points to a master plan with an active `plan_sources` row and an active `provider_sources` row.
 
 Yeu cau:
 

@@ -421,6 +421,7 @@ Audit detail adds:
     - wallet and invoice currency must match
     - invoice must still be payable
     - when the invoice has `order_id`, successful payment finalizes the order to `order_status=paid` and `billing_status=paid`
+    - paid orders are queued once in `jobs` with `job_type=provider.provision`, `reference_type=order`, and `reference_id=<order_id>`
     - insufficient funds returns `wallet.insufficient_balance`
 
 ### 4.7 Payment reconciliation
@@ -495,7 +496,7 @@ Route-specific errors that frontend and agents should expect:
 - wallets: `wallet.not_found`, `wallet.ledger_not_found`
 - top-up: `wallet.topup_not_found`, `wallet.topup_status_conflict`, `wallet.payment_method_invalid`
 - checkout: `checkout.order_not_checkoutable`
-- payment: `payment.transaction_not_found`, `payment.invoice_not_payable`, `payment.idempotency_conflict`, `payment.wallet_currency_mismatch`, `wallet.insufficient_balance`, `order.status_conflict`
+- payment: `payment.transaction_not_found`, `payment.invoice_not_payable`, `payment.idempotency_conflict`, `payment.wallet_currency_mismatch`, `wallet.insufficient_balance`, `order.status_conflict`, `order.provisioning_source_not_found`
 - audit: `audit.created_time_invalid`
 
 ## 7. Practical Notes For Frontend And Agents
