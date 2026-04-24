@@ -131,6 +131,107 @@ func TestHTTPHandlerListAdminWalletsUsesOwnerFilter(t *testing.T) {
 	}
 }
 
+func TestHTTPHandlerListResellerWalletsUsesTenantAndOwnerFilter(t *testing.T) {
+	service := &fakeWalletHTTPService{wallets: []Wallet{{
+		ID:                    "wallet_3",
+		DisplayID:             70005,
+		TenantID:              "reseller_tenant",
+		OwnerType:             OwnerTypeUser,
+		OwnerID:               OwnerID("account_3"),
+		Currency:              "USD",
+		Status:                StatusActive,
+		AvailableBalanceMinor: 2000,
+	}}}
+	handler := registerWalletTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/reseller/wallets?display_id=70005&owner_type=user&owner_id=account_3&status=active&limit=10", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("reseller_tenant")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("reseller_1", "reseller_tenant", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.walletFilter.TenantID != tenant.ID("reseller_tenant") ||
+		service.walletFilter.DisplayID != 70005 ||
+		service.walletFilter.OwnerType != OwnerTypeUser ||
+		service.walletFilter.OwnerID != OwnerID("account_3") ||
+		service.walletFilter.Status != StatusActive ||
+		service.walletFilter.Limit != 10 {
+		t.Fatalf("unexpected reseller wallet filter: %+v", service.walletFilter)
+	}
+	if !strings.Contains(response.Body.String(), `"display_id":70005`) {
+		t.Fatalf("expected wallet response, got %s", response.Body.String())
+	}
+}
+
+func TestHTTPHandlerListResellerLedgerUsesTenantAndWallet(t *testing.T) {
+	service := &fakeWalletHTTPService{entries: []LedgerEntry{{
+		ID:          "entry_3",
+		DisplayID:   71003,
+		WalletID:    "wallet_3",
+		TenantID:    "reseller_tenant",
+		Direction:   DirectionCredit,
+		AmountMinor: 2000,
+		Currency:    "USD",
+		EntryType:   EntryTypeTopup,
+		Status:      LedgerStatusPosted,
+	}}}
+	handler := registerWalletTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/reseller/wallets/wallet_3/ledger?direction=credit&entry_type=topup&status=posted&limit=8", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("reseller_tenant")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("reseller_1", "reseller_tenant", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.listLedgerCalls != 1 {
+		t.Fatalf("expected list ledger once, got %d", service.listLedgerCalls)
+	}
+	if service.ledgerFilter.TenantID != tenant.ID("reseller_tenant") ||
+		service.ledgerFilter.WalletID != WalletID("wallet_3") ||
+		service.ledgerFilter.Direction != DirectionCredit ||
+		service.ledgerFilter.EntryType != EntryTypeTopup ||
+		service.ledgerFilter.Status != LedgerStatusPosted ||
+		service.ledgerFilter.Limit != 8 {
+		t.Fatalf("unexpected reseller ledger filter: %+v", service.ledgerFilter)
+	}
+	if !strings.Contains(response.Body.String(), `"display_id":71003`) {
+		t.Fatalf("expected ledger response, got %s", response.Body.String())
+	}
+}
+
+func TestHTTPHandlerResellerWalletMiddlewareRunsBeforeService(t *testing.T) {
+	service := &fakeWalletHTTPService{}
+	mux := http.NewServeMux()
+	NewHTTPHandlerWithOptions(service, HTTPHandlerOptions{
+		ResellerMiddleware: func(next http.HandlerFunc) http.HandlerFunc {
+			return func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusForbidden)
+			}
+		},
+	}).RegisterRoutes(mux)
+
+	request := httptest.NewRequest(http.MethodGet, "/reseller/wallets", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	response := httptest.NewRecorder()
+
+	mux.ServeHTTP(response, request)
+
+	if response.Code != http.StatusForbidden {
+		t.Fatalf("expected status 403, got %d", response.Code)
+	}
+	if service.listWalletCalls != 0 {
+		t.Fatalf("expected service not to run, got %d calls", service.listWalletCalls)
+	}
+}
+
 func TestHTTPHandlerRejectsBadLedgerStatus(t *testing.T) {
 	service := &fakeWalletHTTPService{wallet: Wallet{ID: "wallet_1"}}
 	handler := registerWalletTestHandler(service)

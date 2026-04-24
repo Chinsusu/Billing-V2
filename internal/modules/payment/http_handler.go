@@ -26,8 +26,9 @@ type HTTPService interface {
 type RouteMiddleware func(http.HandlerFunc) http.HandlerFunc
 
 type HTTPHandlerOptions struct {
-	AdminMiddleware  RouteMiddleware
-	ClientMiddleware RouteMiddleware
+	AdminMiddleware    RouteMiddleware
+	ResellerMiddleware RouteMiddleware
+	ClientMiddleware   RouteMiddleware
 }
 
 type HTTPHandler struct {
@@ -57,6 +58,7 @@ func (handler *HTTPHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/payment-reconciliation/", handler.adminReconciliationRoute)
 	mux.HandleFunc("/admin/transactions", handler.adminTransactionsRoute)
 	mux.HandleFunc("/admin/transactions/", handler.adminTransactionRoute)
+	mux.HandleFunc("/reseller/transactions", handler.resellerTransactionsRoute)
 	mux.HandleFunc(clientInvoiceWalletPaymentsPath, handler.clientInvoiceWalletPaymentsRoute)
 	mux.HandleFunc("/client/transactions", handler.clientTransactionsRoute)
 	mux.HandleFunc("/client/transactions/", handler.clientTransactionRoute)
@@ -71,6 +73,12 @@ func (handler *HTTPHandler) adminTransactionsRoute(w http.ResponseWriter, r *htt
 func (handler *HTTPHandler) adminTransactionRoute(w http.ResponseWriter, r *http.Request) {
 	dispatchPaymentMethods(w, r, map[string]http.HandlerFunc{
 		http.MethodGet: handler.tenantRoute(handler.handleGetAdminTransaction, handler.options.AdminMiddleware),
+	})
+}
+
+func (handler *HTTPHandler) resellerTransactionsRoute(w http.ResponseWriter, r *http.Request) {
+	dispatchPaymentMethods(w, r, map[string]http.HandlerFunc{
+		http.MethodGet: handler.tenantRoute(handler.handleListAdminTransactions, handler.options.ResellerMiddleware),
 	})
 }
 

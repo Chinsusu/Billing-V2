@@ -106,6 +106,68 @@ func TestHTTPHandlerListAdminInvoicesUsesFilters(t *testing.T) {
 	}
 }
 
+func TestHTTPHandlerListResellerInvoicesUsesTenantAndFilters(t *testing.T) {
+	service := &fakeInvoiceHTTPService{invoices: []Invoice{{
+		ID:          "invoice_3",
+		DisplayID:   80003,
+		TenantID:    "reseller_tenant",
+		BuyerUserID: "account_3",
+		Status:      StatusPaid,
+		Currency:    "USD",
+		TotalMinor:  5000,
+	}}}
+	handler := registerInvoiceTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/reseller/invoices?buyer_user_id=account_3&display_id=80003&order_id=order_3&status=paid&amount_min=100&amount_max=5000&limit=12", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("reseller_tenant")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("reseller_1", "reseller_tenant", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.invoiceFilter.TenantID != tenant.ID("reseller_tenant") ||
+		service.invoiceFilter.BuyerUserID != identity.UserID("account_3") ||
+		service.invoiceFilter.DisplayID != 80003 ||
+		service.invoiceFilter.OrderID != order.OrderID("order_3") ||
+		service.invoiceFilter.Status != StatusPaid ||
+		service.invoiceFilter.AmountMinMinor == nil || *service.invoiceFilter.AmountMinMinor != 100 ||
+		service.invoiceFilter.AmountMaxMinor == nil || *service.invoiceFilter.AmountMaxMinor != 5000 ||
+		service.invoiceFilter.Limit != 12 {
+		t.Fatalf("unexpected reseller invoice filter: %+v", service.invoiceFilter)
+	}
+	if !strings.Contains(response.Body.String(), `"display_id":80003`) {
+		t.Fatalf("expected invoice response, got %s", response.Body.String())
+	}
+}
+
+func TestHTTPHandlerResellerInvoiceMiddlewareRunsBeforeService(t *testing.T) {
+	service := &fakeInvoiceHTTPService{}
+	mux := http.NewServeMux()
+	NewHTTPHandlerWithOptions(service, HTTPHandlerOptions{
+		ResellerMiddleware: func(next http.HandlerFunc) http.HandlerFunc {
+			return func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusForbidden)
+			}
+		},
+	}).RegisterRoutes(mux)
+
+	request := httptest.NewRequest(http.MethodGet, "/reseller/invoices", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	response := httptest.NewRecorder()
+
+	mux.ServeHTTP(response, request)
+
+	if response.Code != http.StatusForbidden {
+		t.Fatalf("expected status 403, got %d", response.Code)
+	}
+	if service.listCalls != 0 {
+		t.Fatalf("expected service not to run, got %d calls", service.listCalls)
+	}
+}
+
 func TestHTTPHandlerRejectsBadInvoiceAmountRange(t *testing.T) {
 	service := &fakeInvoiceHTTPService{}
 	handler := registerInvoiceTestHandler(service)

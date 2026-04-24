@@ -16,6 +16,7 @@ type RouteMiddleware func(http.HandlerFunc) http.HandlerFunc
 type HTTPHandlerOptions struct {
 	AdminMiddleware       RouteMiddleware
 	AdminReviewMiddleware RouteMiddleware
+	ResellerMiddleware    RouteMiddleware
 	ClientMiddleware      RouteMiddleware
 }
 
@@ -27,6 +28,7 @@ type HTTPHandler struct {
 const (
 	adminWalletPrefix        = "/admin/wallets/"
 	adminTopupRequestPrefix  = "/admin/topup-requests/"
+	resellerWalletPrefix     = "/reseller/wallets/"
 	clientWalletPrefix       = "/client/wallets/"
 	clientTopupRequestPrefix = "/client/topup-requests/"
 )
@@ -44,6 +46,9 @@ func (handler *HTTPHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/wallets/", handler.adminWalletRoute)
 	mux.HandleFunc("/admin/topup-requests", handler.adminTopupRequestsRoute)
 	mux.HandleFunc("/admin/topup-requests/", handler.adminTopupRequestRoute)
+	mux.HandleFunc("/reseller/wallets", handler.resellerWalletsRoute)
+	mux.HandleFunc("/reseller/wallets/", handler.resellerWalletRoute)
+	mux.HandleFunc("/reseller/topup-requests", handler.resellerTopupRequestsRoute)
 	mux.HandleFunc("/client/wallets", handler.clientWalletsRoute)
 	mux.HandleFunc("/client/wallets/", handler.clientWalletRoute)
 	mux.HandleFunc("/client/topup-requests", handler.clientTopupRequestsRoute)
@@ -73,6 +78,35 @@ func (handler *HTTPHandler) adminWalletRoute(w http.ResponseWriter, r *http.Requ
 			http.MethodGet: handler.tenantRoute(func(w http.ResponseWriter, r *http.Request) {
 				handler.handleListAdminLedger(w, r, walletID)
 			}, handler.options.AdminMiddleware),
+		})
+	default:
+		writeWalletError(w, r, ErrWalletIDMissing)
+	}
+}
+
+func (handler *HTTPHandler) resellerWalletsRoute(w http.ResponseWriter, r *http.Request) {
+	dispatchWalletMethods(w, r, map[string]http.HandlerFunc{
+		http.MethodGet: handler.tenantRoute(handler.handleListAdminWallets, handler.options.ResellerMiddleware),
+	})
+}
+
+func (handler *HTTPHandler) resellerWalletRoute(w http.ResponseWriter, r *http.Request) {
+	walletID, action, ok := walletPath(w, r, resellerWalletPrefix)
+	if !ok {
+		return
+	}
+	switch action {
+	case "":
+		dispatchWalletMethods(w, r, map[string]http.HandlerFunc{
+			http.MethodGet: handler.tenantRoute(func(w http.ResponseWriter, r *http.Request) {
+				handler.handleGetAdminWallet(w, r, walletID)
+			}, handler.options.ResellerMiddleware),
+		})
+	case "ledger":
+		dispatchWalletMethods(w, r, map[string]http.HandlerFunc{
+			http.MethodGet: handler.tenantRoute(func(w http.ResponseWriter, r *http.Request) {
+				handler.handleListAdminLedger(w, r, walletID)
+			}, handler.options.ResellerMiddleware),
 		})
 	default:
 		writeWalletError(w, r, ErrWalletIDMissing)
