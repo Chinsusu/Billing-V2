@@ -1,6 +1,6 @@
 # T106 - Provider readiness runbook examples
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t106-provider-readiness-runbook-examples
 PR: https://github.com/Chinsusu/Billing-V2/pull/240
@@ -38,3 +38,4 @@ Add practical provider readiness examples to the operations docs so agents know 
 - 2026-04-24: Added provider readiness examples and operator actions for `ready`, `inactive_source`, `missing_plan_source`, `unsupported_capability`, and `fake_provider_only`.
 - 2026-04-24: Validation passed: `npm ci`, `npm audit --omit=dev`, `npm run lint`, `npm run build`, `go test ./...`, and `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`.
 - 2026-04-24: Opened PR #240 and moved the task to review.
+- 2026-04-24: PR #240 passed CI and merged into main at `9153e4de8212fa1921a8930109f4e353d2e155ce`; moved the task to done.
