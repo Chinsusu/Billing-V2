@@ -74,10 +74,14 @@ export function ClientShop() {
     setNotice(null);
     try {
       const order = await billingApi.createClientOrder(orderBody(plan));
-      setNotice({ type: "success", text: `Order ${recordLabel(order.display_id, "ORD-")} created.` });
+      const invoice = await billingApi.checkoutClientOrder({ order_id: order.id });
+      setNotice({
+        type: "success",
+        text: `Order ${recordLabel(order.display_id, "ORD-")} created. Invoice ${recordLabel(invoice.display_id, "INV-")} issued.`,
+      });
       setRefreshKey((current) => current + 1);
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Order failed.";
+      const message = error instanceof Error ? error.message : "Checkout failed.";
       setNotice({ type: "error", text: message });
     } finally {
       setBusyAction(null);

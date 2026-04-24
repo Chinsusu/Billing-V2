@@ -30,7 +30,7 @@ Required on tenant-scoped billing routes:
 | `X-Actor-Type` | yes when `X-Actor-Id` is present | Actor type such as client or reseller owner. |
 | `X-Actor-Tenant-Id` | recommended | Keeps actor tenant explicit. |
 | `X-Request-ID` | optional | Echoed back in the response header and body. |
-| `Idempotency-Key` | required on create money-changing client routes | Used on order create, top-up create, and invoice wallet payment. |
+| `Idempotency-Key` | required on create money-changing client routes | Used on order create, checkout create, top-up create, and invoice wallet payment. |
 
 Notes:
 - Route authorization is currently backed by the database role and permission store, not by `X-Actor-Role-Ids`.
@@ -105,6 +105,7 @@ Operation error:
 | Route group | Permission |
 |---|---|
 | Client orders | `order.create` |
+| Client checkout | `order.create` |
 | Admin order read | `order.view` |
 | Admin order status mutation | `order.manage` |
 | Client and admin services | `service.view` |
@@ -200,6 +201,16 @@ Audit detail adds:
   - auth: client actor, `order.create`
   - response: one `order`
   - note: buyer scope is forced to the current actor
+
+- `POST /client/checkouts`
+  - auth: client actor, `order.create`
+  - headers: `Idempotency-Key` required
+  - body: `order_id`
+  - response: invoice detail with `items[]`
+  - notes:
+    - tenant and buyer scope are forced from request context
+    - order must be `order_status=pending_payment` and `billing_status=unpaid`
+    - duplicate submits for the same order return the existing invoice instead of creating another invoice
 
 - `GET /admin/orders`
   - auth: admin actor, `order.view`
@@ -481,6 +492,7 @@ Route-specific errors that frontend and agents should expect:
 - invoices: `invoice.not_found`, `invoice.status_conflict`
 - wallets: `wallet.not_found`, `wallet.ledger_not_found`
 - top-up: `wallet.topup_not_found`, `wallet.topup_status_conflict`, `wallet.payment_method_invalid`
+- checkout: `checkout.order_not_checkoutable`
 - payment: `payment.transaction_not_found`, `payment.invoice_not_payable`, `payment.idempotency_conflict`, `payment.wallet_currency_mismatch`, `wallet.insufficient_balance`
 - audit: `audit.created_time_invalid`
 
@@ -491,5 +503,6 @@ Route-specific errors that frontend and agents should expect:
 - Treat all money amounts as integer minor units.
 - For client list routes, do not rely on user id filters to widen scope. The backend forces actor-owned scope.
 - For money-changing client routes, always send a fresh `Idempotency-Key`.
+- For checkout, submit `POST /client/checkouts` after `POST /client/orders`, then pay the returned invoice through `POST /client/invoice-wallet-payments`.
 - For audit and reconciliation date filters, send RFC3339 timestamps.
 - For list screens, build UI filters around the exact query names in this document rather than inventing aliases.

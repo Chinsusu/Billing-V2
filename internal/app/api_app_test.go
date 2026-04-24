@@ -68,12 +68,13 @@ func TestHealthEndpointRejectsUnsupportedMethod(t *testing.T) {
 
 func TestNewAPIWithOptionsRegistersOptionalRoutes(t *testing.T) {
 	api, err := NewAPIWithOptions(testAPIConfig(), logger.New(&bytes.Buffer{}, config.LogLevelDebug), APIOptions{
-		AccountRoutes: testAccountRouteRegistrar{},
-		CatalogRoutes: testRouteRegistrar{},
-		InvoiceRoutes: testInvoiceRouteRegistrar{},
-		OrderRoutes:   testOrderRouteRegistrar{},
-		PaymentRoutes: testPaymentRouteRegistrar{},
-		WalletRoutes:  testWalletRouteRegistrar{},
+		AccountRoutes:  testAccountRouteRegistrar{},
+		CatalogRoutes:  testRouteRegistrar{},
+		CheckoutRoutes: testCheckoutRouteRegistrar{},
+		InvoiceRoutes:  testInvoiceRouteRegistrar{},
+		OrderRoutes:    testOrderRouteRegistrar{},
+		PaymentRoutes:  testPaymentRouteRegistrar{},
+		WalletRoutes:   testWalletRouteRegistrar{},
 	})
 	if err != nil {
 		t.Fatalf("NewAPIWithOptions returned error: %v", err)
@@ -106,6 +107,12 @@ func TestNewAPIWithOptionsRegistersOptionalRoutes(t *testing.T) {
 		t.Fatalf("expected invoice route status 204, got %d", invoiceResponse.Code)
 	}
 
+	checkoutResponse := httptest.NewRecorder()
+	api.Handler().ServeHTTP(checkoutResponse, httptest.NewRequest(http.MethodGet, "/checkout-test", nil))
+	if checkoutResponse.Code != http.StatusNoContent {
+		t.Fatalf("expected checkout route status 204, got %d", checkoutResponse.Code)
+	}
+
 	walletResponse := httptest.NewRecorder()
 	api.Handler().ServeHTTP(walletResponse, httptest.NewRequest(http.MethodGet, "/wallet-test", nil))
 	if walletResponse.Code != http.StatusNoContent {
@@ -135,6 +142,12 @@ type testInvoiceRouteRegistrar struct{}
 
 func (testInvoiceRouteRegistrar) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/invoice-test", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusNoContent) })
+}
+
+type testCheckoutRouteRegistrar struct{}
+
+func (testCheckoutRouteRegistrar) RegisterRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("/checkout-test", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusNoContent) })
 }
 
 type testPaymentRouteRegistrar struct{}

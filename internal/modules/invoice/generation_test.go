@@ -110,6 +110,71 @@ func TestGenerateInvoiceRequiresIdempotencyKey(t *testing.T) {
 	}
 }
 
+func TestIssueInvoiceForPendingOrderUsesBuyerScope(t *testing.T) {
+	sourceOrder := pendingOrder()
+	store := &fakeInvoiceStore{}
+	reader := &fakeOrderReader{record: sourceOrder}
+	service := NewServiceWithOrderReader(store, reader)
+
+	detail, err := service.IssueInvoiceForOrder(context.Background(), IssueInvoiceForOrderInput{
+		TenantID:       tenant.ID("tenant-1"),
+		BuyerUserID:    identity.UserID("buyer-1"),
+		OrderID:        order.OrderID("order-1"),
+		IdempotencyKey: IdempotencyKey(" checkout-key-1 "),
+	})
+	if err != nil {
+		t.Fatalf("expected invoice detail: %v", err)
+	}
+	if reader.lookup.BuyerUserID != identity.UserID("buyer-1") {
+		t.Fatalf("expected buyer-scoped order lookup, got %+v", reader.lookup)
+	}
+	if store.createInput.Invoice.Status != StatusIssued ||
+		store.createInput.Invoice.BuyerUserID != identity.UserID("buyer-1") ||
+		store.createInput.IdempotencyKey != IdempotencyKey("checkout-key-1") {
+		t.Fatalf("unexpected checkout invoice input: %+v", store.createInput)
+	}
+	if detail.Invoice.ID != InvoiceID("invoice-1") {
+		t.Fatalf("expected returned invoice detail, got %+v", detail)
+	}
+}
+
+func TestIssueInvoiceRejectsNonCheckoutableOrder(t *testing.T) {
+	store := &fakeInvoiceStore{}
+	service := NewServiceWithOrderReader(store, &fakeOrderReader{record: paidOrder()})
+
+	_, err := service.IssueInvoiceForOrder(context.Background(), IssueInvoiceForOrderInput{
+		TenantID:       tenant.ID("tenant-1"),
+		BuyerUserID:    identity.UserID("buyer-1"),
+		OrderID:        order.OrderID("order-1"),
+		IdempotencyKey: IdempotencyKey("checkout-key-1"),
+	})
+	if !errors.Is(err, ErrOrderNotCheckoutable) {
+		t.Fatalf("expected checkoutable error, got %v", err)
+	}
+	if store.createCalls != 0 {
+		t.Fatalf("expected no invoice create, got %d", store.createCalls)
+	}
+}
+
+func TestIssueInvoiceReturnsExistingDuplicate(t *testing.T) {
+	existing := InvoiceDetail{Invoice: Invoice{ID: "invoice-existing", TenantID: "tenant-1", OrderID: "order-1"}}
+	store := &fakeInvoiceStore{detail: existing}
+	service := NewServiceWithOrderReader(store, &fakeOrderReader{record: pendingOrder()})
+
+	detail, err := service.IssueInvoiceForOrder(context.Background(), IssueInvoiceForOrderInput{
+		TenantID:       tenant.ID("tenant-1"),
+		BuyerUserID:    identity.UserID("buyer-1"),
+		OrderID:        order.OrderID("order-1"),
+		IdempotencyKey: IdempotencyKey("checkout-key-1"),
+	})
+	if err != nil {
+		t.Fatalf("expected existing invoice detail: %v", err)
+	}
+	if detail.Invoice.ID != InvoiceID("invoice-existing") {
+		t.Fatalf("expected existing invoice, got %+v", detail.Invoice)
+	}
+}
+
 func paidOrder() order.Order {
 	return order.Order{
 		ID:              "order-1",
@@ -127,6 +192,13 @@ func paidOrder() order.Order {
 		PlanSnapshot:    json.RawMessage(`{"name":"Starter"}`),
 		PriceSnapshot:   json.RawMessage(`{"cycle":"monthly"}`),
 	}
+}
+
+func pendingOrder() order.Order {
+	record := paidOrder()
+	record.OrderStatus = order.OrderStatusPendingPayment
+	record.BillingStatus = order.BillingStatusUnpaid
+	return record
 }
 
 type fakeOrderReader struct {

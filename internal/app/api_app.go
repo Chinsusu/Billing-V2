@@ -17,13 +17,14 @@ type RouteRegistrar interface {
 }
 
 type APIOptions struct {
-	AccountRoutes RouteRegistrar
-	AuditRoutes   RouteRegistrar
-	CatalogRoutes RouteRegistrar
-	InvoiceRoutes RouteRegistrar
-	OrderRoutes   RouteRegistrar
-	PaymentRoutes RouteRegistrar
-	WalletRoutes  RouteRegistrar
+	AccountRoutes  RouteRegistrar
+	AuditRoutes    RouteRegistrar
+	CatalogRoutes  RouteRegistrar
+	CheckoutRoutes RouteRegistrar
+	InvoiceRoutes  RouteRegistrar
+	OrderRoutes    RouteRegistrar
+	PaymentRoutes  RouteRegistrar
+	WalletRoutes   RouteRegistrar
 }
 
 type API struct {
@@ -65,6 +66,9 @@ func NewAPIWithOptions(cfg config.Config, log *logger.Logger, options APIOptions
 	}
 	if options.CatalogRoutes != nil {
 		options.CatalogRoutes.RegisterRoutes(mux)
+	}
+	if options.CheckoutRoutes != nil {
+		options.CheckoutRoutes.RegisterRoutes(mux)
 	}
 	if options.InvoiceRoutes != nil {
 		options.InvoiceRoutes.RegisterRoutes(mux)

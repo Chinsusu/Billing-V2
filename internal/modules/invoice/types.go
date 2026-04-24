@@ -20,6 +20,7 @@ var (
 	ErrIdempotencyKeyMissing = errors.New("invoice idempotency key missing")
 	ErrOrderReaderMissing    = errors.New("invoice order reader missing")
 	ErrOrderNotPaid          = errors.New("invoice generation requires paid order")
+	ErrOrderNotCheckoutable  = errors.New("invoice checkout requires pending unpaid order")
 	ErrInvoiceStatusConflict = errors.New("invoice status conflict")
 	ErrStoreExecutorMissing  = errors.New("invoice store executor missing")
 	ErrServiceStoreMissing   = errors.New("invoice service store missing")

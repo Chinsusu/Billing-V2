@@ -50,6 +50,12 @@ func TestNewRuntimeWithoutDSNLeavesDomainRoutesDisabled(t *testing.T) {
 		t.Fatalf("expected order route to be disabled without DB_DSN, got %d", orderResponse.Code)
 	}
 
+	checkoutResponse := httptest.NewRecorder()
+	runtime.api.Handler().ServeHTTP(checkoutResponse, httptest.NewRequest(http.MethodPost, "/client/checkouts", strings.NewReader(`{}`)))
+	if checkoutResponse.Code != http.StatusNotFound {
+		t.Fatalf("expected checkout route to be disabled without DB_DSN, got %d", checkoutResponse.Code)
+	}
+
 	paymentResponse := httptest.NewRecorder()
 	runtime.api.Handler().ServeHTTP(paymentResponse, httptest.NewRequest(http.MethodGet, "/client/transactions", nil))
 	if paymentResponse.Code != http.StatusNotFound {
@@ -108,6 +114,27 @@ func TestNewRuntimeWithDSNRegistersOrderRoutes(t *testing.T) {
 
 	if response.Code != http.StatusBadRequest {
 		t.Fatalf("expected registered order route to validate tenant context, got %d: %s", response.Code, response.Body.String())
+	}
+	if !strings.Contains(response.Body.String(), "tenant.context_missing") {
+		t.Fatalf("expected tenant validation response, got %s", response.Body.String())
+	}
+}
+
+func TestNewRuntimeWithDSNRegistersCheckoutRoutes(t *testing.T) {
+	runtime, err := newRuntime(context.Background(), testRuntimeConfig("postgres://billing@localhost/billing"), testRuntimeLogger(), func(ctx context.Context, cfg platformdb.Config) (*sql.DB, error) {
+		return newStubDB(), nil
+	})
+	if err != nil {
+		t.Fatalf("newRuntime returned error: %v", err)
+	}
+	defer closeRuntime(t, runtime)
+
+	response := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodPost, "/client/checkouts", strings.NewReader(`{}`))
+	runtime.api.Handler().ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("expected registered checkout route to validate tenant context, got %d: %s", response.Code, response.Body.String())
 	}
 	if !strings.Contains(response.Body.String(), "tenant.context_missing") {
 		t.Fatalf("expected tenant validation response, got %s", response.Body.String())
@@ -197,6 +224,21 @@ func TestNewOrderRoutesReturnsRegistrar(t *testing.T) {
 	mux.ServeHTTP(response, httptest.NewRequest(http.MethodPost, "/client/orders", nil))
 	if response.Code != http.StatusBadRequest {
 		t.Fatalf("expected order route to be registered, got %d", response.Code)
+	}
+}
+
+func TestNewCheckoutRoutesReturnsRegistrar(t *testing.T) {
+	registrar := newCheckoutRoutes(newStubDB())
+	if registrar == nil {
+		t.Fatal("expected checkout route registrar")
+	}
+
+	mux := http.NewServeMux()
+	registrar.RegisterRoutes(mux)
+	response := httptest.NewRecorder()
+	mux.ServeHTTP(response, httptest.NewRequest(http.MethodPost, "/client/checkouts", nil))
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("expected checkout route to be registered, got %d", response.Code)
 	}
 }
 
