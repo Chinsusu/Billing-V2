@@ -1,6 +1,6 @@
 # T097 - Admin provisioning summary API
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t097-admin-provisioning-summary-api
 PR: https://github.com/Chinsusu/Billing-V2/pull/221
@@ -41,3 +41,4 @@ Expose a compact admin read model for provisioning queue health so operators do 
 - 2026-04-24: Added focused jobs API/query/unit tests and updated API/runbook docs.
 - 2026-04-24: Validation passed: `go test ./internal/modules/jobs`, `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`, `npm ci`, `npm audit --omit=dev`, `npm run lint`, `npm run build`.
 - 2026-04-24: Opened PR https://github.com/Chinsusu/Billing-V2/pull/221 for review/CI.
+- 2026-04-24: PR #221 merged into `main` at `c68b3d437c30d0afaca2164a60cb4d8a6a6aefbf`.
