@@ -13,10 +13,33 @@ VALUES
         '{"supportsHealthCheck":true,"supportsManualProvision":true,"supportsStatusSync":true}'::jsonb,
         'manual_unlimited',
         'low'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000302',
+        'hetzner',
+        'Local Fake Hetzner Ready',
+        NULL,
+        'local-fsn1',
+        'active',
+        '{"supportsHealthCheck":true,"supportsLiveStockCheck":true,"supportsAutoProvision":true,"supportsStatusSync":true,"supportsSuspend":true,"supportsUnsuspend":true,"supportsTerminate":true,"supportsRenew":true,"supportsResetPassword":true,"supportsChangeIP":true,"vps":{"supportsOSTemplateSelection":true,"supportsCustomHostname":true,"supportsIPv6":true,"supportsResize":true,"supportsVNCConsole":true}}'::jsonb,
+        'provider_live',
+        'medium'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000303',
+        'hetzner',
+        'Local Fake Hetzner Maintenance',
+        NULL,
+        'local-nbg1',
+        'maintenance',
+        '{"supportsHealthCheck":true,"supportsLiveStockCheck":true,"supportsAutoProvision":true,"supportsStatusSync":true,"vps":{"supportsOSTemplateSelection":true}}'::jsonb,
+        'provider_live',
+        'medium'
     )
 ON CONFLICT (source_id) DO UPDATE
 SET source_type = EXCLUDED.source_type,
     name = EXCLUDED.name,
+    provider_account_id = EXCLUDED.provider_account_id,
     location = EXCLUDED.location,
     status = EXCLUDED.status,
     capability_profile = EXCLUDED.capability_profile,
@@ -112,6 +135,21 @@ VALUES
         300,
         600,
         450,
+        'USD',
+        'active',
+        1
+    ),
+    (
+        '00000000-0000-0000-0000-000000000504',
+        '00000000-0000-0000-0000-000000000401',
+        'vps-maintenance-example-monthly',
+        'VPS Maintenance Example',
+        '{"cpu":"2 vCPU","memory":"4 GB","disk":"40 GB","region":"maintenance-example"}'::jsonb,
+        'month_30d',
+        1,
+        700,
+        1200,
+        900,
         'USD',
         'active',
         1
