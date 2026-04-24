@@ -3,7 +3,7 @@
 Status: REVIEW
 Owner: Codex
 Branch: codex/t068-admin-catalog-provider-live
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/156
 Risk: frontend/API
 Created: 2026-04-24
 Updated: 2026-04-24
