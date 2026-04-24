@@ -266,6 +266,12 @@ Audit detail adds:
   - query: `buyer_user_id`, `display_id`, `order_id`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
   - response: list of `invoice`
 
+- `GET /reseller/invoices`
+  - auth: reseller actor, `wallet.view`
+  - query: `buyer_user_id`, `display_id`, `order_id`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
+  - response: list of `invoice`
+  - note: tenant scope is forced to the current reseller tenant
+
 - `GET /admin/invoices/{invoice_id}`
   - auth: admin actor, `wallet.view`
   - response: invoice detail
@@ -301,6 +307,21 @@ Audit detail adds:
   - query: `display_id`, `direction`, `entry_type`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
   - response: list of `ledger`
 
+- `GET /reseller/wallets`
+  - auth: reseller actor, `wallet.view`
+  - query: `display_id`, `owner_type`, `owner_id`, `status`, `limit`, `cursor`
+  - response: list of `wallet`
+  - note: tenant scope is forced to the current reseller tenant
+
+- `GET /reseller/wallets/{wallet_id}`
+  - auth: reseller actor, `wallet.view`
+  - response: one `wallet`
+
+- `GET /reseller/wallets/{wallet_id}/ledger`
+  - auth: reseller actor, `wallet.view`
+  - query: `display_id`, `direction`, `entry_type`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
+  - response: list of `ledger`
+
 ### 4.5 Top-up requests
 
 - `POST /client/topup-requests`
@@ -331,6 +352,12 @@ Audit detail adds:
   - auth: admin actor, `wallet.view`
   - response: one `topup_request`
 
+- `GET /reseller/topup-requests`
+  - auth: reseller actor, `wallet.view`
+  - query: `requested_by`, `display_id`, `wallet_id`, `payment_method`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
+  - response: list of `topup_request`
+  - note: tenant scope is forced to the current reseller tenant
+
 - `POST /admin/topup-requests/{topup_request_id}/approve`
   - auth: admin actor, `wallet.topup.approve`
   - body: `review_note`
@@ -359,6 +386,12 @@ Audit detail adds:
   - auth: admin actor, `wallet.view`
   - query: `account_user_id`, `display_id`, `order_id`, `invoice_id`, `type`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
   - response: list of `transaction`
+
+- `GET /reseller/transactions`
+  - auth: reseller actor, `wallet.view`
+  - query: `account_user_id`, `display_id`, `order_id`, `invoice_id`, `type`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
+  - response: list of `transaction`
+  - note: tenant scope is forced to the current reseller tenant
 
 - `GET /admin/transactions/{transaction_id}`
   - auth: admin actor, `wallet.view`

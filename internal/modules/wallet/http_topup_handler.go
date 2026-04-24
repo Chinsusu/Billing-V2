@@ -15,6 +15,12 @@ func (handler *HTTPHandler) adminTopupRequestsRoute(w http.ResponseWriter, r *ht
 	})
 }
 
+func (handler *HTTPHandler) resellerTopupRequestsRoute(w http.ResponseWriter, r *http.Request) {
+	dispatchWalletMethods(w, r, map[string]http.HandlerFunc{
+		http.MethodGet: handler.tenantRoute(handler.handleListAdminTopupRequests, handler.options.ResellerMiddleware),
+	})
+}
+
 func (handler *HTTPHandler) adminTopupRequestRoute(w http.ResponseWriter, r *http.Request) {
 	topupRequestID, action, ok := topupRequestPath(w, r, adminTopupRequestPrefix)
 	if !ok {

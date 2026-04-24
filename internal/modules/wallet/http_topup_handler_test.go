@@ -93,6 +93,46 @@ func TestHTTPHandlerListAdminTopupRequestsUsesReviewFilters(t *testing.T) {
 	}
 }
 
+func TestHTTPHandlerListResellerTopupRequestsUsesTenantAndFilters(t *testing.T) {
+	service := &fakeWalletHTTPService{topups: []TopupRequest{{
+		ID:            "topup_3",
+		DisplayID:     90005,
+		TenantID:      "reseller_tenant",
+		WalletID:      "wallet_3",
+		RequestedBy:   "account_3",
+		AmountMinor:   5000,
+		Currency:      "USD",
+		PaymentMethod: PaymentMethodBankTransfer,
+		Status:        TopupStatusSubmitted,
+	}}}
+	handler := registerWalletTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/reseller/topup-requests?requested_by=account_3&wallet_id=wallet_3&payment_method=bank_transfer&status=submitted&display_id=90005&amount_min=100&amount_max=5000&limit=10", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("reseller_tenant")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("reseller_1", "reseller_tenant", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.topupFilter.TenantID != tenant.ID("reseller_tenant") ||
+		service.topupFilter.RequestedBy != identity.UserID("account_3") ||
+		service.topupFilter.WalletID != WalletID("wallet_3") ||
+		service.topupFilter.PaymentMethod != PaymentMethodBankTransfer ||
+		service.topupFilter.Status != TopupStatusSubmitted ||
+		service.topupFilter.DisplayID != 90005 ||
+		service.topupFilter.AmountMinMinor == nil || *service.topupFilter.AmountMinMinor != 100 ||
+		service.topupFilter.AmountMaxMinor == nil || *service.topupFilter.AmountMaxMinor != 5000 ||
+		service.topupFilter.Limit != 10 {
+		t.Fatalf("unexpected reseller top-up filter: %+v", service.topupFilter)
+	}
+	if !strings.Contains(response.Body.String(), `"display_id":90005`) {
+		t.Fatalf("expected top-up response, got %s", response.Body.String())
+	}
+}
+
 func TestHTTPHandlerRejectsBadTopupPaymentMethod(t *testing.T) {
 	service := &fakeWalletHTTPService{}
 	handler := registerWalletTestHandler(service)

@@ -21,8 +21,9 @@ type HTTPService interface {
 type RouteMiddleware func(http.HandlerFunc) http.HandlerFunc
 
 type HTTPHandlerOptions struct {
-	AdminMiddleware  RouteMiddleware
-	ClientMiddleware RouteMiddleware
+	AdminMiddleware    RouteMiddleware
+	ResellerMiddleware RouteMiddleware
+	ClientMiddleware   RouteMiddleware
 }
 
 type HTTPHandler struct {
@@ -46,6 +47,7 @@ func NewHTTPHandlerWithOptions(service HTTPService, options HTTPHandlerOptions) 
 func (handler *HTTPHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/invoices", handler.adminInvoicesRoute)
 	mux.HandleFunc("/admin/invoices/", handler.adminInvoiceRoute)
+	mux.HandleFunc("/reseller/invoices", handler.resellerInvoicesRoute)
 	mux.HandleFunc("/client/invoices", handler.clientInvoicesRoute)
 	mux.HandleFunc("/client/invoices/", handler.clientInvoiceRoute)
 }
@@ -59,6 +61,12 @@ func (handler *HTTPHandler) adminInvoicesRoute(w http.ResponseWriter, r *http.Re
 func (handler *HTTPHandler) adminInvoiceRoute(w http.ResponseWriter, r *http.Request) {
 	dispatchInvoiceMethods(w, r, map[string]http.HandlerFunc{
 		http.MethodGet: handler.tenantRoute(handler.handleGetAdminInvoice, handler.options.AdminMiddleware),
+	})
+}
+
+func (handler *HTTPHandler) resellerInvoicesRoute(w http.ResponseWriter, r *http.Request) {
+	dispatchInvoiceMethods(w, r, map[string]http.HandlerFunc{
+		http.MethodGet: handler.tenantRoute(handler.handleListAdminInvoices, handler.options.ResellerMiddleware),
 	})
 }
 

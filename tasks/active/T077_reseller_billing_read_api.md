@@ -1,7 +1,7 @@
 # T077 - Reseller billing read APIs
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t077-reseller-billing-read-api
 PR: -
 Risk: backend/API
@@ -34,3 +34,7 @@ Add reseller-scoped read endpoints for invoices, transactions, wallets, ledger, 
 ## Agent Log
 
 - 2026-04-24: Task created after T074 completed and the board needed the next reseller/live workflow batch.
+- 2026-04-24: Codex claimed the task after T076 completed and started adding reseller billing/wallet read routes.
+- 2026-04-24: Added reseller read routes for invoices, transactions, wallets, wallet ledger, and top-up requests with runtime middleware wiring and docs.
+- 2026-04-24: Split runtime protection tests out of `cmd/api/main_test.go` to keep files under 500 lines.
+- 2026-04-24: Validation passed: `go test ./...` and `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke`.

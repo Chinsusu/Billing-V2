@@ -144,8 +144,9 @@ func newInvoiceRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	service := invoice.NewService(store)
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return invoice.NewHTTPHandlerWithOptions(service, invoice.HTTPHandlerOptions{
-		AdminMiddleware:  invoiceAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
-		ClientMiddleware: invoiceAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
+		AdminMiddleware:    invoiceAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
+		ResellerMiddleware: invoiceAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
+		ClientMiddleware:   invoiceAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
 	})
 }
 
@@ -154,8 +155,9 @@ func newPaymentRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	service := payment.NewServiceWithAudit(store, audit.NewService(audit.NewPostgresStore(executor)))
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return payment.NewHTTPHandlerWithOptions(service, payment.HTTPHandlerOptions{
-		AdminMiddleware:  paymentAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
-		ClientMiddleware: paymentAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
+		AdminMiddleware:    paymentAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
+		ResellerMiddleware: paymentAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
+		ClientMiddleware:   paymentAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
 	})
 }
 
@@ -166,6 +168,7 @@ func newWalletRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	return wallet.NewHTTPHandlerWithOptions(service, wallet.HTTPHandlerOptions{
 		AdminMiddleware:       walletAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
 		AdminReviewMiddleware: walletAuthMiddleware(authorizer, rbac.PermissionWalletTopupApprove, rbac.RiskHigh),
+		ResellerMiddleware:    walletAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
 		ClientMiddleware:      walletAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
 	})
 }

@@ -223,6 +223,75 @@ func TestHTTPHandlerListAdminTransactionsUsesAccountFilter(t *testing.T) {
 	}
 }
 
+func TestHTTPHandlerListResellerTransactionsUsesTenantAndFilters(t *testing.T) {
+	service := &fakePaymentHTTPService{
+		transactions: []Transaction{{
+			ID:            "txn_3",
+			DisplayID:     60003,
+			TenantID:      "reseller_tenant",
+			AccountUserID: "account_3",
+			OrderID:       "order_3",
+			InvoiceID:     "invoice_3",
+			Type:          TransactionTypeCharge,
+			Status:        TransactionStatusPosted,
+			Currency:      "USD",
+			AmountMinor:   900,
+		}},
+	}
+	handler := registerPaymentTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/reseller/transactions?account_user_id=account_3&display_id=60003&type=charge&status=posted&order_id=order_3&invoice_id=invoice_3&amount_min=100&amount_max=900&limit=12", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("reseller_tenant")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("reseller_1", "reseller_tenant", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.filter.TenantID != tenant.ID("reseller_tenant") ||
+		service.filter.AccountUserID != identity.UserID("account_3") ||
+		service.filter.DisplayID != 60003 ||
+		service.filter.OrderID != order.OrderID("order_3") ||
+		service.filter.InvoiceID != invoice.InvoiceID("invoice_3") ||
+		service.filter.Type != TransactionTypeCharge ||
+		service.filter.Status != TransactionStatusPosted ||
+		service.filter.AmountMinMinor == nil || *service.filter.AmountMinMinor != 100 ||
+		service.filter.AmountMaxMinor == nil || *service.filter.AmountMaxMinor != 900 ||
+		service.filter.Limit != 12 {
+		t.Fatalf("unexpected reseller transaction filter: %+v", service.filter)
+	}
+	if !strings.Contains(response.Body.String(), `"display_id":60003`) {
+		t.Fatalf("expected transaction response, got %s", response.Body.String())
+	}
+}
+
+func TestHTTPHandlerResellerTransactionMiddlewareRunsBeforeService(t *testing.T) {
+	service := &fakePaymentHTTPService{}
+	mux := http.NewServeMux()
+	NewHTTPHandlerWithOptions(service, HTTPHandlerOptions{
+		ResellerMiddleware: func(next http.HandlerFunc) http.HandlerFunc {
+			return func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusForbidden)
+			}
+		},
+	}).RegisterRoutes(mux)
+
+	request := httptest.NewRequest(http.MethodGet, "/reseller/transactions", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	response := httptest.NewRecorder()
+
+	mux.ServeHTTP(response, request)
+
+	if response.Code != http.StatusForbidden {
+		t.Fatalf("expected status 403, got %d", response.Code)
+	}
+	if service.listCalls != 0 {
+		t.Fatalf("expected service not to run, got %d calls", service.listCalls)
+	}
+}
+
 func TestHTTPHandlerRejectsBadTransactionDisplayID(t *testing.T) {
 	service := &fakePaymentHTTPService{}
 	handler := registerPaymentTestHandler(service)
