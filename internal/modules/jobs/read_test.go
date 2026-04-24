@@ -53,3 +53,20 @@ func TestValidateJobLookupRequiresIDAndTenant(t *testing.T) {
 		t.Fatalf("expected tenant error, got %v", err)
 	}
 }
+
+func TestNormalizeAttemptFilterTrimsAndDefaultsLimit(t *testing.T) {
+	filter := normalizeAttemptFilter(AttemptFilter{JobID: " job_1 ", TenantID: " tenant_1 "})
+
+	if filter.JobID != ID("job_1") || filter.TenantID != tenant.ID("tenant_1") || filter.Limit != defaultJobListLimit {
+		t.Fatalf("unexpected attempt filter: %+v", filter)
+	}
+}
+
+func TestValidateAttemptFilterRequiresJobAndTenant(t *testing.T) {
+	if err := validateAttemptFilter(AttemptFilter{TenantID: "tenant_1"}); !errors.Is(err, ErrJobIDMissing) {
+		t.Fatalf("expected job id error, got %v", err)
+	}
+	if err := validateAttemptFilter(AttemptFilter{JobID: "job_1"}); !errors.Is(err, tenant.ErrTenantIDMissing) {
+		t.Fatalf("expected tenant error, got %v", err)
+	}
+}
