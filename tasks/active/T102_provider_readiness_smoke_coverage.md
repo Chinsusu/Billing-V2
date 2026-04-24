@@ -1,9 +1,9 @@
 # T102 - Provider readiness smoke coverage
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t102-provider-readiness-smoke-coverage
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/232
 Risk: QA/smoke
 Created: 2026-04-24
 Updated: 2026-04-24
@@ -37,3 +37,4 @@ Add smoke coverage that verifies the provider readiness endpoint is reachable an
 - 2026-04-24: Task created in the provider readiness follow-up batch.
 - 2026-04-24: Codex claimed the task on `codex/t102-provider-readiness-smoke-coverage`.
 - 2026-04-24: Added admin provider readiness smoke coverage with display-ID summary output and redacted blocked-field checks.
+- 2026-04-24: Opened PR #232 for review.
