@@ -9,6 +9,7 @@ import type { CatalogProviderSource, Order, ProvisioningJob, ServiceInstance } f
 import { useApiResource } from "@/lib/api/useApiResource";
 import { PROVISIONING_JOBS } from "@/mocks/billingData";
 import { AdminJobTimelinePanel } from "../components/AdminJobTimelinePanel";
+import { AdminProvisioningSummaryPanel } from "../components/AdminProvisioningSummaryPanel";
 
 interface ProvisioningRow {
   id: string;
@@ -45,6 +46,10 @@ export function AdminProvisioning() {
   const jobs = useApiResource(
     () => billingApi.listAdminJobs({ job_type: "provider.provision", limit: 100 }),
     `admin-provisioning-jobs:${refreshKey}`,
+  );
+  const summary = useApiResource(
+    () => billingApi.getAdminJobSummary({ job_type: "provider.provision" }),
+    `admin-provisioning-summary:${refreshKey}`,
   );
   const orders = useApiResource(
     () => billingApi.listAdminOrders({ limit: 100 }),
@@ -119,6 +124,12 @@ export function AdminProvisioning() {
 
   return (
     <div className="p-4 flex flex-col gap-4">
+      <AdminProvisioningSummaryPanel
+        summary={summary.data}
+        loading={summary.status === "loading"}
+        error={summary.error}
+      />
+
       {(manualReview.length > 0 || failed > 0) && (
         <div className="bg-amber-50 border border-amber-200 text-amber-700 text-[12px] p-4 rounded flex items-center gap-3">
           <span className="font-medium tabular-nums">{manualReview.length + failed}</span>

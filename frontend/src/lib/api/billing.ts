@@ -1,5 +1,5 @@
 import { getApiData, newIdempotencyKey, postApiData } from "./client";
-import type { JobAttemptQuery, ProvisioningJobAttempt } from "./jobTypes";
+import type { JobAttemptQuery, JobSummary, JobSummaryQuery, ProvisioningJobAttempt } from "./jobTypes";
 import {
   AdminAccount,
   AdminAccountQuery,
@@ -117,6 +117,8 @@ export const billingApi = {
     getApiData<ServiceInstance[]>("/admin/services", "admin", query),
   listAdminJobs: (query: JobQuery = {}) =>
     getApiData<ProvisioningJob[]>("/admin/jobs", "admin", query),
+  getAdminJobSummary: (query: JobSummaryQuery = {}) =>
+    getApiData<JobSummary>("/admin/jobs/summary", "admin", query),
   listAdminJobAttempts: (id: string, query: JobAttemptQuery = {}) =>
     getApiData<ProvisioningJobAttempt[]>(`/admin/jobs/${encodeURIComponent(id)}/attempts`, "admin", query),
   retryAdminJob: (id: string, body: { next_attempt_at?: string } = {}) =>
