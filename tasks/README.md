@@ -20,7 +20,7 @@ Task files reduce merge conflicts between coding agents.
 
 If the branch was accidentally created from another task branch, stop and recreate it from `origin/main`; cherry-pick only the commits for this task.
 
-If a task says `IN_PROGRESS` or `REVIEW` but the branch or PR no longer exists, treat it as a stale claim. Do not silently reuse that branch name; reset or clean up the task explicitly first.
+If a task says `IN_PROGRESS` or `REVIEW` but the branch or PR no longer exists, first verify whether the work only exists locally. Do not silently reuse that branch name; reset or clean up the task only after that check.
 
 ## Review Flow
 

@@ -47,7 +47,7 @@ Snapshot taken during board cleanup on `2026-04-24`:
 - To claim a task, edit only that task file: set `Status`, `Owner`, `Branch`, and add a short log entry.
 - To open review, edit only that task file: set `Status: REVIEW`, add the PR link, and add validation notes.
 - To mark done, edit only that task file after the PR is merged: set `Status: DONE`, add the merged PR and date.
-- If a task says `IN_PROGRESS` or `REVIEW` but its branch or PR no longer exists, treat it as a stale claim and clean it up explicitly before reusing the branch name.
+- If a task says `IN_PROGRESS` or `REVIEW` but its branch or PR no longer exists, first verify with the task owner or user whether the work only exists locally; mark it stale only after that check.
 - If `TASKS.md` conflicts during rebase, keep both new task rows and do not overwrite task-file status.
 - If a task creates follow-up work, add a new task file and a new row in this index.
 
@@ -57,8 +57,8 @@ Active tasks below are the only task files not currently marked `DONE`.
 
 | ID | Task File | Status | Owner | Suggested Branch | Risk | Summary | Board Note |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T010 | [tasks/active/T010_frontend_ui_polish.md](tasks/active/T010_frontend_ui_polish.md) | IN_PROGRESS | Sonnet4.6 | feat/frontend-ui-polish | frontend | Fix and polish the frontend UI: layout issues, broken rendering, visual inconsistencies, and UX problems. | Stale claim during 2026-04-24 cleanup: no matching remote branch or PR found. Reset or re-claim explicitly before new work. |
-| T011 | [tasks/active/T011_frontend_dev_server_fix.md](tasks/active/T011_frontend_dev_server_fix.md) | IN_PROGRESS | Sonnet4.6 | fix/frontend-dev-server | frontend | Fix Next.js dev server 404/static asset issues caused by stale `.next` cache after merge. | Stale claim during 2026-04-24 cleanup: no matching remote branch or PR found. Reset or re-claim explicitly before new work. |
+| T010 | [tasks/active/T010_frontend_ui_polish.md](tasks/active/T010_frontend_ui_polish.md) | IN_PROGRESS | Sonnet4.6 | feat/frontend-ui-polish | frontend | Fix and polish the frontend UI: layout issues, broken rendering, visual inconsistencies, and UX problems. | User confirmed on 2026-04-24 that work exists locally and is not committed or pushed yet. Do not reset or re-claim without handoff. |
+| T011 | [tasks/active/T011_frontend_dev_server_fix.md](tasks/active/T011_frontend_dev_server_fix.md) | IN_PROGRESS | Sonnet4.6 | fix/frontend-dev-server | frontend | Fix Next.js dev server 404/static asset issues caused by stale `.next` cache after merge. | User confirmed on 2026-04-24 that work exists locally and is not committed or pushed yet. Do not reset or re-claim without handoff. |
 
 There are no `TODO` tasks in the current board snapshot.
 

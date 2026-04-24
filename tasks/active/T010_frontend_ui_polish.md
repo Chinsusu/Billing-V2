@@ -35,3 +35,4 @@ Fix and polish the frontend UI: layout issues, broken rendering, visual inconsis
 
 - 2026-04-22: Task created by user request after T009 merge.
 - 2026-04-22: Claimed by Sonnet4.6. Starting UI polish on feat/frontend-ui-polish.
+- 2026-04-24: User confirmed active local work exists and has not been committed or pushed yet.
