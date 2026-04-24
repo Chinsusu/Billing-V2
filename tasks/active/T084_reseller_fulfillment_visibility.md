@@ -1,6 +1,6 @@
 # T084 - Reseller fulfillment visibility
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t084-reseller-fulfillment-visibility
 PR: https://github.com/Chinsusu/Billing-V2/pull/192
@@ -37,3 +37,4 @@ Make reseller views show the fulfillment state of paid client orders and provisi
 - 2026-04-24: Codex claimed the task after T082/T083 merged and started inspecting reseller order/service visibility against current read APIs.
 - 2026-04-24: Added reseller fulfillment visibility from existing order/service reads: billing and service screens now show order display IDs, fulfillment status, service display IDs or inferred provider.provision jobs, with partial-data fallback text. Local frontend/backend gates passed.
 - 2026-04-24: Opened PR https://github.com/Chinsusu/Billing-V2/pull/192 for review.
+- 2026-04-24: PR #192 merged into main at 438d4cc.
