@@ -1,6 +1,6 @@
 # T072 - Admin accounts live views
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t072-admin-accounts-live-views
 PR: https://github.com/Chinsusu/Billing-V2/pull/166
@@ -39,3 +39,4 @@ Wire the admin tenants and customers screens to live account read APIs and remov
 - 2026-04-24: Codex claimed the task after T071 merged and started wiring admin account screens to live APIs.
 - 2026-04-24: Added admin tenant/account frontend API wrappers and wired AdminTenants/AdminCustomers to live data with explicit demo fallback states. Local frontend audit, lint, and build passed.
 - 2026-04-24: Opened PR #166 for review.
+- 2026-04-24: PR #166 merged into `main` with commit `469fd753ed6093ab6f5088481b68c4245207ee2f`.
