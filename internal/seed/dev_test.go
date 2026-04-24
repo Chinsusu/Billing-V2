@@ -67,6 +67,24 @@ func TestDevStatementsIncludeBillingFlowData(t *testing.T) {
 	}
 }
 
+func TestDevStatementsIncludeProviderReadinessScenarios(t *testing.T) {
+	sql := strings.ToLower(joinSeedSQL(DevStatements()))
+	required := []string{
+		"local fake hetzner ready",
+		"local fake hetzner maintenance",
+		"vps-maintenance-example-monthly",
+		"supportsautoprovision",
+		"maintenance",
+		"00000000-0000-0000-0000-000000000302",
+		"00000000-0000-0000-0000-000000000303",
+	}
+	for _, value := range required {
+		if !strings.Contains(sql, value) {
+			t.Fatalf("expected seed SQL to contain readiness scenario %q", value)
+		}
+	}
+}
+
 func TestApplyDevRunsStatementsInOrder(t *testing.T) {
 	executor := &fakeSeedExecutor{}
 	if err := ApplyDev(context.Background(), executor); err != nil {

@@ -1,7 +1,7 @@
 # T104 - Provider readiness seed scenarios
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t104-provider-readiness-seed-scenarios
 PR: -
 Risk: seed/local-dev
@@ -36,3 +36,6 @@ Make local seed data demonstrate provider readiness states clearly without break
 ## Agent Log
 
 - 2026-04-24: Task created in the provider readiness follow-up batch.
+- 2026-04-24: Codex claimed the task on `codex/t104-provider-readiness-seed-scenarios`.
+- 2026-04-24: Added local seed readiness examples for `ready`, `fake_provider_only`, `unsupported_capability`, and `inactive_source`; kept paid-order smoke on a ready fake provider source and documented fresh local display IDs.
+- 2026-04-24: Validation passed: `go test ./internal/seed`, `go test ./internal/modules/catalog`, `go test ./cmd/smoke`, `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`, `npm ci`, `npm audit --omit=dev`, `npm run lint`, and `npm run build`.

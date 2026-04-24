@@ -57,6 +57,17 @@ States:
 
 The response uses plan/source display IDs first and does not expose provider credentials, raw provider payloads, or capability JSON.
 
+Fresh local seed examples:
+
+| State | Plan display ID | Source display ID | Plan code | Use |
+|---|---:|---:|---|---|
+| `ready` | `10000` | `10001` | `vps-cx23-40gb-monthly` | Green-path paid-order smoke. |
+| `fake_provider_only` | `10001` | `10000` | `vps-cx33-80gb-monthly` | Manual local fallback example. |
+| `unsupported_capability` | `10002` | `10001` | `proxy-static-10gb-monthly` | Active source that cannot provision this product type. |
+| `inactive_source` | `10003` | `10002` | `vps-maintenance-example-monthly` | Non-cloned maintenance example for ops checks. |
+
+If an existing local database has been reseeded many times, display IDs may differ. Use the plan code to find the same scenario.
+
 ## 4. Green Path Checklist
 
 Run the deterministic smoke first:
