@@ -1,8 +1,8 @@
 # T063 - Frontend API surface expansion
 
-Status: TODO
-Owner: -
-Branch: feat/frontend-api-surface-expansion
+Status: IN_PROGRESS
+Owner: Codex
+Branch: codex/t063-frontend-api-surface
 PR: -
 Risk: frontend/API
 Created: 2026-04-24
@@ -43,3 +43,4 @@ Expand the shared frontend API layer for the next portal batch without mixing sc
 ## Agent Log
 
 - 2026-04-24: Task created as the shared API foundation for the next frontend batch.
+- 2026-04-24: Codex claimed the task and started expanding the shared frontend API surface.
