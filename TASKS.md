@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-24` after closing stale PR #80 and creating the next live workflow batch:
+Current board snapshot on `2026-04-24` after completing T074 and creating the next reseller/live workflow batch:
 
-- `TODO`: 4
+- `TODO`: 6
 - `IN_PROGRESS`: 0
 - `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 67
+- `DONE` task files in `tasks/active/`: 71
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -59,18 +59,19 @@ Current board snapshot on `2026-04-24` after closing stale PR #80 and creating t
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T071 | [tasks/active/T071_admin_accounts_read_api.md](tasks/active/T071_admin_accounts_read_api.md) | codex/t071-admin-accounts-read-api | backend/API | Add admin tenant/account read APIs that expose numeric display IDs for the admin account screens. |
-| T072 | [tasks/active/T072_admin_accounts_live_views.md](tasks/active/T072_admin_accounts_live_views.md) | codex/t072-admin-accounts-live-views | frontend/admin | Wire admin tenants and customers screens to the live account read APIs. |
-| T073 | [tasks/active/T073_reseller_catalog_clone_actions.md](tasks/active/T073_reseller_catalog_clone_actions.md) | codex/t073-reseller-catalog-clone-actions | frontend/reseller | Add reseller catalog clone actions using the existing reseller catalog mutation endpoints. |
-| T074 | [tasks/active/T074_client_billing_action_flows.md](tasks/active/T074_client_billing_action_flows.md) | codex/t074-client-billing-action-flows | frontend/client | Add client order, top-up, and wallet invoice payment actions against existing billing endpoints. |
+| T075 | [tasks/active/T075_reseller_customers_read_api.md](tasks/active/T075_reseller_customers_read_api.md) | codex/t075-reseller-customers-read-api | backend/API | Add reseller-scoped customer account read API with numeric display IDs. |
+| T076 | [tasks/active/T076_reseller_ops_read_api.md](tasks/active/T076_reseller_ops_read_api.md) | codex/t076-reseller-ops-read-api | backend/API | Add reseller-scoped orders and services read APIs. |
+| T077 | [tasks/active/T077_reseller_billing_read_api.md](tasks/active/T077_reseller_billing_read_api.md) | codex/t077-reseller-billing-read-api | backend/API | Add reseller-scoped billing, wallet, ledger, and top-up read APIs. |
+| T078 | [tasks/active/T078_reseller_portal_live_views.md](tasks/active/T078_reseller_portal_live_views.md) | codex/t078-reseller-portal-live-views | frontend/reseller | Wire reseller portal screens to live reseller APIs. |
+| T079 | [tasks/active/T079_checkout_payment_orchestration.md](tasks/active/T079_checkout_payment_orchestration.md) | codex/t079-checkout-payment-orchestration | backend/billing | Implement the next backend checkout step after client order creation. |
+| T080 | [tasks/active/T080_billing_flow_smoke_v2.md](tasks/active/T080_billing_flow_smoke_v2.md) | codex/t080-billing-flow-smoke-v2 | QA/smoke | Add live billing flow smoke coverage after the next endpoint surface lands. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not stay in the active queue:
 
 - `T003` to `T009`
-- `T011_persistence_repositories`
-- `T012` to `T070`
+- `T011` to `T074`
 
 ## Removed Tasks
 
