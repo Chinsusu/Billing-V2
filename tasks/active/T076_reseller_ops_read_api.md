@@ -1,7 +1,7 @@
 # T076 - Reseller ops read APIs
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t076-reseller-ops-read-api
 PR: -
 Risk: backend/API
@@ -35,3 +35,6 @@ Add reseller-scoped read endpoints for orders and service inventory so reseller 
 ## Agent Log
 
 - 2026-04-24: Task created after T074 completed and the board needed the next reseller/live workflow batch.
+- 2026-04-24: Codex claimed the task after T075 completed and started adding reseller order/service read routes.
+- 2026-04-24: Added `GET /reseller/orders` and `GET /reseller/services`, reseller view middleware wiring, handler/runtime tests, and API docs.
+- 2026-04-24: Validation passed: `go test ./...` and `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke`.

@@ -710,6 +710,7 @@ RISK_MANUAL_REVIEW_REQUIRED
 
 ```text
 GET /client/orders/{order_id}
+GET /reseller/orders
 ```
 
 Scope:
@@ -717,6 +718,18 @@ Scope:
 client can view own order only
 reseller can view orders inside tenant
 admin can view all with permission
+```
+
+Filters:
+```text
+buyer_user_id
+display_id
+status
+billing_status
+amount_min
+amount_max
+limit
+cursor
 ```
 
 Tenant mismatch returns:
@@ -759,13 +772,18 @@ wallet.reversal.posted
 
 ```text
 GET /client/services
+GET /reseller/services
 ```
 
 Filters:
 ```text
 status
-service_type
-expiring_before
+buyer_user_id
+display_id
+order_id
+order_display_id
+limit
+cursor
 ```
 
 Response:

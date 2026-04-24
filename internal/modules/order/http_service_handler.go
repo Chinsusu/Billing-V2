@@ -20,6 +20,12 @@ func (handler *HTTPHandler) adminServiceRoute(w http.ResponseWriter, r *http.Req
 	})
 }
 
+func (handler *HTTPHandler) resellerServicesRoute(w http.ResponseWriter, r *http.Request) {
+	dispatchOrderMethods(w, r, map[string]http.HandlerFunc{
+		http.MethodGet: handler.tenantRoute(handler.handleListAdminServices, handler.options.ResellerServiceMiddleware),
+	})
+}
+
 func (handler *HTTPHandler) clientServicesRoute(w http.ResponseWriter, r *http.Request) {
 	dispatchOrderMethods(w, r, map[string]http.HandlerFunc{
 		http.MethodGet: handler.tenantRoute(handler.handleListClientServices, handler.options.ClientServiceMiddleware),

@@ -206,6 +206,12 @@ Audit detail adds:
   - query: `buyer_user_id`, `display_id`, `status`, `billing_status`, `amount_min`, `amount_max`, `limit`, `cursor`
   - response: list of `order`
 
+- `GET /reseller/orders`
+  - auth: reseller actor, `order.view`
+  - query: `buyer_user_id`, `display_id`, `status`, `billing_status`, `amount_min`, `amount_max`, `limit`, `cursor`
+  - response: list of `order`
+  - note: tenant scope is forced to the current reseller tenant
+
 - `GET /admin/orders/{order_id}`
   - auth: admin actor, `order.view`
   - response: one `order`
@@ -232,6 +238,12 @@ Audit detail adds:
   - auth: admin actor, `service.view`
   - query: `buyer_user_id`, `display_id`, `order_id`, `order_display_id`, `status`, `limit`, `cursor`
   - response: list of `service`
+
+- `GET /reseller/services`
+  - auth: reseller actor, `service.view`
+  - query: `buyer_user_id`, `display_id`, `order_id`, `order_display_id`, `status`, `limit`, `cursor`
+  - response: list of `service`
+  - note: tenant scope is forced to the current reseller tenant
 
 - `GET /admin/services/{service_id}`
   - auth: admin actor, `service.view`

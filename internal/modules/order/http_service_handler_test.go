@@ -106,6 +106,47 @@ func TestHTTPHandlerListAdminServicesUsesSearchFilters(t *testing.T) {
 	}
 }
 
+func TestHTTPHandlerListResellerServicesUsesTenantAndFilters(t *testing.T) {
+	service := &fakeOrderHTTPService{
+		services: []ServiceInstance{{
+			ID:               "service_3",
+			DisplayID:        50003,
+			TenantID:         "reseller_tenant",
+			OrderID:          "order_3",
+			TenantPlanID:     catalog.TenantPlanID("tenant_plan_3"),
+			ProviderSourceID: catalog.ProviderSourceID("source_3"),
+			Status:           ServiceStatusActive,
+			BillingStatus:    BillingStatusPaid,
+		}},
+	}
+	handler := registerOrderTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/reseller/services?buyer_user_id=buyer_3&display_id=50003&order_display_id=30007&status=active&limit=10", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("reseller_tenant")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("reseller_1", "reseller_tenant", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.listServiceCalls != 1 {
+		t.Fatalf("expected list services once, got %d", service.listServiceCalls)
+	}
+	if service.serviceFilter.TenantID != tenant.ID("reseller_tenant") ||
+		service.serviceFilter.BuyerUserID != identity.UserID("buyer_3") ||
+		service.serviceFilter.DisplayID != 50003 ||
+		service.serviceFilter.OrderDisplayID != 30007 ||
+		service.serviceFilter.Status != ServiceStatusActive ||
+		service.serviceFilter.Limit != 10 {
+		t.Fatalf("unexpected reseller service filter: %+v", service.serviceFilter)
+	}
+	if !strings.Contains(response.Body.String(), `"display_id":50003`) {
+		t.Fatalf("expected service response, got %s", response.Body.String())
+	}
+}
+
 func TestHTTPHandlerListServicesRejectsBadStatus(t *testing.T) {
 	service := &fakeOrderHTTPService{}
 	handler := registerOrderTestHandler(service)
@@ -122,5 +163,30 @@ func TestHTTPHandlerListServicesRejectsBadStatus(t *testing.T) {
 	}
 	if service.listServiceCalls != 0 {
 		t.Fatalf("expected no list service call, got %d", service.listServiceCalls)
+	}
+}
+
+func TestHTTPHandlerResellerServiceMiddlewareRunsBeforeService(t *testing.T) {
+	service := &fakeOrderHTTPService{}
+	mux := http.NewServeMux()
+	NewHTTPHandlerWithOptions(service, HTTPHandlerOptions{
+		ResellerServiceMiddleware: func(next http.HandlerFunc) http.HandlerFunc {
+			return func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusForbidden)
+			}
+		},
+	}).RegisterRoutes(mux)
+
+	request := httptest.NewRequest(http.MethodGet, "/reseller/services", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	response := httptest.NewRecorder()
+
+	mux.ServeHTTP(response, request)
+
+	if response.Code != http.StatusForbidden {
+		t.Fatalf("expected status 403, got %d", response.Code)
+	}
+	if service.listServiceCalls != 0 {
+		t.Fatalf("expected service not to run, got %d calls", service.listServiceCalls)
 	}
 }
