@@ -1,6 +1,6 @@
 # Provisioning Ops Readiness Checklist
 
-**Version:** v1.11
+**Version:** v1.12
 **Date:** 2026-04-24
 **Scope:** Local and sandbox readiness checks for paid-order fulfillment, provisioning worker runs, job recovery, and smoke verification.
 
@@ -67,6 +67,20 @@ Fresh local seed examples:
 | `inactive_source` | `10003` | `10002` | `vps-maintenance-example-monthly` | Non-cloned maintenance example for ops checks. |
 
 If an existing local database has been reseeded many times, display IDs may differ. Use the plan code to find the same scenario.
+
+### 3.1 State Examples And Actions
+
+Use the readiness API above for every check. It is the safe path because it returns display IDs and reasons, but not credentials, raw provider payloads, or capability JSON.
+
+| State | Local example | Meaning | Operator action | Safe check |
+|---|---|---|---|---|
+| `ready` | `PLAN-10000` / `SRC-10001` / `vps-cx23-40gb-monthly` | Plan and source are active, and the source can auto-provision this product type. | OK to run paid-order smoke or the worker. If a job still fails, inspect the job attempt error before retrying. | Confirm the row is still `ready` immediately before running `cmd/smoke` or `cmd/worker`. |
+| `inactive_source` | `PLAN-10003` / `SRC-10002` / `vps-maintenance-example-monthly` | The plan has a source, but the plan source or provider source is not active. | Do not retry jobs. Activate the right source in sandbox, or move the plan to an active source, then check readiness again. | Confirm `source_status` or `plan_source_status` in the readiness response changed back to active before retry. |
+| `missing_plan_source` | `PLAN-<returned>` / no source display ID | The plan is active, but no source is linked to it. Fresh seed may not include this row. | Link the plan to a sandbox-safe source first. Do not run the worker for that plan while the source is missing. | Find the row by `plan_code`; it should have no `source_display_id`. After linking, the state must move to `ready` or another explicit non-ready state. |
+| `unsupported_capability` | `PLAN-10002` / `SRC-10001` / `proxy-static-10gb-monthly` | The source is active, but it cannot auto-provision this product type. | Do not retry the job against this source. Pick a source that supports the product type, or keep it manual. | Check `product_type` and `state`; do not inspect or paste capability JSON. |
+| `fake_provider_only` | `PLAN-10001` / `SRC-10000` / `vps-cx33-80gb-monthly` | Local fake/manual path is usable for development smoke only. | OK for local tests. Not enough for production readiness or provider launch approval. | Confirm `inventory_mode` is manual/local and record the display IDs only. |
+
+When handing off a readiness issue, record only the state, plan display ID, source display ID if present, plan code, and redacted job attempt error. If a note needs UUIDs for API paths, keep them in the task details but continue using display IDs in human discussion.
 
 ## 4. Green Path Checklist
 
