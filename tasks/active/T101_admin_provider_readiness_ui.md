@@ -1,6 +1,6 @@
 # T101 - Admin provider readiness UI
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t101-admin-provider-readiness-ui
 PR: https://github.com/Chinsusu/Billing-V2/pull/230
@@ -42,3 +42,4 @@ Wire the provider readiness API into the admin portal so operators can inspect p
 - 2026-04-24: Browser verification passed with mocked live readiness data on desktop and mobile; confirmed Ready, Fake only, and Missing source states render without capability JSON or raw provider payloads.
 - 2026-04-24: Validation passed: `npm ci`, `npm audit --omit=dev`, `npm run lint`, `npm run build`, `go test ./...`, and `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`.
 - 2026-04-24: Opened PR https://github.com/Chinsusu/Billing-V2/pull/230 for review/CI.
+- 2026-04-24: CI passed on PR #230 and merged to main at `116bd25`.
