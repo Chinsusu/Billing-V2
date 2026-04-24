@@ -1,7 +1,7 @@
 # T101 - Admin provider readiness UI
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t101-admin-provider-readiness-ui
 PR: -
 Risk: frontend/admin-ops
@@ -37,3 +37,7 @@ Wire the provider readiness API into the admin portal so operators can inspect p
 ## Agent Log
 
 - 2026-04-24: Task created in the provider readiness follow-up batch.
+- 2026-04-24: Codex claimed the task on `codex/t101-admin-provider-readiness-ui`.
+- 2026-04-24: Added frontend API types/helper for admin provider readiness and a Providers screen readiness panel with display-ID-first rows and safe demo fallback.
+- 2026-04-24: Browser verification passed with mocked live readiness data on desktop and mobile; confirmed Ready, Fake only, and Missing source states render without capability JSON or raw provider payloads.
+- 2026-04-24: Validation passed: `npm ci`, `npm audit --omit=dev`, `npm run lint`, `npm run build`, `go test ./...`, and `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`.

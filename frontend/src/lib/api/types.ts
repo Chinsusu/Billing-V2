@@ -267,6 +267,30 @@ export interface CatalogProviderSource {
   updated_at: string;
 }
 
+export type ProviderReadinessState =
+  | "ready"
+  | "inactive_source"
+  | "missing_plan_source"
+  | "unsupported_capability"
+  | "fake_provider_only";
+
+export interface ProviderReadiness {
+  plan_display_id: number;
+  plan_code: string;
+  plan_name: string;
+  product_type: string;
+  plan_status: string;
+  plan_source_display_id?: number;
+  plan_source_status?: string;
+  source_display_id?: number;
+  source_name?: string;
+  source_type?: string;
+  source_status?: string;
+  inventory_mode?: string;
+  state: ProviderReadinessState;
+  reason: string;
+}
+
 export interface TenantCatalogProduct {
   id: string;
   display_id: number;
@@ -488,6 +512,11 @@ export interface CatalogQuery extends PageQuery {
 
 export interface AdminProviderSourceQuery extends PageQuery {
   source_type?: string;
+  status?: string;
+}
+
+export interface AdminProviderReadinessQuery extends PageQuery {
+  product_type?: string;
   status?: string;
 }
 

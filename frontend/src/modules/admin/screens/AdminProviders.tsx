@@ -5,6 +5,7 @@ import { billingApi } from "@/lib/api/billing";
 import { compactDateTime, recordLabel, shortID } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { PROVIDERS } from "@/mocks/billingData";
+import { AdminProviderReadinessPanel } from "../components/AdminProviderReadinessPanel";
 
 interface ProviderRow {
   id: string;
@@ -56,7 +57,8 @@ export function AdminProviders() {
   const statusText = sourceText(providers.status, usingLive);
 
   return (
-    <div className="p-4">
+    <div className="flex flex-col gap-4 p-4">
+      <AdminProviderReadinessPanel />
       <div className="bg-white border border-gray-200 rounded">
         <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-4">
           <h3 className="text-[13px] font-medium text-gray-900 m-0">Providers / Sources</h3>
