@@ -1,9 +1,9 @@
 # T076 - Reseller ops read APIs
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t076-reseller-ops-read-api
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/175
 Risk: backend/API
 Created: 2026-04-24
 Updated: 2026-04-24
@@ -38,3 +38,4 @@ Add reseller-scoped read endpoints for orders and service inventory so reseller 
 - 2026-04-24: Codex claimed the task after T075 completed and started adding reseller order/service read routes.
 - 2026-04-24: Added `GET /reseller/orders` and `GET /reseller/services`, reseller view middleware wiring, handler/runtime tests, and API docs.
 - 2026-04-24: Validation passed: `go test ./...` and `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke`.
+- 2026-04-24: Opened PR #175 for review/CI.
