@@ -1,6 +1,6 @@
 # T082 - Paid order provisioning enqueue
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t082-paid-order-provisioning-enqueue
 PR: https://github.com/Chinsusu/Billing-V2/pull/188
@@ -38,3 +38,4 @@ After an order becomes paid, enqueue the existing provisioning path so paid clie
 - 2026-04-24: Codex claimed the task after T081 merged and started inspecting the existing order provisioning queue and worker wiring.
 - 2026-04-24: Implemented paid-order provisioning enqueue after payment finalization, active source resolution from tenant plan, idempotent job reuse, payment error mapping, docs, and local validation.
 - 2026-04-24: Opened PR https://github.com/Chinsusu/Billing-V2/pull/188 and moved the task to REVIEW.
+- 2026-04-24: PR https://github.com/Chinsusu/Billing-V2/pull/188 passed CI and merged to main at c85c0f4.
