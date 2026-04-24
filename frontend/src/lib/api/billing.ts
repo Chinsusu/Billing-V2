@@ -1,4 +1,4 @@
-import { getApiData } from "./client";
+import { getApiData, postApiData } from "./client";
 import {
   AdminAuditLogQuery,
   AdminInvoiceQuery,
@@ -23,6 +23,7 @@ import {
   TenantCatalogQuery,
   TopupRequest,
   TopupRequestQuery,
+  TopupReviewBody,
   Wallet,
 } from "./types";
 
@@ -62,6 +63,10 @@ export const billingApi = {
     getApiData<LedgerEntry[]>(`/admin/wallets/${walletId}/ledger`, "admin", query),
   listAdminTopupRequests: (query: TopupRequestQuery = {}) =>
     getApiData<TopupRequest[]>("/admin/topup-requests", "admin", query),
+  approveAdminTopupRequest: (id: string, body: TopupReviewBody = {}) =>
+    postApiData<TopupRequest>(`/admin/topup-requests/${encodeURIComponent(id)}/approve`, "admin", body),
+  rejectAdminTopupRequest: (id: string, body: TopupReviewBody = {}) =>
+    postApiData<TopupRequest>(`/admin/topup-requests/${encodeURIComponent(id)}/reject`, "admin", body),
   listAdminTransactions: (query: AdminTransactionQuery = {}) =>
     getApiData<PaymentTransaction[]>("/admin/transactions", "admin", query),
   listAdminReconciliation: (query: AdminTransactionQuery = {}) =>

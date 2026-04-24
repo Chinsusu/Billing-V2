@@ -254,6 +254,10 @@ export interface TopupRequest {
   updated_at: string;
 }
 
+export interface TopupReviewBody {
+  review_note?: string;
+}
+
 export interface AdminInvoiceQuery {
   display_id?: string;
   buyer_user_id?: string;

@@ -1,5 +1,5 @@
 import { ApiActor, actorHeaders, apiBaseUrl, apiEnabled } from "./config";
-import { ApiEnvelope, ApiQuery, ApiQueryValue } from "./types";
+import { ApiEnvelope, ApiJson, ApiQuery, ApiQueryValue } from "./types";
 
 export class BillingApiError extends Error {
   constructor(message: string, public readonly status?: number) {
@@ -43,5 +43,26 @@ export async function getApiData<T>(path: string, actor: ApiActor, query?: ApiQu
     throw new BillingApiError(body || response.statusText, response.status);
   }
   const envelope = JSON.parse(body) as ApiEnvelope<T>;
+  return envelope.data;
+}
+
+export async function postApiData<T>(path: string, actor: ApiActor, body: ApiJson = {}): Promise<T> {
+  if (!apiEnabled()) {
+    throw new BillingApiError("API is not configured.");
+  }
+  const response = await fetch(apiBaseUrl() + path, {
+    method: "POST",
+    headers: {
+      ...actorHeaders(actor),
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body ?? {}),
+    cache: "no-store",
+  });
+  const responseBody = await response.text();
+  if (!response.ok) {
+    throw new BillingApiError(responseBody || response.statusText, response.status);
+  }
+  const envelope = JSON.parse(responseBody) as ApiEnvelope<T>;
   return envelope.data;
 }

@@ -1,8 +1,8 @@
 # T069 - Admin top-up review actions
 
-Status: TODO
-Owner: -
-Branch: feat/admin-topup-review-actions
+Status: REVIEW
+Owner: Codex
+Branch: codex/t069-admin-topup-review-actions
 PR: -
 Risk: frontend/API
 Created: 2026-04-24
@@ -38,3 +38,5 @@ Turn the admin top-up review queue from read-only display into real approve/reje
 ## Agent Log
 
 - 2026-04-24: Task created after T066 completed and the admin frontend batch was refreshed.
+- 2026-04-24: Codex claimed the task and started wiring real admin top-up review actions.
+- 2026-04-24: Added frontend POST helpers and wired AdminTopups approve/reject actions for live reviewable top-ups. Local audit, lint, and build passed.
