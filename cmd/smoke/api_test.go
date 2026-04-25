@@ -69,6 +69,54 @@ func TestAPISmokeChecksIncludeAdminProviderReadiness(t *testing.T) {
 	t.Fatal("expected admin provider readiness smoke check")
 }
 
+func TestAPISmokeChecksIncludeRBACNegativeChecks(t *testing.T) {
+	checks := apiRBACNegativeChecks()
+	expected := map[string]struct {
+		method string
+		path   string
+	}{
+		"deny admin provider readiness": {
+			method: http.MethodGet,
+			path:   "/admin/catalog/provider-readiness?status=active&limit=20",
+		},
+		"deny admin job list": {
+			method: http.MethodGet,
+			path:   "/admin/jobs?job_type=provider.provision&limit=20",
+		},
+		"deny admin job retry": {
+			method: http.MethodPost,
+			path:   "/admin/jobs/00000000-0000-0000-0000-000000000999/retry",
+		},
+	}
+	seen := map[string]bool{}
+	for _, check := range checks {
+		want, ok := expected[check.Name]
+		if !ok {
+			t.Fatalf("unexpected RBAC negative check %q", check.Name)
+		}
+		seen[check.Name] = true
+		if check.Method != want.method || check.Path != want.path {
+			t.Fatalf("unexpected RBAC check route for %q: %s %s", check.Name, check.Method, check.Path)
+		}
+		if check.WantStatus != http.StatusForbidden || check.WantCode != "auth.permission_denied" {
+			t.Fatalf("unexpected RBAC expected error for %q: %d %s", check.Name, check.WantStatus, check.WantCode)
+		}
+		if check.Headers["X-Actor-Id"] != demoNoPermissionActorID || check.Headers["X-Actor-Type"] != "client" {
+			t.Fatalf("expected low-permission actor headers, got %+v", check.Headers)
+		}
+		for _, blocked := range []string{`"payload_json"`, `"provider_account_id"`, `"raw_response"`, `"provider.provision"`, `"order_display_id"`} {
+			if !stringSliceContains(check.NotContains, blocked) {
+				t.Fatalf("RBAC check %q missing blocked token %q", check.Name, blocked)
+			}
+		}
+	}
+	for name := range expected {
+		if !seen[name] {
+			t.Fatalf("missing RBAC negative check %q", name)
+		}
+	}
+}
+
 func TestRunAPICheckRejectsBlockedFieldsWithoutDumpingBody(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -143,6 +191,85 @@ func TestRunAPICheckReturnsDisplayIDSummary(t *testing.T) {
 		if !strings.Contains(summary, expected) {
 			t.Fatalf("expected summary to include %q, got %q", expected, summary)
 		}
+	}
+}
+
+func TestRunAPIRBACNegativeCheckAcceptsPermissionDeniedEnvelope(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusForbidden)
+		_, _ = w.Write([]byte(`{"error":{"code":"auth.permission_denied","message":"Permission denied."},"request_id":"req_test"}`))
+	}))
+	defer server.Close()
+
+	check := apiRBACNegativeCheck{
+		Name:        "deny admin job list",
+		Method:      http.MethodGet,
+		Path:        "/admin/jobs",
+		Headers:     lowPermissionHeaders(),
+		WantStatus:  http.StatusForbidden,
+		WantCode:    "auth.permission_denied",
+		NotContains: sensitiveAPIRedactionTokens(),
+	}
+	if err := runAPIRBACNegativeCheck(context.Background(), server.Client(), server.URL, check); err != nil {
+		t.Fatalf("runAPIRBACNegativeCheck returned error: %v", err)
+	}
+}
+
+func TestRunAPIRBACNegativeCheckRejectsUnexpectedSuccessWithoutDumpingBody(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"data":[{"payload_json":{"secret":"should-not-leak"}}]}`))
+	}))
+	defer server.Close()
+
+	check := apiRBACNegativeCheck{
+		Name:        "deny admin job list",
+		Method:      http.MethodGet,
+		Path:        "/admin/jobs",
+		Headers:     lowPermissionHeaders(),
+		WantStatus:  http.StatusForbidden,
+		WantCode:    "auth.permission_denied",
+		NotContains: sensitiveAPIRedactionTokens(),
+	}
+	err := runAPIRBACNegativeCheck(context.Background(), server.Client(), server.URL, check)
+	if err == nil {
+		t.Fatal("expected unexpected success to fail")
+	}
+	message := err.Error()
+	if !strings.Contains(message, "expected HTTP 403, got 200") {
+		t.Fatalf("expected status failure, got %q", message)
+	}
+	if strings.Contains(message, "should-not-leak") || strings.Contains(message, "payload_json") {
+		t.Fatalf("expected error to avoid dumping response body, got %q", message)
+	}
+}
+
+func TestRunAPIRBACNegativeCheckRejectsDeniedLeakWithoutDumpingSecret(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusForbidden)
+		_, _ = w.Write([]byte(`{"error":{"code":"auth.permission_denied","message":"Permission denied.","details":{"payload_json":{"secret":"should-not-leak"}}},"request_id":"req_test"}`))
+	}))
+	defer server.Close()
+
+	check := apiRBACNegativeCheck{
+		Name:        "deny admin job list",
+		Method:      http.MethodGet,
+		Path:        "/admin/jobs",
+		Headers:     lowPermissionHeaders(),
+		WantStatus:  http.StatusForbidden,
+		WantCode:    "auth.permission_denied",
+		NotContains: sensitiveAPIRedactionTokens(),
+	}
+	err := runAPIRBACNegativeCheck(context.Background(), server.Client(), server.URL, check)
+	if err == nil {
+		t.Fatal("expected leaked denied response to fail")
+	}
+	message := err.Error()
+	if !strings.Contains(message, "blocked field") {
+		t.Fatalf("expected blocked token failure, got %q", message)
+	}
+	if strings.Contains(message, "should-not-leak") {
+		t.Fatalf("expected error to avoid dumping leaked secret, got %q", message)
 	}
 }
 
