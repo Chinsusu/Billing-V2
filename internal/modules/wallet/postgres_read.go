@@ -11,7 +11,9 @@ const topupRequestRelatedReadColumns = topupRequestReadColumns + `,
 (SELECT wallet.display_id FROM wallets wallet WHERE wallet.wallet_id = topup.wallet_id AND wallet.tenant_id = topup.tenant_id) AS wallet_display_id,
 (SELECT requester.display_id FROM users requester WHERE requester.user_id = topup.requested_by AND requester.tenant_id = topup.tenant_id) AS requested_by_display_id,
 (SELECT reviewer.display_id FROM users reviewer WHERE reviewer.user_id = topup.reviewed_by AND reviewer.tenant_id = topup.tenant_id) AS reviewed_by_display_id`
-const walletReadColumns = `wallet.wallet_id, wallet.display_id, wallet.tenant_id, wallet.owner_type, wallet.owner_id, wallet.currency, wallet.status, wallet.available_balance_minor, wallet.locked_balance_minor, wallet.metadata, wallet.created_at, wallet.updated_at`
+const walletReadColumns = `wallet.wallet_id, wallet.display_id, wallet.tenant_id, wallet.owner_type, wallet.owner_id,
+(SELECT owner.display_id FROM users owner WHERE owner.user_id = wallet.owner_id AND owner.tenant_id = wallet.tenant_id) AS owner_display_id,
+wallet.currency, wallet.status, wallet.available_balance_minor, wallet.locked_balance_minor, wallet.metadata, wallet.created_at, wallet.updated_at`
 
 func (store *PostgresStore) ListWallets(ctx context.Context, filter WalletFilter) ([]Wallet, error) {
 	if err := store.ready(); err != nil {

@@ -19,6 +19,7 @@ export interface Wallet {
   tenant_id?: string;
   owner_type?: string;
   owner_id: string;
+  owner_display_id?: number;
   currency: string;
   status: string;
   available_balance_minor: number;

@@ -14,6 +14,7 @@ type walletResponse struct {
 	TenantID              tenant.ID       `json:"tenant_id"`
 	OwnerType             OwnerType       `json:"owner_type"`
 	OwnerID               OwnerID         `json:"owner_id"`
+	OwnerDisplayID        int64           `json:"owner_display_id,omitempty"`
 	Currency              string          `json:"currency"`
 	Status                Status          `json:"status"`
 	AvailableBalanceMinor int64           `json:"available_balance_minor"`
@@ -49,6 +50,7 @@ func newWalletResponse(wallet Wallet) walletResponse {
 		TenantID:              wallet.TenantID,
 		OwnerType:             wallet.OwnerType,
 		OwnerID:               wallet.OwnerID,
+		OwnerDisplayID:        wallet.OwnerDisplayID,
 		Currency:              wallet.Currency,
 		Status:                wallet.Status,
 		AvailableBalanceMinor: wallet.AvailableBalanceMinor,

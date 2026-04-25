@@ -153,7 +153,7 @@ Invoice detail adds:
 
 `wallet` response fields:
 
-`id`, `display_id`, `tenant_id`, `owner_type`, `owner_id`, `currency`, `status`, `available_balance_minor`, `locked_balance_minor`, `metadata`, `created_at`, `updated_at`
+`id`, `display_id`, `tenant_id`, `owner_type`, `owner_id`, `owner_display_id`, `currency`, `status`, `available_balance_minor`, `locked_balance_minor`, `metadata`, `created_at`, `updated_at`
 
 `ledger` response fields:
 
@@ -325,12 +325,12 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 - `GET /client/wallets`
   - auth: client actor, `wallet.view`
   - query: `display_id`, `status`, `limit`, `cursor`
-  - response: list of `wallet`
+  - response: list of `wallet`; related public fields include `owner_display_id` when available
   - note: owner scope is forced to the current actor's user wallet
 
 - `GET /client/wallets/{wallet_id}`
   - auth: client actor, `wallet.view`
-  - response: one `wallet`
+  - response: one `wallet`; related public fields include `owner_display_id` when available
 
 - `GET /client/wallets/{wallet_id}/ledger`
   - auth: client actor, `wallet.view`
@@ -340,11 +340,11 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 - `GET /admin/wallets`
   - auth: admin actor, `wallet.view`
   - query: `display_id`, `owner_type`, `owner_id`, `status`, `limit`, `cursor`
-  - response: list of `wallet`
+  - response: list of `wallet`; related public fields include `owner_display_id` when available
 
 - `GET /admin/wallets/{wallet_id}`
   - auth: admin actor, `wallet.view`
-  - response: one `wallet`
+  - response: one `wallet`; related public fields include `owner_display_id` when available
 
 - `GET /admin/wallets/{wallet_id}/ledger`
   - auth: admin actor, `wallet.view`
@@ -354,12 +354,12 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 - `GET /reseller/wallets`
   - auth: reseller actor, `wallet.view`
   - query: `display_id`, `owner_type`, `owner_id`, `status`, `limit`, `cursor`
-  - response: list of `wallet`
+  - response: list of `wallet`; related public fields include `owner_display_id` when available
   - note: tenant scope is forced to the current reseller tenant
 
 - `GET /reseller/wallets/{wallet_id}`
   - auth: reseller actor, `wallet.view`
-  - response: one `wallet`
+  - response: one `wallet`; related public fields include `owner_display_id` when available
 
 - `GET /reseller/wallets/{wallet_id}/ledger`
   - auth: reseller actor, `wallet.view`

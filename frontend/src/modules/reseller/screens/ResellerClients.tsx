@@ -47,8 +47,13 @@ export function ResellerClients() {
   const orderCounts = new Map<number, number>();
   const serviceCounts = new Map<number, number>();
   const orderBuyerDisplayIDs = new Map<string, number>();
-  const walletByOwner = new Map(
+  const walletByOwnerID = new Map(
     (wallets.data ?? []).map((wallet) => [wallet.owner_id, wallet]),
+  );
+  const walletByOwnerDisplayID = new Map(
+    (wallets.data ?? [])
+      .filter((wallet) => wallet.owner_display_id)
+      .map((wallet) => [wallet.owner_display_id!, wallet]),
   );
 
   if (orders.status === "success") {
@@ -67,7 +72,7 @@ export function ResellerClients() {
 
   const rows: ClientRow[] = usingLive
     ? (customers.data ?? []).map((client) => {
-        const wallet = walletByOwner.get(client.id);
+        const wallet = walletByOwnerDisplayID.get(client.display_id) ?? walletByOwnerID.get(client.id);
         return {
           id: recordLabel(client.display_id, "ACC-"),
           name: client.full_name || client.email,
