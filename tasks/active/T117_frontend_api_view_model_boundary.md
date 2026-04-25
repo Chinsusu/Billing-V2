@@ -1,9 +1,9 @@
 # T117 - Frontend API view model boundary
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t117-frontend-api-view-model-boundary
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/264
 Risk: frontend/API
 Created: 2026-04-25
 Updated: 2026-04-25
@@ -36,3 +36,4 @@ Keep frontend screens from depending directly on risky raw API fields by adding 
 - 2026-04-25: Task created in the board and delivery hardening batch.
 - 2026-04-25: Codex claimed the task; adding shared frontend API-to-view mapping for safe admin display fields.
 - 2026-04-25: Added shared admin API view mapping and removed raw backend ID labels from admin live rows; validation passed for frontend sensitive-text, lint, build, admin smoke, repo guards, and Go tests.
+- 2026-04-25: Opened PR https://github.com/Chinsusu/Billing-V2/pull/264 for review and CI.

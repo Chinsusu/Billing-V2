@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-25` while T117 is in progress:
+Current board snapshot on `2026-04-25` while T117 is in review:
 
 - `TODO`: 1
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 113
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T117 | [tasks/active/T117_frontend_api_view_model_boundary.md](tasks/active/T117_frontend_api_view_model_boundary.md) | IN_PROGRESS | Codex | codex/t117-frontend-api-view-model-boundary | Add shared frontend API-to-view mapping for safe admin display fields. |
+| T117 | [tasks/active/T117_frontend_api_view_model_boundary.md](tasks/active/T117_frontend_api_view_model_boundary.md) | REVIEW | Codex | codex/t117-frontend-api-view-model-boundary | Add shared frontend API-to-view mapping for safe admin display fields. |
 
 ## Done Task Files
 
