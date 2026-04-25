@@ -362,6 +362,14 @@ Validate migration:
 make migrate-validate
 ```
 
+Check API contract drift:
+
+```bash
+make contract-guard
+```
+
+This guard compares tracked backend billing route wiring with `docs/05_development_standards/56_Billing_API_Operational_Reference.md`. Run it when changing backend routes, permissions, query filters, response redaction notes, or the operational API reference.
+
 Frontend local validation for the runnable Next.js app:
 
 ```bash

@@ -36,6 +36,9 @@ jobs:
       - name: Test
         run: make test
 
+      - name: API contract drift guard
+        run: make contract-guard
+
       - name: Build
         run: make build
 

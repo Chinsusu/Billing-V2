@@ -1,6 +1,6 @@
 GO ?= go
 
-.PHONY: fmt test build build-api build-migrate build-seed build-smoke build-worker run-api run-worker migrate-validate seed-plan seed-dev smoke-dev-db smoke-dev-api smoke-dev-billing
+.PHONY: fmt test build build-api build-migrate build-seed build-smoke build-worker run-api run-worker migrate-validate seed-plan seed-dev smoke-dev-db smoke-dev-api smoke-dev-billing contract-guard
 
 fmt:
 	$(GO) fmt ./...
@@ -33,6 +33,9 @@ run-worker:
 
 migrate-validate:
 	$(GO) run ./cmd/migrate validate
+
+contract-guard:
+	$(GO) run ./cmd/contractguard
 
 seed-plan:
 	$(GO) run ./cmd/seed plan
