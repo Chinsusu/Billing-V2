@@ -30,9 +30,9 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-25` after completing T112:
+Current board snapshot on `2026-04-25` after creating the T113-T118 hardening batch:
 
-- `TODO`: 0
+- `TODO`: 6
 - `IN_PROGRESS`: 0
 - `REVIEW`: 0
 - `BLOCKED`: 0
@@ -61,7 +61,12 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| - | - | - | - | No TODO task is currently claimable. |
+| T113 | [tasks/active/T113_task_board_consistency_guard.md](tasks/active/T113_task_board_consistency_guard.md) | codex/t113-task-board-consistency-guard | workflow/CI | Add a lightweight guard for task board metadata drift. |
+| T114 | [tasks/active/T114_frontend_admin_smoke_ci_hardening.md](tasks/active/T114_frontend_admin_smoke_ci_hardening.md) | codex/t114-frontend-admin-smoke-ci-hardening | frontend/CI | Harden the admin browser smoke path for CI and local runs. |
+| T115 | [tasks/active/T115_api_error_code_drift_guard.md](tasks/active/T115_api_error_code_drift_guard.md) | codex/t115-api-error-code-drift-guard | API/docs/CI | Guard stable API error code documentation against drift. |
+| T116 | [tasks/active/T116_provider_sandbox_contract_harness.md](tasks/active/T116_provider_sandbox_contract_harness.md) | codex/t116-provider-sandbox-contract-harness | provider/testing | Add a provider sandbox contract test harness shape. |
+| T117 | [tasks/active/T117_frontend_api_view_model_boundary.md](tasks/active/T117_frontend_api_view_model_boundary.md) | codex/t117-frontend-api-view-model-boundary | frontend/API | Add shared frontend API-to-view mapping for safe admin display fields. |
+| T118 | [tasks/active/T118_smoke_runbook_command_matrix.md](tasks/active/T118_smoke_runbook_command_matrix.md) | codex/t118-smoke-runbook-command-matrix | docs/workflow | Unify smoke and validation command guidance. |
 
 ## In-Flight Task Files
 
