@@ -138,7 +138,7 @@ Use `docs/05_development_standards/63_Validation_Command_Matrix.md` as the sourc
 Khi có Go code, build tối thiểu:
 
 ```bash
-go test ./...
+make test
 go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker
 ```
 
@@ -163,7 +163,7 @@ Go code phải chạy:
 
 ```bash
 gofmt -w <files>
-go test ./...
+make test
 ```
 
 Khi có lint tool:
@@ -509,7 +509,7 @@ git pull --ff-only origin main
 git switch -c feat/<scope>-<short-name>
 git status
 git diff
-go test ./...
+make test
 git add <files>
 git commit -m "feat(scope): short summary"
 git push -u origin feat/<scope>-<short-name>

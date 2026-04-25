@@ -238,7 +238,7 @@ Before handoff, record:
 For CI-backed docs changes, run:
 
 ```bash
-go test ./...
+make test
 go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker
 cd frontend
 npm ci

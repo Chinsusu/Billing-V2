@@ -51,7 +51,7 @@ Trước khi mở PR ready:
 
 ```bash
 gofmt -w <files>
-go test ./...
+make test
 ```
 
 Khi có nhiều entrypoint:
@@ -294,7 +294,7 @@ TestError
 Một thay đổi đạt testing gate khi:
 
 - Test liên quan đã được thêm hoặc cập nhật.
-- `go test ./...` pass.
+- `make test` or the package-scoped Windows equivalent passes.
 - Entry point bị ảnh hưởng build được.
 - Migration được kiểm nếu có.
 - Test P0 pass cho flow tiền/tenant/quyền/provider.
