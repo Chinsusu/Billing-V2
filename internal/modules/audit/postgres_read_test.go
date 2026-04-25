@@ -44,6 +44,8 @@ func TestBuildListLogsQueryAddsFilters(t *testing.T) {
 		"ord.display_id = $9",
 		"job.display_id = $9",
 		"topup.display_id = $9",
+		"svc.display_id = $9",
+		"source.display_id = $9",
 		"created_at >= $10",
 		"created_at <= $11",
 		"LIMIT $12",
