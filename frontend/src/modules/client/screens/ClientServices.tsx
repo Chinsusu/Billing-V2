@@ -2,7 +2,7 @@
 
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
-import { clientServiceCategory, clientServiceOrderLabel, clientServiceSourceLabel } from "@/lib/api/clientViewModels";
+import { clientServiceCategory, clientServiceOrderLabel, clientServicePlanLabel, clientServiceSourceLabel } from "@/lib/api/clientViewModels";
 import { compactDateTime, recordLabel } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
 
@@ -37,7 +37,7 @@ export function ClientServices({ category }: ClientServicesProps) {
         id: service.id,
         category: clientServiceCategory(service),
         label: recordLabel(service.display_id, "SVC-"),
-        identifier: service.external_resource_id || "-",
+        plan: clientServicePlanLabel(service),
         source: clientServiceSourceLabel(service),
         detail: clientServiceOrderLabel(service),
         expiry: compactDateTime(service.term_end),
@@ -66,7 +66,7 @@ export function ClientServices({ category }: ClientServicesProps) {
           <table className="w-full text-[13px] border-collapse min-w-[760px]">
             <thead>
               <tr className="bg-gray-50">
-                {["Service", "Identifier", "Region / Source", category === "bandwidth" ? "Usage" : "Cycle / Order", "Expires", "Status"].map((heading) => (
+                {["Service ID", "Plan", "Region / Source", "Order", "Expires", "Status"].map((heading) => (
                   <th key={heading} className="text-left text-[11px] font-medium uppercase text-gray-400 p-4 border-b border-gray-200">
                     {heading}
                   </th>
@@ -77,7 +77,7 @@ export function ClientServices({ category }: ClientServicesProps) {
               {rows.map((service) => (
                 <tr key={service.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
                   <td className="p-4 font-medium text-gray-900">{service.label}</td>
-                  <td className="p-4 text-[12px] text-gray-500">{service.identifier}</td>
+                  <td className="p-4 text-[12px] text-gray-500">{service.plan}</td>
                   <td className="p-4 text-gray-500">{service.source}</td>
                   <td className="p-4 text-gray-500">{service.detail}</td>
                   <td className="p-4 text-gray-500">{service.expiry}</td>

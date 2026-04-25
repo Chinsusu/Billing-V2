@@ -22,6 +22,10 @@ export function clientServiceOrderLabel(service: ServiceInstance): string {
   return service.order_display_id ? recordLabel(service.order_display_id, "ORD-") : hiddenReference("Order");
 }
 
+export function clientServicePlanLabel(service: ServiceInstance): string {
+  return snapshotValue(service, ["name", "plan_name", "plan_code", "product_type"]) || hiddenReference("Plan");
+}
+
 function serviceSearchText(service: ServiceInstance): string {
   return [
     service.external_resource_id,
