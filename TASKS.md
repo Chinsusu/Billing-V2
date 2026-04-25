@@ -34,9 +34,9 @@ Current board snapshot on `2026-04-25` after T121 is done:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 120
+- `DONE` task files in `tasks/active/`: 121
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -67,14 +67,14 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T124 | [tasks/active/T124_admin_read_model_related_display_ids.md](tasks/active/T124_admin_read_model_related_display_ids.md) | REVIEW | Codex | codex/t124-admin-read-model-related-display-ids | Add safe related public IDs to admin read models. |
+| - | - | - | - | - | No task files are in progress or review. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T123`
+- `T011` to `T124`
 
 ## Removed Tasks
 
