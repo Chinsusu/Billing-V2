@@ -41,7 +41,8 @@ func TestHTTPHandlerListAdminJobsUsesFilters(t *testing.T) {
 		t.Fatalf("unexpected job filter: %+v", service.filter)
 	}
 	body := response.Body.String()
-	if !strings.Contains(body, `"display_id":81001`) || !strings.Contains(body, `"job_type":"provider.provision"`) {
+	if !strings.Contains(body, `"display_id":81001`) || !strings.Contains(body, `"job_type":"provider.provision"`) ||
+		!strings.Contains(body, `"source_display_id":10002`) || !strings.Contains(body, `"reference_display_id":30004`) {
 		t.Fatalf("expected job response, got %s", body)
 	}
 	if strings.Contains(body, "payload") || strings.Contains(body, "idempotency") {
@@ -309,7 +310,9 @@ func testReadJob() Job {
 		Type:                     "provider.provision",
 		ReferenceType:            "order",
 		ReferenceID:              "order_1",
+		ReferenceDisplayID:       30004,
 		SourceID:                 "source_1",
+		SourceDisplayID:          10002,
 		Status:                   StatusFailedRetryable,
 		Priority:                 50,
 		AttemptCount:             2,

@@ -25,6 +25,8 @@ func TestBuildListJobsQueryAddsFilters(t *testing.T) {
 	}
 	for _, clause := range []string{
 		"FROM jobs",
+		"source_display_id",
+		"reference_display_id",
 		"tenant_id = $1",
 		"display_id = $2",
 		"job_type = $3",

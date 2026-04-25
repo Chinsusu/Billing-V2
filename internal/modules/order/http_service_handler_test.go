@@ -84,7 +84,19 @@ func TestHTTPHandlerGetAdminServiceUsesTenantScopeOnly(t *testing.T) {
 }
 
 func TestHTTPHandlerListAdminServicesUsesSearchFilters(t *testing.T) {
-	service := &fakeOrderHTTPService{}
+	service := &fakeOrderHTTPService{services: []ServiceInstance{{
+		ID:                      "service_1",
+		DisplayID:               50002,
+		TenantID:                "tenant_1",
+		OrderID:                 "order_1",
+		OrderDisplayID:          30005,
+		BuyerDisplayID:          10002,
+		TenantPlanID:            catalog.TenantPlanID("tenant_plan_1"),
+		ProviderSourceID:        catalog.ProviderSourceID("source_1"),
+		ProviderSourceDisplayID: 10003,
+		Status:                  ServiceStatusActive,
+		BillingStatus:           BillingStatusPaid,
+	}}}
 	handler := registerOrderTestHandler(service)
 
 	request := httptest.NewRequest(http.MethodGet, "/admin/services?buyer_user_id=buyer_2&buyer_display_id=10002&display_id=50002&order_display_id=30005&provider_source_display_id=10003&status=active", nil)
@@ -105,6 +117,12 @@ func TestHTTPHandlerListAdminServicesUsesSearchFilters(t *testing.T) {
 		service.serviceFilter.ProviderSourceDisplayID != 10003 ||
 		service.serviceFilter.Status != ServiceStatusActive {
 		t.Fatalf("unexpected admin service filter: %+v", service.serviceFilter)
+	}
+	body := response.Body.String()
+	for _, expected := range []string{`"order_display_id":30005`, `"buyer_display_id":10002`, `"provider_source_display_id":10003`} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("expected %s in service response, got %s", expected, body)
+		}
 	}
 }
 

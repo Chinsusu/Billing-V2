@@ -10,24 +10,26 @@ import (
 )
 
 type Invoice struct {
-	ID            InvoiceID
-	DisplayID     int64
-	TenantID      tenant.ID
-	BuyerUserID   identity.UserID
-	OrderID       order.OrderID
-	Status        Status
-	Currency      string
-	SubtotalMinor int64
-	TaxMinor      int64
-	DiscountMinor int64
-	TotalMinor    int64
-	IssuedAt      time.Time
-	DueAt         time.Time
-	PaidAt        time.Time
-	VoidedAt      time.Time
-	Metadata      json.RawMessage
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
+	ID             InvoiceID
+	DisplayID      int64
+	TenantID       tenant.ID
+	BuyerUserID    identity.UserID
+	BuyerDisplayID int64
+	OrderID        order.OrderID
+	OrderDisplayID int64
+	Status         Status
+	Currency       string
+	SubtotalMinor  int64
+	TaxMinor       int64
+	DiscountMinor  int64
+	TotalMinor     int64
+	IssuedAt       time.Time
+	DueAt          time.Time
+	PaidAt         time.Time
+	VoidedAt       time.Time
+	Metadata       json.RawMessage
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
 }
 
 type CreateInvoiceInput struct {

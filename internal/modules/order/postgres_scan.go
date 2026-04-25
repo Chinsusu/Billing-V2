@@ -83,13 +83,26 @@ func scanProvisioningJob(row orderScanner) (ProvisioningJob, error) {
 }
 
 func scanServiceInstance(row orderScanner) (ServiceInstance, error) {
+	return scanServiceInstanceFields(row, false)
+}
+
+func scanServiceInstanceRead(row orderScanner) (ServiceInstance, error) {
+	return scanServiceInstanceFields(row, true)
+}
+
+func scanServiceInstanceFields(row orderScanner, includeRelatedDisplayIDs bool) (ServiceInstance, error) {
 	var record ServiceInstance
 	var id, tenantID, orderID, tenantPlanID, providerSourceID, externalResourceID, status, billingStatus string
+	var orderDisplayID, buyerDisplayID, providerSourceDisplayID sql.NullInt64
 	var suspensionReason sql.NullString
-	if err := row.Scan(
+	destinations := []interface{}{
 		&id, &record.DisplayID, &tenantID, &orderID, &tenantPlanID, &providerSourceID, &externalResourceID,
 		&status, &billingStatus, &suspensionReason, &record.TermStart, &record.TermEnd, &record.CreatedAt, &record.UpdatedAt,
-	); err != nil {
+	}
+	if includeRelatedDisplayIDs {
+		destinations = append(destinations, &orderDisplayID, &buyerDisplayID, &providerSourceDisplayID)
+	}
+	if err := row.Scan(destinations...); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return ServiceInstance{}, ErrServiceNotFound
 		}
@@ -98,8 +111,17 @@ func scanServiceInstance(row orderScanner) (ServiceInstance, error) {
 	record.ID = ServiceID(id)
 	record.TenantID = tenant.ID(tenantID)
 	record.OrderID = OrderID(orderID)
+	if orderDisplayID.Valid {
+		record.OrderDisplayID = orderDisplayID.Int64
+	}
+	if buyerDisplayID.Valid {
+		record.BuyerDisplayID = buyerDisplayID.Int64
+	}
 	record.TenantPlanID = catalog.TenantPlanID(tenantPlanID)
 	record.ProviderSourceID = catalog.ProviderSourceID(providerSourceID)
+	if providerSourceDisplayID.Valid {
+		record.ProviderSourceDisplayID = providerSourceDisplayID.Int64
+	}
 	record.ExternalResourceID = provider.ExternalResourceID(externalResourceID)
 	record.Status = ServiceStatus(status)
 	record.BillingStatus = BillingStatus(billingStatus)

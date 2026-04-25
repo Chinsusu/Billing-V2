@@ -22,6 +22,23 @@ func NewPostgresStore(executor platformdb.Executor) *PostgresStore {
 }
 
 const auditColumns = `audit_id, display_id, tenant_id, actor_id, actor_type, action, target_type, target_id, before_snapshot_redacted, after_snapshot_redacted, metadata_redacted, ip_address, user_agent, correlation_id, created_at`
+const auditReadColumns = auditColumns + `,
+(SELECT actor.display_id FROM users actor WHERE actor.user_id = audit_logs.actor_id AND actor.tenant_id = audit_logs.tenant_id) AS actor_display_id,
+CASE
+  WHEN audit_logs.target_type = 'invoice' THEN (
+    SELECT inv.display_id FROM invoices inv WHERE inv.invoice_id = audit_logs.target_id AND inv.tenant_id = audit_logs.tenant_id
+  )
+  WHEN audit_logs.target_type = 'order' THEN (
+    SELECT ord.display_id FROM orders ord WHERE ord.order_id = audit_logs.target_id AND ord.tenant_id = audit_logs.tenant_id
+  )
+  WHEN audit_logs.target_type = 'job' THEN (
+    SELECT job.display_id FROM jobs job WHERE job.job_id = audit_logs.target_id AND job.tenant_id = audit_logs.tenant_id
+  )
+  WHEN audit_logs.target_type = 'topup_request' THEN (
+    SELECT topup.display_id FROM topup_requests topup WHERE topup.topup_request_id = audit_logs.target_id AND topup.tenant_id = audit_logs.tenant_id
+  )
+  ELSE NULL
+END AS target_display_id`
 
 func (store *PostgresStore) Append(ctx context.Context, input AppendInput) (Log, error) {
 	if err := store.ready(); err != nil {
@@ -54,15 +71,28 @@ type logScanner interface {
 }
 
 func scanLog(row logScanner) (Log, error) {
+	return scanLogFields(row, false)
+}
+
+func scanLogRead(row logScanner) (Log, error) {
+	return scanLogFields(row, true)
+}
+
+func scanLogFields(row logScanner, includeRelatedDisplayIDs bool) (Log, error) {
 	var record Log
 	var id, tenantID, actorID, actorType, targetID, correlationID string
 	var tenantNull, actorNull, ipNull, userAgentNull sql.NullString
+	var actorDisplayID, targetDisplayID sql.NullInt64
 	var beforeSnapshot, afterSnapshot, metadata []byte
 
-	if err := row.Scan(
+	destinations := []interface{}{
 		&id, &record.DisplayID, &tenantNull, &actorNull, &actorType, &record.Action, &record.TargetType, &targetID,
 		&beforeSnapshot, &afterSnapshot, &metadata, &ipNull, &userAgentNull, &correlationID, &record.CreatedAt,
-	); err != nil {
+	}
+	if includeRelatedDisplayIDs {
+		destinations = append(destinations, &actorDisplayID, &targetDisplayID)
+	}
+	if err := row.Scan(destinations...); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return Log{}, ErrAuditLogNotFound
 		}
@@ -73,8 +103,14 @@ func scanLog(row logScanner) (Log, error) {
 	record.TenantID = tenant.ID(tenantID)
 	actorID = actorNull.String
 	record.ActorID = ActorID(actorID)
+	if actorDisplayID.Valid {
+		record.ActorDisplayID = actorDisplayID.Int64
+	}
 	record.ActorType = ActorType(actorType)
 	record.TargetID = TargetID(targetID)
+	if targetDisplayID.Valid {
+		record.TargetDisplayID = targetDisplayID.Int64
+	}
 	record.BeforeSnapshotRedacted = append(record.BeforeSnapshotRedacted, beforeSnapshot...)
 	record.AfterSnapshotRedacted = append(record.AfterSnapshotRedacted, afterSnapshot...)
 	record.MetadataRedacted = append(record.MetadataRedacted, metadata...)

@@ -7,6 +7,10 @@ import (
 
 const ledgerEntryReadColumns = `entry.ledger_entry_id, entry.display_id, entry.wallet_id, entry.tenant_id, entry.direction, entry.amount_minor, entry.currency, entry.entry_type, entry.status, entry.balance_after_minor, entry.reference_type, entry.reference_id, entry.idempotency_key, entry.created_by, entry.reason, entry.correlation_id, entry.created_at`
 const topupRequestReadColumns = `topup.topup_request_id, topup.display_id, topup.tenant_id, topup.wallet_id, topup.requested_by, topup.amount_minor, topup.currency, topup.payment_method, topup.payment_reference, topup.status, topup.reviewed_by, topup.reviewed_at, topup.review_note, topup.ledger_entry_id, topup.idempotency_key, topup.created_at, topup.updated_at`
+const topupRequestRelatedReadColumns = topupRequestReadColumns + `,
+(SELECT wallet.display_id FROM wallets wallet WHERE wallet.wallet_id = topup.wallet_id AND wallet.tenant_id = topup.tenant_id) AS wallet_display_id,
+(SELECT requester.display_id FROM users requester WHERE requester.user_id = topup.requested_by AND requester.tenant_id = topup.tenant_id) AS requested_by_display_id,
+(SELECT reviewer.display_id FROM users reviewer WHERE reviewer.user_id = topup.reviewed_by AND reviewer.tenant_id = topup.tenant_id) AS reviewed_by_display_id`
 const walletReadColumns = `wallet.wallet_id, wallet.display_id, wallet.tenant_id, wallet.owner_type, wallet.owner_id, wallet.currency, wallet.status, wallet.available_balance_minor, wallet.locked_balance_minor, wallet.metadata, wallet.created_at, wallet.updated_at`
 
 func (store *PostgresStore) ListWallets(ctx context.Context, filter WalletFilter) ([]Wallet, error) {
@@ -201,7 +205,7 @@ func (store *PostgresStore) ListTopupRequests(ctx context.Context, filter TopupR
 	defer rows.Close()
 	requests := make([]TopupRequest, 0)
 	for rows.Next() {
-		request, err := scanTopupRequest(rows)
+		request, err := scanTopupRequestRead(rows)
 		if err != nil {
 			return nil, err
 		}
@@ -221,7 +225,7 @@ func (store *PostgresStore) GetTopupRequest(ctx context.Context, lookup TopupReq
 	if err != nil {
 		return TopupRequest{}, err
 	}
-	return scanTopupRequest(store.executor.QueryRowContext(ctx, query, args...))
+	return scanTopupRequestRead(store.executor.QueryRowContext(ctx, query, args...))
 }
 
 func buildListTopupRequestsQuery(filter TopupRequestFilter) (string, []interface{}, error) {
@@ -229,7 +233,7 @@ func buildListTopupRequestsQuery(filter TopupRequestFilter) (string, []interface
 	if err := validateTopupRequestFilter(filter); err != nil {
 		return "", nil, err
 	}
-	query := `SELECT ` + topupRequestReadColumns + `
+	query := `SELECT ` + topupRequestRelatedReadColumns + `
 FROM topup_requests topup
 WHERE topup.tenant_id = $1`
 	args := []interface{}{filter.TenantID}
@@ -292,7 +296,7 @@ func buildGetTopupRequestQuery(lookup TopupRequestLookup) (string, []interface{}
 	if err := validateTopupRequestLookup(lookup); err != nil {
 		return "", nil, err
 	}
-	query := `SELECT ` + topupRequestReadColumns + `
+	query := `SELECT ` + topupRequestRelatedReadColumns + `
 FROM topup_requests topup
 WHERE topup.topup_request_id = $1
   AND topup.tenant_id = $2`

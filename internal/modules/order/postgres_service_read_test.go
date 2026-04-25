@@ -26,6 +26,9 @@ func TestBuildListServiceInstancesQueryAddsClientScope(t *testing.T) {
 	}
 	for _, clause := range []string{
 		"JOIN orders ord",
+		"order_display_id",
+		"buyer_display_id",
+		"provider_source_display_id",
 		"ord.tenant_id = svc.tenant_id",
 		"svc.tenant_id = $1",
 		"ord.buyer_user_id = $2",

@@ -10,24 +10,26 @@ import (
 )
 
 type invoiceResponse struct {
-	ID            InvoiceID       `json:"id"`
-	DisplayID     int64           `json:"display_id"`
-	TenantID      tenant.ID       `json:"tenant_id"`
-	BuyerUserID   identity.UserID `json:"buyer_user_id"`
-	OrderID       order.OrderID   `json:"order_id,omitempty"`
-	Status        Status          `json:"status"`
-	Currency      string          `json:"currency"`
-	SubtotalMinor int64           `json:"subtotal_minor"`
-	TaxMinor      int64           `json:"tax_minor"`
-	DiscountMinor int64           `json:"discount_minor"`
-	TotalMinor    int64           `json:"total_minor"`
-	IssuedAt      *time.Time      `json:"issued_at,omitempty"`
-	DueAt         *time.Time      `json:"due_at,omitempty"`
-	PaidAt        *time.Time      `json:"paid_at,omitempty"`
-	VoidedAt      *time.Time      `json:"voided_at,omitempty"`
-	Metadata      json.RawMessage `json:"metadata"`
-	CreatedAt     time.Time       `json:"created_at"`
-	UpdatedAt     time.Time       `json:"updated_at"`
+	ID             InvoiceID       `json:"id"`
+	DisplayID      int64           `json:"display_id"`
+	TenantID       tenant.ID       `json:"tenant_id"`
+	BuyerUserID    identity.UserID `json:"buyer_user_id"`
+	BuyerDisplayID int64           `json:"buyer_display_id,omitempty"`
+	OrderID        order.OrderID   `json:"order_id,omitempty"`
+	OrderDisplayID int64           `json:"order_display_id,omitempty"`
+	Status         Status          `json:"status"`
+	Currency       string          `json:"currency"`
+	SubtotalMinor  int64           `json:"subtotal_minor"`
+	TaxMinor       int64           `json:"tax_minor"`
+	DiscountMinor  int64           `json:"discount_minor"`
+	TotalMinor     int64           `json:"total_minor"`
+	IssuedAt       *time.Time      `json:"issued_at,omitempty"`
+	DueAt          *time.Time      `json:"due_at,omitempty"`
+	PaidAt         *time.Time      `json:"paid_at,omitempty"`
+	VoidedAt       *time.Time      `json:"voided_at,omitempty"`
+	Metadata       json.RawMessage `json:"metadata"`
+	CreatedAt      time.Time       `json:"created_at"`
+	UpdatedAt      time.Time       `json:"updated_at"`
 }
 
 type invoiceDetailResponse struct {
@@ -55,24 +57,26 @@ type invoiceItemResponse struct {
 
 func newInvoiceResponse(invoice Invoice) invoiceResponse {
 	return invoiceResponse{
-		ID:            invoice.ID,
-		DisplayID:     invoice.DisplayID,
-		TenantID:      invoice.TenantID,
-		BuyerUserID:   invoice.BuyerUserID,
-		OrderID:       invoice.OrderID,
-		Status:        invoice.Status,
-		Currency:      invoice.Currency,
-		SubtotalMinor: invoice.SubtotalMinor,
-		TaxMinor:      invoice.TaxMinor,
-		DiscountMinor: invoice.DiscountMinor,
-		TotalMinor:    invoice.TotalMinor,
-		IssuedAt:      timeIfSet(invoice.IssuedAt),
-		DueAt:         timeIfSet(invoice.DueAt),
-		PaidAt:        timeIfSet(invoice.PaidAt),
-		VoidedAt:      timeIfSet(invoice.VoidedAt),
-		Metadata:      invoice.Metadata,
-		CreatedAt:     invoice.CreatedAt,
-		UpdatedAt:     invoice.UpdatedAt,
+		ID:             invoice.ID,
+		DisplayID:      invoice.DisplayID,
+		TenantID:       invoice.TenantID,
+		BuyerUserID:    invoice.BuyerUserID,
+		BuyerDisplayID: invoice.BuyerDisplayID,
+		OrderID:        invoice.OrderID,
+		OrderDisplayID: invoice.OrderDisplayID,
+		Status:         invoice.Status,
+		Currency:       invoice.Currency,
+		SubtotalMinor:  invoice.SubtotalMinor,
+		TaxMinor:       invoice.TaxMinor,
+		DiscountMinor:  invoice.DiscountMinor,
+		TotalMinor:     invoice.TotalMinor,
+		IssuedAt:       timeIfSet(invoice.IssuedAt),
+		DueAt:          timeIfSet(invoice.DueAt),
+		PaidAt:         timeIfSet(invoice.PaidAt),
+		VoidedAt:       timeIfSet(invoice.VoidedAt),
+		Metadata:       invoice.Metadata,
+		CreatedAt:      invoice.CreatedAt,
+		UpdatedAt:      invoice.UpdatedAt,
 	}
 }
 

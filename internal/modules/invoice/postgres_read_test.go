@@ -28,6 +28,8 @@ func TestBuildListInvoicesQueryAddsTenantBuyerAndStatusFilters(t *testing.T) {
 	}
 	for _, clause := range []string{
 		"inv.tenant_id = $1",
+		"buyer_display_id",
+		"order_display_id",
 		"inv.buyer_user_id = $2",
 		"buyer.user_id = inv.buyer_user_id",
 		"buyer.display_id = $3",

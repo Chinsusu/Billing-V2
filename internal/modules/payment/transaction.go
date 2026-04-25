@@ -11,21 +11,24 @@ import (
 )
 
 type Transaction struct {
-	ID             TransactionID
-	DisplayID      int64
-	TenantID       tenant.ID
-	AccountUserID  identity.UserID
-	OrderID        order.OrderID
-	InvoiceID      invoice.InvoiceID
-	Type           TransactionType
-	Status         TransactionStatus
-	Currency       string
-	AmountMinor    int64
-	Description    string
-	IdempotencyKey IdempotencyKey
-	Metadata       json.RawMessage
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
+	ID               TransactionID
+	DisplayID        int64
+	TenantID         tenant.ID
+	AccountUserID    identity.UserID
+	AccountDisplayID int64
+	OrderID          order.OrderID
+	OrderDisplayID   int64
+	InvoiceID        invoice.InvoiceID
+	InvoiceDisplayID int64
+	Type             TransactionType
+	Status           TransactionStatus
+	Currency         string
+	AmountMinor      int64
+	Description      string
+	IdempotencyKey   IdempotencyKey
+	Metadata         json.RawMessage
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
 }
 
 type CreateTransactionInput struct {

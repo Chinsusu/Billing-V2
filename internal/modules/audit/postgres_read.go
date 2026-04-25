@@ -20,7 +20,7 @@ func (store *PostgresStore) ListLogs(ctx context.Context, filter Filter) ([]Log,
 	defer rows.Close()
 	logs := make([]Log, 0)
 	for rows.Next() {
-		record, err := scanLog(rows)
+		record, err := scanLogRead(rows)
 		if err != nil {
 			return nil, err
 		}
@@ -40,7 +40,7 @@ func (store *PostgresStore) GetLog(ctx context.Context, lookup Lookup) (Log, err
 	if err != nil {
 		return Log{}, err
 	}
-	return scanLog(store.executor.QueryRowContext(ctx, query, args...))
+	return scanLogRead(store.executor.QueryRowContext(ctx, query, args...))
 }
 
 func buildListLogsQuery(filter Filter) (string, []interface{}, error) {
@@ -48,7 +48,7 @@ func buildListLogsQuery(filter Filter) (string, []interface{}, error) {
 	if err := validateFilter(filter); err != nil {
 		return "", nil, err
 	}
-	query := `SELECT ` + auditColumns + `
+	query := `SELECT ` + auditReadColumns + `
 FROM audit_logs
 WHERE tenant_id = $1`
 	args := []interface{}{filter.TenantID}
@@ -93,7 +93,7 @@ func buildGetLogQuery(lookup Lookup) (string, []interface{}, error) {
 	if err := validateLookup(lookup); err != nil {
 		return "", nil, err
 	}
-	query := `SELECT ` + auditColumns + `
+	query := `SELECT ` + auditReadColumns + `
 FROM audit_logs
 WHERE audit_id = $1
   AND tenant_id = $2`

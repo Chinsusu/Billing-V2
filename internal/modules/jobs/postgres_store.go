@@ -233,6 +233,21 @@ func scanJobs(rows *sql.Rows) ([]Job, error) {
 	return jobs, nil
 }
 
+func scanJobsRead(rows *sql.Rows) ([]Job, error) {
+	jobs := make([]Job, 0)
+	for rows.Next() {
+		job, err := scanJobRead(rows)
+		if err != nil {
+			return nil, err
+		}
+		jobs = append(jobs, job)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("read jobs: %w", err)
+	}
+	return jobs, nil
+}
+
 func scanOutboxEvents(rows *sql.Rows) ([]OutboxEvent, error) {
 	events := make([]OutboxEvent, 0)
 	for rows.Next() {
@@ -253,16 +268,29 @@ type rowScanner interface {
 }
 
 func scanJob(row rowScanner) (Job, error) {
+	return scanJobFields(row, false)
+}
+
+func scanJobRead(row rowScanner) (Job, error) {
+	return scanJobFields(row, true)
+}
+
+func scanJobFields(row rowScanner, includeRelatedDisplayIDs bool) (Job, error) {
 	var job Job
 	var id, jobType, referenceType, referenceID, status, correlationID string
 	var tenantID, sourceID, lockedBy, lastErrorCode, lastErrorMessage, manualReviewReason sql.NullString
+	var sourceDisplayID, referenceDisplayID sql.NullInt64
 	var lockedUntil, finishedAt sql.NullTime
 	var payload []byte
-	if err := row.Scan(
+	destinations := []interface{}{
 		&id, &job.DisplayID, &tenantID, &jobType, &referenceType, &referenceID, &sourceID, &payload, &status, &job.Priority,
 		&job.IdempotencyKey, &job.AttemptCount, &job.MaxAttempts, &job.NextAttemptAt, &lockedBy, &lockedUntil,
 		&lastErrorCode, &lastErrorMessage, &manualReviewReason, &correlationID, &job.CreatedAt, &job.UpdatedAt, &finishedAt,
-	); err != nil {
+	}
+	if includeRelatedDisplayIDs {
+		destinations = append(destinations, &sourceDisplayID, &referenceDisplayID)
+	}
+	if err := row.Scan(destinations...); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return Job{}, ErrJobNotFound
 		}
@@ -273,7 +301,13 @@ func scanJob(row rowScanner) (Job, error) {
 	job.Type = Type(jobType)
 	job.ReferenceType = ReferenceType(referenceType)
 	job.ReferenceID = ReferenceID(referenceID)
+	if referenceDisplayID.Valid {
+		job.ReferenceDisplayID = referenceDisplayID.Int64
+	}
 	job.SourceID = SourceID(sourceID.String)
+	if sourceDisplayID.Valid {
+		job.SourceDisplayID = sourceDisplayID.Int64
+	}
 	job.PayloadJSON = append(job.PayloadJSON, payload...)
 	job.Status = Status(status)
 	job.LockedBy = WorkerID(lockedBy.String)

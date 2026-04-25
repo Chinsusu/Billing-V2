@@ -130,8 +130,8 @@ function liveRow(service: ServiceInstance): ServiceInventoryRow {
   return {
     id: recordLabel(service.display_id, "SVC-"),
     service: planName || productName || recordLabel(service.display_id, "Service "),
-    owner: hiddenReference("Order"),
-    tenant: hiddenReference("Tenant"),
+    owner: service.order_display_id ? recordLabel(service.order_display_id, "ORD-") : hiddenReference("Order"),
+    tenant: service.buyer_display_id ? recordLabel(service.buyer_display_id, "ACC-") : hiddenReference("Account"),
     resource: hiddenReference("Resource"),
     plan: planName || hiddenReference("Plan"),
     region: region || "-",
@@ -139,7 +139,7 @@ function liveRow(service: ServiceInstance): ServiceInventoryRow {
     billingStatus: service.billing_status,
     created: compactDateTime(service.created_at),
     expires: compactDateTime(service.term_end),
-    provider: hiddenReference("Source"),
+    provider: service.provider_source_display_id ? recordLabel(service.provider_source_display_id, "SRC-") : hiddenReference("Source"),
     note: service.suspension_reason || "Live read-only",
     family: inferFamily(service),
   };

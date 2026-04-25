@@ -66,15 +66,28 @@ func scanLedgerEntry(row ledgerEntryScanner) (LedgerEntry, error) {
 }
 
 func scanTopupRequest(row ledgerEntryScanner) (TopupRequest, error) {
+	return scanTopupRequestFields(row, false)
+}
+
+func scanTopupRequestRead(row ledgerEntryScanner) (TopupRequest, error) {
+	return scanTopupRequestFields(row, true)
+}
+
+func scanTopupRequestFields(row ledgerEntryScanner, includeRelatedDisplayIDs bool) (TopupRequest, error) {
 	var record TopupRequest
 	var id, tenantID, walletID, requestedBy, currency, method, status, idempotencyKey string
+	var walletDisplayID, requestedByDisplayID, reviewedByDisplayID sql.NullInt64
 	var paymentReference, reviewedBy, reviewNote, ledgerEntryID sql.NullString
 	var reviewedAt sql.NullTime
-	if err := row.Scan(
+	destinations := []interface{}{
 		&id, &record.DisplayID, &tenantID, &walletID, &requestedBy, &record.AmountMinor,
 		&currency, &method, &paymentReference, &status, &reviewedBy, &reviewedAt,
 		&reviewNote, &ledgerEntryID, &idempotencyKey, &record.CreatedAt, &record.UpdatedAt,
-	); err != nil {
+	}
+	if includeRelatedDisplayIDs {
+		destinations = append(destinations, &walletDisplayID, &requestedByDisplayID, &reviewedByDisplayID)
+	}
+	if err := row.Scan(destinations...); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return TopupRequest{}, ErrTopupRequestNotFound
 		}
@@ -83,12 +96,21 @@ func scanTopupRequest(row ledgerEntryScanner) (TopupRequest, error) {
 	record.ID = TopupRequestID(id)
 	record.TenantID = tenant.ID(tenantID)
 	record.WalletID = WalletID(walletID)
+	if walletDisplayID.Valid {
+		record.WalletDisplayID = walletDisplayID.Int64
+	}
 	record.RequestedBy = identity.UserID(requestedBy)
+	if requestedByDisplayID.Valid {
+		record.RequestedByDisplayID = requestedByDisplayID.Int64
+	}
 	record.Currency = currency
 	record.PaymentMethod = PaymentMethod(method)
 	record.PaymentReference = paymentReference.String
 	record.Status = TopupStatus(status)
 	record.ReviewedBy = identity.UserID(reviewedBy.String)
+	if reviewedByDisplayID.Valid {
+		record.ReviewedByDisplayID = reviewedByDisplayID.Int64
+	}
 	if reviewedAt.Valid {
 		record.ReviewedAt = &reviewedAt.Time
 	}

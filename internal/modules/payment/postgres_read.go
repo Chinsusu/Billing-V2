@@ -6,6 +6,10 @@ import (
 )
 
 const transactionReadColumns = `txn.payment_transaction_id, txn.display_id, txn.tenant_id, txn.account_user_id, txn.order_id, txn.invoice_id, txn.transaction_type, txn.status, txn.currency, txn.amount_minor, txn.description, txn.idempotency_key, txn.metadata, txn.created_at, txn.updated_at`
+const transactionAdminReadColumns = transactionReadColumns + `,
+(SELECT account.display_id FROM users account WHERE account.user_id = txn.account_user_id AND account.tenant_id = txn.tenant_id) AS account_display_id,
+(SELECT ord.display_id FROM orders ord WHERE ord.order_id = txn.order_id AND ord.tenant_id = txn.tenant_id) AS order_display_id,
+(SELECT inv.display_id FROM invoices inv WHERE inv.invoice_id = txn.invoice_id AND inv.tenant_id = txn.tenant_id) AS invoice_display_id`
 
 func (store *PostgresStore) ListTransactions(ctx context.Context, filter TransactionFilter) ([]Transaction, error) {
 	if err := store.ready(); err != nil {
@@ -22,7 +26,7 @@ func (store *PostgresStore) ListTransactions(ctx context.Context, filter Transac
 	defer rows.Close()
 	transactions := make([]Transaction, 0)
 	for rows.Next() {
-		transaction, err := scanTransaction(rows)
+		transaction, err := scanTransactionRead(rows)
 		if err != nil {
 			return nil, err
 		}
@@ -42,7 +46,7 @@ func (store *PostgresStore) GetTransaction(ctx context.Context, lookup Transacti
 	if err != nil {
 		return Transaction{}, err
 	}
-	return scanTransaction(store.executor.QueryRowContext(ctx, query, args...))
+	return scanTransactionRead(store.executor.QueryRowContext(ctx, query, args...))
 }
 
 func buildListTransactionsQuery(filter TransactionFilter) (string, []interface{}, error) {
@@ -50,7 +54,7 @@ func buildListTransactionsQuery(filter TransactionFilter) (string, []interface{}
 	if err := validateTransactionFilter(filter); err != nil {
 		return "", nil, err
 	}
-	query := `SELECT ` + transactionReadColumns + `
+	query := `SELECT ` + transactionAdminReadColumns + `
 FROM payment_transactions txn
 WHERE txn.tenant_id = $1`
 	args := []interface{}{filter.TenantID}
@@ -130,7 +134,7 @@ func buildGetTransactionQuery(lookup TransactionLookup) (string, []interface{}, 
 		return "", nil, err
 	}
 	if lookup.ID.Empty() {
-		query := `SELECT ` + transactionReadColumns + `
+		query := `SELECT ` + transactionAdminReadColumns + `
 FROM payment_transactions txn
 WHERE txn.tenant_id = $1
   AND txn.idempotency_key = $2`
@@ -141,7 +145,7 @@ WHERE txn.tenant_id = $1
 		}
 		return query, args, nil
 	}
-	query := `SELECT ` + transactionReadColumns + `
+	query := `SELECT ` + transactionAdminReadColumns + `
 FROM payment_transactions txn
 WHERE txn.payment_transaction_id = $1
   AND txn.tenant_id = $2`

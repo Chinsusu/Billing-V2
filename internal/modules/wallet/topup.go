@@ -8,23 +8,26 @@ import (
 )
 
 type TopupRequest struct {
-	ID               TopupRequestID
-	DisplayID        int64
-	TenantID         tenant.ID
-	WalletID         WalletID
-	RequestedBy      identity.UserID
-	AmountMinor      int64
-	Currency         string
-	PaymentMethod    PaymentMethod
-	PaymentReference string
-	Status           TopupStatus
-	ReviewedBy       identity.UserID
-	ReviewedAt       *time.Time
-	ReviewNote       string
-	LedgerEntryID    LedgerEntryID
-	IdempotencyKey   IdempotencyKey
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
+	ID                   TopupRequestID
+	DisplayID            int64
+	TenantID             tenant.ID
+	WalletID             WalletID
+	WalletDisplayID      int64
+	RequestedBy          identity.UserID
+	RequestedByDisplayID int64
+	AmountMinor          int64
+	Currency             string
+	PaymentMethod        PaymentMethod
+	PaymentReference     string
+	Status               TopupStatus
+	ReviewedBy           identity.UserID
+	ReviewedByDisplayID  int64
+	ReviewedAt           *time.Time
+	ReviewNote           string
+	LedgerEntryID        LedgerEntryID
+	IdempotencyKey       IdempotencyKey
+	CreatedAt            time.Time
+	UpdatedAt            time.Time
 }
 
 type CreateTopupRequestInput struct {

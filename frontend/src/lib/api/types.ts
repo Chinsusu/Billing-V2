@@ -51,7 +51,9 @@ export interface Invoice {
   id: string;
   display_id: number;
   buyer_user_id: string;
+  buyer_display_id?: number;
   order_id?: string;
+  order_display_id?: number;
   status: string;
   currency: string;
   total_minor: number;
@@ -64,8 +66,11 @@ export interface PaymentTransaction {
   id: string;
   display_id: number;
   account_user_id: string;
+  account_display_id?: number;
   order_id?: string;
+  order_display_id?: number;
   invoice_id?: string;
+  invoice_display_id?: number;
   type: string;
   status: string;
   currency: string;
@@ -134,8 +139,11 @@ export interface ServiceInstance {
   display_id: number;
   tenant_id?: string;
   order_id: string;
+  order_display_id?: number;
+  buyer_display_id?: number;
   tenant_plan_id?: string;
   provider_source_id?: string;
+  provider_source_display_id?: number;
   external_resource_id: string;
   status: string;
   billing_status: string;
@@ -153,7 +161,9 @@ export interface ProvisioningJob {
   job_type: string;
   reference_type: string;
   reference_id: string;
+  reference_display_id?: number;
   source_id?: string;
+  source_display_id?: number;
   status: string;
   priority: number;
   attempt_count: number;
@@ -171,10 +181,12 @@ export interface AuditLog {
   id: string;
   display_id: number;
   actor_id?: string;
+  actor_display_id?: number;
   actor_type: string;
   action: string;
   target_type: string;
   target_id: string;
+  target_display_id?: number;
   correlation_id: string;
   created_at: string;
 }
@@ -356,13 +368,16 @@ export interface TopupRequest {
   display_id: number;
   tenant_id: string;
   wallet_id: string;
+  wallet_display_id?: number;
   requested_by: string;
+  requested_by_display_id?: number;
   amount_minor: number;
   currency: string;
   payment_method: string;
   payment_reference?: string;
   status: string;
   reviewed_by?: string;
+  reviewed_by_display_id?: number;
   reviewed_at?: string;
   review_note?: string;
   ledger_entry_id?: string;
@@ -416,119 +431,18 @@ export interface TopupReviewBody {
   review_note?: string;
 }
 
-export interface AdminInvoiceQuery {
-  display_id?: string;
-  buyer_user_id?: string;
-  buyer_display_id?: string;
-  order_id?: string;
-  order_display_id?: string;
-  status?: string;
-  amount_min?: string;
-  amount_max?: string;
-}
-export interface AdminTransactionQuery {
-  display_id?: string;
-  account_user_id?: string;
-  account_display_id?: string;
-  order_id?: string;
-  order_display_id?: string;
-  invoice_id?: string;
-  invoice_display_id?: string;
-  type?: string;
-  status?: string;
-  amount_min?: string;
-  amount_max?: string;
-}
-export interface AdminAuditLogQuery extends PageQuery {
-  display_id?: string;
-  actor_id?: string;
-  action?: string;
-  target_type?: string;
-  target_id?: string;
-}
-export interface AdminTenantQuery extends PageQuery {
-  display_id?: string;
-  parent_tenant_id?: string;
-  type?: string;
-  status?: string;
-}
-export interface AdminAccountQuery extends PageQuery {
-  display_id?: string;
-  type?: string;
-  status?: string;
-  email?: string;
-}
-export interface AdminOrderQuery extends PageQuery {
-  buyer_user_id?: string;
-  buyer_display_id?: string;
-  display_id?: string;
-  status?: string;
-  billing_status?: string;
-  amount_min?: string;
-  amount_max?: string;
-}
-export interface AdminServiceQuery extends PageQuery {
-  buyer_user_id?: string;
-  buyer_display_id?: string;
-  display_id?: string;
-  order_id?: string;
-  order_display_id?: string;
-  provider_source_display_id?: string;
-  status?: string;
-}
-export interface JobQuery extends PageQuery {
-  display_id?: string;
-  job_type?: string;
-  status?: string;
-  reference_type?: string;
-  reference_id?: string;
-  source_id?: string;
-  source_display_id?: string;
-}
-export interface AdminWalletQuery extends PageQuery {
-  display_id?: string;
-  owner_type?: string;
-  owner_id?: string;
-  status?: string;
-}
-export interface LedgerQuery extends PageQuery {
-  display_id?: string;
-  direction?: string;
-  entry_type?: string;
-  status?: string;
-  amount_min?: string;
-  amount_max?: string;
-}
-export interface TopupRequestQuery extends PageQuery {
-  wallet_id?: string;
-  wallet_display_id?: string;
-  requested_by?: string;
-  requested_by_display_id?: string;
-  display_id?: string;
-  payment_method?: string;
-  status?: string;
-  amount_min?: string;
-  amount_max?: string;
-}
-
-export interface CatalogQuery extends PageQuery {
-  product_type?: string;
-  status?: string;
-}
-
-export interface AdminProviderSourceQuery extends PageQuery {
-  display_id?: string;
-  source_type?: string;
-  status?: string;
-}
-
-export interface AdminProviderReadinessQuery extends PageQuery {
-  plan_display_id?: string;
-  source_display_id?: string;
-  product_type?: string;
-  status?: string;
-}
-
-export interface TenantCatalogQuery extends CatalogQuery {
-  visibility?: string;
-}
+export interface AdminInvoiceQuery extends PageQuery { display_id?: string; buyer_user_id?: string; buyer_display_id?: string; order_id?: string; order_display_id?: string; status?: string; amount_min?: string; amount_max?: string; }
+export interface AdminTransactionQuery extends PageQuery { display_id?: string; account_user_id?: string; account_display_id?: string; order_id?: string; order_display_id?: string; invoice_id?: string; invoice_display_id?: string; type?: string; status?: string; amount_min?: string; amount_max?: string; }
+export interface AdminAuditLogQuery extends PageQuery { display_id?: string; actor_id?: string; action?: string; target_type?: string; target_id?: string; }
+export interface AdminTenantQuery extends PageQuery { display_id?: string; parent_tenant_id?: string; type?: string; status?: string; }
+export interface AdminAccountQuery extends PageQuery { display_id?: string; type?: string; status?: string; email?: string; }
+export interface AdminOrderQuery extends PageQuery { buyer_user_id?: string; buyer_display_id?: string; display_id?: string; status?: string; billing_status?: string; amount_min?: string; amount_max?: string; }
+export interface AdminServiceQuery extends PageQuery { buyer_user_id?: string; buyer_display_id?: string; display_id?: string; order_id?: string; order_display_id?: string; provider_source_display_id?: string; status?: string; }
+export interface JobQuery extends PageQuery { display_id?: string; job_type?: string; status?: string; reference_type?: string; reference_id?: string; source_id?: string; source_display_id?: string; }
+export interface AdminWalletQuery extends PageQuery { display_id?: string; owner_type?: string; owner_id?: string; status?: string; }
+export interface LedgerQuery extends PageQuery { display_id?: string; direction?: string; entry_type?: string; status?: string; amount_min?: string; amount_max?: string; }
+export interface TopupRequestQuery extends PageQuery { wallet_id?: string; wallet_display_id?: string; requested_by?: string; requested_by_display_id?: string; display_id?: string; payment_method?: string; status?: string; amount_min?: string; amount_max?: string; }
+export interface CatalogQuery extends PageQuery { product_type?: string; status?: string; }
+export interface AdminProviderSourceQuery extends PageQuery { display_id?: string; source_type?: string; status?: string; }
+export interface AdminProviderReadinessQuery extends PageQuery { plan_display_id?: string; source_display_id?: string; product_type?: string; status?: string; }
+export interface TenantCatalogQuery extends CatalogQuery { visibility?: string; }

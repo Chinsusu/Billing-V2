@@ -6,6 +6,10 @@ import (
 )
 
 const serviceInstanceReadColumns = `svc.service_instance_id, svc.display_id, svc.tenant_id, svc.order_id, svc.tenant_plan_id, svc.provider_source_id, svc.external_resource_id, svc.status, svc.billing_status, svc.suspension_reason, svc.term_start, svc.term_end, svc.created_at, svc.updated_at`
+const serviceInstanceRelatedReadColumns = serviceInstanceReadColumns + `,
+ord.display_id AS order_display_id,
+(SELECT buyer.display_id FROM users buyer WHERE buyer.user_id = ord.buyer_user_id AND buyer.tenant_id = ord.tenant_id) AS buyer_display_id,
+(SELECT source.display_id FROM provider_sources source WHERE source.source_id = svc.provider_source_id) AS provider_source_display_id`
 
 func (store *PostgresStore) ListServiceInstances(ctx context.Context, filter ServiceInstanceFilter) ([]ServiceInstance, error) {
 	if err := store.ready(); err != nil {
@@ -22,7 +26,7 @@ func (store *PostgresStore) ListServiceInstances(ctx context.Context, filter Ser
 	defer rows.Close()
 	services := make([]ServiceInstance, 0)
 	for rows.Next() {
-		service, err := scanServiceInstance(rows)
+		service, err := scanServiceInstanceRead(rows)
 		if err != nil {
 			return nil, err
 		}
@@ -42,7 +46,7 @@ func (store *PostgresStore) GetServiceInstance(ctx context.Context, lookup Servi
 	if err != nil {
 		return ServiceInstance{}, err
 	}
-	return scanServiceInstance(store.executor.QueryRowContext(ctx, query, args...))
+	return scanServiceInstanceRead(store.executor.QueryRowContext(ctx, query, args...))
 }
 
 func buildListServiceInstancesQuery(filter ServiceInstanceFilter) (string, []interface{}, error) {
@@ -50,7 +54,7 @@ func buildListServiceInstancesQuery(filter ServiceInstanceFilter) (string, []int
 	if err := validateServiceInstanceFilter(filter); err != nil {
 		return "", nil, err
 	}
-	query := `SELECT ` + serviceInstanceReadColumns + `
+	query := `SELECT ` + serviceInstanceRelatedReadColumns + `
 FROM service_instances svc
 JOIN orders ord
   ON ord.order_id = svc.order_id
@@ -107,7 +111,7 @@ func buildGetServiceInstanceQuery(lookup ServiceInstanceLookup) (string, []inter
 	if err := validateServiceInstanceLookup(lookup); err != nil {
 		return "", nil, err
 	}
-	query := `SELECT ` + serviceInstanceReadColumns + `
+	query := `SELECT ` + serviceInstanceRelatedReadColumns + `
 FROM service_instances svc
 JOIN orders ord
   ON ord.order_id = svc.order_id

@@ -29,6 +29,8 @@ func TestBuildListLogsQueryAddsFilters(t *testing.T) {
 	}
 	for _, clause := range []string{
 		"tenant_id = $1",
+		"actor_display_id",
+		"target_display_id",
 		"actor_id = $2",
 		"actor_type = $3",
 		"display_id = $4",

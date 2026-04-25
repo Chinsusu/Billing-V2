@@ -32,8 +32,8 @@ REMOVED      archived by user decision and no longer part of the board
 
 Current board snapshot on `2026-04-25` after T121 is done:
 
-- `TODO`: 1
-- `IN_PROGRESS`: 0
+- `TODO`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 120
@@ -61,13 +61,13 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T124 | [tasks/active/T124_admin_read_model_related_display_ids.md](tasks/active/T124_admin_read_model_related_display_ids.md) | codex/t124-admin-read-model-related-display-ids | API/frontend | Add safe related public IDs to admin read models. |
+| - | - | - | - | No TODO tasks are currently open. |
 
 ## In-Flight Task Files
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No task files are in progress or review. |
+| T124 | [tasks/active/T124_admin_read_model_related_display_ids.md](tasks/active/T124_admin_read_model_related_display_ids.md) | IN_PROGRESS | Codex | codex/t124-admin-read-model-related-display-ids | Add safe related public IDs to admin read models. |
 
 ## Done Task Files
 

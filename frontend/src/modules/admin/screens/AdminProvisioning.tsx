@@ -295,16 +295,25 @@ function liveProvisioningRows(
     const order = ordersByID.get(job.reference_id);
     const service = servicesByOrderID.get(job.reference_id);
     const provider = job.source_id ? providersByID.get(job.source_id) : undefined;
-    const providerReadiness = readinessForJobSource(readinessRows, provider, order);
+    const sourceDisplayID = provider?.display_id ?? job.source_display_id;
+    const providerReadiness = readinessForJobSource(readinessRows, sourceDisplayID, order);
     const error = job.manual_review_reason || job.last_error_message_redacted || job.last_error_code || "-";
     return {
       id: recordLabel(job.display_id, "JOB-"),
       apiId: job.id,
       live: true,
-      order: order ? recordLabel(order.display_id, "ORD-") : hiddenReference("Order"),
+      order: order
+        ? recordLabel(order.display_id, "ORD-")
+        : job.reference_type === "order" && job.reference_display_id
+          ? recordLabel(job.reference_display_id, "ORD-")
+          : hiddenReference("Order"),
       service: service ? recordLabel(service.display_id, "SVC-") : jobStatusLabel(job.status),
       tenant: hiddenReference("Tenant"),
-      provider: provider ? providerSourceLabel(provider) : hiddenReference("Source"),
+      provider: provider
+        ? providerSourceLabel(provider)
+        : job.source_display_id
+          ? recordLabel(job.source_display_id, "SRC-")
+          : hiddenReference("Source"),
       status: job.status,
       attempt: `${job.attempt_count}/${job.max_attempts}`,
       created: compactDateTime(job.created_at),
@@ -320,16 +329,16 @@ function liveProvisioningRows(
 
 function readinessForJobSource(
   rows: ProviderReadiness[],
-  provider: CatalogProviderSource | undefined,
+  sourceDisplayID: number | undefined,
   order: Order | undefined,
 ): ProviderReadiness | undefined {
-  if (!provider) return undefined;
+  if (!sourceDisplayID) return undefined;
   const planCode = planCodeFromSnapshot(order?.plan_snapshot);
   if (planCode) {
-    const exact = rows.find((row) => row.source_display_id === provider.display_id && row.plan_code === planCode);
+    const exact = rows.find((row) => row.source_display_id === sourceDisplayID && row.plan_code === planCode);
     if (exact) return exact;
   }
-  return rows.find((row) => row.source_display_id === provider.display_id);
+  return rows.find((row) => row.source_display_id === sourceDisplayID);
 }
 
 function planCodeFromSnapshot(snapshot: unknown): string | undefined {

@@ -22,7 +22,7 @@ func (store *PostgresStore) ListInvoices(ctx context.Context, filter InvoiceFilt
 	defer rows.Close()
 	invoices := make([]Invoice, 0)
 	for rows.Next() {
-		invoice, err := scanInvoice(rows)
+		invoice, err := scanInvoiceRead(rows)
 		if err != nil {
 			return nil, err
 		}
@@ -42,7 +42,7 @@ func (store *PostgresStore) GetInvoice(ctx context.Context, lookup InvoiceLookup
 	if err != nil {
 		return InvoiceDetail{}, err
 	}
-	record, err := scanInvoice(store.executor.QueryRowContext(ctx, query, args...))
+	record, err := scanInvoiceRead(store.executor.QueryRowContext(ctx, query, args...))
 	if err != nil {
 		return InvoiceDetail{}, err
 	}

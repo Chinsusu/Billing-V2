@@ -241,7 +241,21 @@ func TestHTTPHandlerGetAdminTransactionUsesTenantScopeOnly(t *testing.T) {
 }
 
 func TestHTTPHandlerListAdminTransactionsUsesAccountFilter(t *testing.T) {
-	service := &fakePaymentHTTPService{}
+	service := &fakePaymentHTTPService{transactions: []Transaction{{
+		ID:               "txn_1",
+		DisplayID:        51001,
+		TenantID:         "tenant_1",
+		AccountUserID:    "account_2",
+		AccountDisplayID: 10002,
+		OrderID:          "order_1",
+		OrderDisplayID:   30004,
+		InvoiceID:        "invoice_1",
+		InvoiceDisplayID: 44001,
+		Type:             TransactionTypeCharge,
+		Status:           TransactionStatusPosted,
+		Currency:         "USD",
+		AmountMinor:      900,
+	}}}
 	handler := registerPaymentTestHandler(service)
 
 	request := httptest.NewRequest(http.MethodGet, "/admin/transactions?account_user_id=account_2&account_display_id=10002&display_id=51001&order_display_id=30004&invoice_display_id=44001&status=posted&amount_min=100&amount_max=900", nil)
@@ -263,6 +277,12 @@ func TestHTTPHandlerListAdminTransactionsUsesAccountFilter(t *testing.T) {
 		service.filter.AmountMinMinor == nil || *service.filter.AmountMinMinor != 100 ||
 		service.filter.AmountMaxMinor == nil || *service.filter.AmountMaxMinor != 900 {
 		t.Fatalf("unexpected admin transaction filter: %+v", service.filter)
+	}
+	body := response.Body.String()
+	for _, expected := range []string{`"account_display_id":10002`, `"order_display_id":30004`, `"invoice_display_id":44001`} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("expected %s in transaction response, got %s", expected, body)
+		}
 	}
 }
 
