@@ -1,6 +1,6 @@
 # T135 - Wallet ledger reference labels
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t135-wallet-ledger-reference-labels
 PR: https://github.com/Chinsusu/Billing-V2/pull/301
@@ -34,3 +34,4 @@ Use shared public reference labels for wallet ledger rows so reseller and client
 - 2026-04-26: Added shared wallet ledger reference formatter and updated client/reseller wallet ledger rows to use it.
 - 2026-04-26: Local validation passed: `npm --prefix frontend run lint`, `npm --prefix frontend run check:sensitive-text`, `npm --prefix frontend run build`, `go run ./cmd/taskguard`, and `git diff --check`.
 - 2026-04-26: Opened PR https://github.com/Chinsusu/Billing-V2/pull/301 for review.
+- 2026-04-26: PR https://github.com/Chinsusu/Billing-V2/pull/301 merged into `main`; marking task done.
