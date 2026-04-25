@@ -433,7 +433,7 @@ export interface TopupReviewBody {
 
 export interface AdminInvoiceQuery extends PageQuery { display_id?: string; buyer_user_id?: string; buyer_display_id?: string; order_id?: string; order_display_id?: string; status?: string; amount_min?: string; amount_max?: string; }
 export interface AdminTransactionQuery extends PageQuery { display_id?: string; account_user_id?: string; account_display_id?: string; order_id?: string; order_display_id?: string; invoice_id?: string; invoice_display_id?: string; type?: string; status?: string; amount_min?: string; amount_max?: string; }
-export interface AdminAuditLogQuery extends PageQuery { display_id?: string; actor_id?: string; action?: string; target_type?: string; target_id?: string; }
+export interface AdminAuditLogQuery extends PageQuery { display_id?: string; actor_id?: string; actor_display_id?: string; action?: string; target_type?: string; target_id?: string; target_display_id?: string; }
 export interface AdminTenantQuery extends PageQuery { display_id?: string; parent_tenant_id?: string; type?: string; status?: string; }
 export interface AdminAccountQuery extends PageQuery { display_id?: string; type?: string; status?: string; email?: string; }
 export interface AdminOrderQuery extends PageQuery { buyer_user_id?: string; buyer_display_id?: string; display_id?: string; status?: string; billing_status?: string; amount_min?: string; amount_max?: string; }

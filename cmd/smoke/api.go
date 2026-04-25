@@ -244,6 +244,7 @@ func apiSmokeChecks() []apiSmokeCheck {
 			SummaryFields:       []string{"plan_display_id", "source_display_id"},
 		},
 		{Name: "admin audit list", Path: "/admin/audit-logs", Headers: admin, Contains: []string{`"display_id":70001`, `"actor_display_id":10001`, `"target_display_id":53001`}},
+		{Name: "admin audit public id filter", Path: "/admin/audit-logs?actor_display_id=10001&target_type=job&target_display_id=53001", Headers: admin, Contains: []string{`"display_id":70001`, `"actor_display_id":10001`, `"target_display_id":53001`}},
 	}
 }
 

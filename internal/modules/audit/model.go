@@ -87,16 +87,18 @@ type AppendInput struct {
 }
 
 type Filter struct {
-	TenantID    tenant.ID
-	ActorID     ActorID
-	ActorType   ActorType
-	DisplayID   int64
-	Action      string
-	TargetType  string
-	TargetID    TargetID
-	CreatedFrom time.Time
-	CreatedTo   time.Time
-	Limit       int
+	TenantID        tenant.ID
+	ActorID         ActorID
+	ActorDisplayID  int64
+	ActorType       ActorType
+	DisplayID       int64
+	Action          string
+	TargetType      string
+	TargetID        TargetID
+	TargetDisplayID int64
+	CreatedFrom     time.Time
+	CreatedTo       time.Time
+	Limit           int
 }
 
 type Lookup struct {

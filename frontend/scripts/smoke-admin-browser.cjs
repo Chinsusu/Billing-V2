@@ -106,6 +106,16 @@ async function main() {
       await expectVisibleText(page, "ACC-10001");
       await expectVisibleText(page, "job.retry");
       await expectVisibleText(page, "job JOB-3301");
+      await page.getByLabel("Actor public ID").fill("10001");
+      await page.getByLabel("Target public ID").fill("3301");
+      const filteredAudit = page.waitForResponse((response) => {
+        const url = new URL(response.url());
+        return url.pathname === "/backend/admin/audit-logs"
+          && url.searchParams.get("actor_display_id") === "10001"
+          && url.searchParams.get("target_display_id") === "3301";
+      });
+      await page.getByRole("button", { name: "Apply" }).click();
+      await filteredAudit;
       await expectVisibleText(page, "req-smoke");
       await assertNoVisibleText(page, ["audit-1", "admin-1", "job-uuid-1", "tenant-uuid-1"], "audit public ID labels");
       await assertNoForbiddenText(page, "audit logs");
@@ -345,9 +355,15 @@ async function installApiMocks(page) {
           ["status", (row) => row.plan_status],
         ]));
       case "/backend/admin/audit-logs":
-        return json(route, [
+        return json(route, filterRows([
           { id: "audit-1", display_id: 70001, actor_id: "admin-1", actor_display_id: 10001, actor_type: "user", action: "job.retry", target_type: "job", target_id: "job-uuid-1", target_display_id: 3301, correlation_id: "req-smoke", created_at: "2026-04-24T08:40:00Z" },
-        ]);
+        ], query, [
+          ["display_id", (row) => row.display_id],
+          ["actor_display_id", (row) => row.actor_display_id],
+          ["action", (row) => row.action],
+          ["target_type", (row) => row.target_type],
+          ["target_display_id", (row) => row.target_display_id],
+        ]));
       default:
         return json(route, []);
     }

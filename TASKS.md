@@ -34,7 +34,7 @@ Current board snapshot on `2026-04-25` after T126 is done:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 123
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No task files are currently `IN_PROGRESS` or `REVIEW`. |
+| T127 | [tasks/active/T127_audit_public_id_filters.md](tasks/active/T127_audit_public_id_filters.md) | REVIEW | Codex | codex/t127-audit-public-id-filters | Add actor and target public ID filters to audit logs. |
 
 ## Done Task Files
 
