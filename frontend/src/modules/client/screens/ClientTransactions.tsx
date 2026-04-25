@@ -42,7 +42,7 @@ export function ClientTransactions() {
             <tbody>
               {rows.map((txn) => (
                 <tr key={txn.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
-                  <td className="p-4 text-[12px] text-[#D50C2D] font-medium">{recordLabel(txn.display_id, "TXN-")}</td>
+                  <td className="p-4 text-[12px] text-[#D50C2D] font-medium">{recordLabel(txn.display_id, "TX-")}</td>
                   <td className="p-4 text-gray-500">{compactDateTime(txn.created_at)}</td>
                   <td className="p-4 text-gray-500">{txn.type}</td>
                   <td className="p-4 text-[12px] text-gray-400">{transactionReference(txn)}</td>

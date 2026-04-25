@@ -138,7 +138,7 @@ function CheckoutStatusPanel({
         />
         <FlowMetric
           label="Payment"
-          value={summary.transactionDisplayID ? recordLabel(summary.transactionDisplayID, "TXN-") : "-"}
+          value={summary.transactionDisplayID ? recordLabel(summary.transactionDisplayID, "TX-") : "-"}
           meta={`${transactionCount} transactions`}
         />
         <FlowMetric label="Provisioning" value={String(serviceCount)} meta={serviceCount === 1 ? "service" : "services"} />
