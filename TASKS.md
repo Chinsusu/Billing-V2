@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-25` after T119 is done:
+Current board snapshot on `2026-04-25` while T120 is in progress:
 
-- `TODO`: 5
-- `IN_PROGRESS`: 0
+- `TODO`: 4
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 116
@@ -61,7 +61,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T120 | [tasks/active/T120_public_display_id_api_policy.md](tasks/active/T120_public_display_id_api_policy.md) | codex/t120-public-display-id-api-policy | API/docs | Document public numeric ID versus backend reference rules. |
 | T121 | [tasks/active/T121_admin_public_id_backend_filters.md](tasks/active/T121_admin_public_id_backend_filters.md) | codex/t121-admin-public-id-backend-filters | API/DB | Add admin backend filters for numeric public IDs. |
 | T122 | [tasks/active/T122_admin_frontend_public_id_filters.md](tasks/active/T122_admin_frontend_public_id_filters.md) | codex/t122-admin-frontend-public-id-filters | frontend/API | Update admin frontend filters to use public ID language and queries. |
 | T123 | [tasks/active/T123_public_id_smoke_coverage.md](tasks/active/T123_public_id_smoke_coverage.md) | codex/t123-public-id-smoke-coverage | smoke/API/frontend | Cover public ID admin flows in smoke checks. |
@@ -71,7 +70,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No task files are in progress or review. |
+| T120 | [tasks/active/T120_public_display_id_api_policy.md](tasks/active/T120_public_display_id_api_policy.md) | IN_PROGRESS | Codex | codex/t120-public-display-id-api-policy | Document public numeric ID versus backend reference rules. |
 
 ## Done Task Files
 

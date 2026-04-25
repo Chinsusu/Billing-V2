@@ -304,7 +304,10 @@ Không hardcode future API response format trái với:
 ```text
 docs/05_development_standards/50_API_Response_Error_Logging_Standard.md
 docs/02_technical_handoff/16_API_Contract_And_Permission_Spec.md
+docs/05_development_standards/64_Public_Display_ID_And_Backend_Reference_Policy.md
 ```
+
+Visible resource labels must use public numeric IDs from `display_id` or related `*_display_id` fields. Do not render backend UUID references as row labels, card titles, search suggestions, or mock examples. If the API does not provide the needed public ID yet, show `not shown` and create or link a backend follow-up.
 
 ## Build validation
 

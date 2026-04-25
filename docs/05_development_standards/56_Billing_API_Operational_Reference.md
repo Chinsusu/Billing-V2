@@ -15,8 +15,10 @@ This is not generated OpenAPI. It is a compact operational reference built from 
 
 ### 2.1 Path IDs vs display IDs
 
+- Full policy: `docs/05_development_standards/64_Public_Display_ID_And_Backend_Reference_Policy.md`.
 - Path parameters use UUID-style ids such as `order_id`, `wallet_id`, `invoice_id`, `transaction_id`, and `audit_log_id`.
-- Human-facing tables should use `display_id` from the response body.
+- Human-facing tables should use public numeric IDs from `display_id` or related `*_display_id` fields.
+- Frontend labels must not fall back to UUID-style backend references.
 - `display_id` is also available as a list filter on most billing read APIs.
 
 ### 2.2 Headers
