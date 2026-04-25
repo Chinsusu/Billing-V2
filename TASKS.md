@@ -34,9 +34,9 @@ Current board snapshot on `2026-04-25` after T121 is done:
 
 - `TODO`: 1
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 119
+- `DONE` task files in `tasks/active/`: 120
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -67,14 +67,14 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T123 | [tasks/active/T123_public_id_smoke_coverage.md](tasks/active/T123_public_id_smoke_coverage.md) | REVIEW | Codex | codex/t123-public-id-smoke-coverage | Cover public ID admin flows in smoke checks. |
+| - | - | - | - | - | No task files are in progress or review. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T122`
+- `T011` to `T123`
 
 ## Removed Tasks
 
