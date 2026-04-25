@@ -17,14 +17,27 @@ type orderScanner interface {
 }
 
 func scanOrder(row orderScanner) (Order, error) {
+	return scanOrderFields(row, false)
+}
+
+func scanOrderRead(row orderScanner) (Order, error) {
+	return scanOrderFields(row, true)
+}
+
+func scanOrderFields(row orderScanner, includeBuyerDisplayID bool) (Order, error) {
 	var record Order
 	var id, tenantID, buyerUserID, tenantPlanID, orderStatus, billingStatus, idempotencyKey string
+	var buyerDisplayID sql.NullInt64
 	var productSnapshot, planSnapshot, priceSnapshot []byte
-	if err := row.Scan(
+	destinations := []interface{}{
 		&id, &record.DisplayID, &tenantID, &buyerUserID, &tenantPlanID, &record.Quantity, &record.Currency,
 		&record.UnitPriceMinor, &record.DiscountMinor, &record.TotalMinor, &orderStatus, &billingStatus, &idempotencyKey,
 		&productSnapshot, &planSnapshot, &priceSnapshot, &record.CreatedAt, &record.UpdatedAt,
-	); err != nil {
+	}
+	if includeBuyerDisplayID {
+		destinations = append(destinations, &buyerDisplayID)
+	}
+	if err := row.Scan(destinations...); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return Order{}, ErrOrderNotFound
 		}
@@ -33,6 +46,9 @@ func scanOrder(row orderScanner) (Order, error) {
 	record.ID = OrderID(id)
 	record.TenantID = tenant.ID(tenantID)
 	record.BuyerUserID = identity.UserID(buyerUserID)
+	if buyerDisplayID.Valid {
+		record.BuyerDisplayID = buyerDisplayID.Int64
+	}
 	record.TenantPlanID = catalog.TenantPlanID(tenantPlanID)
 	record.OrderStatus = OrderStatus(orderStatus)
 	record.BillingStatus = BillingStatus(billingStatus)

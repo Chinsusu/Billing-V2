@@ -131,7 +131,7 @@ Operation error:
 
 `order` response fields:
 
-`id`, `display_id`, `tenant_id`, `buyer_user_id`, `tenant_plan_id`, `quantity`, `currency`, `unit_price_minor`, `discount_minor`, `total_minor`, `order_status`, `billing_status`, `product_snapshot`, `plan_snapshot`, `price_snapshot`, `created_at`, `updated_at`
+`id`, `display_id`, `tenant_id`, `buyer_user_id`, `buyer_display_id`, `tenant_plan_id`, `quantity`, `currency`, `unit_price_minor`, `discount_minor`, `total_minor`, `order_status`, `billing_status`, `product_snapshot`, `plan_snapshot`, `price_snapshot`, `created_at`, `updated_at`
 
 ### 3.2 Service instance
 
@@ -221,7 +221,7 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 - `GET /client/orders`
   - auth: client actor, `order.create`
   - query: `display_id`, `status`, `billing_status`, `amount_min`, `amount_max`, `limit`, `cursor`
-  - response: list of `order`
+  - response: list of `order`; related public fields include `buyer_display_id` when available
   - note: buyer scope is forced to the current actor
 
 - `POST /client/orders`
@@ -232,7 +232,7 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 
 - `GET /client/orders/{order_id}`
   - auth: client actor, `order.create`
-  - response: one `order`
+  - response: one `order`; related public fields include `buyer_display_id` when available
   - note: buyer scope is forced to the current actor
 
 - `POST /client/checkouts`
@@ -248,17 +248,17 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 - `GET /admin/orders`
   - auth: admin actor, `order.view`
   - query: `buyer_user_id`, `buyer_display_id`, `display_id`, `status`, `billing_status`, `amount_min`, `amount_max`, `limit`, `cursor`
-  - response: list of `order`
+  - response: list of `order`; related public fields include `buyer_display_id` when available
 
 - `GET /reseller/orders`
   - auth: reseller actor, `order.view`
   - query: `buyer_user_id`, `buyer_display_id`, `display_id`, `status`, `billing_status`, `amount_min`, `amount_max`, `limit`, `cursor`
-  - response: list of `order`
+  - response: list of `order`; related public fields include `buyer_display_id` when available
   - note: tenant scope is forced to the current reseller tenant
 
 - `GET /admin/orders/{order_id}`
   - auth: admin actor, `order.view`
-  - response: one `order`
+  - response: one `order`; related public fields include `buyer_display_id` when available
 
 - `PATCH /admin/orders/{order_id}/status`
   - auth: admin actor, `order.manage`
