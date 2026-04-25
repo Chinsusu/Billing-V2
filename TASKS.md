@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-25` after completing T113:
+Current board snapshot on `2026-04-25` after completing T114:
 
-- `TODO`: 5
+- `TODO`: 4
 - `IN_PROGRESS`: 0
 - `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 110
+- `DONE` task files in `tasks/active/`: 111
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -61,7 +61,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T114 | [tasks/active/T114_frontend_admin_smoke_ci_hardening.md](tasks/active/T114_frontend_admin_smoke_ci_hardening.md) | codex/t114-frontend-admin-smoke-ci-hardening | frontend/CI | Harden the admin browser smoke path for CI and local runs. |
 | T115 | [tasks/active/T115_api_error_code_drift_guard.md](tasks/active/T115_api_error_code_drift_guard.md) | codex/t115-api-error-code-drift-guard | API/docs/CI | Guard stable API error code documentation against drift. |
 | T116 | [tasks/active/T116_provider_sandbox_contract_harness.md](tasks/active/T116_provider_sandbox_contract_harness.md) | codex/t116-provider-sandbox-contract-harness | provider/testing | Add a provider sandbox contract test harness shape. |
 | T117 | [tasks/active/T117_frontend_api_view_model_boundary.md](tasks/active/T117_frontend_api_view_model_boundary.md) | codex/t117-frontend-api-view-model-boundary | frontend/API | Add shared frontend API-to-view mapping for safe admin display fields. |
@@ -76,7 +75,7 @@ No task files are currently `IN_PROGRESS` or `REVIEW`.
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T113`
+- `T011` to `T114`
 
 ## Removed Tasks
 

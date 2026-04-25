@@ -1,6 +1,6 @@
 # T114 - Frontend admin smoke CI hardening
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t114-frontend-admin-smoke-ci-hardening
 PR: https://github.com/Chinsusu/Billing-V2/pull/258
@@ -38,3 +38,4 @@ Make the admin browser smoke flow easier to run in CI and less likely to fail be
 - 2026-04-25: Codex claimed the task; hardening the admin browser smoke path for CI and local runs.
 - 2026-04-25: Added a CI smoke script that runs against the standalone production artifact, added Playwright Chromium installation to the frontend CI gate, and documented local/CI smoke ordering.
 - 2026-04-25: Opened PR #258. Validation passed: `npm audit --omit=dev`, `npm run check:sensitive-text`, `npm run lint`, `npm run build`, `npm run smoke:admin:ci`, `npm run smoke:admin`, `go run ./cmd/contractguard`, `git diff --check`.
+- 2026-04-25: PR #258 passed CI and merged into main at `4130106`; moved the task to done.
