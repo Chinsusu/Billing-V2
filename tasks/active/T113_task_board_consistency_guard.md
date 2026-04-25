@@ -1,6 +1,6 @@
 # T113 - Task board consistency guard
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t113-task-board-consistency-guard
 PR: https://github.com/Chinsusu/Billing-V2/pull/256
@@ -37,3 +37,4 @@ Add a lightweight guard that checks task board metadata for obvious drift after 
 - 2026-04-25: Task created in the board and delivery hardening batch.
 - 2026-04-25: Codex claimed the task; adding a task board consistency guard and docs.
 - 2026-04-25: Opened PR #256. Validation passed: `go test ./cmd/taskguard`, `go run ./cmd/taskguard`, `go run ./cmd/contractguard`, `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker ./cmd/contractguard ./cmd/taskguard`, `git diff --check`.
+- 2026-04-25: PR #256 passed CI and merged into main at `98b2791`; moved the task to done.
