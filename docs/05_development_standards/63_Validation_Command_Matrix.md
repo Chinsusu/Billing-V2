@@ -90,3 +90,4 @@ If a command was not run, write the reason and the risk.
 - Provider sandbox: `docs/05_development_standards/60_Provider_Sandbox_Contract_Checklist.md`
 - Task board guard: `docs/05_development_standards/61_Task_Board_Consistency_Guard.md`
 - API error guard: `docs/05_development_standards/62_API_Error_Code_Drift_Guard.md`
+- Public ID policy: `docs/05_development_standards/64_Public_Display_ID_And_Backend_Reference_Policy.md`

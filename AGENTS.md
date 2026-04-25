@@ -17,6 +17,7 @@ docs/05_development_standards/48_Definition_Of_Ready_Done_And_Task_Workflow.md
 docs/05_development_standards/49_Testing_Strategy_And_Quality_Gates.md
 docs/05_development_standards/50_API_Response_Error_Logging_Standard.md
 docs/05_development_standards/56_Billing_API_Operational_Reference.md
+docs/05_development_standards/64_Public_Display_ID_And_Backend_Reference_Policy.md
 docs/05_development_standards/54_Multi_Agent_Task_Board_Conflict_Workflow.md
 docs/04_architecture_deep_dive/37_Go_Backend_Architecture_And_Module_Boundaries.md
 docs/04_architecture_deep_dive/45_Architecture_Decision_Records_ADR.md
@@ -70,6 +71,7 @@ docs/02_technical_handoff/20_UI_Wireflow_And_Screen_Spec.md
 docs/05_development_standards/50_API_Response_Error_Logging_Standard.md
 docs/05_development_standards/56_Billing_API_Operational_Reference.md
 docs/05_development_standards/53_Frontend_App_Shell_And_UI_Implementation_Standard.md
+docs/05_development_standards/64_Public_Display_ID_And_Backend_Reference_Policy.md
 ```
 
 ## Start-of-Task Checklist
@@ -141,6 +143,7 @@ Rules:
 ## API, Error, and Logging Rules
 
 - Follow `docs/05_development_standards/50_API_Response_Error_Logging_Standard.md`.
+- Follow `docs/05_development_standards/64_Public_Display_ID_And_Backend_Reference_Policy.md` for visible IDs.
 - Use one response envelope across modules.
 - Error responses must include stable `code`, readable `message`, and `request_id`.
 - Validation errors must include field-level details.
@@ -178,6 +181,7 @@ Rules:
 - A frontend app shell must have `frontend/package.json` with `dev`, `build`, and `preview` scripts.
 - It must have working navigation, screen registry, layout shell, mock data layer, and build validation.
 - Do not wire production backend routes during app-shell phase unless the task explicitly asks for it.
+- Use public numeric IDs for visible resource labels; do not render backend UUID references as UI labels.
 - Run the frontend build command and include the result in the PR.
 
 ## Git Workflow

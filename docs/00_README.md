@@ -110,6 +110,7 @@ Bản v1.10 bổ sung local development runbook để dev mới có thể setup 
 - `05_development_standards/61_Task_Board_Consistency_Guard.md`
 - `05_development_standards/62_API_Error_Code_Drift_Guard.md`
 - `05_development_standards/63_Validation_Command_Matrix.md`
+- `05_development_standards/64_Public_Display_ID_And_Backend_Reference_Policy.md`
 
 ### Tài liệu tổng hợp và ghi chú
 - `VPS_Proxy_Project_Master_Document.md`
@@ -149,8 +150,9 @@ Bản v1.10 bổ sung local development runbook để dev mới có thể setup 
 18. `05_development_standards/54_Multi_Agent_Task_Board_Conflict_Workflow.md`
 19. `05_development_standards/55_Local_Development_Runbook.md`
 20. `05_development_standards/56_Billing_API_Operational_Reference.md`
-21. `05_development_standards/57_Billing_Operations_Runbook.md`
-22. `05_development_standards/58_Provisioning_Ops_Readiness_Checklist.md`
+21. `05_development_standards/64_Public_Display_ID_And_Backend_Reference_Policy.md`
+22. `05_development_standards/57_Billing_Operations_Runbook.md`
+23. `05_development_standards/58_Provisioning_Ops_Readiness_Checklist.md`
 
 ### Cho frontend
 1. `02_technical_handoff/16_API_Contract_And_Permission_Spec.md`
@@ -166,6 +168,7 @@ Bản v1.10 bổ sung local development runbook để dev mới có thể setup 
 11. `05_development_standards/54_Multi_Agent_Task_Board_Conflict_Workflow.md`
 12. `05_development_standards/55_Local_Development_Runbook.md`
 13. `05_development_standards/56_Billing_API_Operational_Reference.md`
+14. `05_development_standards/64_Public_Display_ID_And_Backend_Reference_Policy.md`
 
 ### Cho QA
 1. `01_product_foundation/12_API_Data_Model_Acceptance_Criteria.md`

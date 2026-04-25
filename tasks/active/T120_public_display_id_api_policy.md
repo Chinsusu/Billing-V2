@@ -1,9 +1,9 @@
 # T120 - Public display ID API policy
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: codex/t120-public-display-id-api-policy
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/271
 Risk: API/docs
 Created: 2026-04-25
 Updated: 2026-04-25
@@ -34,3 +34,5 @@ Document the API rule for numeric public display IDs versus backend UUID referen
 ## Agent Log
 
 - 2026-04-25: Task created in the public ID and validation hardening batch.
+- 2026-04-25: Codex claimed the task; documenting public ID versus backend reference rules before backend/filter work.
+- 2026-04-25: Opened PR https://github.com/Chinsusu/Billing-V2/pull/271 after task board, contract, error code, and diff checks passed.
