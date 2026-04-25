@@ -1,12 +1,12 @@
 # T129 - Client public ID labels
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t129-client-public-id-labels
 PR: https://github.com/Chinsusu/Billing-V2/pull/289
 Risk: frontend
 Created: 2026-04-25
-Updated: 2026-04-25
+Updated: 2026-04-26
 
 ## Summary
 
@@ -35,3 +35,4 @@ Clean up client-facing billing screens so visible labels use public numeric IDs 
 - 2026-04-25: Codex created and claimed the task after T128 was marked done; starting client public ID label cleanup.
 - 2026-04-25: Codex updated client dashboard, services, invoices, transactions, checkout invoice list, and wallet labels to use public IDs or safe hidden-reference text. Local validation passed: `npm --prefix frontend run lint`, `npm --prefix frontend run check:sensitive-text`, and `npm --prefix frontend run build`.
 - 2026-04-25: Opened PR https://github.com/Chinsusu/Billing-V2/pull/289 for review and CI.
+- 2026-04-26: PR https://github.com/Chinsusu/Billing-V2/pull/289 passed CI and was merged to `main`; task marked DONE.
