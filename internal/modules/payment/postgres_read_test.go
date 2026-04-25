@@ -13,16 +13,19 @@ import (
 
 func TestBuildListTransactionsQueryAddsAccountScopeAndFilters(t *testing.T) {
 	query, args, err := buildListTransactionsQuery(TransactionFilter{
-		TenantID:       tenant.ID("tenant-1"),
-		AccountUserID:  identity.UserID("account-1"),
-		DisplayID:      51001,
-		OrderID:        order.OrderID("order-1"),
-		InvoiceID:      invoice.InvoiceID("invoice-1"),
-		Type:           TransactionTypeCharge,
-		Status:         TransactionStatusPosted,
-		AmountMinMinor: int64Ptr(100),
-		AmountMaxMinor: int64Ptr(900),
-		Limit:          25,
+		TenantID:         tenant.ID("tenant-1"),
+		AccountUserID:    identity.UserID("account-1"),
+		AccountDisplayID: 10002,
+		DisplayID:        51001,
+		OrderID:          order.OrderID("order-1"),
+		OrderDisplayID:   30001,
+		InvoiceID:        invoice.InvoiceID("invoice-1"),
+		InvoiceDisplayID: 44001,
+		Type:             TransactionTypeCharge,
+		Status:           TransactionStatusPosted,
+		AmountMinMinor:   int64Ptr(100),
+		AmountMaxMinor:   int64Ptr(900),
+		Limit:            25,
 	})
 	if err != nil {
 		t.Fatalf("expected query: %v", err)
@@ -30,20 +33,26 @@ func TestBuildListTransactionsQueryAddsAccountScopeAndFilters(t *testing.T) {
 	for _, clause := range []string{
 		"txn.tenant_id = $1",
 		"txn.account_user_id = $2",
-		"txn.display_id = $3",
-		"txn.order_id = $4",
-		"txn.invoice_id = $5",
-		"txn.transaction_type = $6",
-		"txn.status = $7",
-		"txn.amount_minor >= $8",
-		"txn.amount_minor <= $9",
-		"LIMIT $10",
+		"account.user_id = txn.account_user_id",
+		"account.display_id = $3",
+		"txn.display_id = $4",
+		"txn.order_id = $5",
+		"ord.order_id = txn.order_id",
+		"ord.display_id = $6",
+		"txn.invoice_id = $7",
+		"inv.invoice_id = txn.invoice_id",
+		"inv.display_id = $8",
+		"txn.transaction_type = $9",
+		"txn.status = $10",
+		"txn.amount_minor >= $11",
+		"txn.amount_minor <= $12",
+		"LIMIT $13",
 	} {
 		if !strings.Contains(query, clause) {
 			t.Fatalf("expected %q in query: %s", clause, query)
 		}
 	}
-	if len(args) != 10 || args[9] != 25 {
+	if len(args) != 13 || args[12] != 25 {
 		t.Fatalf("unexpected args: %#v", args)
 	}
 }

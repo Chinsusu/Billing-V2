@@ -91,6 +91,10 @@ func buildListProviderSourcesQuery(filter ProviderSourceFilter) (string, []inter
 FROM provider_sources
 WHERE TRUE`
 	args := make([]interface{}, 0, 3)
+	if filter.DisplayID > 0 {
+		args = append(args, filter.DisplayID)
+		query += fmt.Sprintf("\n  AND display_id = $%d", len(args))
+	}
 	if filter.Type != "" {
 		args = append(args, filter.Type)
 		query += fmt.Sprintf("\n  AND source_type = $%d", len(args))

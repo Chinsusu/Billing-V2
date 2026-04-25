@@ -360,6 +360,11 @@ func orderFilterFromRequest(w http.ResponseWriter, r *http.Request) (OrderFilter
 	if buyerUserID != "" {
 		filter.BuyerUserID = buyerUserID
 	}
+	if buyerDisplayID, present, ok := orderPositiveInt64Query(w, r, "buyer_display_id"); !ok {
+		return OrderFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.BuyerDisplayID = buyerDisplayID
+	}
 	if displayID, present, ok := orderPositiveInt64Query(w, r, "display_id"); !ok {
 		return OrderFilter{}, httpserver.CursorPageRequest{}, false
 	} else if present {

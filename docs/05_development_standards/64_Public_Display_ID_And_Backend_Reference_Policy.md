@@ -59,16 +59,16 @@ When both public and backend filters exist, frontend search boxes should default
 | Resource | Public label fields | Backend reference fields | UI rule |
 | --- | --- | --- | --- |
 | Tenant | `display_id`, future `tenant_display_id` when related | `tenant_id`, `parent_tenant_id` | Show public ID with tenant name/domain. |
-| Account/user/customer | `display_id`, future `account_display_id`, `buyer_display_id`, `requested_by_display_id` when related | `user_id`, `buyer_user_id`, `account_user_id`, `requested_by`, `created_by`, `owner_id` | Show public ID plus email/name when allowed. Do not show raw user UUIDs. |
+| Account/user/customer | `display_id`, `account_display_id`, `buyer_display_id`, `requested_by_display_id` when related | `user_id`, `buyer_user_id`, `account_user_id`, `requested_by`, `created_by`, `owner_id` | Show public ID plus email/name when allowed. Do not show raw user UUIDs. |
 | Provider/source | `display_id`, `source_display_id`, `plan_source_display_id` | `source_id`, `provider_source_id`, `provider_account_id` | Show public source ID plus provider name/location. Never show provider credential or account references as labels. |
 | Product/plan | `display_id`, `product_display_id`, `plan_display_id`, `tenant_plan_display_id` | `product_id`, `plan_id`, `tenant_product_id`, `tenant_plan_id` | Show public ID plus code/name. |
 | Order | `display_id`, `order_display_id` | `order_id` | Show public order ID in all order-facing UI. |
 | Service | `display_id`, `service_display_id`, `order_display_id`, `provider_source_display_id` | `service_id`, `service_instance_id`, `order_id`, `provider_source_id` | Show public service ID and related public IDs. External resource ID is support detail only. |
 | Invoice | `display_id`, `invoice_display_id`, `order_display_id` | `invoice_id`, `order_id` | Show public invoice ID; use related public order ID in tables. |
 | Wallet and ledger | `display_id`, `wallet_display_id`, `ledger_display_id` | `wallet_id`, `ledger_entry_id`, `reference_id` | Show public wallet or ledger ID. Do not label rows by backend reference. |
-| Transaction | `display_id`, `transaction_display_id`, `invoice_display_id`, `order_display_id` | `transaction_id`, `payment_transaction_id`, `invoice_id`, `order_id` | Show public transaction ID and related public IDs. |
-| Top-up | `display_id`, `topup_display_id`, `wallet_display_id` | `topup_request_id`, `wallet_id`, `requested_by` | Show public top-up ID and public wallet ID. |
-| Job/outbox | `display_id`, `job_display_id`, `attempt_display_id`, related public IDs when available | `job_id`, `job_attempt_id`, `outbox_event_id`, `reference_id`, `source_id` | Show public job ID. Related backend references should be hidden unless clearly labeled for internal ops. |
+| Transaction | `display_id`, `transaction_display_id`, `account_display_id`, `invoice_display_id`, `order_display_id` | `transaction_id`, `payment_transaction_id`, `account_user_id`, `invoice_id`, `order_id` | Show public transaction ID and related public IDs. |
+| Top-up | `display_id`, `topup_display_id`, `wallet_display_id`, `requested_by_display_id` | `topup_request_id`, `wallet_id`, `requested_by` | Show public top-up ID and public wallet/requester IDs. |
+| Job/outbox | `display_id`, `job_display_id`, `attempt_display_id`, `source_display_id`, related public IDs when available | `job_id`, `job_attempt_id`, `outbox_event_id`, `reference_id`, `source_id` | Show public job ID. Related backend references should be hidden unless clearly labeled for internal ops. |
 | Audit log | `display_id`, `audit_display_id`, related actor/target public IDs when available | `audit_id`, `actor_id`, `target_id`, `correlation_id` | Show public audit ID. Actor/target UUIDs are not row labels. |
 
 ## Frontend Mapping Rule

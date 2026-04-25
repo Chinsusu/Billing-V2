@@ -11,8 +11,10 @@ import (
 type InvoiceFilter struct {
 	TenantID       tenant.ID
 	BuyerUserID    identity.UserID
+	BuyerDisplayID int64
 	DisplayID      int64
 	OrderID        order.OrderID
+	OrderDisplayID int64
 	Status         Status
 	AmountMinMinor *int64
 	AmountMaxMinor *int64

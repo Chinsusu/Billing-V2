@@ -206,10 +206,15 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 
 - `GET /admin/catalog/provider-readiness`
   - auth: admin actor, `catalog.view`
-  - query: `product_type`, `status`, `limit`, `cursor`
+  - query: `plan_display_id`, `source_display_id`, `product_type`, `status`, `limit`, `cursor`
   - response: list of provider readiness rows with `plan_display_id`, `plan_code`, `plan_name`, `product_type`, `plan_status`, optional `plan_source_display_id`, optional `source_display_id`, `source_name`, `source_type`, `source_status`, `inventory_mode`, `state`, and `reason`
   - states: `ready`, `inactive_source`, `missing_plan_source`, `unsupported_capability`, `fake_provider_only`
   - note: this route does not expose provider credentials, raw provider payloads, or capability JSON
+
+- `GET /admin/catalog/provider-sources`
+  - auth: admin actor, `catalog.view`
+  - query: `display_id`, `source_type`, `status`, `limit`, `cursor`
+  - response: list of provider sources without credentials or raw provider payloads
 
 ### 4.1 Orders
 
@@ -242,12 +247,12 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 
 - `GET /admin/orders`
   - auth: admin actor, `order.view`
-  - query: `buyer_user_id`, `display_id`, `status`, `billing_status`, `amount_min`, `amount_max`, `limit`, `cursor`
+  - query: `buyer_user_id`, `buyer_display_id`, `display_id`, `status`, `billing_status`, `amount_min`, `amount_max`, `limit`, `cursor`
   - response: list of `order`
 
 - `GET /reseller/orders`
   - auth: reseller actor, `order.view`
-  - query: `buyer_user_id`, `display_id`, `status`, `billing_status`, `amount_min`, `amount_max`, `limit`, `cursor`
+  - query: `buyer_user_id`, `buyer_display_id`, `display_id`, `status`, `billing_status`, `amount_min`, `amount_max`, `limit`, `cursor`
   - response: list of `order`
   - note: tenant scope is forced to the current reseller tenant
 
@@ -275,12 +280,12 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 
 - `GET /admin/services`
   - auth: admin actor, `service.view`
-  - query: `buyer_user_id`, `display_id`, `order_id`, `order_display_id`, `status`, `limit`, `cursor`
+  - query: `buyer_user_id`, `buyer_display_id`, `display_id`, `order_id`, `order_display_id`, `provider_source_display_id`, `status`, `limit`, `cursor`
   - response: list of `service`
 
 - `GET /reseller/services`
   - auth: reseller actor, `service.view`
-  - query: `buyer_user_id`, `display_id`, `order_id`, `order_display_id`, `status`, `limit`, `cursor`
+  - query: `buyer_user_id`, `buyer_display_id`, `display_id`, `order_id`, `order_display_id`, `provider_source_display_id`, `status`, `limit`, `cursor`
   - response: list of `service`
   - note: tenant scope is forced to the current reseller tenant
 
@@ -292,7 +297,7 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 
 - `GET /client/invoices`
   - auth: client actor, `wallet.view`
-  - query: `display_id`, `order_id`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
+  - query: `display_id`, `order_id`, `order_display_id`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
   - response: list of `invoice`
   - note: buyer scope is forced to the current actor
 
@@ -302,12 +307,12 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 
 - `GET /admin/invoices`
   - auth: admin actor, `wallet.view`
-  - query: `buyer_user_id`, `display_id`, `order_id`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
+  - query: `buyer_user_id`, `buyer_display_id`, `display_id`, `order_id`, `order_display_id`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
   - response: list of `invoice`
 
 - `GET /reseller/invoices`
   - auth: reseller actor, `wallet.view`
-  - query: `buyer_user_id`, `display_id`, `order_id`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
+  - query: `buyer_user_id`, `buyer_display_id`, `display_id`, `order_id`, `order_display_id`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
   - response: list of `invoice`
   - note: tenant scope is forced to the current reseller tenant
 
@@ -384,7 +389,7 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 
 - `GET /admin/topup-requests`
   - auth: admin actor, `wallet.view`
-  - query: `requested_by`, `display_id`, `wallet_id`, `payment_method`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
+  - query: `requested_by`, `requested_by_display_id`, `display_id`, `wallet_id`, `wallet_display_id`, `payment_method`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
   - response: list of `topup_request`
 
 - `GET /admin/topup-requests/{topup_request_id}`
@@ -393,7 +398,7 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 
 - `GET /reseller/topup-requests`
   - auth: reseller actor, `wallet.view`
-  - query: `requested_by`, `display_id`, `wallet_id`, `payment_method`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
+  - query: `requested_by`, `requested_by_display_id`, `display_id`, `wallet_id`, `wallet_display_id`, `payment_method`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
   - response: list of `topup_request`
   - note: tenant scope is forced to the current reseller tenant
 
@@ -413,7 +418,7 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 
 - `GET /client/transactions`
   - auth: client actor, `wallet.view`
-  - query: `display_id`, `order_id`, `invoice_id`, `type`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
+  - query: `display_id`, `order_id`, `order_display_id`, `invoice_id`, `invoice_display_id`, `type`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
   - response: list of `transaction`
   - note: account scope is forced to the current actor
 
@@ -423,12 +428,12 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 
 - `GET /admin/transactions`
   - auth: admin actor, `wallet.view`
-  - query: `account_user_id`, `display_id`, `order_id`, `invoice_id`, `type`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
+  - query: `account_user_id`, `account_display_id`, `display_id`, `order_id`, `order_display_id`, `invoice_id`, `invoice_display_id`, `type`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
   - response: list of `transaction`
 
 - `GET /reseller/transactions`
   - auth: reseller actor, `wallet.view`
-  - query: `account_user_id`, `display_id`, `order_id`, `invoice_id`, `type`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
+  - query: `account_user_id`, `account_display_id`, `display_id`, `order_id`, `order_display_id`, `invoice_id`, `invoice_display_id`, `type`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
   - response: list of `transaction`
   - note: tenant scope is forced to the current reseller tenant
 
@@ -478,7 +483,7 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 
 - `GET /admin/jobs`
   - auth: admin actor, `order.view`
-  - query: `display_id`, `job_type`, `status`, `reference_type`, `reference_id`, `source_id`, `limit`, `cursor`
+  - query: `display_id`, `job_type`, `status`, `reference_type`, `reference_id`, `source_id`, `source_display_id`, `limit`, `cursor`
   - response: list of `job`
 
 - `GET /admin/jobs/summary`
@@ -517,7 +522,7 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 
 - `GET /reseller/jobs`
   - auth: reseller actor, `order.view`
-  - query: `display_id`, `job_type`, `status`, `reference_type`, `reference_id`, `source_id`, `limit`, `cursor`
+  - query: `display_id`, `job_type`, `status`, `reference_type`, `reference_id`, `source_id`, `source_display_id`, `limit`, `cursor`
   - response: list of `job`
   - note: tenant scope is forced to the current reseller tenant
 

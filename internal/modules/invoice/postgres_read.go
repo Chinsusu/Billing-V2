@@ -90,6 +90,17 @@ WHERE inv.tenant_id = $1`
 		args = append(args, filter.BuyerUserID)
 		query += fmt.Sprintf("\n  AND inv.buyer_user_id = $%d", len(args))
 	}
+	if filter.BuyerDisplayID > 0 {
+		args = append(args, filter.BuyerDisplayID)
+		query += fmt.Sprintf(`
+  AND EXISTS (
+    SELECT 1
+    FROM users buyer
+    WHERE buyer.user_id = inv.buyer_user_id
+      AND buyer.tenant_id = inv.tenant_id
+      AND buyer.display_id = $%d
+  )`, len(args))
+	}
 	if filter.DisplayID > 0 {
 		args = append(args, filter.DisplayID)
 		query += fmt.Sprintf("\n  AND inv.display_id = $%d", len(args))
@@ -97,6 +108,17 @@ WHERE inv.tenant_id = $1`
 	if filter.OrderID != "" {
 		args = append(args, filter.OrderID)
 		query += fmt.Sprintf("\n  AND inv.order_id = $%d", len(args))
+	}
+	if filter.OrderDisplayID > 0 {
+		args = append(args, filter.OrderDisplayID)
+		query += fmt.Sprintf(`
+  AND EXISTS (
+    SELECT 1
+    FROM orders ord
+    WHERE ord.order_id = inv.order_id
+      AND ord.tenant_id = inv.tenant_id
+      AND ord.display_id = $%d
+  )`, len(args))
 	}
 	if filter.Status != "" {
 		args = append(args, filter.Status)

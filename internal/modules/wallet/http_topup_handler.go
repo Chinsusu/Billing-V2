@@ -258,8 +258,18 @@ func topupRequestFilterFromRequest(w http.ResponseWriter, r *http.Request) (Topu
 	if walletID := WalletID(strings.TrimSpace(query.Get("wallet_id"))); walletID != "" {
 		filter.WalletID = walletID
 	}
+	if walletDisplayID, present, ok := walletPositiveInt64Query(w, r, "wallet_display_id"); !ok {
+		return TopupRequestFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.WalletDisplayID = walletDisplayID
+	}
 	if requestedBy := strings.TrimSpace(query.Get("requested_by")); requestedBy != "" {
 		filter.RequestedBy = identity.UserID(requestedBy)
+	}
+	if requestedByDisplayID, present, ok := walletPositiveInt64Query(w, r, "requested_by_display_id"); !ok {
+		return TopupRequestFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.RequestedByDisplayID = requestedByDisplayID
 	}
 	if displayID, present, ok := walletPositiveInt64Query(w, r, "display_id"); !ok {
 		return TopupRequestFilter{}, httpserver.CursorPageRequest{}, false

@@ -1,9 +1,9 @@
 # T121 - Admin public ID backend filters
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: codex/t121-admin-public-id-backend-filters
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/273
 Risk: API/DB
 Created: 2026-04-25
 Updated: 2026-04-25
@@ -34,3 +34,5 @@ Add or normalize backend admin filters so operators can search common records by
 ## Agent Log
 
 - 2026-04-25: Task created in the public ID and validation hardening batch.
+- 2026-04-25: Codex claimed the task; reviewing admin list filters for missing public ID query support.
+- 2026-04-25: Opened PR #273 with backend filters, docs, contract guard updates, and local verification.

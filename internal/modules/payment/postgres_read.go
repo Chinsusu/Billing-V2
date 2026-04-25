@@ -58,6 +58,17 @@ WHERE txn.tenant_id = $1`
 		args = append(args, filter.AccountUserID)
 		query += fmt.Sprintf("\n  AND txn.account_user_id = $%d", len(args))
 	}
+	if filter.AccountDisplayID > 0 {
+		args = append(args, filter.AccountDisplayID)
+		query += fmt.Sprintf(`
+  AND EXISTS (
+    SELECT 1
+    FROM users account
+    WHERE account.user_id = txn.account_user_id
+      AND account.tenant_id = txn.tenant_id
+      AND account.display_id = $%d
+  )`, len(args))
+	}
 	if filter.DisplayID > 0 {
 		args = append(args, filter.DisplayID)
 		query += fmt.Sprintf("\n  AND txn.display_id = $%d", len(args))
@@ -66,9 +77,31 @@ WHERE txn.tenant_id = $1`
 		args = append(args, filter.OrderID)
 		query += fmt.Sprintf("\n  AND txn.order_id = $%d", len(args))
 	}
+	if filter.OrderDisplayID > 0 {
+		args = append(args, filter.OrderDisplayID)
+		query += fmt.Sprintf(`
+  AND EXISTS (
+    SELECT 1
+    FROM orders ord
+    WHERE ord.order_id = txn.order_id
+      AND ord.tenant_id = txn.tenant_id
+      AND ord.display_id = $%d
+  )`, len(args))
+	}
 	if filter.InvoiceID != "" {
 		args = append(args, filter.InvoiceID)
 		query += fmt.Sprintf("\n  AND txn.invoice_id = $%d", len(args))
+	}
+	if filter.InvoiceDisplayID > 0 {
+		args = append(args, filter.InvoiceDisplayID)
+		query += fmt.Sprintf(`
+  AND EXISTS (
+    SELECT 1
+    FROM invoices inv
+    WHERE inv.invoice_id = txn.invoice_id
+      AND inv.tenant_id = txn.tenant_id
+      AND inv.display_id = $%d
+  )`, len(args))
 	}
 	if filter.Type != "" {
 		args = append(args, filter.Type)

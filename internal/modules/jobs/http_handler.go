@@ -295,6 +295,11 @@ func jobFilterFromRequest(w http.ResponseWriter, r *http.Request) (Filter, https
 	filter.ReferenceType = ReferenceType(strings.TrimSpace(query.Get("reference_type")))
 	filter.ReferenceID = ReferenceID(strings.TrimSpace(query.Get("reference_id")))
 	filter.SourceID = SourceID(strings.TrimSpace(query.Get("source_id")))
+	if sourceDisplayID, present, ok := jobPositiveInt64Query(w, r, "source_display_id"); !ok {
+		return Filter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.SourceDisplayID = sourceDisplayID
+	}
 	return filter, page, true
 }
 

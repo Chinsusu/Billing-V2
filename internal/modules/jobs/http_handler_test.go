@@ -16,7 +16,7 @@ func TestHTTPHandlerListAdminJobsUsesFilters(t *testing.T) {
 	service := &fakeJobsHTTPService{jobs: []Job{testReadJob()}}
 	handler := registerJobsTestHandler(service)
 
-	request := httptest.NewRequest(http.MethodGet, "/admin/jobs?display_id=81001&job_type=provider.provision&status=failed_retryable&reference_type=order&reference_id=order_1&source_id=source_1&limit=20", nil)
+	request := httptest.NewRequest(http.MethodGet, "/admin/jobs?display_id=81001&job_type=provider.provision&status=failed_retryable&reference_type=order&reference_id=order_1&source_id=source_1&source_display_id=10002&limit=20", nil)
 	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
 	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
 	response := httptest.NewRecorder()
@@ -36,6 +36,7 @@ func TestHTTPHandlerListAdminJobsUsesFilters(t *testing.T) {
 		service.filter.ReferenceType != ReferenceType("order") ||
 		service.filter.ReferenceID != ReferenceID("order_1") ||
 		service.filter.SourceID != SourceID("source_1") ||
+		service.filter.SourceDisplayID != 10002 ||
 		service.filter.Limit != 20 {
 		t.Fatalf("unexpected job filter: %+v", service.filter)
 	}
@@ -272,6 +273,25 @@ func TestHTTPHandlerRejectsBadJobStatus(t *testing.T) {
 	}
 	if !strings.Contains(response.Body.String(), "job.status_invalid") {
 		t.Fatalf("expected status validation response, got %s", response.Body.String())
+	}
+}
+
+func TestHTTPHandlerRejectsBadJobSourceDisplayID(t *testing.T) {
+	service := &fakeJobsHTTPService{}
+	handler := registerJobsTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/admin/jobs?source_display_id=bad", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("expected status 400, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.listCalls != 0 {
+		t.Fatalf("expected no service call, got %d", service.listCalls)
 	}
 }
 

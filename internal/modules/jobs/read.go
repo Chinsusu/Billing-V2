@@ -12,14 +12,15 @@ const maxJobListLimit = 500
 const defaultJobSummaryType Type = "provider.provision"
 
 type Filter struct {
-	TenantID      tenant.ID
-	DisplayID     int64
-	Type          Type
-	Status        Status
-	ReferenceType ReferenceType
-	ReferenceID   ReferenceID
-	SourceID      SourceID
-	Limit         int
+	TenantID        tenant.ID
+	DisplayID       int64
+	Type            Type
+	Status          Status
+	ReferenceType   ReferenceType
+	ReferenceID     ReferenceID
+	SourceID        SourceID
+	SourceDisplayID int64
+	Limit           int
 }
 
 type Lookup struct {

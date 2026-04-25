@@ -241,9 +241,31 @@ WHERE topup.tenant_id = $1`
 		args = append(args, filter.WalletID)
 		query += fmt.Sprintf("\n  AND topup.wallet_id = $%d", len(args))
 	}
+	if filter.WalletDisplayID > 0 {
+		args = append(args, filter.WalletDisplayID)
+		query += fmt.Sprintf(`
+  AND EXISTS (
+    SELECT 1
+    FROM wallets wallet
+    WHERE wallet.wallet_id = topup.wallet_id
+      AND wallet.tenant_id = topup.tenant_id
+      AND wallet.display_id = $%d
+  )`, len(args))
+	}
 	if filter.RequestedBy != "" {
 		args = append(args, filter.RequestedBy)
 		query += fmt.Sprintf("\n  AND topup.requested_by = $%d", len(args))
+	}
+	if filter.RequestedByDisplayID > 0 {
+		args = append(args, filter.RequestedByDisplayID)
+		query += fmt.Sprintf(`
+  AND EXISTS (
+    SELECT 1
+    FROM users requester
+    WHERE requester.user_id = topup.requested_by
+      AND requester.tenant_id = topup.tenant_id
+      AND requester.display_id = $%d
+  )`, len(args))
 	}
 	if filter.PaymentMethod != "" {
 		args = append(args, filter.PaymentMethod)

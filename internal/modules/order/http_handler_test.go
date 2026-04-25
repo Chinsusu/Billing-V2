@@ -178,7 +178,7 @@ func TestHTTPHandlerListAdminOrdersUsesTenantAndBuyerFilter(t *testing.T) {
 	}
 	handler := registerOrderTestHandler(service)
 
-	request := httptest.NewRequest(http.MethodGet, "/admin/orders?buyer_user_id=buyer_2&display_id=30004&status=paid&billing_status=paid&amount_min=1000&amount_max=3000&limit=20", nil)
+	request := httptest.NewRequest(http.MethodGet, "/admin/orders?buyer_user_id=buyer_2&buyer_display_id=10002&display_id=30004&status=paid&billing_status=paid&amount_min=1000&amount_max=3000&limit=20", nil)
 	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
 	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
 	response := httptest.NewRecorder()
@@ -195,11 +195,31 @@ func TestHTTPHandlerListAdminOrdersUsesTenantAndBuyerFilter(t *testing.T) {
 		t.Fatalf("unexpected admin order filter: %+v", service.orderFilter)
 	}
 	if service.orderFilter.DisplayID != 30004 ||
+		service.orderFilter.BuyerDisplayID != 10002 ||
 		service.orderFilter.OrderStatus != OrderStatusPaid ||
 		service.orderFilter.BillingStatus != BillingStatusPaid ||
 		service.orderFilter.AmountMinMinor == nil || *service.orderFilter.AmountMinMinor != 1000 ||
 		service.orderFilter.AmountMaxMinor == nil || *service.orderFilter.AmountMaxMinor != 3000 {
 		t.Fatalf("unexpected admin status filters: %+v", service.orderFilter)
+	}
+}
+
+func TestHTTPHandlerListAdminOrdersRejectsBadBuyerDisplayID(t *testing.T) {
+	service := &fakeOrderHTTPService{}
+	handler := registerOrderTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/admin/orders?buyer_display_id=bad", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("expected status 400, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.listOrderCalls != 0 {
+		t.Fatalf("expected no list call, got %d", service.listOrderCalls)
 	}
 }
 

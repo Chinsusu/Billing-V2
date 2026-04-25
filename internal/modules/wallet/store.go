@@ -42,15 +42,17 @@ type LedgerEntryLookup struct {
 }
 
 type TopupRequestFilter struct {
-	TenantID       tenant.ID
-	WalletID       WalletID
-	RequestedBy    identity.UserID
-	DisplayID      int64
-	PaymentMethod  PaymentMethod
-	Status         TopupStatus
-	AmountMinMinor *int64
-	AmountMaxMinor *int64
-	Limit          int
+	TenantID             tenant.ID
+	WalletID             WalletID
+	WalletDisplayID      int64
+	RequestedBy          identity.UserID
+	RequestedByDisplayID int64
+	DisplayID            int64
+	PaymentMethod        PaymentMethod
+	Status               TopupStatus
+	AmountMinMinor       *int64
+	AmountMaxMinor       *int64
+	Limit                int
 }
 
 type TopupRequestLookup struct {

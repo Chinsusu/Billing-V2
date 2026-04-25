@@ -36,19 +36,20 @@ func TestBuildListProductsQueryRejectsBadStatus(t *testing.T) {
 
 func TestBuildListProviderSourcesQueryAddsFilters(t *testing.T) {
 	query, args, err := buildListProviderSourcesQuery(ProviderSourceFilter{
-		Type:   provider.TypeManual,
-		Status: ProviderSourceStatusActive,
-		Limit:  10,
+		DisplayID: 10002,
+		Type:      provider.TypeManual,
+		Status:    ProviderSourceStatusActive,
+		Limit:     10,
 	})
 	if err != nil {
 		t.Fatalf("expected query: %v", err)
 	}
-	for _, clause := range []string{"source_type = $1", "status = $2", "LIMIT $3"} {
+	for _, clause := range []string{"display_id = $1", "source_type = $2", "status = $3", "LIMIT $4"} {
 		if !strings.Contains(query, clause) {
 			t.Fatalf("expected %q in query: %s", clause, query)
 		}
 	}
-	if len(args) != 3 || args[2] != 10 {
+	if len(args) != 4 || args[3] != 10 {
 		t.Fatalf("unexpected args: %#v", args)
 	}
 }
