@@ -1,6 +1,6 @@
 # T127 - Audit log public ID filters
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t127-audit-public-id-filters
 PR: https://github.com/Chinsusu/Billing-V2/pull/285
@@ -36,3 +36,4 @@ Allow admin audit logs to be filtered by actor public ID and target public ID in
 - 2026-04-25: Added backend `actor_display_id` and `target_display_id` filters, frontend audit filter fields, and smoke coverage.
 - 2026-04-25: Validation passed: audit/smoke tests, full Go tests, Go build, frontend smoke/lint/build/sensitive-text, taskguard, and diff check.
 - 2026-04-25: Opened PR #285 for review.
+- 2026-04-25: PR https://github.com/Chinsusu/Billing-V2/pull/285 merged into `main`.
