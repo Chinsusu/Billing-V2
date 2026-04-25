@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-25` after completing T106 and creating the post-readiness hardening batch:
+Current board snapshot on `2026-04-25` after completing T111 and moving T112 to review:
 
-- `TODO`: 6
+- `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 103
+- `DONE` task files in `tasks/active/`: 108
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -55,23 +55,28 @@ Current board snapshot on `2026-04-25` after completing T106 and creating the po
 - If `TASKS.md` conflicts during rebase, keep both new task rows and do not overwrite task-file status.
 - If a task creates follow-up work, add a new task file and a new row in this index.
 
-## Active Tasks
+## Claimable Tasks
+
+Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or in-flight sections.
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T107 | [tasks/active/T107_frontend_admin_browser_smoke.md](tasks/active/T107_frontend_admin_browser_smoke.md) | codex/t107-frontend-admin-browser-smoke | frontend/QA | Add a repeatable browser smoke for critical admin frontend screens. |
-| T108 | [tasks/active/T108_smoke_rbac_negative_checks.md](tasks/active/T108_smoke_rbac_negative_checks.md) | codex/t108-smoke-rbac-negative-checks | backend/RBAC/QA | Extend smoke coverage with safe negative RBAC checks. |
-| T109 | [tasks/active/T109_api_contract_drift_guard.md](tasks/active/T109_api_contract_drift_guard.md) | codex/t109-api-contract-drift-guard | docs/API/CI | Add a lightweight guard for backend route/API reference drift. |
-| T110 | [tasks/active/T110_frontend_sensitive_text_guard.md](tasks/active/T110_frontend_sensitive_text_guard.md) | codex/t110-frontend-sensitive-text-guard | frontend/security | Add a frontend guard for sensitive/internal UI text. |
-| T111 | [tasks/active/T111_provider_sandbox_contract_checklist.md](tasks/active/T111_provider_sandbox_contract_checklist.md) | codex/t111-provider-sandbox-contract-checklist | docs/provider-ops | Add a provider sandbox readiness contract checklist. |
-| T112 | [tasks/active/T112_task_board_archive_cleanup.md](tasks/active/T112_task_board_archive_cleanup.md) | codex/t112-task-board-archive-cleanup | workflow/docs | Clean up task board documentation for parallel agents. |
+| - | - | - | - | No TODO task is currently claimable. |
+
+## In-Flight Task Files
+
+These files are not claimable unless the owner or user explicitly hands them off.
+
+| ID | Task File | Status | Owner | Branch | Summary |
+| --- | --- | --- | --- | --- | --- |
+| T112 | [tasks/active/T112_task_board_archive_cleanup.md](tasks/active/T112_task_board_archive_cleanup.md) | REVIEW | Codex | codex/t112-task-board-archive-cleanup | Clean up task board documentation for parallel agents. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T106`
+- `T011` to `T111`
 
 ## Removed Tasks
 
