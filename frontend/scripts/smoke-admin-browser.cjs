@@ -8,11 +8,11 @@ const host = process.env.SMOKE_HOST || "127.0.0.1";
 const port = Number(process.env.SMOKE_PORT || "3120");
 const baseURL = `http://${host}:${port}`;
 const forbiddenText = [
-  "payload_json",
-  "capability_profile",
-  "provider_account_id",
-  "secret",
-  "raw_response",
+  "payload_json", // sensitive-text-allowlist: browser smoke forbidden text
+  "capability_profile", // sensitive-text-allowlist: browser smoke forbidden text
+  "provider_account_id", // sensitive-text-allowlist: browser smoke forbidden text
+  "secret", // sensitive-text-allowlist: browser smoke forbidden text
+  "raw_response", // sensitive-text-allowlist: browser smoke forbidden text
 ];
 
 async function main() {

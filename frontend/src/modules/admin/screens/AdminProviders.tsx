@@ -2,7 +2,7 @@
 
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
-import { compactDateTime, recordLabel, shortID } from "@/lib/api/format";
+import { compactDateTime, recordLabel } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { PROVIDERS } from "@/mocks/billingData";
 import { AdminProviderReadinessPanel } from "../components/AdminProviderReadinessPanel";
@@ -40,7 +40,7 @@ export function AdminProviders() {
         location: provider.location || "-",
         inventory: provider.inventory_mode,
         risk: provider.risk_level,
-        account: shortID(provider.provider_account_id),
+        account: "not shown",
         updated: compactDateTime(provider.updated_at),
       }))
     : PROVIDERS.map((provider) => ({

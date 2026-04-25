@@ -1,9 +1,9 @@
 # T110 - Frontend sensitive text guard
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: codex/t110-frontend-sensitive-text-guard
-PR: -
+PR: pending
 Risk: frontend/security
 Created: 2026-04-25
 Updated: 2026-04-25
@@ -33,3 +33,5 @@ Add a frontend guard that prevents sensitive/internal backend field names from b
 ## Agent Log
 
 - 2026-04-25: Task created in the post-readiness hardening batch.
+- 2026-04-25: Codex claimed the task; adding a static frontend sensitive text guard.
+- 2026-04-25: Added `npm run check:sensitive-text`, CI coverage, narrow allowlist markers for browser redaction tests, and removed direct provider account field use from the admin provider screen. Validation passed: `npm run check:sensitive-text`, `npm audit --omit=dev`, `npm run lint`, `npm run build`, `npm run smoke:admin`, `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker ./cmd/contractguard`.
