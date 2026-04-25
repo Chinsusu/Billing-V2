@@ -1,7 +1,7 @@
 # T116 - Provider sandbox contract harness
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t116-provider-sandbox-contract-harness
 PR: -
 Risk: provider/testing
@@ -34,3 +34,5 @@ Create the first provider sandbox contract test harness shape so future real pro
 ## Agent Log
 
 - 2026-04-25: Task created in the board and delivery hardening batch.
+- 2026-04-25: Codex claimed the task; adding a provider sandbox contract harness shape without real credentials.
+- 2026-04-25: Added a local provider sandbox contract harness for health, quote/stock, provision, status, cancel/terminate, and idempotency repeat cases, with fake-adapter tests and checklist docs.
