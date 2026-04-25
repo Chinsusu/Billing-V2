@@ -1,6 +1,6 @@
 # T118 - Smoke runbook command matrix
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t118-smoke-runbook-command-matrix
 PR: https://github.com/Chinsusu/Billing-V2/pull/266
@@ -37,3 +37,4 @@ Unify smoke test and validation command documentation so agents know which check
 - 2026-04-25: Codex claimed the task; consolidating smoke and validation commands into one command matrix.
 - 2026-04-25: Added the validation command matrix, linked related docs, and corrected stale build command examples; validation passed for task, contract, error-code guards, Go tests, and diff check.
 - 2026-04-25: Opened PR https://github.com/Chinsusu/Billing-V2/pull/266 for review and CI.
+- 2026-04-25: PR https://github.com/Chinsusu/Billing-V2/pull/266 merged; task marked DONE.
