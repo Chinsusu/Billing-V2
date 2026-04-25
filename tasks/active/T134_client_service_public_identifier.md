@@ -1,6 +1,6 @@
 # T134 - Client service public identifier
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t134-client-service-public-identifier
 PR: https://github.com/Chinsusu/Billing-V2/pull/299
@@ -35,3 +35,4 @@ Stop showing raw provider resource IDs in the client service table and keep the 
 - 2026-04-26: Replaced client service visible raw provider identifier with snapshot plan labels while keeping service/order public labels.
 - 2026-04-26: Local validation passed: `npm --prefix frontend run lint`, `npm --prefix frontend run check:sensitive-text`, `npm --prefix frontend run build`, `go run ./cmd/taskguard`, and `git diff --check`.
 - 2026-04-26: Opened PR https://github.com/Chinsusu/Billing-V2/pull/299 for review.
+- 2026-04-26: PR https://github.com/Chinsusu/Billing-V2/pull/299 merged into `main`; marking task done.
