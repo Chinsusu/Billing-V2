@@ -1,6 +1,6 @@
 # T132 - Ledger reference public ID response
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t132-ledger-reference-public-id
 PR: https://github.com/Chinsusu/Billing-V2/pull/295
@@ -34,3 +34,4 @@ Expose related public IDs on wallet ledger entries so wallet history can label i
 - 2026-04-26: Codex created and claimed the task after T131 was marked done; starting ledger reference public ID response support.
 - 2026-04-26: Codex implemented `reference_display_id` in ledger read responses, frontend wallet labels, API reference, smoke checks, and wallet tests while preserving ledger create/post scans. Local validation passed: `go test $(go run ./cmd/gopackages)`, `go build ./cmd/api ./cmd/worker ./cmd/smoke`, `npm --prefix frontend run lint`, `npm --prefix frontend run check:sensitive-text`, `npm --prefix frontend run build`, `go run ./cmd/taskguard`, and `git diff --check`.
 - 2026-04-26: Opened PR https://github.com/Chinsusu/Billing-V2/pull/295 for review and CI.
+- 2026-04-26: PR https://github.com/Chinsusu/Billing-V2/pull/295 passed CI and was merged to `main`; task marked DONE.
