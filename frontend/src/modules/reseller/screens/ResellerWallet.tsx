@@ -4,6 +4,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
+import { walletLedgerReferenceLabel } from "@/lib/api/walletViewModels";
 import { TOPUP_REQUESTS } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
 
@@ -37,7 +38,7 @@ export function ResellerWallet() {
           type: entry.entry_type,
           amountMinor: signedMinor,
           amount: moneyMinor(signedMinor, entry.currency),
-          ref: `${entry.reference_type} ${recordLabel(entry.display_id, "LED-")}`,
+          ref: walletLedgerReferenceLabel(entry),
           balance: moneyMinor(entry.balance_after_minor, entry.currency),
         };
       })
