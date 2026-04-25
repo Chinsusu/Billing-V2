@@ -37,13 +37,12 @@ function ResellerInvoices() {
     () => billingApi.listResellerJobs({ job_type: "provider.provision", limit: 100 }),
     "reseller-invoice-jobs",
   );
-  const customerByID = new Map((customers.data ?? []).map((customer) => [customer.id, customer]));
   const customerByDisplayID = new Map((customers.data ?? []).map((customer) => [customer.display_id, customer]));
   const orderByID = new Map((orders.data ?? []).map((order) => [order.id, order]));
   const usingLive = invoices.status === "success";
   const rows = usingLive
     ? (invoices.data ?? []).map((invoice) => {
-        const customer = customerByDisplayID.get(invoice.buyer_display_id ?? 0) ?? customerByID.get(invoice.buyer_user_id);
+        const customer = customerByDisplayID.get(invoice.buyer_display_id ?? 0);
         const buyerDisplayID = invoice.buyer_display_id ?? customer?.display_id;
         const fulfillment = fulfillmentForOrder(invoice.order_id ? orderByID.get(invoice.order_id) : undefined, services.data ?? [], {
           jobs: jobs.data ?? [],
@@ -131,13 +130,12 @@ function ResellerTransactions() {
     () => billingApi.listResellerJobs({ job_type: "provider.provision", limit: 100 }),
     "reseller-transaction-jobs",
   );
-  const customerByID = new Map((customers.data ?? []).map((customer) => [customer.id, customer]));
   const customerByDisplayID = new Map((customers.data ?? []).map((customer) => [customer.display_id, customer]));
   const orderByID = new Map((orders.data ?? []).map((order) => [order.id, order]));
   const usingLive = transactions.status === "success";
   const rows = usingLive
     ? (transactions.data ?? []).map((transaction) => {
-        const customer = customerByDisplayID.get(transaction.account_display_id ?? 0) ?? customerByID.get(transaction.account_user_id);
+        const customer = customerByDisplayID.get(transaction.account_display_id ?? 0);
         const accountDisplayID = transaction.account_display_id ?? customer?.display_id;
         const fulfillment = fulfillmentForOrder(transaction.order_id ? orderByID.get(transaction.order_id) : undefined, services.data ?? [], {
           jobs: jobs.data ?? [],

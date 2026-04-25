@@ -43,7 +43,6 @@ export function ResellerDashboard() {
   const serviceCounts = new Map<number, number>();
   const orderBuyerDisplayIDs = new Map<string, number>();
   const serviceOrderIDs = new Set((services.data ?? []).map((service) => service.order_id));
-  const walletByOwnerID = new Map((wallets.data ?? []).map((item) => [item.owner_id, item]));
   const walletByOwnerDisplayID = new Map(
     (wallets.data ?? [])
       .filter((item) => item.owner_display_id)
@@ -66,7 +65,7 @@ export function ResellerDashboard() {
 
   const rows: DashboardClientRow[] = usingLiveRows
     ? (customers.data ?? []).slice(0, 5).map((client) => {
-        const clientWallet = walletByOwnerDisplayID.get(client.display_id) ?? walletByOwnerID.get(client.id);
+        const clientWallet = walletByOwnerDisplayID.get(client.display_id);
         return {
           id: recordLabel(client.display_id, "ACC-"),
           name: client.full_name || client.email,
