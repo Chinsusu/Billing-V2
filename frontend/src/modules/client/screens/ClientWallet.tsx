@@ -84,7 +84,7 @@ export function ClientWallet() {
         payment_method: paymentMethod,
         payment_reference: paymentReference.trim() || undefined,
       });
-      setNotice({ type: "success", text: `Top-up ${recordLabel(request.display_id, "TOP-")} submitted.` });
+      setNotice({ type: "success", text: `Top-up ${recordLabel(request.display_id, "TUP-")} submitted.` });
       setPaymentReference("");
       setRefreshKey((current) => current + 1);
     } catch (error: unknown) {
@@ -166,7 +166,7 @@ export function ClientWallet() {
             <tbody>
               {(topups.data ?? []).map((request) => (
                 <tr key={request.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
-                  <td className="p-4 text-[#D50C2D] text-[12px]">{recordLabel(request.display_id, "TOP-")}</td>
+                  <td className="p-4 text-[#D50C2D] text-[12px]">{recordLabel(request.display_id, "TUP-")}</td>
                   <td className="p-4 tabular-nums font-medium">{moneyMinor(request.amount_minor, request.currency)}</td>
                   <td className="p-4 text-gray-500">{request.payment_method}</td>
                   <td className="p-4 text-gray-400">{compactDateTime(request.created_at)}</td>
