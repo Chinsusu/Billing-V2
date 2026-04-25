@@ -48,6 +48,7 @@ export function AdminInvoices() {
     ? liveInvoices.map(mapAdminInvoiceView)
     : filterMockInvoices(appliedFilters).map((inv) => ({
         ...inv,
+        order: "Order not shown",
         amount: fmtMoney(inv.amount),
       }));
   const activeFilters = hasActiveFilters(appliedFilters);
@@ -139,10 +140,10 @@ export function AdminInvoices() {
           />
         </AdminFilterBar>
         <div className="overflow-x-auto">
-          <table className="min-w-[760px] w-full text-[13px] border-collapse">
+          <table className="min-w-[860px] w-full text-[13px] border-collapse">
             <thead>
               <tr className="bg-gray-50">
-                {["Invoice", "Customer", "Issued", "Due", "Amount", "Status"].map((h) => (
+                {["Invoice", "Customer", "Order", "Issued", "Due", "Amount", "Status"].map((h) => (
                   <th key={h} className="text-left text-[11px] font-medium uppercase tracking-wide text-gray-400 p-4 p-4 border-b border-gray-200">
                     {h}
                   </th>
@@ -154,6 +155,7 @@ export function AdminInvoices() {
                 <tr key={inv.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
                   <td className="p-4 p-4 text-[12px] text-[#D50C2D]">{inv.id}</td>
                   <td className="p-4 p-4 text-gray-700">{inv.customer}</td>
+                  <td className="p-4 p-4 text-[12px] text-gray-500">{inv.order}</td>
                   <td className="p-4 p-4 text-gray-400">{inv.issued}</td>
                   <td className="p-4 p-4 text-gray-400">{inv.due}</td>
                   <td className="p-4 p-4 text-right font-medium tabular-nums">{inv.amount}</td>
@@ -161,7 +163,7 @@ export function AdminInvoices() {
                 </tr>
               ))}
               {usingLive && rows.length === 0 && (
-                <tr><td colSpan={6} className="p-4 text-center text-[12px] text-gray-400">No invoices</td></tr>
+                <tr><td colSpan={7} className="p-4 text-center text-[12px] text-gray-400">No invoices</td></tr>
               )}
             </tbody>
           </table>

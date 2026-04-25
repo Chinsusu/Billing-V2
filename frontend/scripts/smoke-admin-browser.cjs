@@ -75,6 +75,7 @@ async function main() {
       await expectVisibleText(page, "Live invoice data");
       await expectVisibleText(page, "INV-44001");
       await expectVisibleText(page, "ACC-10002");
+      await expectVisibleText(page, "ORD-42001");
       await page.getByLabel("Display ID").fill("44001");
       await page.getByLabel("Customer public ID").fill("10002");
       const filteredInvoice = page.waitForResponse((response) => {
@@ -94,6 +95,8 @@ async function main() {
       await expectVisibleText(page, "Live transaction data");
       await expectVisibleText(page, "TX-51001");
       await expectVisibleText(page, "ACC-10002");
+      await expectVisibleText(page, "ORD-42001");
+      await expectVisibleText(page, "INV-44001");
       await assertNoVisibleText(page, ["txn-uuid-1", "buyer-1", "order-uuid-1", "invoice-uuid-1", "tenant-uuid-1"], "transaction public ID labels");
       await assertNoForbiddenText(page, "transactions");
 

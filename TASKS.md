@@ -34,7 +34,7 @@ Current board snapshot on `2026-04-25` after T121 is done:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 122
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No task files are currently `IN_PROGRESS` or `REVIEW`. |
+| T126 | [tasks/active/T126_admin_billing_linked_public_id_columns.md](tasks/active/T126_admin_billing_linked_public_id_columns.md) | REVIEW | Codex | codex/t126-admin-billing-linked-public-id-columns | Show linked public IDs in admin billing tables. |
 
 ## Done Task Files
 
