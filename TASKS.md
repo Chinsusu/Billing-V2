@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-25` while T119 is in progress:
+Current board snapshot on `2026-04-25` while T119 is in review:
 
 - `TODO`: 5
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 115
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -71,7 +71,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T119 | [tasks/active/T119_go_validation_package_scope_hygiene.md](tasks/active/T119_go_validation_package_scope_hygiene.md) | IN_PROGRESS | Codex | codex/t119-go-validation-package-scope-hygiene | Keep Go validation from traversing frontend dependency packages. |
+| T119 | [tasks/active/T119_go_validation_package_scope_hygiene.md](tasks/active/T119_go_validation_package_scope_hygiene.md) | REVIEW | Codex | codex/t119-go-validation-package-scope-hygiene | Keep Go validation from traversing frontend dependency packages. |
 
 ## Done Task Files
 
