@@ -39,6 +39,9 @@ jobs:
       - name: API contract drift guard
         run: make contract-guard
 
+      - name: API error code drift guard
+        run: make error-code-guard
+
       - name: Build
         run: make build
 

@@ -1,7 +1,7 @@
 # T115 - API error code drift guard
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t115-api-error-code-drift-guard
 PR: -
 Risk: API/docs/CI
@@ -34,3 +34,4 @@ Add a guard that keeps stable API error codes and response envelope documentatio
 ## Agent Log
 
 - 2026-04-25: Task created in the board and delivery hardening batch.
+- 2026-04-25: Codex claimed the task; adding a stable API error code documentation drift guard.
