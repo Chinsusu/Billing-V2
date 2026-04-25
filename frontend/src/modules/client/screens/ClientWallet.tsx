@@ -50,7 +50,7 @@ export function ClientWallet() {
         type: entry.entry_type,
         amountMinor: entry.direction === "debit" ? -entry.amount_minor : entry.amount_minor,
         amountText: moneyMinor(entry.direction === "debit" ? -entry.amount_minor : entry.amount_minor, entry.currency),
-        ref: `${entry.reference_type} ${recordLabel(entry.display_id)}`,
+        ref: `${entry.reference_type} ${recordLabel(entry.display_id, "LED-")}`,
         balanceText: moneyMinor(entry.balance_after_minor, entry.currency),
       }))
     : CLIENT_LEDGER.map((entry) => ({
@@ -103,7 +103,7 @@ export function ClientWallet() {
             {wallet ? moneyMinor(wallet.available_balance_minor, wallet.currency) : "$128.40"}
           </div>
           <div className="text-[12px] text-gray-400 mt-1">
-            {wallet ? `${recordLabel(wallet.display_id, "WAL-")} Â· ${wallet.status}` : "Linh Tran Â· via ProxyVN"}
+            {wallet ? `${recordLabel(wallet.display_id, "WAL-")} - ${wallet.status}` : "Linh Tran - via ProxyVN"}
           </div>
           {notice && (
             <div className={`text-[12px] font-medium mt-4 ${notice.type === "error" ? "text-red-600" : "text-green-700"}`}>

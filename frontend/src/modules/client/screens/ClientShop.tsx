@@ -7,6 +7,7 @@ import { billingApi } from "@/lib/api/billing";
 import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
 import type { Invoice, InvoiceWalletPayment, Order, TenantCatalogPlan, Wallet } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
+import { hiddenReference } from "@/lib/api/viewModels";
 import { PRODUCTS } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
 
@@ -65,10 +66,8 @@ function canPayInvoice(invoice: Invoice): boolean {
   return PAYABLE_INVOICE_STATUSES.has(invoice.status);
 }
 
-function orderLabelForID(orderId: string | undefined, ordersByID: Map<string, Order>): string {
-  if (!orderId) return "-";
-  const order = ordersByID.get(orderId);
-  return order ? recordLabel(order.display_id, "ORD-") : "-";
+function orderLabelForDisplayID(displayID: number | undefined): string {
+  return displayID ? recordLabel(displayID, "ORD-") : hiddenReference("Order");
 }
 
 function summaryFromCheckout(order: Order, invoice: Invoice): CheckoutSummary {
@@ -345,7 +344,7 @@ export function ClientShop() {
               {(liveInvoices ?? []).map((invoice) => (
                 <tr key={invoice.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
                   <td className="p-4 text-[12px] text-[#D50C2D]">{recordLabel(invoice.display_id, "INV-")}</td>
-                  <td className="p-4 text-[12px] text-gray-500">{orderLabelForID(invoice.order_id, ordersByID)}</td>
+                  <td className="p-4 text-[12px] text-gray-500">{orderLabelForDisplayID(invoice.order_display_id)}</td>
                   <td className="p-4 text-gray-400">{compactDateTime(invoice.issued_at)}</td>
                   <td className="p-4 text-gray-400">{compactDateTime(invoice.paid_at)}</td>
                   <td className="p-4 text-right font-medium tabular-nums">{moneyMinor(invoice.total_minor, invoice.currency)}</td>

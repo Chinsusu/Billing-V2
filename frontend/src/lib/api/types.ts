@@ -149,6 +149,9 @@ export interface ServiceInstance {
   status: string;
   billing_status: string;
   suspension_reason?: string;
+  product_snapshot?: ApiJson;
+  plan_snapshot?: ApiJson;
+  price_snapshot?: ApiJson;
   term_start?: string;
   term_end: string;
   created_at?: string;

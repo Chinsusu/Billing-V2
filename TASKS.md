@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-25` after T128 is done:
+Current board snapshot on `2026-04-25` after T129 is in review:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 125
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No task files are currently `IN_PROGRESS` or `REVIEW`. |
+| T129 | [tasks/active/T129_client_public_id_labels.md](tasks/active/T129_client_public_id_labels.md) | REVIEW | Codex | codex/t129-client-public-id-labels | Clean up client-facing labels to use public IDs. |
 
 ## Done Task Files
 
