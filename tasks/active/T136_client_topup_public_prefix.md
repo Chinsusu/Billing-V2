@@ -1,6 +1,6 @@
 # T136 - Client top-up public prefix
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t136-client-topup-prefix
 PR: https://github.com/Chinsusu/Billing-V2/pull/303
@@ -34,3 +34,4 @@ Align client wallet top-up labels with the shared `TUP-` public ID prefix used b
 - 2026-04-26: Replaced client wallet top-up notice and row labels from `TOP-` to `TUP-`.
 - 2026-04-26: Local validation passed: `npm --prefix frontend run lint`, `npm --prefix frontend run check:sensitive-text`, `npm --prefix frontend run build`, `go run ./cmd/taskguard`, and `git diff --check`.
 - 2026-04-26: Opened PR https://github.com/Chinsusu/Billing-V2/pull/303 for review.
+- 2026-04-26: PR https://github.com/Chinsusu/Billing-V2/pull/303 merged into `main`; marking task done.
