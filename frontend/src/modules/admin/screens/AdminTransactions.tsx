@@ -56,6 +56,8 @@ export function AdminTransactions() {
     ? (transactions.data ?? []).map((tx) => mapAdminTransactionView(tx, reconciliationByTransactionID.get(tx.id)))
     : filterMockTransactions(appliedFilters).map((tx) => ({
         ...tx,
+        order: "Order not shown",
+        invoice: "Invoice not shown",
         amount: fmtMoney(tx.amount),
       }));
   const activeFilters = hasActiveFilters(appliedFilters);
@@ -153,10 +155,10 @@ export function AdminTransactions() {
           />
         </AdminFilterBar>
         <div className="overflow-x-auto">
-          <table className="min-w-[820px] w-full text-[13px] border-collapse">
+          <table className="min-w-[1040px] w-full text-[13px] border-collapse">
             <thead>
               <tr className="bg-gray-50">
-                {["ID", "Time", "Customer", "Method", "Type", "Amount", "Status"].map((h) => (
+                {["ID", "Time", "Customer", "Order", "Invoice", "Method", "Type", "Amount", "Status"].map((h) => (
                   <th key={h} className="text-left text-[11px] font-medium uppercase tracking-wide text-gray-400 p-4 p-4 border-b border-gray-200">
                     {h}
                   </th>
@@ -169,6 +171,8 @@ export function AdminTransactions() {
                   <td className="p-4 p-4 text-[12px] text-gray-400">{tx.id}</td>
                   <td className="p-4 p-4 text-gray-400 tabular-nums">{tx.time}</td>
                   <td className="p-4 p-4 text-gray-700">{tx.customer}</td>
+                  <td className="p-4 p-4 text-[12px] text-gray-500">{tx.order}</td>
+                  <td className="p-4 p-4 text-[12px] text-gray-500">{tx.invoice}</td>
                   <td className="p-4 p-4 text-gray-500">{tx.method}</td>
                   <td className="p-4 p-4">
                     <span className="text-[11px] px-1.5 py-px bg-gray-100 text-gray-500 rounded-sm">{tx.type}</span>
@@ -178,7 +182,7 @@ export function AdminTransactions() {
                 </tr>
               ))}
               {usingLive && rows.length === 0 && (
-                <tr><td colSpan={7} className="p-4 text-center text-[12px] text-gray-400">No transactions</td></tr>
+                <tr><td colSpan={9} className="p-4 text-center text-[12px] text-gray-400">No transactions</td></tr>
               )}
             </tbody>
           </table>

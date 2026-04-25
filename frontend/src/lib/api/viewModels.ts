@@ -95,6 +95,7 @@ export function mapAdminProviderSourceView(provider: CatalogProviderSource): Adm
 export interface AdminInvoiceView {
   id: string;
   customer: string;
+  order: string;
   issued: string;
   due: string;
   amount: string;
@@ -105,6 +106,7 @@ export function mapAdminInvoiceView(invoice: Invoice): AdminInvoiceView {
   return {
     id: adminDisplayLabel(invoice.display_id, "INV-"),
     customer: publicIDLabel(invoice.buyer_display_id, "ACC-", "Account"),
+    order: publicIDLabel(invoice.order_display_id, "ORD-", "Order"),
     issued: compactDateTime(invoice.issued_at),
     due: compactDateTime(invoice.due_at),
     amount: moneyMinor(invoice.total_minor, invoice.currency),
@@ -116,6 +118,8 @@ export interface AdminTransactionView {
   id: string;
   time: string;
   customer: string;
+  order: string;
+  invoice: string;
   method: string;
   type: string;
   amount: string;
@@ -130,6 +134,8 @@ export function mapAdminTransactionView(
     id: adminDisplayLabel(transaction.display_id, "TX-"),
     time: compactDateTime(transaction.created_at),
     customer: publicIDLabel(transaction.account_display_id, "ACC-", "Account"),
+    order: publicIDLabel(transaction.order_display_id, "ORD-", "Order"),
+    invoice: publicIDLabel(transaction.invoice_display_id, "INV-", "Invoice"),
     method: reconciliation?.provider ?? "wallet",
     type: transaction.type,
     amount: moneyMinor(transaction.amount_minor, transaction.currency),
