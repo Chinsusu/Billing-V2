@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-25` after opening T113 review:
+Current board snapshot on `2026-04-25` after completing T113:
 
 - `TODO`: 5
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 109
+- `DONE` task files in `tasks/active/`: 110
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -69,16 +69,14 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 ## In-Flight Task Files
 
-| ID | Task File | Status | Owner | Branch | Summary |
-| --- | --- | --- | --- | --- | --- |
-| T113 | [tasks/active/T113_task_board_consistency_guard.md](tasks/active/T113_task_board_consistency_guard.md) | REVIEW | Codex | codex/t113-task-board-consistency-guard | Add a lightweight guard for task board metadata drift. |
+No task files are currently `IN_PROGRESS` or `REVIEW`.
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T112`
+- `T011` to `T113`
 
 ## Removed Tasks
 
