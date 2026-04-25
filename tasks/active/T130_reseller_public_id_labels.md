@@ -1,6 +1,6 @@
 # T130 - Reseller public ID labels
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t130-reseller-public-id-labels
 PR: https://github.com/Chinsusu/Billing-V2/pull/291
@@ -35,3 +35,4 @@ Clean up reseller-facing billing and service screens so client/order/service lab
 - 2026-04-26: Codex created and claimed the task after T129 was marked done; starting reseller public ID label cleanup.
 - 2026-04-26: Codex updated reseller billing, clients, dashboard, and services to prefer public account/order/service labels and shared account label mapping. Local validation passed: `npm --prefix frontend run lint`, `npm --prefix frontend run check:sensitive-text`, `npm --prefix frontend run build`, `go run ./cmd/taskguard`, and `git diff --check`.
 - 2026-04-26: Opened PR https://github.com/Chinsusu/Billing-V2/pull/291 for review and CI.
+- 2026-04-26: PR https://github.com/Chinsusu/Billing-V2/pull/291 passed CI and was merged to `main`; task marked DONE.

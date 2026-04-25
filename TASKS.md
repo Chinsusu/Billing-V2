@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` after T130 is in review:
+Current board snapshot on `2026-04-26` after T130 is done:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 126
+- `DONE` task files in `tasks/active/`: 127
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -67,14 +67,14 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T130 | [tasks/active/T130_reseller_public_id_labels.md](tasks/active/T130_reseller_public_id_labels.md) | REVIEW | Codex | codex/t130-reseller-public-id-labels | Clean up reseller-facing labels to use public IDs. |
+| - | - | - | - | - | No task files are currently `IN_PROGRESS` or `REVIEW`. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T129`
+- `T011` to `T130`
 
 ## Removed Tasks
 
