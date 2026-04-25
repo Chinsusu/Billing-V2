@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-25` after creating the T113-T118 hardening batch:
+Current board snapshot on `2026-04-25` after opening T113 review:
 
-- `TODO`: 6
+- `TODO`: 5
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 109
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -61,7 +61,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T113 | [tasks/active/T113_task_board_consistency_guard.md](tasks/active/T113_task_board_consistency_guard.md) | codex/t113-task-board-consistency-guard | workflow/CI | Add a lightweight guard for task board metadata drift. |
 | T114 | [tasks/active/T114_frontend_admin_smoke_ci_hardening.md](tasks/active/T114_frontend_admin_smoke_ci_hardening.md) | codex/t114-frontend-admin-smoke-ci-hardening | frontend/CI | Harden the admin browser smoke path for CI and local runs. |
 | T115 | [tasks/active/T115_api_error_code_drift_guard.md](tasks/active/T115_api_error_code_drift_guard.md) | codex/t115-api-error-code-drift-guard | API/docs/CI | Guard stable API error code documentation against drift. |
 | T116 | [tasks/active/T116_provider_sandbox_contract_harness.md](tasks/active/T116_provider_sandbox_contract_harness.md) | codex/t116-provider-sandbox-contract-harness | provider/testing | Add a provider sandbox contract test harness shape. |
@@ -70,7 +69,9 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 ## In-Flight Task Files
 
-No task files are currently `IN_PROGRESS` or `REVIEW`.
+| ID | Task File | Status | Owner | Branch | Summary |
+| --- | --- | --- | --- | --- | --- |
+| T113 | [tasks/active/T113_task_board_consistency_guard.md](tasks/active/T113_task_board_consistency_guard.md) | REVIEW | Codex | codex/t113-task-board-consistency-guard | Add a lightweight guard for task board metadata drift. |
 
 ## Done Task Files
 

@@ -12,6 +12,15 @@ Updated: 2026-04-24
 
 Fix 404 errors for Next.js static assets caused by stale .next cache after branch merge.
 
+## Scope
+
+- Removed task record only.
+- No code changes are expected for this archived task.
+
+## Acceptance Criteria
+
+- The removed task remains archived and is not claimable.
+
 ## Notes
 
 - Removed from task tracking by user request on 2026-04-24.

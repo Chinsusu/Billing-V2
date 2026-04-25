@@ -192,6 +192,16 @@ Status: IN_PROGRESS -> REVIEW
 Validation: npm run build, make test, make build
 ```
 
+## Task Board Guard
+
+When a PR creates a task batch, archives tasks, or deliberately cleans the board, run:
+
+```bash
+make task-guard
+```
+
+This guard checks task-file metadata, `TASKS.md` snapshot counts, claimable rows, and in-flight rows. Normal task claim/review/done updates should still edit only the owned task file unless the task explicitly includes a board cleanup.
+
 ## Anti-Patterns
 
 Do not:
