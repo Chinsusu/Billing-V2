@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-25` after adding T119-T124:
+Current board snapshot on `2026-04-25` while T119 is in progress:
 
-- `TODO`: 6
-- `IN_PROGRESS`: 0
+- `TODO`: 5
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 115
@@ -61,7 +61,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T119 | [tasks/active/T119_go_validation_package_scope_hygiene.md](tasks/active/T119_go_validation_package_scope_hygiene.md) | codex/t119-go-validation-package-scope-hygiene | tooling/CI | Keep Go validation from traversing frontend dependency packages. |
 | T120 | [tasks/active/T120_public_display_id_api_policy.md](tasks/active/T120_public_display_id_api_policy.md) | codex/t120-public-display-id-api-policy | API/docs | Document public numeric ID versus backend reference rules. |
 | T121 | [tasks/active/T121_admin_public_id_backend_filters.md](tasks/active/T121_admin_public_id_backend_filters.md) | codex/t121-admin-public-id-backend-filters | API/DB | Add admin backend filters for numeric public IDs. |
 | T122 | [tasks/active/T122_admin_frontend_public_id_filters.md](tasks/active/T122_admin_frontend_public_id_filters.md) | codex/t122-admin-frontend-public-id-filters | frontend/API | Update admin frontend filters to use public ID language and queries. |
@@ -70,7 +69,9 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 ## In-Flight Task Files
 
-No task files are currently `IN_PROGRESS` or `REVIEW`.
+| ID | Task File | Status | Owner | Branch | Summary |
+| --- | --- | --- | --- | --- | --- |
+| T119 | [tasks/active/T119_go_validation_package_scope_hygiene.md](tasks/active/T119_go_validation_package_scope_hygiene.md) | IN_PROGRESS | Codex | codex/t119-go-validation-package-scope-hygiene | Keep Go validation from traversing frontend dependency packages. |
 
 ## Done Task Files
 

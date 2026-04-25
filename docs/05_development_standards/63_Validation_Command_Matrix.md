@@ -10,15 +10,16 @@ Use this before opening a PR. Add the commands you actually ran to the task log 
 - Run focused tests first when they exist, then broader repo checks.
 - Do not run `npm run build`, `npm run smoke:admin`, or `npm run smoke:admin:ci` in parallel. They read or write `.next`.
 - For frontend CI smoke, run `npm run build` before `npm run smoke:admin:ci`.
-- If `make` is not available on Windows, run the Go equivalent in this doc.
+- If `make` is not available on Windows, use `go run ./cmd/gopackages` to get the repo-scoped Go package list and pass it to `go fmt` or `go test`.
 - Do not use production DSNs, provider accounts, or real customer data for local smoke.
 
 ## Command Reference
 
 | Purpose | Preferred command | Windows/no-make equivalent | When to run |
 | --- | --- | --- | --- |
-| Go format | `make fmt` | `go fmt ./...` | Go code changed. |
-| Go tests | `make test` | `go test ./...` | Backend, DB, provider, shared code, or full-stack changed. |
+| Repo Go package list | `make go-packages` | `go run ./cmd/gopackages` | Before manual Go fmt/test commands when `frontend/node_modules` exists. |
+| Go format | `make fmt` | `$pkgs = go run ./cmd/gopackages; go fmt $pkgs` | Go code changed. |
+| Go tests | `make test` | `$pkgs = go run ./cmd/gopackages; go test $pkgs` | Backend, DB, provider, shared code, or full-stack changed. |
 | Go build | `make build` | `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker` | Backend entrypoints or shared Go packages changed. |
 | Migration syntax | `make migrate-validate` | `go run ./cmd/migrate validate` | Migration files or migrator changed. |
 | API contract guard | `make contract-guard` | `go run ./cmd/contractguard` | Backend route, permission, query, response shape, or API docs changed. |
@@ -44,10 +45,10 @@ Use this before opening a PR. Add the commands you actually ran to the task log 
 | --- | --- | --- |
 | Docs only | `git diff --check` | `go run ./cmd/taskguard` for task docs; `go run ./cmd/contractguard` or `go run ./cmd/errorcodeguard` if API/error docs changed. |
 | Task board or task batch | `go run ./cmd/taskguard`, `git diff --check` | None unless code changed too. |
-| Backend API or service | `go fmt ./...`, `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`, `git diff --check` | `go run ./cmd/contractguard`, `go run ./cmd/errorcodeguard`, smoke command matching the flow. |
-| Shared Go platform | `go fmt ./...`, `go test ./...`, Go build command above, `git diff --check` | API and error guards if HTTP response, middleware, or routing changed. |
+| Backend API or service | `make fmt`, `make test`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`, `git diff --check` | `go run ./cmd/contractguard`, `go run ./cmd/errorcodeguard`, smoke command matching the flow. |
+| Shared Go platform | `make fmt`, `make test`, Go build command above, `git diff --check` | API and error guards if HTTP response, middleware, or routing changed. |
 | DB migration or seed | `go run ./cmd/migrate validate`, `go test ./cmd/migrate ./internal/platform/db ./internal/seed`, `git diff --check` | `go run ./cmd/smoke dev-db` on local DB; `go run ./cmd/smoke dev-billing` for billing seed flows. |
-| Provider adapter | `go test ./internal/modules/provider`, `go test ./internal/modules/provider -run SandboxContract`, `go test ./...`, `git diff --check` | Billing smoke if provisioning outcome changes; update provider sandbox docs. |
+| Provider adapter | `go test ./internal/modules/provider`, `go test ./internal/modules/provider -run SandboxContract`, `make test`, `git diff --check` | Billing smoke if provisioning outcome changes; update provider sandbox docs. |
 | Frontend UI or app shell | `cd frontend && npm run check:sensitive-text`, `npm run lint`, `npm run build`, `git diff --check` | `npm run smoke:admin` for admin screens/nav/API mapping; `npm audit --omit=dev` for dependency changes. |
 | Frontend CI or standalone smoke | `cd frontend && npm run check:sensitive-text`, `npm run lint`, `npm run build`, `npm run smoke:admin:ci`, `git diff --check` | `npx playwright install chromium` when local browser runtime is missing. |
 | Full-stack billing flow | Backend API/service commands, frontend commands, `go run ./cmd/smoke dev-billing`, `git diff --check` | `go run ./cmd/smoke dev-db` when DB setup changed. |
@@ -69,7 +70,7 @@ Use a short list, not a paragraph:
 
 ```text
 Validation:
-- go test ./...
+- make test
 - go run ./cmd/contractguard
 - cd frontend && npm run build
 - cd frontend && npm run smoke:admin:ci

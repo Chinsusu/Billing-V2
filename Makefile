@@ -1,12 +1,15 @@
 GO ?= go
 
-.PHONY: fmt test build build-api build-migrate build-seed build-smoke build-worker run-api run-worker migrate-validate seed-plan seed-dev smoke-dev-db smoke-dev-api smoke-dev-billing contract-guard error-code-guard task-guard
+.PHONY: go-packages fmt test build build-api build-migrate build-seed build-smoke build-worker run-api run-worker migrate-validate seed-plan seed-dev smoke-dev-db smoke-dev-api smoke-dev-billing contract-guard error-code-guard task-guard
+
+go-packages:
+	$(GO) run ./cmd/gopackages
 
 fmt:
-	$(GO) fmt ./...
+	$(GO) fmt $$($(GO) run ./cmd/gopackages)
 
 test:
-	$(GO) test ./...
+	$(GO) test $$($(GO) run ./cmd/gopackages)
 
 build: build-api build-migrate build-seed build-smoke build-worker
 

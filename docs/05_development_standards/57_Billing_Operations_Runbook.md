@@ -359,7 +359,7 @@ Recovery:
 For code or runbook changes around this flow, run:
 
 ```bash
-go test ./...
+make test
 go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker
 cd frontend
 npm audit --omit=dev
