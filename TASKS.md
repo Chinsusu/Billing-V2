@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-24` after completing T100 and creating the provider readiness follow-up batch:
+Current board snapshot on `2026-04-25` after completing T106 and creating the post-readiness hardening batch:
 
 - `TODO`: 6
 - `IN_PROGRESS`: 0
 - `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 97
+- `DONE` task files in `tasks/active/`: 103
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -59,19 +59,19 @@ Current board snapshot on `2026-04-24` after completing T100 and creating the pr
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T101 | [tasks/active/T101_admin_provider_readiness_ui.md](tasks/active/T101_admin_provider_readiness_ui.md) | codex/t101-admin-provider-readiness-ui | frontend/admin-ops | Show provider readiness in the admin portal using the T100 API. |
-| T102 | [tasks/active/T102_provider_readiness_smoke_coverage.md](tasks/active/T102_provider_readiness_smoke_coverage.md) | codex/t102-provider-readiness-smoke-coverage | QA/smoke | Add smoke coverage for the provider readiness endpoint and redaction guarantees. |
-| T103 | [tasks/active/T103_catalog_admin_read_permission_split.md](tasks/active/T103_catalog_admin_read_permission_split.md) | codex/t103-catalog-admin-read-permission-split | backend/RBAC | Split admin catalog read routes from catalog mutation permissions. |
-| T104 | [tasks/active/T104_provider_readiness_seed_scenarios.md](tasks/active/T104_provider_readiness_seed_scenarios.md) | codex/t104-provider-readiness-seed-scenarios | seed/local-dev | Add local seed scenarios that demonstrate readiness states safely. |
-| T105 | [tasks/active/T105_provider_readiness_job_context.md](tasks/active/T105_provider_readiness_job_context.md) | codex/t105-provider-readiness-job-context | frontend/admin-ops | Show source readiness context in admin provisioning job detail. |
-| T106 | [tasks/active/T106_provider_readiness_runbook_examples.md](tasks/active/T106_provider_readiness_runbook_examples.md) | codex/t106-provider-readiness-runbook-examples | docs/operations | Add practical runbook examples for each readiness state. |
+| T107 | [tasks/active/T107_frontend_admin_browser_smoke.md](tasks/active/T107_frontend_admin_browser_smoke.md) | codex/t107-frontend-admin-browser-smoke | frontend/QA | Add a repeatable browser smoke for critical admin frontend screens. |
+| T108 | [tasks/active/T108_smoke_rbac_negative_checks.md](tasks/active/T108_smoke_rbac_negative_checks.md) | codex/t108-smoke-rbac-negative-checks | backend/RBAC/QA | Extend smoke coverage with safe negative RBAC checks. |
+| T109 | [tasks/active/T109_api_contract_drift_guard.md](tasks/active/T109_api_contract_drift_guard.md) | codex/t109-api-contract-drift-guard | docs/API/CI | Add a lightweight guard for backend route/API reference drift. |
+| T110 | [tasks/active/T110_frontend_sensitive_text_guard.md](tasks/active/T110_frontend_sensitive_text_guard.md) | codex/t110-frontend-sensitive-text-guard | frontend/security | Add a frontend guard for sensitive/internal UI text. |
+| T111 | [tasks/active/T111_provider_sandbox_contract_checklist.md](tasks/active/T111_provider_sandbox_contract_checklist.md) | codex/t111-provider-sandbox-contract-checklist | docs/provider-ops | Add a provider sandbox readiness contract checklist. |
+| T112 | [tasks/active/T112_task_board_archive_cleanup.md](tasks/active/T112_task_board_archive_cleanup.md) | codex/t112-task-board-archive-cleanup | workflow/docs | Clean up task board documentation for parallel agents. |
 
 ## Done Task Files
 
-The following task files under `tasks/active/` are already `DONE` and should not stay in the active queue:
+The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T100`
+- `T011` to `T106`
 
 ## Removed Tasks
 
