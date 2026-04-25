@@ -4,9 +4,10 @@ import { useState } from "react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { canCancelJob, canMarkJobManualReview, canRetryJob, jobStatusLabel } from "@/lib/api/fulfillment";
-import { compactDateTime, recordLabel, shortID } from "@/lib/api/format";
+import { compactDateTime, recordLabel } from "@/lib/api/format";
 import type { CatalogProviderSource, Order, ProviderReadiness, ProvisioningJob, ServiceInstance } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
+import { hiddenReference, providerSourceLabel } from "@/lib/api/viewModels";
 import { PROVISIONING_JOBS } from "@/mocks/billingData";
 import { AdminJobTimelinePanel } from "../components/AdminJobTimelinePanel";
 import { AdminProvisioningSummaryPanel } from "../components/AdminProvisioningSummaryPanel";
@@ -239,10 +240,10 @@ function liveProvisioningRows(
       id: recordLabel(job.display_id, "JOB-"),
       apiId: job.id,
       live: true,
-      order: order ? recordLabel(order.display_id, "ORD-") : shortID(job.reference_id),
+      order: order ? recordLabel(order.display_id, "ORD-") : hiddenReference("Order"),
       service: service ? recordLabel(service.display_id, "SVC-") : jobStatusLabel(job.status),
-      tenant: order?.tenant_id ? shortID(order.tenant_id) : shortID(job.tenant_id),
-      provider: provider ? `${provider.name} (${recordLabel(provider.display_id, "SRC-")})` : shortID(job.source_id),
+      tenant: hiddenReference("Tenant"),
+      provider: provider ? providerSourceLabel(provider) : hiddenReference("Source"),
       status: job.status,
       attempt: `${job.attempt_count}/${job.max_attempts}`,
       created: compactDateTime(job.created_at),

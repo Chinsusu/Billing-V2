@@ -1,7 +1,7 @@
 import { billingApi } from "@/lib/api/billing";
-import { compactDateTime, recordLabel, shortID } from "@/lib/api/format";
-import type { AuditLog, ProvisioningJob } from "@/lib/api/types";
+import type { ProvisioningJob } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
+import { mapAdminAuditLogView, type AdminAuditLogView } from "@/lib/api/viewModels";
 
 interface AdminJobRecoveryAuditPanelProps {
   job: ProvisioningJob;
@@ -37,7 +37,9 @@ export function AdminJobRecoveryAuditPanel({ job }: AdminJobRecoveryAuditPanelPr
     }),
     `admin-job-recovery-audit:${job.id}`,
   );
-  const rows = (audits.data ?? []).filter((log) => RECOVERY_ACTIONS.has(log.action));
+  const rows = (audits.data ?? [])
+    .filter((log) => RECOVERY_ACTIONS.has(log.action))
+    .map(mapAdminAuditLogView);
 
   return (
     <div className="border-t border-gray-100 p-4">
@@ -55,7 +57,7 @@ function RecoveryAuditContent({
   loading,
   error,
 }: {
-  rows: AuditLog[];
+  rows: AdminAuditLogView[];
   loading: boolean;
   error: string | null;
 }) {
@@ -76,16 +78,16 @@ function RecoveryAuditContent({
             <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${ACTION_STYLE[log.action] ?? "bg-gray-100 text-gray-500"}`}>
               {ACTION_LABEL[log.action] ?? log.action}
             </span>
-            <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${actorStyle(log.actor_type)}`}>
-              {log.actor_type}
+            <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${actorStyle(log.actor)}`}>
+              {log.actor}
             </span>
-            <span className="text-[11px] text-gray-500">{shortID(log.actor_id)}</span>
+            <span className="text-[11px] text-gray-500">{log.actorName}</span>
           </div>
           <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-[11px] text-gray-500">
-            <span>{recordLabel(log.display_id, "AUD-")}</span>
-            <span>{compactDateTime(log.created_at)}</span>
-            <span>Correlation {shortID(log.correlation_id)}</span>
-            <span>Target {shortID(log.target_id)}</span>
+            <span>{log.id}</span>
+            <span>{log.ts}</span>
+            <span>Request {log.requestId}</span>
+            <span>{log.detail}</span>
           </div>
         </li>
       ))}

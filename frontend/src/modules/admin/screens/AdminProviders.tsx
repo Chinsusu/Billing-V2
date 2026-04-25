@@ -2,8 +2,8 @@
 
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
-import { compactDateTime, recordLabel } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
+import { mapAdminProviderSourceView } from "@/lib/api/viewModels";
 import { PROVIDERS } from "@/mocks/billingData";
 import { AdminProviderReadinessPanel } from "../components/AdminProviderReadinessPanel";
 
@@ -32,17 +32,7 @@ export function AdminProviders() {
   );
   const usingLive = providers.status === "success";
   const rows: ProviderRow[] = usingLive
-    ? (providers.data ?? []).map((provider) => ({
-        id: recordLabel(provider.display_id, "SRC-"),
-        name: provider.name,
-        type: provider.source_type,
-        status: provider.status,
-        location: provider.location || "-",
-        inventory: provider.inventory_mode,
-        risk: provider.risk_level,
-        account: "not shown",
-        updated: compactDateTime(provider.updated_at),
-      }))
+    ? (providers.data ?? []).map(mapAdminProviderSourceView)
     : PROVIDERS.map((provider) => ({
         id: provider.id,
         name: provider.name,

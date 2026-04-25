@@ -4,9 +4,10 @@ import { useState } from "react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { TablePagination } from "@/components/ui/TablePagination";
 import { billingApi } from "@/lib/api/billing";
-import { compactDateTime, recordLabel, shortID } from "@/lib/api/format";
+import { compactDateTime, recordLabel } from "@/lib/api/format";
 import type { ServiceInstance } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
+import { hiddenReference } from "@/lib/api/viewModels";
 
 export type ServiceFamily = "proxy" | "vps" | "bandwidth";
 
@@ -115,16 +116,16 @@ function liveRow(service: ServiceInstance): ServiceInventoryRow {
   return {
     id: recordLabel(service.display_id, "SVC-"),
     service: planName || productName || recordLabel(service.display_id, "Service "),
-    owner: shortID(service.order_id),
-    tenant: shortID(service.tenant_id),
-    resource: service.external_resource_id || shortID(service.order_id),
-    plan: planName || shortID(service.tenant_plan_id),
+    owner: hiddenReference("Order"),
+    tenant: hiddenReference("Tenant"),
+    resource: hiddenReference("Resource"),
+    plan: planName || hiddenReference("Plan"),
     region: region || "-",
     status: service.status,
     billingStatus: service.billing_status,
     created: compactDateTime(service.created_at),
     expires: compactDateTime(service.term_end),
-    provider: shortID(service.provider_source_id),
+    provider: hiddenReference("Source"),
     note: service.suspension_reason || "Live read-only",
     family: inferFamily(service),
   };

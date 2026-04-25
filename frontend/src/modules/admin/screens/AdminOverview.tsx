@@ -5,8 +5,9 @@ import { CreditCard, Headphones, Server, User, Wallet, XCircle } from "lucide-re
 import { KpiCard } from "@/components/ui/KpiCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
-import { compactDateTime, moneyMinor, recordLabel, shortID } from "@/lib/api/format";
+import { compactDateTime, moneyMinor } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
+import { adminDisplayLabel, mapAdminInvoiceView } from "@/lib/api/viewModels";
 import { ACTIVITY_FEED, ActivityEvent, INVOICES, TOPUP_REQUESTS } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
 
@@ -102,14 +103,7 @@ export function AdminOverview() {
     : TOPUP_REQUESTS.filter((req) => isPendingTopup(req.status)).length;
 
   const invoiceRows = usingLiveInvoices
-    ? (invoices.data ?? []).slice(0, 7).map((inv) => ({
-        id: recordLabel(inv.display_id, "INV-"),
-        customer: shortID(inv.buyer_user_id),
-        issued: compactDateTime(inv.issued_at),
-        due: compactDateTime(inv.due_at),
-        amount: moneyMinor(inv.total_minor, inv.currency),
-        status: inv.status,
-      }))
+    ? (invoices.data ?? []).slice(0, 7).map(mapAdminInvoiceView)
     : INVOICES.slice(0, 7).map((inv) => ({
         id: inv.id,
         customer: inv.customer,
@@ -123,7 +117,7 @@ export function AdminOverview() {
     ? liveTopups.slice(0, 7).map((req) => ({
         t: compactDateTime(req.created_at),
         icon: "wallet",
-        text: `Top-up ${recordLabel(req.display_id, "TUP-")} ${req.status} for ${shortID(req.requested_by)} (${moneyMinor(req.amount_minor, req.currency)})`,
+        text: `Top-up ${adminDisplayLabel(req.display_id, "TUP-")} ${req.status} (${moneyMinor(req.amount_minor, req.currency)})`,
         type: topupActivityTone(req.status),
       }))
     : ACTIVITY_FEED;

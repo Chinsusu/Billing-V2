@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
-import { compactDateTime, moneyMinor, recordLabel, shortID } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
+import { mapAdminTopupView } from "@/lib/api/viewModels";
 import { TOPUP_REQUESTS } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
 
@@ -65,20 +65,7 @@ export function AdminTopups() {
   );
   const usingLive = topups.status === "success";
   const rows: TopupRow[] = usingLive
-    ? (topups.data ?? []).map((req) => ({
-        id: recordLabel(req.display_id, "TUP-"),
-        apiId: req.id,
-        live: true,
-        tenant: shortID(req.tenant_id),
-        actor: shortID(req.requested_by),
-        amount: moneyMinor(req.amount_minor, req.currency),
-        method: req.payment_method,
-        ref: req.payment_reference ?? "-",
-        created: compactDateTime(req.created_at),
-        proof: req.payment_reference ? "Ref provided" : "No ref",
-        status: req.status,
-        note: req.review_note,
-      }))
+    ? (topups.data ?? []).map(mapAdminTopupView)
     : TOPUP_REQUESTS.map((req) => ({
         id: req.id,
         live: false,

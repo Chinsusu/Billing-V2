@@ -3,9 +3,10 @@
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { KpiCard } from "@/components/ui/KpiCard";
 import { billingApi } from "@/lib/api/billing";
-import { compactDateTime, moneyMinor, recordLabel, shortID } from "@/lib/api/format";
+import { moneyMinor, recordLabel } from "@/lib/api/format";
 import type { PaymentTransaction } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
+import { mapAdminAuditLogView } from "@/lib/api/viewModels";
 import { AUDIT_LOGS, INVOICES, TRANSACTIONS } from "@/mocks/billingData";
 import { fmtMoney, fmtMoneyShort } from "@/mocks/sampleData";
 
@@ -85,14 +86,17 @@ export function AdminReports() {
       }));
 
   const auditRows: AuditRow[] = usingLiveAudit
-    ? (auditLogs.data ?? []).slice(0, 8).map((log) => ({
-        id: recordLabel(log.display_id, "LOG-"),
-        time: compactDateTime(log.created_at),
-        actor: `${log.actor_type} ${shortID(log.actor_id)}`,
-        action: log.action,
-        target: `${log.target_type} ${shortID(log.target_id)}`,
-        request: shortID(log.correlation_id),
-      }))
+    ? (auditLogs.data ?? []).slice(0, 8).map((log) => {
+        const row = mapAdminAuditLogView(log);
+        return {
+          id: row.id,
+          time: row.ts,
+          actor: `${row.actor} ${row.actorName}`,
+          action: row.action,
+          target: row.target,
+          request: row.requestId,
+        };
+      })
     : AUDIT_LOGS.slice(0, 8).map((log) => ({
         id: log.id,
         time: log.ts,

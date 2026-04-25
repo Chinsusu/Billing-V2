@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-25` after completing T116:
+Current board snapshot on `2026-04-25` while T117 is in progress:
 
-- `TODO`: 2
-- `IN_PROGRESS`: 0
+- `TODO`: 1
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 113
@@ -61,12 +61,13 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T117 | [tasks/active/T117_frontend_api_view_model_boundary.md](tasks/active/T117_frontend_api_view_model_boundary.md) | codex/t117-frontend-api-view-model-boundary | frontend/API | Add shared frontend API-to-view mapping for safe admin display fields. |
 | T118 | [tasks/active/T118_smoke_runbook_command_matrix.md](tasks/active/T118_smoke_runbook_command_matrix.md) | codex/t118-smoke-runbook-command-matrix | docs/workflow | Unify smoke and validation command guidance. |
 
 ## In-Flight Task Files
 
-No task files are currently `IN_PROGRESS` or `REVIEW`.
+| ID | Task File | Status | Owner | Branch | Summary |
+| --- | --- | --- | --- | --- | --- |
+| T117 | [tasks/active/T117_frontend_api_view_model_boundary.md](tasks/active/T117_frontend_api_view_model_boundary.md) | IN_PROGRESS | Codex | codex/t117-frontend-api-view-model-boundary | Add shared frontend API-to-view mapping for safe admin display fields. |
 
 ## Done Task Files
 

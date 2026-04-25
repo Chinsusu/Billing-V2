@@ -6,8 +6,8 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { fmtMoney } from "@/mocks/sampleData";
 import { billingApi } from "@/lib/api/billing";
 import { AdminInvoiceQuery } from "@/lib/api/types";
-import { compactDateTime, moneyMinor, recordLabel, shortID } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
+import { mapAdminInvoiceView } from "@/lib/api/viewModels";
 import { AdminFilterBar, AdminFilterInput } from "../components/AdminFilterBar";
 import { equalsFilter, hasActiveFilters, includesFilter, matchesAmountRange, trimStringFilters } from "../lib/filterUtils";
 
@@ -38,14 +38,7 @@ export function AdminInvoices() {
   const liveInvoices = invoices.data ?? [];
   const usingLive = invoices.status === "success";
   const rows = usingLive
-    ? liveInvoices.map((inv) => ({
-        id: recordLabel(inv.display_id, "INV-"),
-        customer: shortID(inv.buyer_user_id),
-        issued: compactDateTime(inv.issued_at),
-        due: compactDateTime(inv.due_at),
-        amount: moneyMinor(inv.total_minor, inv.currency),
-        status: inv.status,
-      }))
+    ? liveInvoices.map(mapAdminInvoiceView)
     : filterMockInvoices(appliedFilters).map((inv) => ({
         ...inv,
         amount: fmtMoney(inv.amount),
@@ -101,7 +94,7 @@ export function AdminInvoices() {
             label="Customer / account"
             value={draftFilters.buyer_user_id}
             onChange={(event) => updateFilter("buyer_user_id", event.target.value)}
-            placeholder="buyer_user_id"
+            placeholder="account reference"
           />
           <AdminFilterInput
             label="Status"

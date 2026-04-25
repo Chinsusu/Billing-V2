@@ -91,7 +91,7 @@ export function AdminJobTimelinePanel({
       <AdminJobRecoveryAuditPanel job={job} />
 
       <div className="border-t border-gray-100 p-4 text-[11px] text-gray-400">
-        UUID {shortID(job.id)} / correlation {shortID(job.correlation_id)}
+        Request {shortID(job.correlation_id)}
       </div>
     </aside>
   );

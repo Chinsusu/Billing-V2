@@ -6,8 +6,8 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { fmtMoney } from "@/mocks/sampleData";
 import { billingApi } from "@/lib/api/billing";
 import { AdminTransactionQuery } from "@/lib/api/types";
-import { compactDateTime, moneyMinor, recordLabel, shortID } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
+import { mapAdminTransactionView } from "@/lib/api/viewModels";
 import { AdminFilterBar, AdminFilterInput } from "../components/AdminFilterBar";
 import { equalsFilter, hasActiveFilters, includesFilter, matchesAmountRange, trimStringFilters } from "../lib/filterUtils";
 
@@ -40,16 +40,11 @@ export function AdminTransactions() {
     `reconciliation:${JSON.stringify(appliedFilters)}`,
   );
   const usingLive = transactions.status === "success";
+  const reconciliationByTransactionID = new Map(
+    (reconciliation.data ?? []).map((item) => [item.transaction.id, item]),
+  );
   const rows = usingLive
-    ? (transactions.data ?? []).map((tx) => ({
-        id: recordLabel(tx.display_id, "TX-"),
-        time: compactDateTime(tx.created_at),
-        customer: shortID(tx.account_user_id),
-        method: reconciliation.data?.find((item) => item.transaction.id === tx.id)?.provider ?? "wallet",
-        type: tx.type,
-        amount: moneyMinor(tx.amount_minor, tx.currency),
-        status: tx.status,
-      }))
+    ? (transactions.data ?? []).map((tx) => mapAdminTransactionView(tx, reconciliationByTransactionID.get(tx.id)))
     : filterMockTransactions(appliedFilters).map((tx) => ({
         ...tx,
         amount: fmtMoney(tx.amount),
@@ -106,7 +101,7 @@ export function AdminTransactions() {
             label="Customer / account"
             value={draftFilters.account_user_id}
             onChange={(event) => updateFilter("account_user_id", event.target.value)}
-            placeholder="account_user_id"
+            placeholder="account reference"
           />
           <AdminFilterInput
             label="Status"
