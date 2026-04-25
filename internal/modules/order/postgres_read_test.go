@@ -26,6 +26,7 @@ func TestBuildListOrdersQueryAddsFilters(t *testing.T) {
 	}
 	for _, clause := range []string{
 		"tenant_id = $1",
+		"AS buyer_display_id",
 		"buyer_user_id = $2",
 		"buyer.user_id = orders.buyer_user_id",
 		"buyer.display_id = $3",
@@ -52,6 +53,9 @@ func TestBuildListOrdersQueryDefaultsLimit(t *testing.T) {
 	}
 	if !strings.Contains(query, "LIMIT $2") {
 		t.Fatalf("expected limit placeholder in query: %s", query)
+	}
+	if !strings.Contains(query, "AS buyer_display_id") {
+		t.Fatalf("expected buyer display id in query: %s", query)
 	}
 	if len(args) != 2 || args[1] != defaultOrderListLimit {
 		t.Fatalf("unexpected args: %#v", args)

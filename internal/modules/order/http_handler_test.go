@@ -167,13 +167,14 @@ func TestHTTPHandlerListClientOrdersUsesContextAndFilters(t *testing.T) {
 func TestHTTPHandlerListAdminOrdersUsesTenantAndBuyerFilter(t *testing.T) {
 	service := &fakeOrderHTTPService{
 		orders: []Order{{
-			ID:            "order_1",
-			DisplayID:     30004,
-			TenantID:      "tenant_1",
-			BuyerUserID:   "buyer_2",
-			TenantPlanID:  "tenant_plan_1",
-			OrderStatus:   OrderStatusPaid,
-			BillingStatus: BillingStatusPaid,
+			ID:             "order_1",
+			DisplayID:      30004,
+			TenantID:       "tenant_1",
+			BuyerUserID:    "buyer_2",
+			BuyerDisplayID: 10002,
+			TenantPlanID:   "tenant_plan_1",
+			OrderStatus:    OrderStatusPaid,
+			BillingStatus:  BillingStatusPaid,
 		}},
 	}
 	handler := registerOrderTestHandler(service)
@@ -201,6 +202,9 @@ func TestHTTPHandlerListAdminOrdersUsesTenantAndBuyerFilter(t *testing.T) {
 		service.orderFilter.AmountMinMinor == nil || *service.orderFilter.AmountMinMinor != 1000 ||
 		service.orderFilter.AmountMaxMinor == nil || *service.orderFilter.AmountMaxMinor != 3000 {
 		t.Fatalf("unexpected admin status filters: %+v", service.orderFilter)
+	}
+	if !strings.Contains(response.Body.String(), `"buyer_display_id":10002`) {
+		t.Fatalf("expected buyer display ID in order response, got %s", response.Body.String())
 	}
 }
 

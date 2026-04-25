@@ -5,6 +5,9 @@ import (
 	"fmt"
 )
 
+const orderReadColumns = orderColumns + `,
+(SELECT buyer.display_id FROM users buyer WHERE buyer.user_id = orders.buyer_user_id AND buyer.tenant_id = orders.tenant_id) AS buyer_display_id`
+
 func (store *PostgresStore) ListOrders(ctx context.Context, filter OrderFilter) ([]Order, error) {
 	if err := store.ready(); err != nil {
 		return nil, err
@@ -20,7 +23,7 @@ func (store *PostgresStore) ListOrders(ctx context.Context, filter OrderFilter) 
 	defer rows.Close()
 	orders := make([]Order, 0)
 	for rows.Next() {
-		order, err := scanOrder(rows)
+		order, err := scanOrderRead(rows)
 		if err != nil {
 			return nil, err
 		}
@@ -40,7 +43,7 @@ func (store *PostgresStore) GetOrder(ctx context.Context, lookup OrderLookup) (O
 	if err != nil {
 		return Order{}, err
 	}
-	return scanOrder(store.executor.QueryRowContext(ctx, query, args...))
+	return scanOrderRead(store.executor.QueryRowContext(ctx, query, args...))
 }
 
 func buildListOrdersQuery(filter OrderFilter) (string, []interface{}, error) {
@@ -48,7 +51,7 @@ func buildListOrdersQuery(filter OrderFilter) (string, []interface{}, error) {
 	if err := validateOrderFilter(filter); err != nil {
 		return "", nil, err
 	}
-	query := `SELECT ` + orderColumns + `
+	query := `SELECT ` + orderReadColumns + `
 FROM orders
 WHERE tenant_id = $1`
 	args := []interface{}{filter.TenantID}
@@ -96,7 +99,7 @@ func buildGetOrderQuery(lookup OrderLookup) (string, []interface{}, error) {
 	if err := validateOrderLookup(lookup); err != nil {
 		return "", nil, err
 	}
-	query := `SELECT ` + orderColumns + `
+	query := `SELECT ` + orderReadColumns + `
 FROM orders
 WHERE order_id = $1
   AND tenant_id = $2`

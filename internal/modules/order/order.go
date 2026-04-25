@@ -14,6 +14,7 @@ type Order struct {
 	DisplayID       int64
 	TenantID        tenant.ID
 	BuyerUserID     identity.UserID
+	BuyerDisplayID  int64
 	TenantPlanID    catalog.TenantPlanID
 	Quantity        int
 	Currency        string

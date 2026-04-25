@@ -43,6 +43,7 @@ type orderResponse struct {
 	DisplayID       int64                `json:"display_id"`
 	TenantID        tenant.ID            `json:"tenant_id"`
 	BuyerUserID     identity.UserID      `json:"buyer_user_id"`
+	BuyerDisplayID  int64                `json:"buyer_display_id,omitempty"`
 	TenantPlanID    catalog.TenantPlanID `json:"tenant_plan_id"`
 	Quantity        int                  `json:"quantity"`
 	Currency        string               `json:"currency"`
@@ -64,6 +65,7 @@ func newOrderResponse(order Order) orderResponse {
 		DisplayID:       order.DisplayID,
 		TenantID:        order.TenantID,
 		BuyerUserID:     order.BuyerUserID,
+		BuyerDisplayID:  order.BuyerDisplayID,
 		TenantPlanID:    order.TenantPlanID,
 		Quantity:        order.Quantity,
 		Currency:        order.Currency,

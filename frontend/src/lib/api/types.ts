@@ -103,6 +103,7 @@ export interface Order {
   display_id: number;
   tenant_id?: string;
   buyer_user_id?: string;
+  buyer_display_id?: number;
   tenant_plan_id: string;
   quantity: number;
   currency: string;
