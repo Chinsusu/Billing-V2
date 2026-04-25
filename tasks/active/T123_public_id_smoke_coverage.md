@@ -1,7 +1,7 @@
 # T123 - Public ID smoke coverage
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t123-public-id-smoke-coverage
 PR: -
 Risk: smoke/API/frontend
@@ -34,3 +34,6 @@ Add smoke coverage that proves public numeric IDs work in admin API/UI flows and
 ## Agent Log
 
 - 2026-04-25: Task created in the public ID and validation hardening batch.
+- 2026-04-25: Codex claimed the task after T122 merged; reviewing smoke fixtures and browser/API coverage for public ID filters.
+- 2026-04-25: Added API smoke positive/miss checks for admin public ID filters and browser smoke coverage for the invoice public ID filter UI.
+- 2026-04-25: Local validation passed: frontend smoke, frontend build/lint/sensitive-text guard, cmd/smoke tests, Go package tests, Go command builds, taskguard, and diff check.

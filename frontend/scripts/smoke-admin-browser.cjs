@@ -56,6 +56,24 @@ async function main() {
       await expectVisibleText(page, "under_review");
       await assertNoForbiddenText(page, "topups");
 
+      await openAdminScreen(page, /^Invoices$/i);
+      await expectVisibleText(page, "Live invoice data");
+      await expectVisibleText(page, "INV-44001");
+      await page.getByLabel("Display ID").fill("44001");
+      await page.getByLabel("Customer public ID").fill("10002");
+      const filteredInvoice = page.waitForResponse((response) => {
+        const url = new URL(response.url());
+        return url.pathname === "/backend/admin/invoices"
+          && url.searchParams.get("display_id") === "44001"
+          && url.searchParams.get("buyer_display_id") === "10002";
+      });
+      await page.getByRole("button", { name: "Apply" }).click();
+      await filteredInvoice;
+      await expectVisibleText(page, "Live invoice filters applied.");
+      await expectVisibleText(page, "INV-44001");
+      await assertNoVisibleText(page, ["invoice-uuid-1", "buyer-1", "order-uuid-1", "tenant-uuid-1"], "invoice public ID filter");
+      await assertNoForbiddenText(page, "invoice public ID filter");
+
       await openAdminScreen(page, /Audit logs/i);
       await expectVisibleText(page, "Live audit filters applied.");
       await expectVisibleText(page, "job.retry");
@@ -200,7 +218,9 @@ function parseArgs(argv) {
 async function installApiMocks(page) {
   await page.route("**/backend/**", (route) => {
     const request = route.request();
-    const pathname = new URL(request.url()).pathname;
+    const url = new URL(request.url());
+    const pathname = url.pathname;
+    const query = url.searchParams;
     if (request.method() !== "GET") {
       return json(route, []);
     }
@@ -215,21 +235,41 @@ async function installApiMocks(page) {
           { id: "order-uuid-1", display_id: 42001, tenant_id: "tenant-uuid-1", buyer_user_id: "buyer-1", tenant_plan_id: "tenant-plan-1", quantity: 1, currency: "USD", total_minor: 1400, order_status: "paid", billing_status: "paid", plan_snapshot: { plan_code: "vps-cx23-40gb-monthly" }, created_at: "2026-04-24T08:00:00Z" },
         ]);
       case "/backend/admin/services":
-        return json(route, [
+        return json(route, filterRows([
           { id: "service-uuid-1", display_id: 43001, tenant_id: "tenant-uuid-1", order_id: "order-uuid-1", tenant_plan_id: "tenant-plan-1", provider_source_id: "source-ready", external_resource_id: "srv-local-1", status: "active", billing_status: "paid", term_end: "2026-05-24T08:00:00Z" },
-        ]);
+        ], query, [
+          ["display_id", (row) => row.display_id],
+          ["order_display_id", () => 42001],
+          ["provider_source_display_id", () => 10001],
+          ["status", (row) => row.status],
+        ]));
       case "/backend/admin/topup-requests":
-        return json(route, [
+        return json(route, filterRows([
           { id: "topup-uuid-1", display_id: 51001, tenant_id: "tenant-uuid-1", wallet_id: "wallet-1", requested_by: "buyer-1", amount_minor: 50000, currency: "USD", payment_method: "bank_transfer", payment_reference: "LOCAL-REF-51001", status: "under_review", review_note: "", created_at: "2026-04-24T08:05:00Z" },
-        ]);
+        ], query, [
+          ["display_id", (row) => row.display_id],
+          ["wallet_display_id", () => 60001],
+          ["requested_by_display_id", () => 10002],
+          ["status", (row) => row.status],
+        ]));
       case "/backend/admin/invoices":
-        return json(route, [
+        return json(route, filterRows([
           { id: "invoice-uuid-1", display_id: 44001, tenant_id: "tenant-uuid-1", buyer_user_id: "buyer-1", order_id: "order-uuid-1", status: "paid", currency: "USD", subtotal_minor: 1400, tax_minor: 0, discount_minor: 0, total_minor: 1400, issued_at: "2026-04-24T08:10:00Z", due_at: "2026-05-24T08:10:00Z", paid_at: "2026-04-24T08:12:00Z", created_at: "2026-04-24T08:10:00Z", updated_at: "2026-04-24T08:12:00Z" },
-        ]);
+        ], query, [
+          ["display_id", (row) => row.display_id],
+          ["buyer_display_id", () => 10002],
+          ["order_display_id", () => 42001],
+          ["status", (row) => row.status],
+        ]));
       case "/backend/admin/jobs":
-        return json(route, [
+        return json(route, filterRows([
           { id: "job-uuid-1", display_id: 3301, tenant_id: "tenant-uuid-1", job_type: "provider.provision", reference_type: "order", reference_id: "order-uuid-1", source_id: "source-ready", status: "manual_review", priority: 5, attempt_count: 2, max_attempts: 5, next_attempt_at: "2026-04-24T09:00:00Z", last_error_code: "PROVIDER_TIMEOUT", last_error_message_redacted: "Provider timed out", manual_review_reason: "Needs provider check", correlation_id: "req-smoke", created_at: "2026-04-24T08:00:00Z", updated_at: "2026-04-24T08:35:00Z" },
-        ]);
+        ], query, [
+          ["display_id", (row) => row.display_id],
+          ["source_display_id", () => 10001],
+          ["status", (row) => row.status],
+          ["job_type", (row) => row.job_type],
+        ]));
       case "/backend/admin/jobs/summary":
         return json(route, {
           job_type: "provider.provision",
@@ -244,13 +284,22 @@ async function installApiMocks(page) {
           { id: "attempt-1", display_id: 91001, job_id: "job-uuid-1", worker_id: "worker-a", attempt_number: 2, started_at: "2026-04-24T08:30:00Z", finished_at: "2026-04-24T08:30:04Z", result: "manual_review", error_code: "PROVIDER_TIMEOUT", error_message_redacted: "Provider timed out", duration_ms: 4200, correlation_id: "req-smoke" },
         ]);
       case "/backend/admin/catalog/provider-sources":
-        return json(route, [
+        return json(route, filterRows([
           { id: "source-ready", display_id: 10001, source_type: "hetzner", name: "Local Fake Hetzner Ready", location: "local-fsn1", status: "active", inventory_mode: "provider_live", risk_level: "medium", created_at: now(), updated_at: now() },
-        ]);
+        ], query, [
+          ["display_id", (row) => row.display_id],
+          ["source_type", (row) => row.source_type],
+          ["status", (row) => row.status],
+        ]));
       case "/backend/admin/catalog/provider-readiness":
-        return json(route, [
+        return json(route, filterRows([
           { plan_display_id: 10000, plan_code: "vps-cx23-40gb-monthly", plan_name: "CX23 VPS 40GB", product_type: "vps", plan_status: "active", plan_source_display_id: 10000, plan_source_status: "active", source_display_id: 10001, source_name: "Local Fake Hetzner Ready", source_type: "hetzner", source_status: "active", inventory_mode: "provider_live", state: "ready", reason: "Source is active and supports automatic provisioning." },
-        ]);
+        ], query, [
+          ["plan_display_id", (row) => row.plan_display_id],
+          ["source_display_id", (row) => row.source_display_id],
+          ["product_type", (row) => row.product_type],
+          ["status", (row) => row.plan_status],
+        ]));
       case "/backend/admin/audit-logs":
         return json(route, [
           { id: "audit-1", display_id: 70001, actor_id: "admin-1", actor_type: "user", action: "job.retry", target_type: "job", target_id: "job-uuid-1", correlation_id: "req-smoke", created_at: "2026-04-24T08:40:00Z" },
@@ -263,6 +312,14 @@ async function installApiMocks(page) {
 
 function now() {
   return "2026-04-24T08:00:00Z";
+}
+
+function filterRows(rows, query, filters) {
+  return rows.filter((row) => filters.every(([key, value]) => {
+    const actual = query.get(key);
+    if (!actual) return true;
+    return String(value(row)).toLowerCase() === actual.toLowerCase();
+  }));
 }
 
 function json(route, data) {
@@ -287,6 +344,15 @@ async function assertNoForbiddenText(page, screenName) {
   for (const value of forbiddenText) {
     if (bodyText.includes(value)) {
       throw new Error(`Forbidden text '${value}' is visible on ${screenName}.`);
+    }
+  }
+}
+
+async function assertNoVisibleText(page, values, screenName) {
+  const bodyText = await page.locator("body").innerText();
+  for (const value of values) {
+    if (bodyText.includes(value)) {
+      throw new Error(`Unexpected backend reference '${value}' is visible on ${screenName}.`);
     }
   }
 }
