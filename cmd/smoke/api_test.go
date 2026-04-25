@@ -69,6 +69,53 @@ func TestAPISmokeChecksIncludeAdminProviderReadiness(t *testing.T) {
 	t.Fatal("expected admin provider readiness smoke check")
 }
 
+func TestAPISmokeChecksIncludeAdminPublicIDFilters(t *testing.T) {
+	checks := apiSmokeChecks()
+	expected := map[string]struct {
+		path        string
+		contains    string
+		notContains string
+	}{
+		"admin service public id filter": {
+			path:     "/admin/services?display_id=43001&order_display_id=42001&provider_source_display_id=10000",
+			contains: `"display_id":43001`,
+		},
+		"admin invoice public id filter": {
+			path:     "/admin/invoices?display_id=44001&buyer_display_id=10002&order_display_id=42001",
+			contains: `"display_id":44001`,
+		},
+		"admin invoice public id filter miss": {
+			path:        "/admin/invoices?display_id=999999",
+			notContains: `"display_id":44001`,
+		},
+	}
+	seen := map[string]bool{}
+	for _, check := range checks {
+		want, ok := expected[check.Name]
+		if !ok {
+			continue
+		}
+		seen[check.Name] = true
+		if check.Path != want.path {
+			t.Fatalf("unexpected public ID smoke path for %q: %s", check.Name, check.Path)
+		}
+		if check.Headers["X-Actor-Type"] != "reseller_owner" {
+			t.Fatalf("expected admin actor headers for %q, got %+v", check.Name, check.Headers)
+		}
+		if want.contains != "" && !stringSliceContains(check.Contains, want.contains) {
+			t.Fatalf("public ID smoke check %q missing contains token %q", check.Name, want.contains)
+		}
+		if want.notContains != "" && !stringSliceContains(check.NotContains, want.notContains) {
+			t.Fatalf("public ID smoke check %q missing not-contains token %q", check.Name, want.notContains)
+		}
+	}
+	for name := range expected {
+		if !seen[name] {
+			t.Fatalf("missing public ID smoke check %q", name)
+		}
+	}
+}
+
 func TestAPISmokeChecksIncludeRBACNegativeChecks(t *testing.T) {
 	checks := apiRBACNegativeChecks()
 	expected := map[string]struct {

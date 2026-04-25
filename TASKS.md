@@ -32,9 +32,9 @@ REMOVED      archived by user decision and no longer part of the board
 
 Current board snapshot on `2026-04-25` after T121 is done:
 
-- `TODO`: 2
+- `TODO`: 1
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 119
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -61,14 +61,13 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T123 | [tasks/active/T123_public_id_smoke_coverage.md](tasks/active/T123_public_id_smoke_coverage.md) | codex/t123-public-id-smoke-coverage | smoke/API/frontend | Cover public ID admin flows in smoke checks. |
 | T124 | [tasks/active/T124_admin_read_model_related_display_ids.md](tasks/active/T124_admin_read_model_related_display_ids.md) | codex/t124-admin-read-model-related-display-ids | API/frontend | Add safe related public IDs to admin read models. |
 
 ## In-Flight Task Files
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No task files are in progress or review. |
+| T123 | [tasks/active/T123_public_id_smoke_coverage.md](tasks/active/T123_public_id_smoke_coverage.md) | REVIEW | Codex | codex/t123-public-id-smoke-coverage | Cover public ID admin flows in smoke checks. |
 
 ## Done Task Files
 
