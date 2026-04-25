@@ -232,22 +232,22 @@ export const TENANTS: Tenant[] = [
 ];
 
 export const PROVIDERS: Provider[] = [
-  { id: "prv-pmx-01", name: "Proxmox · VN-HCM", type: "self-host", health: "ok", capacity: 82, failRate: 0.2, lastSync: "2m ago" },
-  { id: "prv-pmx-02", name: "Proxmox · VN-HAN", type: "self-host", health: "ok", capacity: 64, failRate: 0.1, lastSync: "1m ago" },
-  { id: "prv-pmg", name: "proxy-manager (self)", type: "self-host", health: "ok", capacity: 91, failRate: 0.3, lastSync: "4m ago" },
-  { id: "prv-ovh", name: "OVH", type: "upstream", health: "degraded", capacity: 54, failRate: 2.8, lastSync: "12m ago" },
-  { id: "prv-hzn", name: "Hetzner", type: "upstream", health: "ok", capacity: 78, failRate: 0.4, lastSync: "3m ago" },
-  { id: "prv-smh", name: "Smarthost", type: "upstream", health: "ok", capacity: 42, failRate: 0.9, lastSync: "5m ago" },
-  { id: "prv-pch", name: "proxy-cheap", type: "upstream", health: "ok", capacity: 88, failRate: 0.5, lastSync: "2m ago" },
+  { id: "SRC-23001", name: "Proxmox · VN-HCM", type: "self-host", health: "ok", capacity: 82, failRate: 0.2, lastSync: "2m ago" },
+  { id: "SRC-23002", name: "Proxmox · VN-HAN", type: "self-host", health: "ok", capacity: 64, failRate: 0.1, lastSync: "1m ago" },
+  { id: "SRC-23003", name: "proxy-manager (self)", type: "self-host", health: "ok", capacity: 91, failRate: 0.3, lastSync: "4m ago" },
+  { id: "SRC-23004", name: "OVH", type: "upstream", health: "degraded", capacity: 54, failRate: 2.8, lastSync: "12m ago" },
+  { id: "SRC-23005", name: "Hetzner", type: "upstream", health: "ok", capacity: 78, failRate: 0.4, lastSync: "3m ago" },
+  { id: "SRC-23006", name: "Smarthost", type: "upstream", health: "ok", capacity: 42, failRate: 0.9, lastSync: "5m ago" },
+  { id: "SRC-23007", name: "proxy-cheap", type: "upstream", health: "ok", capacity: 88, failRate: 0.5, lastSync: "2m ago" },
 ];
 
 export const PROVISIONING_JOBS: ProvisioningJob[] = [
-  { id: "job-8a21", order: "ORD-48291", service: "VPS 4C/8G · HCM", tenant: "ProxyVN", provider: "Proxmox · VN-HCM", status: "manual_review", attempt: 2, error: "provider_timeout — resource state unknown", correlation: "cor_9a21f8", age: "18m" },
-  { id: "job-8a20", order: "ORD-48290", service: "Residential · 5GB", tenant: "CloudBase", provider: "proxy-cheap", status: "failed", attempt: 3, error: "auth_failed", correlation: "cor_9a20c4", age: "22m" },
-  { id: "job-8a19", order: "ORD-48289", service: "VPS 2C/4G · SG", tenant: "HANetwork", provider: "OVH", status: "provisioning", attempt: 1, error: "", correlation: "cor_9a19a1", age: "3m" },
-  { id: "job-8a18", order: "ORD-48288", service: "DC Proxy · 100 IPs", tenant: "Saigon Proxy", provider: "proxy-cheap", status: "provisioning", attempt: 1, error: "", correlation: "cor_9a18e2", age: "1m" },
-  { id: "job-8a17", order: "ORD-48287", service: "VPS 8C/16G · HEL", tenant: "HANetwork", provider: "Hetzner", status: "queued", attempt: 0, error: "", correlation: "cor_9a17b8", age: "0m" },
-  { id: "job-8a16", order: "ORD-48286", service: "ISP Static · 50 IPs", tenant: "ProxyVN", provider: "Smarthost", status: "manual_review", attempt: 1, error: "partial_success — external_id unknown", correlation: "cor_9a16d3", age: "1h 04m" },
+  { id: "JOB-3301", order: "ORD-48291", service: "VPS 4C/8G · HCM", tenant: "ProxyVN", provider: "Proxmox · VN-HCM", status: "manual_review", attempt: 2, error: "provider_timeout — resource state unknown", correlation: "cor_9a21f8", age: "18m" },
+  { id: "JOB-3298", order: "ORD-48290", service: "Residential · 5GB", tenant: "CloudBase", provider: "proxy-cheap", status: "failed", attempt: 3, error: "auth_failed", correlation: "cor_9a20c4", age: "22m" },
+  { id: "JOB-3291", order: "ORD-48289", service: "VPS 2C/4G · SG", tenant: "HANetwork", provider: "OVH", status: "provisioning", attempt: 1, error: "", correlation: "cor_9a19a1", age: "3m" },
+  { id: "JOB-3288", order: "ORD-48288", service: "DC Proxy · 100 IPs", tenant: "Saigon Proxy", provider: "proxy-cheap", status: "provisioning", attempt: 1, error: "", correlation: "cor_9a18e2", age: "1m" },
+  { id: "JOB-3287", order: "ORD-48287", service: "VPS 8C/16G · HEL", tenant: "HANetwork", provider: "Hetzner", status: "queued", attempt: 0, error: "", correlation: "cor_9a17b8", age: "0m" },
+  { id: "JOB-3286", order: "ORD-48286", service: "ISP Static · 50 IPs", tenant: "ProxyVN", provider: "Smarthost", status: "manual_review", attempt: 1, error: "partial_success — external_id unknown", correlation: "cor_9a16d3", age: "1h 04m" },
 ];
 
 export const TOPUP_REQUESTS: TopupRequest[] = [
@@ -332,14 +332,14 @@ export const INVOICES: Invoice[] = [
 ];
 
 export const TRANSACTIONS: Transaction[] = [
-  { id: "txn_9A8f21", time: "2026-04-22 14:22", customer: "DataMine Inc.", method: "Visa •• 4242", type: "charge", amount: 8420.00, status: "paid" },
-  { id: "txn_9A8e12", time: "2026-04-22 13:48", customer: "CloudHarvest", method: "ACH", type: "charge", amount: 6240.00, status: "paid" },
-  { id: "txn_9A8d04", time: "2026-04-22 11:17", customer: "Linh Tran", method: "Wallet", type: "topup", amount: 500.00, status: "paid" },
-  { id: "txn_9A8c92", time: "2026-04-22 10:02", customer: "Kenji Watanabe", method: "Visa •• 0914", type: "charge", amount: 420.00, status: "failed" },
-  { id: "txn_9A8b77", time: "2026-04-22 09:41", customer: "Marie Dubois", method: "Mastercard •• 1821", type: "charge", amount: 1120.00, status: "paid" },
-  { id: "txn_9A8a31", time: "2026-04-22 08:12", customer: "Proxy Garden", method: "PayPal", type: "charge", amount: 340.00, status: "paid" },
-  { id: "txn_9A8920", time: "2026-04-21 22:58", customer: "Acme Proxy Co.", method: "Wire", type: "charge", amount: 4280.00, status: "pending" },
-  { id: "txn_9A86b5", time: "2026-04-21 14:21", customer: "Nguyễn Tuấn", method: "Wallet", type: "refund", amount: -29.00, status: "paid" },
+  { id: "TX-51001", time: "2026-04-22 14:22", customer: "DataMine Inc.", method: "Visa •• 4242", type: "charge", amount: 8420.00, status: "paid" },
+  { id: "TX-51002", time: "2026-04-22 13:48", customer: "CloudHarvest", method: "ACH", type: "charge", amount: 6240.00, status: "paid" },
+  { id: "TX-51003", time: "2026-04-22 11:17", customer: "Linh Tran", method: "Wallet", type: "topup", amount: 500.00, status: "paid" },
+  { id: "TX-51004", time: "2026-04-22 10:02", customer: "Kenji Watanabe", method: "Visa •• 0914", type: "charge", amount: 420.00, status: "failed" },
+  { id: "TX-51005", time: "2026-04-22 09:41", customer: "Marie Dubois", method: "Mastercard •• 1821", type: "charge", amount: 1120.00, status: "paid" },
+  { id: "TX-51006", time: "2026-04-22 08:12", customer: "Proxy Garden", method: "PayPal", type: "charge", amount: 340.00, status: "paid" },
+  { id: "TX-51007", time: "2026-04-21 22:58", customer: "Acme Proxy Co.", method: "Wire", type: "charge", amount: 4280.00, status: "pending" },
+  { id: "TX-51008", time: "2026-04-21 14:21", customer: "Nguyễn Tuấn", method: "Wallet", type: "refund", amount: -29.00, status: "paid" },
 ];
 
 export const TICKETS: Ticket[] = [
