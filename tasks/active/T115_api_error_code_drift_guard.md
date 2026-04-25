@@ -1,9 +1,9 @@
 # T115 - API error code drift guard
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t115-api-error-code-drift-guard
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/260
 Risk: API/docs/CI
 Created: 2026-04-25
 Updated: 2026-04-25
@@ -35,3 +35,4 @@ Add a guard that keeps stable API error codes and response envelope documentatio
 
 - 2026-04-25: Task created in the board and delivery hardening batch.
 - 2026-04-25: Codex claimed the task; adding a stable API error code documentation drift guard.
+- 2026-04-25: Opened PR #260. Validation passed: `go test ./cmd/errorcodeguard`, `go run ./cmd/errorcodeguard`, `go run ./cmd/contractguard`, `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker ./cmd/contractguard ./cmd/taskguard ./cmd/errorcodeguard`, `git diff --check`.
