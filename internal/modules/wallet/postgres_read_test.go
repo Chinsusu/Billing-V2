@@ -22,6 +22,7 @@ func TestBuildListWalletsQueryAddsOwnerScopeAndFilters(t *testing.T) {
 	}
 	for _, clause := range []string{
 		"wallet.tenant_id = $1",
+		"owner_display_id",
 		"wallet.display_id = $2",
 		"wallet.owner_type = $3",
 		"wallet.owner_id = $4",
@@ -47,7 +48,7 @@ func TestBuildGetWalletQueryAddsOwnerScope(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected query: %v", err)
 	}
-	for _, clause := range []string{"wallet.wallet_id = $1", "wallet.tenant_id = $2", "wallet.owner_type = $3", "wallet.owner_id = $4"} {
+	for _, clause := range []string{"owner_display_id", "wallet.wallet_id = $1", "wallet.tenant_id = $2", "wallet.owner_type = $3", "wallet.owner_id = $4"} {
 		if !strings.Contains(query, clause) {
 			t.Fatalf("expected %q in query: %s", clause, query)
 		}

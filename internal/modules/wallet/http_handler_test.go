@@ -19,6 +19,7 @@ func TestHTTPHandlerListClientWalletsUsesActorScope(t *testing.T) {
 			TenantID:              "tenant_1",
 			OwnerType:             OwnerTypeUser,
 			OwnerID:               OwnerID("account_1"),
+			OwnerDisplayID:        10002,
 			Currency:              "USD",
 			Status:                StatusActive,
 			AvailableBalanceMinor: 1000,
@@ -46,13 +47,14 @@ func TestHTTPHandlerListClientWalletsUsesActorScope(t *testing.T) {
 		service.walletFilter.Limit != 10 {
 		t.Fatalf("unexpected wallet filter: %+v", service.walletFilter)
 	}
-	if !strings.Contains(response.Body.String(), `"display_id":70001`) {
+	if !strings.Contains(response.Body.String(), `"display_id":70001`) ||
+		!strings.Contains(response.Body.String(), `"owner_display_id":10002`) {
 		t.Fatalf("expected wallet response, got %s", response.Body.String())
 	}
 }
 
 func TestHTTPHandlerGetClientWalletUsesOwnerScope(t *testing.T) {
-	service := &fakeWalletHTTPService{wallet: Wallet{ID: "wallet_1", DisplayID: 70002, TenantID: "tenant_1"}}
+	service := &fakeWalletHTTPService{wallet: Wallet{ID: "wallet_1", DisplayID: 70002, TenantID: "tenant_1", OwnerDisplayID: 10002}}
 	handler := registerWalletTestHandler(service)
 
 	request := httptest.NewRequest(http.MethodGet, "/client/wallets/wallet_1", nil)
@@ -69,6 +71,9 @@ func TestHTTPHandlerGetClientWalletUsesOwnerScope(t *testing.T) {
 		service.walletLookup.OwnerType != OwnerTypeUser ||
 		service.walletLookup.OwnerID != OwnerID("account_1") {
 		t.Fatalf("unexpected wallet lookup: %+v", service.walletLookup)
+	}
+	if !strings.Contains(response.Body.String(), `"owner_display_id":10002`) {
+		t.Fatalf("expected wallet owner display id, got %s", response.Body.String())
 	}
 }
 
@@ -138,6 +143,7 @@ func TestHTTPHandlerListResellerWalletsUsesTenantAndOwnerFilter(t *testing.T) {
 		TenantID:              "reseller_tenant",
 		OwnerType:             OwnerTypeUser,
 		OwnerID:               OwnerID("account_3"),
+		OwnerDisplayID:        10003,
 		Currency:              "USD",
 		Status:                StatusActive,
 		AvailableBalanceMinor: 2000,
@@ -162,7 +168,8 @@ func TestHTTPHandlerListResellerWalletsUsesTenantAndOwnerFilter(t *testing.T) {
 		service.walletFilter.Limit != 10 {
 		t.Fatalf("unexpected reseller wallet filter: %+v", service.walletFilter)
 	}
-	if !strings.Contains(response.Body.String(), `"display_id":70005`) {
+	if !strings.Contains(response.Body.String(), `"display_id":70005`) ||
+		!strings.Contains(response.Body.String(), `"owner_display_id":10003`) {
 		t.Fatalf("expected wallet response, got %s", response.Body.String())
 	}
 }

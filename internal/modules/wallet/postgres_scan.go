@@ -16,9 +16,10 @@ type ledgerEntryScanner interface {
 func scanWallet(row ledgerEntryScanner) (Wallet, error) {
 	var record Wallet
 	var id, tenantID, ownerType, ownerID, status string
+	var ownerDisplayID sql.NullInt64
 	var metadata []byte
 	if err := row.Scan(
-		&id, &record.DisplayID, &tenantID, &ownerType, &ownerID, &record.Currency, &status,
+		&id, &record.DisplayID, &tenantID, &ownerType, &ownerID, &ownerDisplayID, &record.Currency, &status,
 		&record.AvailableBalanceMinor, &record.LockedBalanceMinor, &metadata, &record.CreatedAt, &record.UpdatedAt,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -30,6 +31,9 @@ func scanWallet(row ledgerEntryScanner) (Wallet, error) {
 	record.TenantID = tenant.ID(tenantID)
 	record.OwnerType = OwnerType(ownerType)
 	record.OwnerID = OwnerID(ownerID)
+	if ownerDisplayID.Valid {
+		record.OwnerDisplayID = ownerDisplayID.Int64
+	}
 	record.Status = Status(status)
 	record.Metadata = append(record.Metadata, metadata...)
 	return record, nil

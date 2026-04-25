@@ -13,6 +13,7 @@ type Wallet struct {
 	TenantID              tenant.ID
 	OwnerType             OwnerType
 	OwnerID               OwnerID
+	OwnerDisplayID        int64
 	Currency              string
 	Status                Status
 	AvailableBalanceMinor int64
