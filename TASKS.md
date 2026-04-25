@@ -33,8 +33,8 @@ REMOVED      archived by user decision and no longer part of the board
 Current board snapshot on `2026-04-25` after T121 is done:
 
 - `TODO`: 2
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 118
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -68,7 +68,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T122 | [tasks/active/T122_admin_frontend_public_id_filters.md](tasks/active/T122_admin_frontend_public_id_filters.md) | IN_PROGRESS | Codex | codex/t122-admin-frontend-public-id-filters | Update admin frontend filters to use public ID language and queries. |
+| T122 | [tasks/active/T122_admin_frontend_public_id_filters.md](tasks/active/T122_admin_frontend_public_id_filters.md) | REVIEW | Codex | codex/t122-admin-frontend-public-id-filters | Update admin frontend filters to use public ID language and queries. |
 
 ## Done Task Files
 
