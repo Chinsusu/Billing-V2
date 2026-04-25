@@ -1,6 +1,6 @@
 # T119 - Go validation package scope hygiene
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t119-go-validation-package-scope-hygiene
 PR: https://github.com/Chinsusu/Billing-V2/pull/269
@@ -37,3 +37,4 @@ Keep Go validation commands focused on Billing source packages instead of accide
 - 2026-04-25: Codex claimed the task; adding a repo-scoped Go package selector for validation commands.
 - 2026-04-25: Added `cmd/gopackages`, wired Makefile `fmt/test` through it, and updated validation docs; local PowerShell package-scoped tests passed without `frontend/node_modules`.
 - 2026-04-25: Opened PR https://github.com/Chinsusu/Billing-V2/pull/269 for review and CI.
+- 2026-04-25: PR https://github.com/Chinsusu/Billing-V2/pull/269 merged; T119 is done.
