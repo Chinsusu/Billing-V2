@@ -9,6 +9,14 @@ import (
 )
 
 const attemptColumns = `attempt.job_attempt_id, attempt.display_id, attempt.job_id, attempt.worker_id, attempt.attempt_number, attempt.started_at, attempt.finished_at, attempt.result, attempt.error_code, attempt.error_message_redacted, attempt.duration_ms, attempt.correlation_id`
+const jobReadColumns = jobColumns + `,
+(SELECT source.display_id FROM provider_sources source WHERE source.source_id = jobs.source_id) AS source_display_id,
+CASE
+  WHEN jobs.reference_type = 'order' THEN (
+    SELECT ord.display_id FROM orders ord WHERE ord.order_id = jobs.reference_id AND ord.tenant_id = jobs.tenant_id
+  )
+  ELSE NULL
+END AS reference_display_id`
 
 func (store *PostgresStore) ListJobs(ctx context.Context, filter Filter) ([]Job, error) {
 	if err := store.ready(); err != nil {
@@ -23,7 +31,7 @@ func (store *PostgresStore) ListJobs(ctx context.Context, filter Filter) ([]Job,
 		return nil, fmt.Errorf("list jobs: %w", err)
 	}
 	defer rows.Close()
-	return scanJobs(rows)
+	return scanJobsRead(rows)
 }
 
 func (store *PostgresStore) GetJob(ctx context.Context, lookup Lookup) (Job, error) {
@@ -34,7 +42,7 @@ func (store *PostgresStore) GetJob(ctx context.Context, lookup Lookup) (Job, err
 	if err != nil {
 		return Job{}, err
 	}
-	return scanJob(store.executor.QueryRowContext(ctx, query, args...))
+	return scanJobRead(store.executor.QueryRowContext(ctx, query, args...))
 }
 
 func (store *PostgresStore) ListAttempts(ctx context.Context, filter AttemptFilter) ([]Attempt, error) {
@@ -136,7 +144,7 @@ func buildListJobsQuery(filter Filter) (string, []interface{}, error) {
 	if err := validateFilter(filter); err != nil {
 		return "", nil, err
 	}
-	query := `SELECT ` + jobColumns + `
+	query := `SELECT ` + jobReadColumns + `
 FROM jobs
 WHERE tenant_id = $1`
 	args := []interface{}{filter.TenantID}
@@ -184,7 +192,7 @@ func buildGetJobQuery(lookup Lookup) (string, []interface{}, error) {
 	if err := validateLookup(lookup); err != nil {
 		return "", nil, err
 	}
-	return `SELECT ` + jobColumns + `
+	return `SELECT ` + jobReadColumns + `
 FROM jobs
 WHERE job_id = $1
   AND tenant_id = $2`, []interface{}{lookup.ID, lookup.TenantID}, nil

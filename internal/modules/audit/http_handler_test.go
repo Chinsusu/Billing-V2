@@ -42,6 +42,12 @@ func TestHTTPHandlerListAdminAuditLogsUsesFilters(t *testing.T) {
 	if strings.Contains(response.Body.String(), "before_snapshot_redacted") {
 		t.Fatalf("list response should not include payload snapshots: %s", response.Body.String())
 	}
+	body := response.Body.String()
+	for _, expected := range []string{`"actor_display_id":10002`, `"target_display_id":44001`} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("expected %s in audit summary response, got %s", expected, body)
+		}
+	}
 }
 
 func TestHTTPHandlerGetAdminAuditLogUsesTenantScope(t *testing.T) {
@@ -97,10 +103,12 @@ func testAuditLog() Log {
 		DisplayID:              70001,
 		TenantID:               tenant.ID("tenant_1"),
 		ActorID:                ActorID("actor_1"),
+		ActorDisplayID:         10002,
 		ActorType:              ActorTypeUser,
 		Action:                 "invoice.paid",
 		TargetType:             "invoice",
 		TargetID:               TargetID("target_1"),
+		TargetDisplayID:        44001,
 		BeforeSnapshotRedacted: []byte(`{"status":"issued"}`),
 		AfterSnapshotRedacted:  []byte(`{"status":"paid"}`),
 		MetadataRedacted:       []byte(`{"source":"test"}`),

@@ -82,7 +82,18 @@ func TestHTTPHandlerGetClientInvoiceIncludesItems(t *testing.T) {
 }
 
 func TestHTTPHandlerListAdminInvoicesUsesFilters(t *testing.T) {
-	service := &fakeInvoiceHTTPService{}
+	service := &fakeInvoiceHTTPService{invoices: []Invoice{{
+		ID:             "invoice_1",
+		DisplayID:      44001,
+		TenantID:       "tenant_1",
+		BuyerUserID:    "account_2",
+		BuyerDisplayID: 10002,
+		OrderID:        "order_2",
+		OrderDisplayID: 30004,
+		Status:         StatusPaid,
+		Currency:       "USD",
+		TotalMinor:     5000,
+	}}}
 	handler := registerInvoiceTestHandler(service)
 
 	request := httptest.NewRequest(http.MethodGet, "/admin/invoices?buyer_user_id=account_2&buyer_display_id=10002&display_id=44001&order_id=order_2&order_display_id=30004&status=paid&amount_min=100&amount_max=5000", nil)
@@ -105,6 +116,12 @@ func TestHTTPHandlerListAdminInvoicesUsesFilters(t *testing.T) {
 		service.invoiceFilter.AmountMinMinor == nil || *service.invoiceFilter.AmountMinMinor != 100 ||
 		service.invoiceFilter.AmountMaxMinor == nil || *service.invoiceFilter.AmountMaxMinor != 5000 {
 		t.Fatalf("unexpected admin invoice filter: %+v", service.invoiceFilter)
+	}
+	body := response.Body.String()
+	for _, expected := range []string{`"buyer_display_id":10002`, `"order_display_id":30004`} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("expected %s in invoice response, got %s", expected, body)
+		}
 	}
 }
 

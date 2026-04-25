@@ -1,9 +1,9 @@
 # T124 - Admin read model related display IDs
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: codex/t124-admin-read-model-related-display-ids
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/279
 Risk: API/frontend
 Created: 2026-04-25
 Updated: 2026-04-25
@@ -34,3 +34,7 @@ Expose safe related public IDs in admin read models so the UI does not need to s
 ## Agent Log
 
 - 2026-04-25: Task created in the public ID and validation hardening batch.
+- 2026-04-25: Codex claimed the task after T123 merged; reviewing backend read models and frontend view-model gaps for related public IDs.
+- 2026-04-25: Added related display IDs to invoice, transaction, service, top-up, job, and audit read responses; updated admin UI view models to prefer public IDs.
+- 2026-04-25: Validation passed: module Go tests, full `go test`, Go command build, frontend lint/build/sensitive-text/admin smoke, taskguard, and diff whitespace check.
+- 2026-04-25: Opened PR https://github.com/Chinsusu/Billing-V2/pull/279 for review.

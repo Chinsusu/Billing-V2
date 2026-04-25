@@ -17,14 +17,27 @@ type transactionScanner interface {
 }
 
 func scanTransaction(row transactionScanner) (Transaction, error) {
+	return scanTransactionFields(row, false)
+}
+
+func scanTransactionRead(row transactionScanner) (Transaction, error) {
+	return scanTransactionFields(row, true)
+}
+
+func scanTransactionFields(row transactionScanner, includeRelatedDisplayIDs bool) (Transaction, error) {
 	var record Transaction
 	var id, tenantID, accountUserID, transactionType, status, idempotencyKey string
 	var orderID, invoiceID, description sql.NullString
+	var accountDisplayID, orderDisplayID, invoiceDisplayID sql.NullInt64
 	var metadata []byte
-	if err := row.Scan(
+	destinations := []interface{}{
 		&id, &record.DisplayID, &tenantID, &accountUserID, &orderID, &invoiceID, &transactionType, &status,
 		&record.Currency, &record.AmountMinor, &description, &idempotencyKey, &metadata, &record.CreatedAt, &record.UpdatedAt,
-	); err != nil {
+	}
+	if includeRelatedDisplayIDs {
+		destinations = append(destinations, &accountDisplayID, &orderDisplayID, &invoiceDisplayID)
+	}
+	if err := row.Scan(destinations...); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return Transaction{}, ErrTransactionNotFound
 		}
@@ -35,6 +48,15 @@ func scanTransaction(row transactionScanner) (Transaction, error) {
 	record.AccountUserID = identity.UserID(accountUserID)
 	record.OrderID = order.OrderID(orderID.String)
 	record.InvoiceID = invoice.InvoiceID(invoiceID.String)
+	if accountDisplayID.Valid {
+		record.AccountDisplayID = accountDisplayID.Int64
+	}
+	if orderDisplayID.Valid {
+		record.OrderDisplayID = orderDisplayID.Int64
+	}
+	if invoiceDisplayID.Valid {
+		record.InvoiceDisplayID = invoiceDisplayID.Int64
+	}
 	record.Type = TransactionType(transactionType)
 	record.Status = TransactionStatus(status)
 	record.Description = description.String

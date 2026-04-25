@@ -17,6 +17,21 @@ export function hiddenReference(label = "Reference"): string {
   return label ? `${label} not shown` : "Not shown";
 }
 
+function publicIDLabel(displayID: number | undefined, prefix: string, fallback: string): string {
+  return displayID ? adminDisplayLabel(displayID, prefix) : hiddenReference(fallback);
+}
+
+function auditTargetLabel(log: AuditLog): string {
+  if (!log.target_display_id) return `${log.target_type} target`;
+  const prefixes: Record<string, string> = {
+    invoice: "INV-",
+    job: "JOB-",
+    order: "ORD-",
+    topup_request: "TUP-",
+  };
+  return `${log.target_type} ${adminDisplayLabel(log.target_display_id, prefixes[log.target_type] ?? "#")}`;
+}
+
 export function requestLabel(value?: string): string {
   return shortID(value);
 }
@@ -89,7 +104,7 @@ export interface AdminInvoiceView {
 export function mapAdminInvoiceView(invoice: Invoice): AdminInvoiceView {
   return {
     id: adminDisplayLabel(invoice.display_id, "INV-"),
-    customer: hiddenReference("Account"),
+    customer: publicIDLabel(invoice.buyer_display_id, "ACC-", "Account"),
     issued: compactDateTime(invoice.issued_at),
     due: compactDateTime(invoice.due_at),
     amount: moneyMinor(invoice.total_minor, invoice.currency),
@@ -114,7 +129,7 @@ export function mapAdminTransactionView(
   return {
     id: adminDisplayLabel(transaction.display_id, "TX-"),
     time: compactDateTime(transaction.created_at),
-    customer: hiddenReference("Account"),
+    customer: publicIDLabel(transaction.account_display_id, "ACC-", "Account"),
     method: reconciliation?.provider ?? "wallet",
     type: transaction.type,
     amount: moneyMinor(transaction.amount_minor, transaction.currency),
@@ -163,10 +178,10 @@ export function mapAdminAuditLogView(log: AuditLog): AdminAuditLogView {
     ts: compactDateTime(log.created_at),
     level: "info",
     actor: mapAdminActorBadge(log.actor_type),
-    actorName: hiddenReference("Actor"),
+    actorName: publicIDLabel(log.actor_display_id, "ACC-", "Actor"),
     action: log.action,
-    target: `${log.target_type} target`,
-    detail: hiddenReference("Target"),
+    target: auditTargetLabel(log),
+    detail: log.target_display_id ? "Public target linked" : hiddenReference("Target"),
     requestId: requestLabel(log.correlation_id),
   };
 }
@@ -191,8 +206,8 @@ export function mapAdminTopupView(request: TopupRequest): AdminTopupView {
     id: adminDisplayLabel(request.display_id, "TUP-"),
     apiId: request.id,
     live: true,
-    tenant: hiddenReference("Tenant"),
-    actor: hiddenReference("Actor"),
+    tenant: publicIDLabel(request.wallet_display_id, "WAL-", "Wallet"),
+    actor: publicIDLabel(request.requested_by_display_id, "ACC-", "Requester"),
     amount: moneyMinor(request.amount_minor, request.currency),
     method: request.payment_method,
     ref: request.payment_reference ?? "-",

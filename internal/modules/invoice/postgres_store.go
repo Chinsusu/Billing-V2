@@ -20,7 +20,9 @@ func NewPostgresStore(executor platformdb.Executor) *PostgresStore {
 	return &PostgresStore{executor: executor}
 }
 
-const invoiceReadColumns = `inv.invoice_id, inv.display_id, inv.tenant_id, inv.buyer_user_id, inv.order_id, inv.status, inv.currency, inv.subtotal_minor, inv.tax_minor, inv.discount_minor, inv.total_minor, inv.issued_at, inv.due_at, inv.paid_at, inv.voided_at, inv.metadata, inv.created_at, inv.updated_at`
+const invoiceReadColumns = `inv.invoice_id, inv.display_id, inv.tenant_id, inv.buyer_user_id, inv.order_id, inv.status, inv.currency, inv.subtotal_minor, inv.tax_minor, inv.discount_minor, inv.total_minor, inv.issued_at, inv.due_at, inv.paid_at, inv.voided_at, inv.metadata, inv.created_at, inv.updated_at,
+(SELECT buyer.display_id FROM users buyer WHERE buyer.user_id = inv.buyer_user_id AND buyer.tenant_id = inv.tenant_id) AS buyer_display_id,
+(SELECT ord.display_id FROM orders ord WHERE ord.order_id = inv.order_id AND ord.tenant_id = inv.tenant_id) AS order_display_id`
 const invoiceItemReadColumns = `item.invoice_item_id, item.invoice_id, item.tenant_id, item.order_id, item.order_item_id, item.service_instance_id, item.description, item.quantity, item.unit_price_minor, item.tax_minor, item.discount_minor, item.line_total_minor, item.metadata, item.created_at, item.updated_at`
 const invoiceColumns = `invoice_id, display_id, tenant_id, buyer_user_id, order_id, status, currency, subtotal_minor, tax_minor, discount_minor, total_minor, issued_at, due_at, paid_at, voided_at, metadata, created_at, updated_at`
 

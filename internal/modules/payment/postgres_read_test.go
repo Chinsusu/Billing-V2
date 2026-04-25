@@ -32,6 +32,9 @@ func TestBuildListTransactionsQueryAddsAccountScopeAndFilters(t *testing.T) {
 	}
 	for _, clause := range []string{
 		"txn.tenant_id = $1",
+		"account_display_id",
+		"order_display_id",
+		"invoice_display_id",
 		"txn.account_user_id = $2",
 		"account.user_id = txn.account_user_id",
 		"account.display_id = $3",

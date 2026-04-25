@@ -9,20 +9,23 @@ import (
 )
 
 type ServiceInstance struct {
-	ID                 ServiceID
-	DisplayID          int64
-	TenantID           tenant.ID
-	OrderID            OrderID
-	TenantPlanID       catalog.TenantPlanID
-	ProviderSourceID   catalog.ProviderSourceID
-	ExternalResourceID provider.ExternalResourceID
-	Status             ServiceStatus
-	BillingStatus      BillingStatus
-	SuspensionReason   SuspensionReason
-	TermStart          time.Time
-	TermEnd            time.Time
-	CreatedAt          time.Time
-	UpdatedAt          time.Time
+	ID                      ServiceID
+	DisplayID               int64
+	TenantID                tenant.ID
+	OrderID                 OrderID
+	OrderDisplayID          int64
+	BuyerDisplayID          int64
+	TenantPlanID            catalog.TenantPlanID
+	ProviderSourceID        catalog.ProviderSourceID
+	ProviderSourceDisplayID int64
+	ExternalResourceID      provider.ExternalResourceID
+	Status                  ServiceStatus
+	BillingStatus           BillingStatus
+	SuspensionReason        SuspensionReason
+	TermStart               time.Time
+	TermEnd                 time.Time
+	CreatedAt               time.Time
+	UpdatedAt               time.Time
 }
 
 type CreateServiceInstanceInput struct {

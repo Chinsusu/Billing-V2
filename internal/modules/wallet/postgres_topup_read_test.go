@@ -28,6 +28,9 @@ func TestBuildListTopupRequestsQueryAddsReviewFilters(t *testing.T) {
 	}
 	for _, clause := range []string{
 		"topup.tenant_id = $1",
+		"wallet_display_id",
+		"requested_by_display_id",
+		"reviewed_by_display_id",
 		"topup.display_id = $2",
 		"topup.wallet_id = $3",
 		"wallet.wallet_id = topup.wallet_id",

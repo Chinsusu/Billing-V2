@@ -147,7 +147,9 @@ type Job struct {
 	Type                     Type
 	ReferenceType            ReferenceType
 	ReferenceID              ReferenceID
+	ReferenceDisplayID       int64
 	SourceID                 SourceID
+	SourceDisplayID          int64
 	PayloadJSON              json.RawMessage
 	Status                   Status
 	Priority                 int

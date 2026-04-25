@@ -281,12 +281,12 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 - `GET /admin/services`
   - auth: admin actor, `service.view`
   - query: `buyer_user_id`, `buyer_display_id`, `display_id`, `order_id`, `order_display_id`, `provider_source_display_id`, `status`, `limit`, `cursor`
-  - response: list of `service`
+  - response: list of `service`; related public fields include `order_display_id`, `buyer_display_id`, and `provider_source_display_id` when available
 
 - `GET /reseller/services`
   - auth: reseller actor, `service.view`
   - query: `buyer_user_id`, `buyer_display_id`, `display_id`, `order_id`, `order_display_id`, `provider_source_display_id`, `status`, `limit`, `cursor`
-  - response: list of `service`
+  - response: list of `service`; related public fields include `order_display_id`, `buyer_display_id`, and `provider_source_display_id` when available
   - note: tenant scope is forced to the current reseller tenant
 
 - `GET /admin/services/{service_id}`
@@ -308,12 +308,12 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 - `GET /admin/invoices`
   - auth: admin actor, `wallet.view`
   - query: `buyer_user_id`, `buyer_display_id`, `display_id`, `order_id`, `order_display_id`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
-  - response: list of `invoice`
+  - response: list of `invoice`; related public fields include `buyer_display_id` and `order_display_id` when available
 
 - `GET /reseller/invoices`
   - auth: reseller actor, `wallet.view`
   - query: `buyer_user_id`, `buyer_display_id`, `display_id`, `order_id`, `order_display_id`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
-  - response: list of `invoice`
+  - response: list of `invoice`; related public fields include `buyer_display_id` and `order_display_id` when available
   - note: tenant scope is forced to the current reseller tenant
 
 - `GET /admin/invoices/{invoice_id}`
@@ -390,7 +390,7 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 - `GET /admin/topup-requests`
   - auth: admin actor, `wallet.view`
   - query: `requested_by`, `requested_by_display_id`, `display_id`, `wallet_id`, `wallet_display_id`, `payment_method`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
-  - response: list of `topup_request`
+  - response: list of `topup_request`; related public fields include `wallet_display_id`, `requested_by_display_id`, and `reviewed_by_display_id` when available
 
 - `GET /admin/topup-requests/{topup_request_id}`
   - auth: admin actor, `wallet.view`
@@ -399,7 +399,7 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 - `GET /reseller/topup-requests`
   - auth: reseller actor, `wallet.view`
   - query: `requested_by`, `requested_by_display_id`, `display_id`, `wallet_id`, `wallet_display_id`, `payment_method`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
-  - response: list of `topup_request`
+  - response: list of `topup_request`; related public fields include `wallet_display_id`, `requested_by_display_id`, and `reviewed_by_display_id` when available
   - note: tenant scope is forced to the current reseller tenant
 
 - `POST /admin/topup-requests/{topup_request_id}/approve`
@@ -429,12 +429,12 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 - `GET /admin/transactions`
   - auth: admin actor, `wallet.view`
   - query: `account_user_id`, `account_display_id`, `display_id`, `order_id`, `order_display_id`, `invoice_id`, `invoice_display_id`, `type`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
-  - response: list of `transaction`
+  - response: list of `transaction`; related public fields include `account_display_id`, `order_display_id`, and `invoice_display_id` when available
 
 - `GET /reseller/transactions`
   - auth: reseller actor, `wallet.view`
   - query: `account_user_id`, `account_display_id`, `display_id`, `order_id`, `order_display_id`, `invoice_id`, `invoice_display_id`, `type`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
-  - response: list of `transaction`
+  - response: list of `transaction`; related public fields include `account_display_id`, `order_display_id`, and `invoice_display_id` when available
   - note: tenant scope is forced to the current reseller tenant
 
 - `GET /admin/transactions/{transaction_id}`
@@ -473,18 +473,18 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 - `GET /admin/audit-logs`
   - auth: admin actor, `audit.view`
   - query: `actor_id`, `actor_type`, `display_id`, `action`, `target_type`, `target_id`, `created_from`, `created_to`, `limit`, `cursor`
-  - response: list of audit log summaries
+  - response: list of audit log summaries; related public fields include `actor_display_id` and `target_display_id` when available
 
 - `GET /admin/audit-logs/{audit_log_id}`
   - auth: admin actor, `audit.view`
-  - response: one audit log detail
+  - response: one audit log detail; related public fields include `actor_display_id` and `target_display_id` when available
 
 ### 4.9 Jobs
 
 - `GET /admin/jobs`
   - auth: admin actor, `order.view`
   - query: `display_id`, `job_type`, `status`, `reference_type`, `reference_id`, `source_id`, `source_display_id`, `limit`, `cursor`
-  - response: list of `job`
+  - response: list of `job`; related public fields include `source_display_id` and `reference_display_id` when available
 
 - `GET /admin/jobs/summary`
   - auth: admin actor, `provisioning.job.view`
@@ -494,7 +494,7 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 
 - `GET /admin/jobs/{job_id}`
   - auth: admin actor, `order.view`
-  - response: one `job`
+  - response: one `job`; related public fields include `source_display_id` and `reference_display_id` when available
 
 - `GET /admin/jobs/{job_id}/attempts`
   - auth: admin actor, `order.view`

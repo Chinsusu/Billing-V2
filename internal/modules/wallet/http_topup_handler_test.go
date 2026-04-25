@@ -70,7 +70,19 @@ func TestHTTPHandlerListClientTopupRequestsUsesActorScope(t *testing.T) {
 }
 
 func TestHTTPHandlerListAdminTopupRequestsUsesReviewFilters(t *testing.T) {
-	service := &fakeWalletHTTPService{}
+	service := &fakeWalletHTTPService{topups: []TopupRequest{{
+		ID:                   "topup_1",
+		DisplayID:            90004,
+		TenantID:             "tenant_1",
+		WalletID:             "wallet_1",
+		WalletDisplayID:      70004,
+		RequestedBy:          "account_2",
+		RequestedByDisplayID: 10002,
+		AmountMinor:          5000,
+		Currency:             "USD",
+		PaymentMethod:        PaymentMethodBankTransfer,
+		Status:               TopupStatusUnderReview,
+	}}}
 	handler := registerWalletTestHandler(service)
 
 	request := httptest.NewRequest(http.MethodGet, "/admin/topup-requests?requested_by=account_2&requested_by_display_id=10002&wallet_display_id=70004&display_id=90004&status=under_review&amount_min=100&amount_max=5000", nil)
@@ -92,6 +104,12 @@ func TestHTTPHandlerListAdminTopupRequestsUsesReviewFilters(t *testing.T) {
 		service.topupFilter.AmountMinMinor == nil || *service.topupFilter.AmountMinMinor != 100 ||
 		service.topupFilter.AmountMaxMinor == nil || *service.topupFilter.AmountMaxMinor != 5000 {
 		t.Fatalf("unexpected admin topup filter: %+v", service.topupFilter)
+	}
+	body := response.Body.String()
+	for _, expected := range []string{`"wallet_display_id":70004`, `"requested_by_display_id":10002`} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("expected %s in top-up response, got %s", expected, body)
+		}
 	}
 }
 

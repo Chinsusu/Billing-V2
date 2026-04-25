@@ -232,7 +232,7 @@ export function AdminTopups() {
           <table className="min-w-[1120px] w-full text-[13px] border-collapse">
             <thead>
               <tr className="bg-gray-50">
-                {["ID", "Tenant / Actor", "Amount", "Method", "Ref", "Created", "Proof", "Status", "Actions"].map((h) => (
+                {["ID", "Wallet / Requester", "Amount", "Method", "Ref", "Created", "Proof", "Status", "Actions"].map((h) => (
                   <th key={h} className="text-left text-[11px] font-medium uppercase tracking-wide text-gray-400 p-4 border-b border-gray-200">
                     {h}
                   </th>

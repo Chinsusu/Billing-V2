@@ -8,17 +8,19 @@ import (
 )
 
 type logSummaryResponse struct {
-	ID            ID            `json:"id"`
-	DisplayID     int64         `json:"display_id"`
-	TenantID      tenant.ID     `json:"tenant_id"`
-	ActorID       ActorID       `json:"actor_id,omitempty"`
-	ActorType     ActorType     `json:"actor_type"`
-	Action        string        `json:"action"`
-	TargetType    string        `json:"target_type"`
-	TargetID      TargetID      `json:"target_id"`
-	IPAddress     string        `json:"ip_address,omitempty"`
-	CorrelationID CorrelationID `json:"correlation_id"`
-	CreatedAt     time.Time     `json:"created_at"`
+	ID              ID            `json:"id"`
+	DisplayID       int64         `json:"display_id"`
+	TenantID        tenant.ID     `json:"tenant_id"`
+	ActorID         ActorID       `json:"actor_id,omitempty"`
+	ActorDisplayID  int64         `json:"actor_display_id,omitempty"`
+	ActorType       ActorType     `json:"actor_type"`
+	Action          string        `json:"action"`
+	TargetType      string        `json:"target_type"`
+	TargetID        TargetID      `json:"target_id"`
+	TargetDisplayID int64         `json:"target_display_id,omitempty"`
+	IPAddress       string        `json:"ip_address,omitempty"`
+	CorrelationID   CorrelationID `json:"correlation_id"`
+	CreatedAt       time.Time     `json:"created_at"`
 }
 
 type logDetailResponse struct {
@@ -26,10 +28,12 @@ type logDetailResponse struct {
 	DisplayID              int64           `json:"display_id"`
 	TenantID               tenant.ID       `json:"tenant_id"`
 	ActorID                ActorID         `json:"actor_id,omitempty"`
+	ActorDisplayID         int64           `json:"actor_display_id,omitempty"`
 	ActorType              ActorType       `json:"actor_type"`
 	Action                 string          `json:"action"`
 	TargetType             string          `json:"target_type"`
 	TargetID               TargetID        `json:"target_id"`
+	TargetDisplayID        int64           `json:"target_display_id,omitempty"`
 	BeforeSnapshotRedacted json.RawMessage `json:"before_snapshot_redacted,omitempty"`
 	AfterSnapshotRedacted  json.RawMessage `json:"after_snapshot_redacted,omitempty"`
 	MetadataRedacted       json.RawMessage `json:"metadata_redacted"`
@@ -41,17 +45,19 @@ type logDetailResponse struct {
 
 func newLogSummaryResponse(record Log) logSummaryResponse {
 	return logSummaryResponse{
-		ID:            record.ID,
-		DisplayID:     record.DisplayID,
-		TenantID:      record.TenantID,
-		ActorID:       record.ActorID,
-		ActorType:     record.ActorType,
-		Action:        record.Action,
-		TargetType:    record.TargetType,
-		TargetID:      record.TargetID,
-		IPAddress:     record.IPAddress,
-		CorrelationID: record.CorrelationID,
-		CreatedAt:     record.CreatedAt,
+		ID:              record.ID,
+		DisplayID:       record.DisplayID,
+		TenantID:        record.TenantID,
+		ActorID:         record.ActorID,
+		ActorDisplayID:  record.ActorDisplayID,
+		ActorType:       record.ActorType,
+		Action:          record.Action,
+		TargetType:      record.TargetType,
+		TargetID:        record.TargetID,
+		TargetDisplayID: record.TargetDisplayID,
+		IPAddress:       record.IPAddress,
+		CorrelationID:   record.CorrelationID,
+		CreatedAt:       record.CreatedAt,
 	}
 }
 
@@ -69,10 +75,12 @@ func newLogDetailResponse(record Log) logDetailResponse {
 		DisplayID:              record.DisplayID,
 		TenantID:               record.TenantID,
 		ActorID:                record.ActorID,
+		ActorDisplayID:         record.ActorDisplayID,
 		ActorType:              record.ActorType,
 		Action:                 record.Action,
 		TargetType:             record.TargetType,
 		TargetID:               record.TargetID,
+		TargetDisplayID:        record.TargetDisplayID,
 		BeforeSnapshotRedacted: record.BeforeSnapshotRedacted,
 		AfterSnapshotRedacted:  record.AfterSnapshotRedacted,
 		MetadataRedacted:       record.MetadataRedacted,

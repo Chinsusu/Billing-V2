@@ -15,16 +15,29 @@ type invoiceScanner interface {
 }
 
 func scanInvoice(row invoiceScanner) (Invoice, error) {
+	return scanInvoiceFields(row, false)
+}
+
+func scanInvoiceRead(row invoiceScanner) (Invoice, error) {
+	return scanInvoiceFields(row, true)
+}
+
+func scanInvoiceFields(row invoiceScanner, includeRelatedDisplayIDs bool) (Invoice, error) {
 	var record Invoice
 	var id, tenantID, buyerUserID, status string
 	var orderID sql.NullString
 	var issuedAt, dueAt, paidAt, voidedAt sql.NullTime
+	var buyerDisplayID, orderDisplayID sql.NullInt64
 	var metadata []byte
-	if err := row.Scan(
+	destinations := []interface{}{
 		&id, &record.DisplayID, &tenantID, &buyerUserID, &orderID, &status, &record.Currency,
 		&record.SubtotalMinor, &record.TaxMinor, &record.DiscountMinor, &record.TotalMinor,
 		&issuedAt, &dueAt, &paidAt, &voidedAt, &metadata, &record.CreatedAt, &record.UpdatedAt,
-	); err != nil {
+	}
+	if includeRelatedDisplayIDs {
+		destinations = append(destinations, &buyerDisplayID, &orderDisplayID)
+	}
+	if err := row.Scan(destinations...); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return Invoice{}, ErrInvoiceNotFound
 		}
@@ -34,6 +47,12 @@ func scanInvoice(row invoiceScanner) (Invoice, error) {
 	record.TenantID = tenant.ID(tenantID)
 	record.BuyerUserID = identity.UserID(buyerUserID)
 	record.OrderID = order.OrderID(orderID.String)
+	if buyerDisplayID.Valid {
+		record.BuyerDisplayID = buyerDisplayID.Int64
+	}
+	if orderDisplayID.Valid {
+		record.OrderDisplayID = orderDisplayID.Int64
+	}
 	record.Status = Status(status)
 	if issuedAt.Valid {
 		record.IssuedAt = issuedAt.Time

@@ -56,10 +56,12 @@ type Log struct {
 	DisplayID              int64
 	TenantID               tenant.ID
 	ActorID                ActorID
+	ActorDisplayID         int64
 	ActorType              ActorType
 	Action                 string
 	TargetType             string
 	TargetID               TargetID
+	TargetDisplayID        int64
 	BeforeSnapshotRedacted json.RawMessage
 	AfterSnapshotRedacted  json.RawMessage
 	MetadataRedacted       json.RawMessage

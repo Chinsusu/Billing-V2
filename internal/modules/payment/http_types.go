@@ -12,38 +12,44 @@ import (
 )
 
 type transactionResponse struct {
-	ID            TransactionID     `json:"id"`
-	DisplayID     int64             `json:"display_id"`
-	TenantID      tenant.ID         `json:"tenant_id"`
-	AccountUserID identity.UserID   `json:"account_user_id"`
-	OrderID       order.OrderID     `json:"order_id,omitempty"`
-	InvoiceID     invoice.InvoiceID `json:"invoice_id,omitempty"`
-	Type          TransactionType   `json:"type"`
-	Status        TransactionStatus `json:"status"`
-	Currency      string            `json:"currency"`
-	AmountMinor   int64             `json:"amount_minor"`
-	Description   string            `json:"description,omitempty"`
-	Metadata      json.RawMessage   `json:"metadata"`
-	CreatedAt     time.Time         `json:"created_at"`
-	UpdatedAt     time.Time         `json:"updated_at"`
+	ID               TransactionID     `json:"id"`
+	DisplayID        int64             `json:"display_id"`
+	TenantID         tenant.ID         `json:"tenant_id"`
+	AccountUserID    identity.UserID   `json:"account_user_id"`
+	AccountDisplayID int64             `json:"account_display_id,omitempty"`
+	OrderID          order.OrderID     `json:"order_id,omitempty"`
+	OrderDisplayID   int64             `json:"order_display_id,omitempty"`
+	InvoiceID        invoice.InvoiceID `json:"invoice_id,omitempty"`
+	InvoiceDisplayID int64             `json:"invoice_display_id,omitempty"`
+	Type             TransactionType   `json:"type"`
+	Status           TransactionStatus `json:"status"`
+	Currency         string            `json:"currency"`
+	AmountMinor      int64             `json:"amount_minor"`
+	Description      string            `json:"description,omitempty"`
+	Metadata         json.RawMessage   `json:"metadata"`
+	CreatedAt        time.Time         `json:"created_at"`
+	UpdatedAt        time.Time         `json:"updated_at"`
 }
 
 func newTransactionResponse(transaction Transaction) transactionResponse {
 	return transactionResponse{
-		ID:            transaction.ID,
-		DisplayID:     transaction.DisplayID,
-		TenantID:      transaction.TenantID,
-		AccountUserID: transaction.AccountUserID,
-		OrderID:       transaction.OrderID,
-		InvoiceID:     transaction.InvoiceID,
-		Type:          transaction.Type,
-		Status:        transaction.Status,
-		Currency:      transaction.Currency,
-		AmountMinor:   transaction.AmountMinor,
-		Description:   transaction.Description,
-		Metadata:      transaction.Metadata,
-		CreatedAt:     transaction.CreatedAt,
-		UpdatedAt:     transaction.UpdatedAt,
+		ID:               transaction.ID,
+		DisplayID:        transaction.DisplayID,
+		TenantID:         transaction.TenantID,
+		AccountUserID:    transaction.AccountUserID,
+		AccountDisplayID: transaction.AccountDisplayID,
+		OrderID:          transaction.OrderID,
+		OrderDisplayID:   transaction.OrderDisplayID,
+		InvoiceID:        transaction.InvoiceID,
+		InvoiceDisplayID: transaction.InvoiceDisplayID,
+		Type:             transaction.Type,
+		Status:           transaction.Status,
+		Currency:         transaction.Currency,
+		AmountMinor:      transaction.AmountMinor,
+		Description:      transaction.Description,
+		Metadata:         transaction.Metadata,
+		CreatedAt:        transaction.CreatedAt,
+		UpdatedAt:        transaction.UpdatedAt,
 	}
 }
 

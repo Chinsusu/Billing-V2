@@ -13,7 +13,9 @@ type jobResponse struct {
 	Type                     Type          `json:"job_type"`
 	ReferenceType            ReferenceType `json:"reference_type"`
 	ReferenceID              ReferenceID   `json:"reference_id"`
+	ReferenceDisplayID       int64         `json:"reference_display_id,omitempty"`
 	SourceID                 SourceID      `json:"source_id,omitempty"`
+	SourceDisplayID          int64         `json:"source_display_id,omitempty"`
 	Status                   Status        `json:"status"`
 	Priority                 int           `json:"priority"`
 	AttemptCount             int           `json:"attempt_count"`
@@ -38,7 +40,9 @@ func newJobResponse(job Job) jobResponse {
 		Type:                     job.Type,
 		ReferenceType:            job.ReferenceType,
 		ReferenceID:              job.ReferenceID,
+		ReferenceDisplayID:       job.ReferenceDisplayID,
 		SourceID:                 job.SourceID,
+		SourceDisplayID:          job.SourceDisplayID,
 		Status:                   job.Status,
 		Priority:                 job.Priority,
 		AttemptCount:             job.AttemptCount,
