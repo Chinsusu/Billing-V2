@@ -133,22 +133,19 @@ Nếu diff khó đọc, tách commit hoặc tách PR.
 
 ## Build
 
+Use `docs/05_development_standards/63_Validation_Command_Matrix.md` as the source of truth for the exact validation set by change type.
+
 Khi có Go code, build tối thiểu:
 
 ```bash
 go test ./...
-go build ./cmd/api
-go build ./cmd/worker
-go build ./cmd/scheduler
-go build ./cmd/migrate
-go build ./cmd/cli
+go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker
 ```
 
 Nếu có `Makefile`, dùng lệnh chuẩn:
 
 ```bash
 make fmt
-make lint
 make test
 make build
 ```
@@ -183,6 +180,8 @@ Rule:
 - Không để import thừa, code chết hoặc biến không dùng.
 
 ## Test
+
+Use `docs/05_development_standards/63_Validation_Command_Matrix.md` for the command matrix by change type.
 
 Mức test tối thiểu:
 

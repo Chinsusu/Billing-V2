@@ -161,6 +161,7 @@ Rules:
 ## Testing Rules
 
 - Add or update tests required by `docs/05_development_standards/49_Testing_Strategy_And_Quality_Gates.md`.
+- Use `docs/05_development_standards/63_Validation_Command_Matrix.md` to choose validation commands for each change type.
 - Run relevant tests before PR.
 - Run full tests when changing shared platform code.
 - Test money flows for idempotency and double-debit prevention.

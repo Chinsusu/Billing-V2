@@ -4,6 +4,8 @@
 **Date:** 2026-04-22  
 **Scope:** Unit tests, integration tests, database tests, CI gates, and release quality checks.
 
+Central command matrix: `docs/05_development_standards/63_Validation_Command_Matrix.md`.
+
 ## Mục tiêu
 
 Tài liệu này định nghĩa test nào cần có trước khi merge. Mục tiêu không phải là coverage đẹp, mà là bắt được lỗi thật trong flow tiền, tenant, quyền, provider và provisioning.
@@ -55,18 +57,13 @@ go test ./...
 Khi có nhiều entrypoint:
 
 ```bash
-go build ./cmd/api
-go build ./cmd/worker
-go build ./cmd/scheduler
-go build ./cmd/migrate
-go build ./cmd/cli
+go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker
 ```
 
 Khi có `Makefile`, dùng:
 
 ```bash
 make fmt
-make lint
 make test
 make build
 ```

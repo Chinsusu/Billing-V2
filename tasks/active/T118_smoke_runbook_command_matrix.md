@@ -1,7 +1,7 @@
 # T118 - Smoke runbook command matrix
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t118-smoke-runbook-command-matrix
 PR: -
 Risk: docs/workflow
@@ -34,3 +34,5 @@ Unify smoke test and validation command documentation so agents know which check
 ## Agent Log
 
 - 2026-04-25: Task created in the board and delivery hardening batch.
+- 2026-04-25: Codex claimed the task; consolidating smoke and validation commands into one command matrix.
+- 2026-04-25: Added the validation command matrix, linked related docs, and corrected stale build command examples; validation passed for task, contract, error-code guards, Go tests, and diff check.

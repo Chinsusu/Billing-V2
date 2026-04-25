@@ -308,6 +308,8 @@ docs/02_technical_handoff/16_API_Contract_And_Permission_Spec.md
 
 ## Build validation
 
+Use `docs/05_development_standards/63_Validation_Command_Matrix.md` for the exact frontend validation set by change type.
+
 PR frontend app shell phải ghi rõ lệnh đã chạy:
 
 ```bash
