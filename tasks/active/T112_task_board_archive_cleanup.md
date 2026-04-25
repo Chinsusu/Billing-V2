@@ -1,9 +1,9 @@
 # T112 - Task board archive cleanup
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t112-task-board-archive-cleanup
-PR: pending
+PR: https://github.com/Chinsusu/Billing-V2/pull/253
 Risk: workflow/docs
 Created: 2026-04-25
 Updated: 2026-04-25
@@ -36,3 +36,4 @@ Clean up task board documentation so active, done, and removed task records are 
 - 2026-04-25: Task created in the post-readiness hardening batch.
 - 2026-04-25: Codex claimed the task; cleaning the task index and archive guidance after T107-T111 merged.
 - 2026-04-25: Updated `TASKS.md` to show only claimable TODO work, separated T112 as review-only in-flight work, and clarified archive rules in `tasks/README.md`. Validation passed: `go run ./cmd/contractguard`, `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker ./cmd/contractguard`.
+- 2026-04-25: PR #253 passed CI and merged into main at `0a0ba0c`; moved the task to done and updated the board snapshot to no open task files.
