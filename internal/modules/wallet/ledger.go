@@ -8,23 +8,24 @@ import (
 )
 
 type LedgerEntry struct {
-	ID                LedgerEntryID
-	DisplayID         int64
-	WalletID          WalletID
-	TenantID          tenant.ID
-	Direction         Direction
-	AmountMinor       int64
-	Currency          string
-	EntryType         EntryType
-	Status            LedgerStatus
-	BalanceAfterMinor int64
-	ReferenceType     ReferenceType
-	ReferenceID       ReferenceID
-	IdempotencyKey    IdempotencyKey
-	CreatedBy         identity.UserID
-	Reason            string
-	CorrelationID     CorrelationID
-	CreatedAt         time.Time
+	ID                 LedgerEntryID
+	DisplayID          int64
+	WalletID           WalletID
+	TenantID           tenant.ID
+	Direction          Direction
+	AmountMinor        int64
+	Currency           string
+	EntryType          EntryType
+	Status             LedgerStatus
+	BalanceAfterMinor  int64
+	ReferenceType      ReferenceType
+	ReferenceID        ReferenceID
+	ReferenceDisplayID int64
+	IdempotencyKey     IdempotencyKey
+	CreatedBy          identity.UserID
+	Reason             string
+	CorrelationID      CorrelationID
+	CreatedAt          time.Time
 }
 
 type CreateLedgerEntryInput struct {

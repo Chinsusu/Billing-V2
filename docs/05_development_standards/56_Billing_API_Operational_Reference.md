@@ -157,7 +157,7 @@ Invoice detail adds:
 
 `ledger` response fields:
 
-`id`, `display_id`, `wallet_id`, `tenant_id`, `direction`, `amount_minor`, `currency`, `entry_type`, `status`, `balance_after_minor`, `reference_type`, `reference_id`, `created_by`, `reason`, `correlation_id`, `created_at`
+`id`, `display_id`, `wallet_id`, `tenant_id`, `direction`, `amount_minor`, `currency`, `entry_type`, `status`, `balance_after_minor`, `reference_type`, `reference_id`, `reference_display_id`, `created_by`, `reason`, `correlation_id`, `created_at`
 
 ### 3.5 Top-up request
 
@@ -335,7 +335,7 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 - `GET /client/wallets/{wallet_id}/ledger`
   - auth: client actor, `wallet.view`
   - query: `display_id`, `direction`, `entry_type`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
-  - response: list of `ledger`
+  - response: list of `ledger`; related public fields include `reference_display_id` when available
 
 - `GET /admin/wallets`
   - auth: admin actor, `wallet.view`
@@ -349,7 +349,7 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 - `GET /admin/wallets/{wallet_id}/ledger`
   - auth: admin actor, `wallet.view`
   - query: `display_id`, `direction`, `entry_type`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
-  - response: list of `ledger`
+  - response: list of `ledger`; related public fields include `reference_display_id` when available
 
 - `GET /reseller/wallets`
   - auth: reseller actor, `wallet.view`
@@ -364,7 +364,7 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 - `GET /reseller/wallets/{wallet_id}/ledger`
   - auth: reseller actor, `wallet.view`
   - query: `display_id`, `direction`, `entry_type`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
-  - response: list of `ledger`
+  - response: list of `ledger`; related public fields include `reference_display_id` when available
 
 ### 4.5 Top-up requests
 

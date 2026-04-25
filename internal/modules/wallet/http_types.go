@@ -25,22 +25,23 @@ type walletResponse struct {
 }
 
 type ledgerEntryResponse struct {
-	ID                LedgerEntryID   `json:"id"`
-	DisplayID         int64           `json:"display_id"`
-	WalletID          WalletID        `json:"wallet_id"`
-	TenantID          tenant.ID       `json:"tenant_id"`
-	Direction         Direction       `json:"direction"`
-	AmountMinor       int64           `json:"amount_minor"`
-	Currency          string          `json:"currency"`
-	EntryType         EntryType       `json:"entry_type"`
-	Status            LedgerStatus    `json:"status"`
-	BalanceAfterMinor int64           `json:"balance_after_minor"`
-	ReferenceType     ReferenceType   `json:"reference_type"`
-	ReferenceID       ReferenceID     `json:"reference_id"`
-	CreatedBy         identity.UserID `json:"created_by,omitempty"`
-	Reason            string          `json:"reason,omitempty"`
-	CorrelationID     CorrelationID   `json:"correlation_id"`
-	CreatedAt         time.Time       `json:"created_at"`
+	ID                 LedgerEntryID   `json:"id"`
+	DisplayID          int64           `json:"display_id"`
+	WalletID           WalletID        `json:"wallet_id"`
+	TenantID           tenant.ID       `json:"tenant_id"`
+	Direction          Direction       `json:"direction"`
+	AmountMinor        int64           `json:"amount_minor"`
+	Currency           string          `json:"currency"`
+	EntryType          EntryType       `json:"entry_type"`
+	Status             LedgerStatus    `json:"status"`
+	BalanceAfterMinor  int64           `json:"balance_after_minor"`
+	ReferenceType      ReferenceType   `json:"reference_type"`
+	ReferenceID        ReferenceID     `json:"reference_id"`
+	ReferenceDisplayID int64           `json:"reference_display_id,omitempty"`
+	CreatedBy          identity.UserID `json:"created_by,omitempty"`
+	Reason             string          `json:"reason,omitempty"`
+	CorrelationID      CorrelationID   `json:"correlation_id"`
+	CreatedAt          time.Time       `json:"created_at"`
 }
 
 func newWalletResponse(wallet Wallet) walletResponse {
@@ -71,22 +72,23 @@ func newWalletResponses(wallets []Wallet) []walletResponse {
 
 func newLedgerEntryResponse(entry LedgerEntry) ledgerEntryResponse {
 	return ledgerEntryResponse{
-		ID:                entry.ID,
-		DisplayID:         entry.DisplayID,
-		WalletID:          entry.WalletID,
-		TenantID:          entry.TenantID,
-		Direction:         entry.Direction,
-		AmountMinor:       entry.AmountMinor,
-		Currency:          entry.Currency,
-		EntryType:         entry.EntryType,
-		Status:            entry.Status,
-		BalanceAfterMinor: entry.BalanceAfterMinor,
-		ReferenceType:     entry.ReferenceType,
-		ReferenceID:       entry.ReferenceID,
-		CreatedBy:         entry.CreatedBy,
-		Reason:            entry.Reason,
-		CorrelationID:     entry.CorrelationID,
-		CreatedAt:         entry.CreatedAt,
+		ID:                 entry.ID,
+		DisplayID:          entry.DisplayID,
+		WalletID:           entry.WalletID,
+		TenantID:           entry.TenantID,
+		Direction:          entry.Direction,
+		AmountMinor:        entry.AmountMinor,
+		Currency:           entry.Currency,
+		EntryType:          entry.EntryType,
+		Status:             entry.Status,
+		BalanceAfterMinor:  entry.BalanceAfterMinor,
+		ReferenceType:      entry.ReferenceType,
+		ReferenceID:        entry.ReferenceID,
+		ReferenceDisplayID: entry.ReferenceDisplayID,
+		CreatedBy:          entry.CreatedBy,
+		Reason:             entry.Reason,
+		CorrelationID:      entry.CorrelationID,
+		CreatedAt:          entry.CreatedAt,
 	}
 }
 

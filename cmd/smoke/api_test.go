@@ -130,6 +130,7 @@ func TestAPISmokeChecksIncludeRelatedDisplayIDResponses(t *testing.T) {
 	checks := apiSmokeChecks()
 	expected := map[string][]string{
 		"admin wallet list":              {`"owner_display_id":10002`},
+		"client wallet ledger":           {`"reference_display_id":52001`, `"reference_display_id":44001`},
 		"admin service list":             {`"order_display_id":42001`, `"buyer_display_id":10002`, `"provider_source_display_id":10000`},
 		"admin order list":               {`"buyer_display_id":10002`},
 		"client wallet list":             {`"owner_display_id":10002`},

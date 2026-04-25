@@ -42,6 +42,7 @@ export interface LedgerEntry {
   balance_after_minor: number;
   reference_type: string;
   reference_id?: string;
+  reference_display_id?: number;
   created_by?: string;
   reason?: string;
   correlation_id?: string;

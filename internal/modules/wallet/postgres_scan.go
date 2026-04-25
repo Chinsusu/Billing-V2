@@ -40,14 +40,27 @@ func scanWallet(row ledgerEntryScanner) (Wallet, error) {
 }
 
 func scanLedgerEntry(row ledgerEntryScanner) (LedgerEntry, error) {
+	return scanLedgerEntryFields(row, false)
+}
+
+func scanLedgerEntryRead(row ledgerEntryScanner) (LedgerEntry, error) {
+	return scanLedgerEntryFields(row, true)
+}
+
+func scanLedgerEntryFields(row ledgerEntryScanner, includeReferenceDisplayID bool) (LedgerEntry, error) {
 	var record LedgerEntry
 	var id, walletID, tenantID, direction, currency, entryType, status, referenceType, referenceID, idempotencyKey, correlationID string
+	var referenceDisplayID sql.NullInt64
 	var createdBy, reason sql.NullString
-	if err := row.Scan(
+	destinations := []interface{}{
 		&id, &record.DisplayID, &walletID, &tenantID, &direction, &record.AmountMinor, &currency,
 		&entryType, &status, &record.BalanceAfterMinor, &referenceType, &referenceID, &idempotencyKey,
 		&createdBy, &reason, &correlationID, &record.CreatedAt,
-	); err != nil {
+	}
+	if includeReferenceDisplayID {
+		destinations = append(destinations, &referenceDisplayID)
+	}
+	if err := row.Scan(destinations...); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return LedgerEntry{}, ErrLedgerEntryNotFound
 		}
@@ -62,6 +75,9 @@ func scanLedgerEntry(row ledgerEntryScanner) (LedgerEntry, error) {
 	record.Status = LedgerStatus(status)
 	record.ReferenceType = ReferenceType(referenceType)
 	record.ReferenceID = ReferenceID(referenceID)
+	if referenceDisplayID.Valid {
+		record.ReferenceDisplayID = referenceDisplayID.Int64
+	}
 	record.IdempotencyKey = IdempotencyKey(idempotencyKey)
 	record.CreatedBy = identity.UserID(createdBy.String)
 	record.Reason = reason.String

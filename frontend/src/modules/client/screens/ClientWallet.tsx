@@ -6,6 +6,7 @@ import { useState } from "react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
+import type { LedgerEntry } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { CLIENT_LEDGER } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
@@ -23,6 +24,17 @@ function amountToMinor(value: string): number | null {
   const parsed = Number.parseFloat(value);
   if (!Number.isFinite(parsed) || parsed <= 0) return null;
   return Math.round(parsed * 100);
+}
+
+function ledgerReferenceLabel(entry: LedgerEntry): string {
+  if (!entry.reference_display_id) return recordLabel(entry.display_id, "LED-");
+  const prefixes: Record<string, string> = {
+    invoice: "INV-",
+    order: "ORD-",
+    payment_transaction: "TX-",
+    topup_request: "TUP-",
+  };
+  return recordLabel(entry.reference_display_id, prefixes[entry.reference_type] ?? "#");
 }
 
 export function ClientWallet() {
@@ -50,7 +62,7 @@ export function ClientWallet() {
         type: entry.entry_type,
         amountMinor: entry.direction === "debit" ? -entry.amount_minor : entry.amount_minor,
         amountText: moneyMinor(entry.direction === "debit" ? -entry.amount_minor : entry.amount_minor, entry.currency),
-        ref: `${entry.reference_type} ${recordLabel(entry.display_id, "LED-")}`,
+        ref: ledgerReferenceLabel(entry),
         balanceText: moneyMinor(entry.balance_after_minor, entry.currency),
       }))
     : CLIENT_LEDGER.map((entry) => ({
