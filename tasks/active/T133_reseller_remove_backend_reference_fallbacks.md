@@ -1,6 +1,6 @@
 # T133 - Reseller remove backend reference fallbacks
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t133-reseller-remove-backend-fallbacks
 PR: https://github.com/Chinsusu/Billing-V2/pull/297
@@ -34,3 +34,4 @@ Remove reseller frontend fallbacks that join wallet/customer labels by backend u
 - 2026-04-26: Removed reseller backend-ID label fallbacks for billing customer labels and wallet owner display lookups.
 - 2026-04-26: Local validation passed: `npm --prefix frontend run lint`, `npm --prefix frontend run check:sensitive-text`, `npm --prefix frontend run build`, `go run ./cmd/taskguard`, and `git diff --check`.
 - 2026-04-26: Opened PR https://github.com/Chinsusu/Billing-V2/pull/297 for review.
+- 2026-04-26: PR https://github.com/Chinsusu/Billing-V2/pull/297 merged into `main`; marking task done.
