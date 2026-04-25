@@ -1,7 +1,7 @@
 # Frontend App Shell and UI Implementation Standard
 
-**Version:** v1.8  
-**Date:** 2026-04-22  
+**Version:** v1.9
+**Date:** 2026-04-25
 **Scope:** Frontend app shell, runnable UI deliverables, mock data, navigation, screen structure, and build validation.
 
 ## Mục tiêu
@@ -317,6 +317,16 @@ npm run build
 ```
 
 `npm run preview` dùng để smoke test thủ công sau build. Không dùng lệnh preview như CI gate nếu command giữ server chạy liên tục.
+
+Khi task thay đổi admin navigation, admin screen, API adapter, mock data, hoặc response mapping, chạy thêm browser smoke:
+
+```bash
+cd frontend
+npm run smoke:admin
+```
+
+Browser smoke dùng dữ liệu mock/intercept an toàn, không cần backend thật hoặc provider credential thật. Nếu command fail vì thiếu browser runtime trên máy mới, cài browser Playwright local bằng `npx playwright install chromium`, rồi chạy lại smoke.
+Không chạy `npm run smoke:admin` song song với `npm run build`, vì cả hai lệnh đều ghi vào thư mục `.next`.
 
 Nếu dùng package manager khác, ghi rõ:
 

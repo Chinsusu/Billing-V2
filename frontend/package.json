@@ -7,7 +7,8 @@
     "build": "next build",
     "preview": "next start",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "smoke:admin": "node scripts/smoke-admin-browser.cjs"
   },
   "dependencies": {
     "lucide-react": "^1.8.0",
@@ -22,6 +23,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.15",
+    "playwright": "^1.57.0",
     "postcss": "^8",
     "tailwindcss": "^4",
     "typescript": "^5"

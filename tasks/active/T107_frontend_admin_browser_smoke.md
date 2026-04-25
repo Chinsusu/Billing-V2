@@ -1,7 +1,7 @@
 # T107 - Frontend admin browser smoke
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t107-frontend-admin-browser-smoke
 PR: -
 Risk: frontend/QA
@@ -36,3 +36,6 @@ Add a repeatable browser smoke for the admin frontend shell so critical admin sc
 ## Agent Log
 
 - 2026-04-25: Task created in the post-readiness hardening batch.
+- 2026-04-25: Codex claimed the task on `codex/t107-frontend-admin-browser-smoke`.
+- 2026-04-25: Added `npm run smoke:admin`, a Playwright browser smoke that starts Next locally, intercepts admin API calls, checks admin overview/provisioning/provider/top-up/audit screens, and blocks sensitive/internal text in rendered UI.
+- 2026-04-25: Validation passed: `npm ci`, `npm audit --omit=dev`, `npm run lint`, `npm run build`, `npm run smoke:admin`, `go test ./...`, and `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`.
