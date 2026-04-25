@@ -1,6 +1,6 @@
 # T140 - Audit target public IDs
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t140-audit-target-public-ids
 PR: https://github.com/Chinsusu/Billing-V2/pull/311
@@ -37,3 +37,4 @@ Resolve service and provider-source public IDs for live audit log target labels 
 - 2026-04-26: Added service/provider-source target display ID joins, matching target display ID filters, and frontend `SVC-*` / `SRC-*` audit target labels.
 - 2026-04-26: Local validation passed: `go test ./internal/modules/audit`, `go test ./...`, `npm --prefix frontend run lint`, `npm --prefix frontend run check:sensitive-text`, `npm --prefix frontend run build`, `go run ./cmd/taskguard`, and `git diff --check`.
 - 2026-04-26: Opened PR https://github.com/Chinsusu/Billing-V2/pull/311 for review.
+- 2026-04-26: PR https://github.com/Chinsusu/Billing-V2/pull/311 merged into `main`; marking task done.
