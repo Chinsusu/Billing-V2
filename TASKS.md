@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-25` while T120 is in progress:
+Current board snapshot on `2026-04-25` while T120 is in review:
 
 - `TODO`: 4
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 116
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -70,7 +70,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T120 | [tasks/active/T120_public_display_id_api_policy.md](tasks/active/T120_public_display_id_api_policy.md) | IN_PROGRESS | Codex | codex/t120-public-display-id-api-policy | Document public numeric ID versus backend reference rules. |
+| T120 | [tasks/active/T120_public_display_id_api_policy.md](tasks/active/T120_public_display_id_api_policy.md) | REVIEW | Codex | codex/t120-public-display-id-api-policy | Document public numeric ID versus backend reference rules. |
 
 ## Done Task Files
 
