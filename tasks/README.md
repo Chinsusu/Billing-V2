@@ -4,6 +4,8 @@ Task files reduce merge conflicts between coding agents.
 
 `TASKS.md` is only the index. Each active task owns one file under `tasks/active/`, and the assigned agent updates only that file while working. Removed or dropped tasks should be archived under `tasks/removed/`.
 
+`TASKS.md` should list only claimable `TODO` work in its claimable table. Done task files can stay under `tasks/active/` as historical records, but they must be summarized in a done/archive section so agents do not treat them as available work.
+
 ## Claim Flow
 
 1. Pull latest `main`.
@@ -54,6 +56,7 @@ Do not mark a task `DONE` before its PR is merged.
 ## Conflict Rules
 
 - Do not edit another agent's task file.
+- Do not edit DONE task files during normal work.
 - Do not create child branches from another agent's feature/task branch.
 - Do not merge or rebase another task branch into your task branch unless the task owner asks for that handoff.
 - Do not edit `TASKS.md` for normal claim/review/done updates.
