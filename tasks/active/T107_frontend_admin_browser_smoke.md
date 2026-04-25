@@ -1,6 +1,6 @@
 # T107 - Frontend admin browser smoke
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t107-frontend-admin-browser-smoke
 PR: https://github.com/Chinsusu/Billing-V2/pull/243
@@ -40,3 +40,4 @@ Add a repeatable browser smoke for the admin frontend shell so critical admin sc
 - 2026-04-25: Added `npm run smoke:admin`, a Playwright browser smoke that starts Next locally, intercepts admin API calls, checks admin overview/provisioning/provider/top-up/audit screens, and blocks sensitive/internal text in rendered UI.
 - 2026-04-25: Validation passed: `npm ci`, `npm audit --omit=dev`, `npm run lint`, `npm run build`, `npm run smoke:admin`, `go test ./...`, and `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`.
 - 2026-04-25: Opened PR #243 and moved the task to review.
+- 2026-04-25: PR #243 passed CI and merged into main at `36e9ded`; moved the task to done.
