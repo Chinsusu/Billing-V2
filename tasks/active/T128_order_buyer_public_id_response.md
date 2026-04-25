@@ -1,6 +1,6 @@
 # T128 - Order buyer public ID response
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t128-order-buyer-public-id-response
 PR: https://github.com/Chinsusu/Billing-V2/pull/287
@@ -34,3 +34,4 @@ Expose buyer public ID on order responses so admin/client flows can show account
 - 2026-04-25: Codex created and claimed the task after T127 merged; starting order buyer public ID response support.
 - 2026-04-25: Codex implemented `buyer_display_id` in order read responses, frontend API type, smoke checks, and API reference. Local validation passed: `go test $(go run ./cmd/gopackages)`, `go build ./cmd/api ./cmd/worker ./cmd/smoke`, `npm --prefix frontend run lint`, `npm --prefix frontend run check:sensitive-text`, `npm --prefix frontend run build`, `go run ./cmd/taskguard`, and `git diff --check`.
 - 2026-04-25: Opened PR https://github.com/Chinsusu/Billing-V2/pull/287 for review and CI.
+- 2026-04-25: PR https://github.com/Chinsusu/Billing-V2/pull/287 passed CI and was merged to `main`; task marked DONE.
