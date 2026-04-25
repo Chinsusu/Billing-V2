@@ -1,6 +1,6 @@
 # T122 - Admin frontend public ID filters
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t122-admin-frontend-public-id-filters
 PR: https://github.com/Chinsusu/Billing-V2/pull/275
@@ -38,3 +38,4 @@ Update admin frontend filters and labels to prefer numeric public IDs after back
 - 2026-04-25: Added admin public ID filter wiring for accounts, invoices, transactions, services, top-ups, provisioning, provider sources, and readiness; audit actor filter wording now avoids backend-reference language.
 - 2026-04-25: Local validation passed: frontend build, lint, sensitive-text guard, admin smoke, taskguard, and diff check.
 - 2026-04-25: Opened PR #275 for review.
+- 2026-04-25: PR #275 merged into main.
