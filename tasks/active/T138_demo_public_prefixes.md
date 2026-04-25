@@ -1,6 +1,6 @@
 # T138 - Demo public ID prefixes
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t138-demo-public-prefixes
 PR: https://github.com/Chinsusu/Billing-V2/pull/307
@@ -36,3 +36,4 @@ Align visible demo and fallback IDs with the public ID prefixes used by the live
 - 2026-04-26: Replaced demo provider, provisioning job, and transaction IDs with `SRC-*`, `JOB-*`, and `TX-*` public prefixes.
 - 2026-04-26: Local validation passed: `npm --prefix frontend run lint`, `npm --prefix frontend run check:sensitive-text`, `npm --prefix frontend run build`, `go run ./cmd/taskguard`, and `git diff --check`.
 - 2026-04-26: Opened PR https://github.com/Chinsusu/Billing-V2/pull/307 for review.
+- 2026-04-26: PR https://github.com/Chinsusu/Billing-V2/pull/307 merged into `main`; marking task done.
