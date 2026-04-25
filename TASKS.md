@@ -33,8 +33,8 @@ REMOVED      archived by user decision and no longer part of the board
 Current board snapshot on `2026-04-25` after T121 is done:
 
 - `TODO`: 1
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 119
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T123 | [tasks/active/T123_public_id_smoke_coverage.md](tasks/active/T123_public_id_smoke_coverage.md) | IN_PROGRESS | Codex | codex/t123-public-id-smoke-coverage | Cover public ID admin flows in smoke checks. |
+| T123 | [tasks/active/T123_public_id_smoke_coverage.md](tasks/active/T123_public_id_smoke_coverage.md) | REVIEW | Codex | codex/t123-public-id-smoke-coverage | Cover public ID admin flows in smoke checks. |
 
 ## Done Task Files
 

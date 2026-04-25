@@ -1,9 +1,9 @@
 # T123 - Public ID smoke coverage
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t123-public-id-smoke-coverage
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/277
 Risk: smoke/API/frontend
 Created: 2026-04-25
 Updated: 2026-04-25
@@ -37,3 +37,4 @@ Add smoke coverage that proves public numeric IDs work in admin API/UI flows and
 - 2026-04-25: Codex claimed the task after T122 merged; reviewing smoke fixtures and browser/API coverage for public ID filters.
 - 2026-04-25: Added API smoke positive/miss checks for admin public ID filters and browser smoke coverage for the invoice public ID filter UI.
 - 2026-04-25: Local validation passed: frontend smoke, frontend build/lint/sensitive-text guard, cmd/smoke tests, Go package tests, Go command builds, taskguard, and diff check.
+- 2026-04-25: Opened PR #277 for review.
