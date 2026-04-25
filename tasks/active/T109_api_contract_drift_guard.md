@@ -1,9 +1,9 @@
 # T109 - API contract drift guard
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: codex/t109-api-contract-drift-guard
-PR: -
+PR: pending
 Risk: docs/API/CI
 Created: 2026-04-25
 Updated: 2026-04-25
@@ -34,3 +34,5 @@ Add a lightweight guard that helps detect when backend route changes drift from 
 ## Agent Log
 
 - 2026-04-25: Task created in the post-readiness hardening batch.
+- 2026-04-25: Codex claimed the task; adding a lightweight route/reference drift guard.
+- 2026-04-25: Added `cmd/contractguard`, `make contract-guard`, CI guard step, and docs for updating tracked API contracts. Validation passed: `go run ./cmd/contractguard`, `go test ./cmd/contractguard`, `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker ./cmd/contractguard`. Local `make contract-guard` could not run because `make` is not installed on this Windows host; the equivalent Go command passed.

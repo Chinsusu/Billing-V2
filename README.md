@@ -55,3 +55,4 @@ Development standards:
 - [Frontend app shell and UI implementation standard](docs/05_development_standards/53_Frontend_App_Shell_And_UI_Implementation_Standard.md)
 - [Multi-agent task board conflict workflow](docs/05_development_standards/54_Multi_Agent_Task_Board_Conflict_Workflow.md)
 - [Local development runbook](docs/05_development_standards/55_Local_Development_Runbook.md)
+- [API contract drift guard](docs/05_development_standards/59_API_Contract_Drift_Guard.md)
