@@ -1,6 +1,6 @@
 # T131 - Wallet owner public ID response
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t131-wallet-owner-public-id
 PR: https://github.com/Chinsusu/Billing-V2/pull/293
@@ -34,3 +34,4 @@ Expose wallet owner public IDs so admin/reseller/client wallet reads can show ac
 - 2026-04-26: Codex created and claimed the task after T130 was marked done; starting wallet owner public ID response support.
 - 2026-04-26: Codex implemented `owner_display_id` in wallet read responses, frontend wallet types, reseller wallet lookups, API reference, smoke checks, and wallet tests. Local validation passed: `go test $(go run ./cmd/gopackages)`, `go build ./cmd/api ./cmd/worker ./cmd/smoke`, `npm --prefix frontend run lint`, `npm --prefix frontend run check:sensitive-text`, `npm --prefix frontend run build`, `go run ./cmd/taskguard`, and `git diff --check`.
 - 2026-04-26: Opened PR https://github.com/Chinsusu/Billing-V2/pull/293 for review and CI.
+- 2026-04-26: PR https://github.com/Chinsusu/Billing-V2/pull/293 passed CI and was merged to `main`; task marked DONE.
