@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-25` after claiming T113:
+Current board snapshot on `2026-04-25` after opening T113 review:
 
 - `TODO`: 5
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 109
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -71,7 +71,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T113 | [tasks/active/T113_task_board_consistency_guard.md](tasks/active/T113_task_board_consistency_guard.md) | IN_PROGRESS | Codex | codex/t113-task-board-consistency-guard | Add a lightweight guard for task board metadata drift. |
+| T113 | [tasks/active/T113_task_board_consistency_guard.md](tasks/active/T113_task_board_consistency_guard.md) | REVIEW | Codex | codex/t113-task-board-consistency-guard | Add a lightweight guard for task board metadata drift. |
 
 ## Done Task Files
 
