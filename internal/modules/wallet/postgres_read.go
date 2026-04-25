@@ -6,6 +6,13 @@ import (
 )
 
 const ledgerEntryReadColumns = `entry.ledger_entry_id, entry.display_id, entry.wallet_id, entry.tenant_id, entry.direction, entry.amount_minor, entry.currency, entry.entry_type, entry.status, entry.balance_after_minor, entry.reference_type, entry.reference_id, entry.idempotency_key, entry.created_by, entry.reason, entry.correlation_id, entry.created_at`
+const ledgerEntryRelatedReadColumns = ledgerEntryReadColumns + `,
+CASE entry.reference_type
+WHEN 'topup_request' THEN (SELECT topup.display_id FROM topup_requests topup WHERE topup.topup_request_id = entry.reference_id AND topup.tenant_id = entry.tenant_id)
+WHEN 'invoice' THEN (SELECT invoice.display_id FROM invoices invoice WHERE invoice.invoice_id = entry.reference_id AND invoice.tenant_id = entry.tenant_id)
+WHEN 'order' THEN (SELECT ord.display_id FROM orders ord WHERE ord.order_id = entry.reference_id AND ord.tenant_id = entry.tenant_id)
+WHEN 'payment_transaction' THEN (SELECT txn.display_id FROM payment_transactions txn WHERE txn.payment_transaction_id = entry.reference_id AND txn.tenant_id = entry.tenant_id)
+END AS reference_display_id`
 const topupRequestReadColumns = `topup.topup_request_id, topup.display_id, topup.tenant_id, topup.wallet_id, topup.requested_by, topup.amount_minor, topup.currency, topup.payment_method, topup.payment_reference, topup.status, topup.reviewed_by, topup.reviewed_at, topup.review_note, topup.ledger_entry_id, topup.idempotency_key, topup.created_at, topup.updated_at`
 const topupRequestRelatedReadColumns = topupRequestReadColumns + `,
 (SELECT wallet.display_id FROM wallets wallet WHERE wallet.wallet_id = topup.wallet_id AND wallet.tenant_id = topup.tenant_id) AS wallet_display_id,
@@ -118,7 +125,7 @@ func (store *PostgresStore) ListLedgerEntries(ctx context.Context, filter Ledger
 	defer rows.Close()
 	entries := make([]LedgerEntry, 0)
 	for rows.Next() {
-		entry, err := scanLedgerEntry(rows)
+		entry, err := scanLedgerEntryRead(rows)
 		if err != nil {
 			return nil, err
 		}
@@ -138,7 +145,7 @@ func (store *PostgresStore) GetLedgerEntry(ctx context.Context, lookup LedgerEnt
 	if err != nil {
 		return LedgerEntry{}, err
 	}
-	return scanLedgerEntry(store.executor.QueryRowContext(ctx, query, args...))
+	return scanLedgerEntryRead(store.executor.QueryRowContext(ctx, query, args...))
 }
 
 func buildListLedgerEntriesQuery(filter LedgerEntryFilter) (string, []interface{}, error) {
@@ -146,7 +153,7 @@ func buildListLedgerEntriesQuery(filter LedgerEntryFilter) (string, []interface{
 	if err := validateLedgerEntryFilter(filter); err != nil {
 		return "", nil, err
 	}
-	query := `SELECT ` + ledgerEntryReadColumns + `
+	query := `SELECT ` + ledgerEntryRelatedReadColumns + `
 FROM wallet_ledger_entries entry
 WHERE entry.tenant_id = $1
   AND entry.wallet_id = $2`
@@ -184,7 +191,7 @@ func buildGetLedgerEntryQuery(lookup LedgerEntryLookup) (string, []interface{}, 
 	if err := validateLedgerEntryLookup(lookup); err != nil {
 		return "", nil, err
 	}
-	query := `SELECT ` + ledgerEntryReadColumns + `
+	query := `SELECT ` + ledgerEntryRelatedReadColumns + `
 FROM wallet_ledger_entries entry
 WHERE entry.ledger_entry_id = $1
   AND entry.tenant_id = $2

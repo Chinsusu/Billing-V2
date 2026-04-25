@@ -81,15 +81,16 @@ func TestHTTPHandlerListClientLedgerVerifiesWalletOwner(t *testing.T) {
 	service := &fakeWalletHTTPService{
 		wallet: Wallet{ID: "wallet_1", DisplayID: 70003, TenantID: "tenant_1"},
 		entries: []LedgerEntry{{
-			ID:          "entry_1",
-			DisplayID:   71001,
-			WalletID:    "wallet_1",
-			TenantID:    "tenant_1",
-			Direction:   DirectionCredit,
-			AmountMinor: 1000,
-			Currency:    "USD",
-			EntryType:   EntryTypeTopup,
-			Status:      LedgerStatusPosted,
+			ID:                 "entry_1",
+			DisplayID:          71001,
+			WalletID:           "wallet_1",
+			TenantID:           "tenant_1",
+			Direction:          DirectionCredit,
+			AmountMinor:        1000,
+			Currency:           "USD",
+			EntryType:          EntryTypeTopup,
+			Status:             LedgerStatusPosted,
+			ReferenceDisplayID: 52001,
 		}},
 	}
 	handler := registerWalletTestHandler(service)
@@ -112,6 +113,9 @@ func TestHTTPHandlerListClientLedgerVerifiesWalletOwner(t *testing.T) {
 		service.ledgerFilter.EntryType != EntryTypeTopup ||
 		service.ledgerFilter.Limit != 8 {
 		t.Fatalf("unexpected ledger filter: %+v", service.ledgerFilter)
+	}
+	if !strings.Contains(response.Body.String(), `"reference_display_id":52001`) {
+		t.Fatalf("expected ledger reference display id, got %s", response.Body.String())
 	}
 }
 
@@ -176,15 +180,16 @@ func TestHTTPHandlerListResellerWalletsUsesTenantAndOwnerFilter(t *testing.T) {
 
 func TestHTTPHandlerListResellerLedgerUsesTenantAndWallet(t *testing.T) {
 	service := &fakeWalletHTTPService{entries: []LedgerEntry{{
-		ID:          "entry_3",
-		DisplayID:   71003,
-		WalletID:    "wallet_3",
-		TenantID:    "reseller_tenant",
-		Direction:   DirectionCredit,
-		AmountMinor: 2000,
-		Currency:    "USD",
-		EntryType:   EntryTypeTopup,
-		Status:      LedgerStatusPosted,
+		ID:                 "entry_3",
+		DisplayID:          71003,
+		WalletID:           "wallet_3",
+		TenantID:           "reseller_tenant",
+		Direction:          DirectionCredit,
+		AmountMinor:        2000,
+		Currency:           "USD",
+		EntryType:          EntryTypeTopup,
+		Status:             LedgerStatusPosted,
+		ReferenceDisplayID: 52001,
 	}}}
 	handler := registerWalletTestHandler(service)
 
@@ -209,7 +214,8 @@ func TestHTTPHandlerListResellerLedgerUsesTenantAndWallet(t *testing.T) {
 		service.ledgerFilter.Limit != 8 {
 		t.Fatalf("unexpected reseller ledger filter: %+v", service.ledgerFilter)
 	}
-	if !strings.Contains(response.Body.String(), `"display_id":71003`) {
+	if !strings.Contains(response.Body.String(), `"display_id":71003`) ||
+		!strings.Contains(response.Body.String(), `"reference_display_id":52001`) {
 		t.Fatalf("expected ledger response, got %s", response.Body.String())
 	}
 }

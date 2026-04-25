@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` after T131 is done:
+Current board snapshot on `2026-04-26` after T132 is in review:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 128
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No task files are currently `IN_PROGRESS` or `REVIEW`. |
+| T132 | [tasks/active/T132_ledger_reference_public_id_response.md](tasks/active/T132_ledger_reference_public_id_response.md) | REVIEW | Codex | codex/t132-ledger-reference-public-id | Expose related public IDs in wallet ledger entries. |
 
 ## Done Task Files
 

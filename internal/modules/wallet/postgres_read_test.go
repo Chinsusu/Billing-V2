@@ -76,6 +76,7 @@ func TestBuildListLedgerEntriesQueryAddsWalletScopeAndFilters(t *testing.T) {
 	for _, clause := range []string{
 		"entry.tenant_id = $1",
 		"entry.wallet_id = $2",
+		"reference_display_id",
 		"entry.display_id = $3",
 		"entry.direction = $4",
 		"entry.entry_type = $5",
@@ -129,7 +130,7 @@ func TestBuildGetLedgerEntryQueryRequiresWalletScope(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected query: %v", err)
 	}
-	for _, clause := range []string{"entry.ledger_entry_id = $1", "entry.tenant_id = $2", "entry.wallet_id = $3"} {
+	for _, clause := range []string{"reference_display_id", "entry.ledger_entry_id = $1", "entry.tenant_id = $2", "entry.wallet_id = $3"} {
 		if !strings.Contains(query, clause) {
 			t.Fatalf("expected %q in query: %s", clause, query)
 		}
