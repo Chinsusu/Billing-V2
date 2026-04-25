@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` after T138 is done:
+Current board snapshot on `2026-04-26` while T139 is in review:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 135
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No task files are currently `IN_PROGRESS` or `REVIEW`. |
+| T139 | [tasks/active/T139_demo_account_service_audit_prefixes.md](tasks/active/T139_demo_account_service_audit_prefixes.md) | REVIEW | Codex | codex/t139-demo-entity-prefixes | Align remaining demo account, service, and audit IDs with public prefixes. |
 
 ## Done Task Files
 
