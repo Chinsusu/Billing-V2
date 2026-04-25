@@ -1,9 +1,9 @@
 # T108 - Smoke RBAC negative checks
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t108-smoke-rbac-negative-checks
-PR: pending
+PR: https://github.com/Chinsusu/Billing-V2/pull/245
 Risk: backend/RBAC/QA
 Created: 2026-04-25
 Updated: 2026-04-25
@@ -36,3 +36,4 @@ Extend smoke coverage with safe negative RBAC checks for admin catalog readiness
 - 2026-04-25: Task created in the post-readiness hardening batch.
 - 2026-04-25: Codex claimed the task; adding negative RBAC checks to the backend smoke suite.
 - 2026-04-25: Added API smoke negative checks for provider readiness, admin job list, and admin job retry. Validation passed: `go test ./cmd/smoke`, `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`.
+- 2026-04-25: PR #245 passed CI and merged into main at `7c49a1c`; moved the task to done.
