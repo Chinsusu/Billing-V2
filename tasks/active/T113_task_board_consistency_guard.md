@@ -1,7 +1,7 @@
 # T113 - Task board consistency guard
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t113-task-board-consistency-guard
 PR: -
 Risk: workflow/CI
@@ -35,3 +35,4 @@ Add a lightweight guard that checks task board metadata for obvious drift after 
 ## Agent Log
 
 - 2026-04-25: Task created in the board and delivery hardening batch.
+- 2026-04-25: Codex claimed the task; adding a task board consistency guard and docs.

@@ -28,6 +28,10 @@ Add admin catalog read/list API endpoints for products, plans, and provider sour
 - Existing POST create routes still work on the same paths.
 - Full validation passes: `make fmt`, `make test`, `make build`, `make migrate-validate`.
 
+## Notes
+
+- Historical task metadata normalized by T113 so the task board guard can validate all active records.
+
 ## Agent Log
 
 - 2026-04-23: Task created and claimed from latest `origin/main` in `/tmp/Billing-T025`.
