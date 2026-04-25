@@ -31,6 +31,11 @@ func providerSourceReadinessFilterFromRequest(w http.ResponseWriter, r *http.Req
 	}
 	filter := ProviderSourceReadinessFilter{Limit: page.Limit}
 	query := r.URL.Query()
+	if planDisplayID, present, ok := catalogPositiveInt64Query(w, r, "plan_display_id"); !ok {
+		return ProviderSourceReadinessFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.PlanDisplayID = planDisplayID
+	}
 	productType := ProductType(strings.TrimSpace(query.Get("product_type")))
 	if productType != "" {
 		if !productType.Valid() {
@@ -46,6 +51,11 @@ func providerSourceReadinessFilterFromRequest(w http.ResponseWriter, r *http.Req
 			return ProviderSourceReadinessFilter{}, httpserver.CursorPageRequest{}, false
 		}
 		filter.PlanStatus = status
+	}
+	if sourceDisplayID, present, ok := catalogPositiveInt64Query(w, r, "source_display_id"); !ok {
+		return ProviderSourceReadinessFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.SourceDisplayID = sourceDisplayID
 	}
 	return filter, page, true
 }

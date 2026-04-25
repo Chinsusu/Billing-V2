@@ -73,7 +73,7 @@ func TestHTTPHandlerListAdminTopupRequestsUsesReviewFilters(t *testing.T) {
 	service := &fakeWalletHTTPService{}
 	handler := registerWalletTestHandler(service)
 
-	request := httptest.NewRequest(http.MethodGet, "/admin/topup-requests?requested_by=account_2&display_id=90004&status=under_review&amount_min=100&amount_max=5000", nil)
+	request := httptest.NewRequest(http.MethodGet, "/admin/topup-requests?requested_by=account_2&requested_by_display_id=10002&wallet_display_id=70004&display_id=90004&status=under_review&amount_min=100&amount_max=5000", nil)
 	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
 	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
 	response := httptest.NewRecorder()
@@ -85,11 +85,32 @@ func TestHTTPHandlerListAdminTopupRequestsUsesReviewFilters(t *testing.T) {
 	}
 	if service.topupFilter.TenantID != tenant.ID("tenant_1") ||
 		service.topupFilter.RequestedBy != identity.UserID("account_2") ||
+		service.topupFilter.RequestedByDisplayID != 10002 ||
+		service.topupFilter.WalletDisplayID != 70004 ||
 		service.topupFilter.DisplayID != 90004 ||
 		service.topupFilter.Status != TopupStatusUnderReview ||
 		service.topupFilter.AmountMinMinor == nil || *service.topupFilter.AmountMinMinor != 100 ||
 		service.topupFilter.AmountMaxMinor == nil || *service.topupFilter.AmountMaxMinor != 5000 {
 		t.Fatalf("unexpected admin topup filter: %+v", service.topupFilter)
+	}
+}
+
+func TestHTTPHandlerRejectsBadTopupWalletDisplayID(t *testing.T) {
+	service := &fakeWalletHTTPService{}
+	handler := registerWalletTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/admin/topup-requests?wallet_display_id=bad", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("expected status 400, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.listTopupCalls != 0 {
+		t.Fatalf("expected no topup list call, got %d", service.listTopupCalls)
 	}
 }
 

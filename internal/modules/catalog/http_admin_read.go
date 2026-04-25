@@ -132,6 +132,11 @@ func providerSourceFilterFromRequest(w http.ResponseWriter, r *http.Request) (Pr
 	}
 	filter := ProviderSourceFilter{Limit: page.Limit}
 	query := r.URL.Query()
+	if displayID, present, ok := catalogPositiveInt64Query(w, r, "display_id"); !ok {
+		return ProviderSourceFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.DisplayID = displayID
+	}
 	sourceType := provider.Type(strings.TrimSpace(query.Get("source_type")))
 	if sourceType != "" {
 		if !providerTypeValid(sourceType) {

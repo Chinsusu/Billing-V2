@@ -23,19 +23,21 @@ func TestBuildListProviderSourceReadinessQueryDefaultsToActivePlans(t *testing.T
 
 func TestBuildListProviderSourceReadinessQueryAddsProductFilter(t *testing.T) {
 	query, args, err := buildListProviderSourceReadinessQuery(ProviderSourceReadinessFilter{
-		ProductType: ProductTypeProxy,
-		PlanStatus:  PlanStatusActive,
-		Limit:       10,
+		PlanDisplayID:   10001,
+		ProductType:     ProductTypeProxy,
+		PlanStatus:      PlanStatusActive,
+		SourceDisplayID: 10002,
+		Limit:           10,
 	})
 	if err != nil {
 		t.Fatalf("expected query: %v", err)
 	}
-	for _, clause := range []string{"mp.status = $1", "product.product_type = $2", "LIMIT $3"} {
+	for _, clause := range []string{"mp.status = $1", "mp.display_id = $2", "product.product_type = $3", "selected.source_display_id = $4", "LIMIT $5"} {
 		if !strings.Contains(query, clause) {
 			t.Fatalf("expected %q in query: %s", clause, query)
 		}
 	}
-	if len(args) != 3 || args[0] != PlanStatusActive || args[1] != ProductTypeProxy || args[2] != 10 {
+	if len(args) != 5 || args[0] != PlanStatusActive || args[1] != int64(10001) || args[2] != ProductTypeProxy || args[3] != int64(10002) || args[4] != 10 {
 		t.Fatalf("unexpected args: %#v", args)
 	}
 }

@@ -56,6 +56,17 @@ WHERE tenant_id = $1`
 		args = append(args, filter.BuyerUserID)
 		query += fmt.Sprintf("\n  AND buyer_user_id = $%d", len(args))
 	}
+	if filter.BuyerDisplayID > 0 {
+		args = append(args, filter.BuyerDisplayID)
+		query += fmt.Sprintf(`
+  AND EXISTS (
+    SELECT 1
+    FROM users buyer
+    WHERE buyer.user_id = orders.buyer_user_id
+      AND buyer.tenant_id = orders.tenant_id
+      AND buyer.display_id = $%d
+  )`, len(args))
+	}
 	if filter.DisplayID > 0 {
 		args = append(args, filter.DisplayID)
 		query += fmt.Sprintf("\n  AND display_id = $%d", len(args))

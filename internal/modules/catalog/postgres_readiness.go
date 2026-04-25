@@ -81,9 +81,17 @@ JOIN master_products product ON product.product_id = mp.product_id
 LEFT JOIN ranked_plan_sources selected ON selected.plan_id = mp.plan_id AND selected.row_number = 1
 WHERE mp.status = $1`
 	args := []interface{}{filter.PlanStatus}
+	if filter.PlanDisplayID > 0 {
+		args = append(args, filter.PlanDisplayID)
+		query += fmt.Sprintf("\n  AND mp.display_id = $%d", len(args))
+	}
 	if filter.ProductType != "" {
 		args = append(args, filter.ProductType)
 		query += fmt.Sprintf("\n  AND product.product_type = $%d", len(args))
+	}
+	if filter.SourceDisplayID > 0 {
+		args = append(args, filter.SourceDisplayID)
+		query += fmt.Sprintf("\n  AND selected.source_display_id = $%d", len(args))
 	}
 	args = append(args, normalizeCatalogListLimit(filter.Limit))
 	query += fmt.Sprintf("\nORDER BY mp.display_id ASC\nLIMIT $%d", len(args))

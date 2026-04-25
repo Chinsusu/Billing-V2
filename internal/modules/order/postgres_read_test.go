@@ -13,6 +13,7 @@ func TestBuildListOrdersQueryAddsFilters(t *testing.T) {
 	query, args, err := buildListOrdersQuery(OrderFilter{
 		TenantID:       tenant.ID("tenant-1"),
 		BuyerUserID:    identity.UserID("buyer-1"),
+		BuyerDisplayID: 10002,
 		DisplayID:      30001,
 		OrderStatus:    OrderStatusPendingPayment,
 		BillingStatus:  BillingStatusUnpaid,
@@ -26,18 +27,20 @@ func TestBuildListOrdersQueryAddsFilters(t *testing.T) {
 	for _, clause := range []string{
 		"tenant_id = $1",
 		"buyer_user_id = $2",
-		"display_id = $3",
-		"order_status = $4",
-		"billing_status = $5",
-		"total_minor >= $6",
-		"total_minor <= $7",
-		"LIMIT $8",
+		"buyer.user_id = orders.buyer_user_id",
+		"buyer.display_id = $3",
+		"display_id = $4",
+		"order_status = $5",
+		"billing_status = $6",
+		"total_minor >= $7",
+		"total_minor <= $8",
+		"LIMIT $9",
 	} {
 		if !strings.Contains(query, clause) {
 			t.Fatalf("expected %q in query: %s", clause, query)
 		}
 	}
-	if len(args) != 8 || args[7] != 25 {
+	if len(args) != 9 || args[8] != 25 {
 		t.Fatalf("unexpected args: %#v", args)
 	}
 }

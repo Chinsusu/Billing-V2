@@ -153,6 +153,11 @@ func serviceInstanceFilterFromRequest(w http.ResponseWriter, r *http.Request) (S
 	if buyerUserID != "" {
 		filter.BuyerUserID = buyerUserID
 	}
+	if buyerDisplayID, present, ok := orderPositiveInt64Query(w, r, "buyer_display_id"); !ok {
+		return ServiceInstanceFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.BuyerDisplayID = buyerDisplayID
+	}
 	if displayID, present, ok := orderPositiveInt64Query(w, r, "display_id"); !ok {
 		return ServiceInstanceFilter{}, httpserver.CursorPageRequest{}, false
 	} else if present {
@@ -166,6 +171,11 @@ func serviceInstanceFilterFromRequest(w http.ResponseWriter, r *http.Request) (S
 		return ServiceInstanceFilter{}, httpserver.CursorPageRequest{}, false
 	} else if present {
 		filter.OrderDisplayID = orderDisplayID
+	}
+	if sourceDisplayID, present, ok := orderPositiveInt64Query(w, r, "provider_source_display_id"); !ok {
+		return ServiceInstanceFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.ProviderSourceDisplayID = sourceDisplayID
 	}
 	status := ServiceStatus(strings.TrimSpace(query.Get("status")))
 	if status != "" {

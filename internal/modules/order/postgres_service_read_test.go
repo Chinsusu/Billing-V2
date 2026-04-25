@@ -11,13 +11,15 @@ import (
 
 func TestBuildListServiceInstancesQueryAddsClientScope(t *testing.T) {
 	query, args, err := buildListServiceInstancesQuery(ServiceInstanceFilter{
-		TenantID:       tenant.ID("tenant-1"),
-		BuyerUserID:    identity.UserID("buyer-1"),
-		DisplayID:      50001,
-		OrderID:        OrderID("order-1"),
-		OrderDisplayID: 30001,
-		Status:         ServiceStatusActive,
-		Limit:          25,
+		TenantID:                tenant.ID("tenant-1"),
+		BuyerUserID:             identity.UserID("buyer-1"),
+		BuyerDisplayID:          10002,
+		DisplayID:               50001,
+		OrderID:                 OrderID("order-1"),
+		OrderDisplayID:          30001,
+		ProviderSourceDisplayID: 10003,
+		Status:                  ServiceStatusActive,
+		Limit:                   25,
 	})
 	if err != nil {
 		t.Fatalf("expected query: %v", err)
@@ -27,17 +29,21 @@ func TestBuildListServiceInstancesQueryAddsClientScope(t *testing.T) {
 		"ord.tenant_id = svc.tenant_id",
 		"svc.tenant_id = $1",
 		"ord.buyer_user_id = $2",
-		"svc.display_id = $3",
-		"svc.order_id = $4",
-		"ord.display_id = $5",
-		"svc.status = $6",
-		"LIMIT $7",
+		"buyer.user_id = ord.buyer_user_id",
+		"buyer.display_id = $3",
+		"svc.display_id = $4",
+		"svc.order_id = $5",
+		"ord.display_id = $6",
+		"source.source_id = svc.provider_source_id",
+		"source.display_id = $7",
+		"svc.status = $8",
+		"LIMIT $9",
 	} {
 		if !strings.Contains(query, clause) {
 			t.Fatalf("expected %q in query: %s", clause, query)
 		}
 	}
-	if len(args) != 7 || args[6] != 25 {
+	if len(args) != 9 || args[8] != 25 {
 		t.Fatalf("unexpected args: %#v", args)
 	}
 }

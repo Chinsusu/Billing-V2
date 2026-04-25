@@ -251,6 +251,11 @@ func invoiceFilterFromRequest(w http.ResponseWriter, r *http.Request) (InvoiceFi
 	if buyerUserID := identity.UserID(strings.TrimSpace(query.Get("buyer_user_id"))); buyerUserID != "" {
 		filter.BuyerUserID = buyerUserID
 	}
+	if buyerDisplayID, present, ok := invoicePositiveInt64Query(w, r, "buyer_display_id"); !ok {
+		return InvoiceFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.BuyerDisplayID = buyerDisplayID
+	}
 	if displayID, present, ok := invoicePositiveInt64Query(w, r, "display_id"); !ok {
 		return InvoiceFilter{}, httpserver.CursorPageRequest{}, false
 	} else if present {
@@ -258,6 +263,11 @@ func invoiceFilterFromRequest(w http.ResponseWriter, r *http.Request) (InvoiceFi
 	}
 	if orderID := order.OrderID(strings.TrimSpace(query.Get("order_id"))); orderID != "" {
 		filter.OrderID = orderID
+	}
+	if orderDisplayID, present, ok := invoicePositiveInt64Query(w, r, "order_display_id"); !ok {
+		return InvoiceFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.OrderDisplayID = orderDisplayID
 	}
 	if status := Status(strings.TrimSpace(query.Get("status"))); status != "" {
 		if !status.Valid() {

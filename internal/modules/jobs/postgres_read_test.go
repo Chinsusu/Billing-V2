@@ -10,14 +10,15 @@ import (
 
 func TestBuildListJobsQueryAddsFilters(t *testing.T) {
 	query, args, err := buildListJobsQuery(Filter{
-		TenantID:      "tenant_1",
-		DisplayID:     81001,
-		Type:          "provider.provision",
-		Status:        StatusFailedRetryable,
-		ReferenceType: "order",
-		ReferenceID:   "order_1",
-		SourceID:      "source_1",
-		Limit:         25,
+		TenantID:        "tenant_1",
+		DisplayID:       81001,
+		Type:            "provider.provision",
+		Status:          StatusFailedRetryable,
+		ReferenceType:   "order",
+		ReferenceID:     "order_1",
+		SourceID:        "source_1",
+		SourceDisplayID: 10002,
+		Limit:           25,
 	})
 	if err != nil {
 		t.Fatalf("expected list query: %v", err)
@@ -31,14 +32,16 @@ func TestBuildListJobsQueryAddsFilters(t *testing.T) {
 		"reference_type = $5",
 		"reference_id = $6",
 		"source_id = $7",
+		"source.source_id = jobs.source_id",
+		"source.display_id = $8",
 		"ORDER BY created_at DESC",
-		"LIMIT $8",
+		"LIMIT $9",
 	} {
 		if !strings.Contains(query, clause) {
 			t.Fatalf("expected %q in query: %s", clause, query)
 		}
 	}
-	if len(args) != 8 || args[0] != tenant.ID("tenant_1") || args[7] != 25 {
+	if len(args) != 9 || args[0] != tenant.ID("tenant_1") || args[8] != 25 {
 		t.Fatalf("unexpected args: %#v", args)
 	}
 }

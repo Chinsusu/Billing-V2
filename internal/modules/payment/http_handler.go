@@ -257,6 +257,11 @@ func transactionFilterFromRequest(w http.ResponseWriter, r *http.Request) (Trans
 	if accountUserID != "" {
 		filter.AccountUserID = accountUserID
 	}
+	if accountDisplayID, present, ok := paymentPositiveInt64Query(w, r, "account_display_id"); !ok {
+		return TransactionFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.AccountDisplayID = accountDisplayID
+	}
 	if displayID, present, ok := paymentPositiveInt64Query(w, r, "display_id"); !ok {
 		return TransactionFilter{}, httpserver.CursorPageRequest{}, false
 	} else if present {
@@ -266,9 +271,19 @@ func transactionFilterFromRequest(w http.ResponseWriter, r *http.Request) (Trans
 	if orderID != "" {
 		filter.OrderID = orderID
 	}
+	if orderDisplayID, present, ok := paymentPositiveInt64Query(w, r, "order_display_id"); !ok {
+		return TransactionFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.OrderDisplayID = orderDisplayID
+	}
 	invoiceID := invoice.InvoiceID(strings.TrimSpace(query.Get("invoice_id")))
 	if invoiceID != "" {
 		filter.InvoiceID = invoiceID
+	}
+	if invoiceDisplayID, present, ok := paymentPositiveInt64Query(w, r, "invoice_display_id"); !ok {
+		return TransactionFilter{}, httpserver.CursorPageRequest{}, false
+	} else if present {
+		filter.InvoiceDisplayID = invoiceDisplayID
 	}
 	transactionType := TransactionType(strings.TrimSpace(query.Get("type")))
 	if transactionType != "" {

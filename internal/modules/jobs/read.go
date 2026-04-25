@@ -19,6 +19,7 @@ type Filter struct {
 	ReferenceType ReferenceType
 	ReferenceID   ReferenceID
 	SourceID      SourceID
+	SourceDisplayID int64
 	Limit         int
 }
 

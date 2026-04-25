@@ -85,7 +85,7 @@ func TestHTTPHandlerListAdminInvoicesUsesFilters(t *testing.T) {
 	service := &fakeInvoiceHTTPService{}
 	handler := registerInvoiceTestHandler(service)
 
-	request := httptest.NewRequest(http.MethodGet, "/admin/invoices?buyer_user_id=account_2&display_id=44001&order_id=order_2&status=paid&amount_min=100&amount_max=5000", nil)
+	request := httptest.NewRequest(http.MethodGet, "/admin/invoices?buyer_user_id=account_2&buyer_display_id=10002&display_id=44001&order_id=order_2&order_display_id=30004&status=paid&amount_min=100&amount_max=5000", nil)
 	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
 	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
 	response := httptest.NewRecorder()
@@ -97,12 +97,33 @@ func TestHTTPHandlerListAdminInvoicesUsesFilters(t *testing.T) {
 	}
 	if service.invoiceFilter.TenantID != tenant.ID("tenant_1") ||
 		service.invoiceFilter.BuyerUserID != identity.UserID("account_2") ||
+		service.invoiceFilter.BuyerDisplayID != 10002 ||
 		service.invoiceFilter.DisplayID != 44001 ||
 		service.invoiceFilter.OrderID != order.OrderID("order_2") ||
+		service.invoiceFilter.OrderDisplayID != 30004 ||
 		service.invoiceFilter.Status != StatusPaid ||
 		service.invoiceFilter.AmountMinMinor == nil || *service.invoiceFilter.AmountMinMinor != 100 ||
 		service.invoiceFilter.AmountMaxMinor == nil || *service.invoiceFilter.AmountMaxMinor != 5000 {
 		t.Fatalf("unexpected admin invoice filter: %+v", service.invoiceFilter)
+	}
+}
+
+func TestHTTPHandlerRejectsBadInvoiceOrderDisplayID(t *testing.T) {
+	service := &fakeInvoiceHTTPService{}
+	handler := registerInvoiceTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/admin/invoices?order_display_id=bad", nil)
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("expected status 400, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.listCalls != 0 {
+		t.Fatalf("expected no invoice list call, got %d", service.listCalls)
 	}
 }
 

@@ -1,7 +1,7 @@
 # T121 - Admin public ID backend filters
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t121-admin-public-id-backend-filters
 PR: -
 Risk: API/DB
@@ -34,3 +34,4 @@ Add or normalize backend admin filters so operators can search common records by
 ## Agent Log
 
 - 2026-04-25: Task created in the public ID and validation hardening batch.
+- 2026-04-25: Codex claimed the task; reviewing admin list filters for missing public ID query support.

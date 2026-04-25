@@ -164,6 +164,16 @@ WHERE tenant_id = $1`
 		args = append(args, filter.SourceID)
 		query += fmt.Sprintf("\n  AND source_id = $%d", len(args))
 	}
+	if filter.SourceDisplayID > 0 {
+		args = append(args, filter.SourceDisplayID)
+		query += fmt.Sprintf(`
+  AND EXISTS (
+    SELECT 1
+    FROM provider_sources source
+    WHERE source.source_id = jobs.source_id
+      AND source.display_id = $%d
+  )`, len(args))
+	}
 	args = append(args, filter.Limit)
 	query += fmt.Sprintf("\nORDER BY created_at DESC\nLIMIT $%d", len(args))
 	return query, args, nil

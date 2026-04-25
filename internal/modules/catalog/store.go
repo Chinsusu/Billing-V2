@@ -20,15 +20,18 @@ type MasterPlanFilter struct {
 }
 
 type ProviderSourceFilter struct {
-	Type   provider.Type
-	Status ProviderSourceStatus
-	Limit  int
+	DisplayID int64
+	Type      provider.Type
+	Status    ProviderSourceStatus
+	Limit     int
 }
 
 type ProviderSourceReadinessFilter struct {
-	ProductType ProductType
-	PlanStatus  PlanStatus
-	Limit       int
+	ProductType     ProductType
+	PlanDisplayID   int64
+	PlanStatus      PlanStatus
+	SourceDisplayID int64
+	Limit           int
 }
 
 type TenantCatalogFilter struct {

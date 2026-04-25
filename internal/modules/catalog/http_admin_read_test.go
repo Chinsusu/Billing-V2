@@ -40,7 +40,7 @@ func TestHTTPHandlerListProviderSourcesUsesQueryFilters(t *testing.T) {
 	}
 	handler := registerCatalogTestHandler(service)
 
-	request := httptest.NewRequest(http.MethodGet, "/admin/catalog/provider-sources?source_type=manual&status=active&limit=9", nil)
+	request := httptest.NewRequest(http.MethodGet, "/admin/catalog/provider-sources?display_id=10002&source_type=manual&status=active&limit=9", nil)
 	response := httptest.NewRecorder()
 
 	handler.ServeHTTP(response, request)
@@ -51,7 +51,7 @@ func TestHTTPHandlerListProviderSourcesUsesQueryFilters(t *testing.T) {
 	if service.listSourceCalls != 1 {
 		t.Fatalf("expected list provider sources once, got %d", service.listSourceCalls)
 	}
-	if service.sourceFilter.Type != provider.TypeManual || service.sourceFilter.Status != ProviderSourceStatusActive || service.sourceFilter.Limit != 9 {
+	if service.sourceFilter.DisplayID != 10002 || service.sourceFilter.Type != provider.TypeManual || service.sourceFilter.Status != ProviderSourceStatusActive || service.sourceFilter.Limit != 9 {
 		t.Fatalf("unexpected source filter: %+v", service.sourceFilter)
 	}
 }
@@ -77,7 +77,7 @@ func TestHTTPHandlerListProviderSourceReadinessUsesQueryFilters(t *testing.T) {
 	}
 	handler := registerCatalogTestHandler(service)
 
-	request := httptest.NewRequest(http.MethodGet, "/admin/catalog/provider-readiness?product_type=vps&status=active&limit=7", nil)
+	request := httptest.NewRequest(http.MethodGet, "/admin/catalog/provider-readiness?plan_display_id=10001&source_display_id=10002&product_type=vps&status=active&limit=7", nil)
 	response := httptest.NewRecorder()
 
 	handler.ServeHTTP(response, request)
@@ -88,7 +88,8 @@ func TestHTTPHandlerListProviderSourceReadinessUsesQueryFilters(t *testing.T) {
 	if service.listReadinessCalls != 1 {
 		t.Fatalf("expected list readiness once, got %d", service.listReadinessCalls)
 	}
-	if service.readinessFilter.ProductType != ProductTypeVPS || service.readinessFilter.PlanStatus != PlanStatusActive || service.readinessFilter.Limit != 7 {
+	if service.readinessFilter.PlanDisplayID != 10001 || service.readinessFilter.SourceDisplayID != 10002 ||
+		service.readinessFilter.ProductType != ProductTypeVPS || service.readinessFilter.PlanStatus != PlanStatusActive || service.readinessFilter.Limit != 7 {
 		t.Fatalf("unexpected readiness filter: %+v", service.readinessFilter)
 	}
 	body := response.Body.String()
@@ -101,6 +102,23 @@ func TestHTTPHandlerListProviderSourceReadinessUsesQueryFilters(t *testing.T) {
 		if strings.Contains(body, blocked) {
 			t.Fatalf("response should not expose %s: %s", blocked, body)
 		}
+	}
+}
+
+func TestHTTPHandlerListProviderSourceReadinessRejectsBadSourceDisplayID(t *testing.T) {
+	service := &fakeCatalogHTTPService{}
+	handler := registerCatalogTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/admin/catalog/provider-readiness?source_display_id=bad", nil)
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("expected status 400, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.listReadinessCalls != 0 {
+		t.Fatalf("expected readiness service not to run, got %d calls", service.listReadinessCalls)
 	}
 }
 

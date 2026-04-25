@@ -10,6 +10,7 @@ import (
 type OrderFilter struct {
 	TenantID       tenant.ID
 	BuyerUserID    identity.UserID
+	BuyerDisplayID int64
 	DisplayID      int64
 	OrderStatus    OrderStatus
 	BillingStatus  BillingStatus
@@ -25,13 +26,15 @@ type OrderLookup struct {
 }
 
 type ServiceInstanceFilter struct {
-	TenantID       tenant.ID
-	BuyerUserID    identity.UserID
-	DisplayID      int64
-	OrderID        OrderID
-	OrderDisplayID int64
-	Status         ServiceStatus
-	Limit          int
+	TenantID                tenant.ID
+	BuyerUserID             identity.UserID
+	BuyerDisplayID          int64
+	DisplayID               int64
+	OrderID                 OrderID
+	OrderDisplayID          int64
+	ProviderSourceDisplayID int64
+	Status                  ServiceStatus
+	Limit                   int
 }
 
 type ServiceInstanceLookup struct {
