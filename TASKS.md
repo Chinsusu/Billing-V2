@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-25` after completing T111 and moving T112 to review:
+Current board snapshot on `2026-04-25` after completing T112:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 108
+- `DONE` task files in `tasks/active/`: 109
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -65,18 +65,14 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 ## In-Flight Task Files
 
-These files are not claimable unless the owner or user explicitly hands them off.
-
-| ID | Task File | Status | Owner | Branch | Summary |
-| --- | --- | --- | --- | --- | --- |
-| T112 | [tasks/active/T112_task_board_archive_cleanup.md](tasks/active/T112_task_board_archive_cleanup.md) | REVIEW | Codex | codex/t112-task-board-archive-cleanup | Clean up task board documentation for parallel agents. |
+No task files are currently `IN_PROGRESS` or `REVIEW`.
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T111`
+- `T011` to `T112`
 
 ## Removed Tasks
 
