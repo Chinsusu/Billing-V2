@@ -1,11 +1,14 @@
 const http = require("http");
+const fs = require("fs");
 const path = require("path");
 const { spawn } = require("child_process");
 const { chromium } = require("playwright");
 
+const args = parseArgs(process.argv.slice(2));
 const appRoot = path.resolve(__dirname, "..");
 const host = process.env.SMOKE_HOST || "127.0.0.1";
 const port = Number(process.env.SMOKE_PORT || "3120");
+const serverMode = args.server || process.env.SMOKE_SERVER || "dev";
 const baseURL = `http://${host}:${port}`;
 const forbiddenText = [
   "payload_json", // sensitive-text-allowlist: browser smoke forbidden text
@@ -16,6 +19,7 @@ const forbiddenText = [
 ];
 
 async function main() {
+  validateServerMode(serverMode);
   const server = startNextServer();
   try {
     await waitForServer(baseURL, 45_000);
@@ -67,8 +71,11 @@ async function main() {
 }
 
 function startNextServer() {
+  if (serverMode === "standalone") {
+    return startStandaloneServer();
+  }
   const nextBin = path.join(appRoot, "node_modules", "next", "dist", "bin", "next");
-  const child = spawn(process.execPath, [nextBin, "dev", "--hostname", host, "--port", String(port)], {
+  const child = spawn(process.execPath, [nextBin, serverMode, "--hostname", host, "--port", String(port)], {
     cwd: appRoot,
     env: { ...process.env, NEXT_TELEMETRY_DISABLED: "1" },
     stdio: ["ignore", "pipe", "pipe"],
@@ -77,10 +84,49 @@ function startNextServer() {
   child.stderr.on("data", (chunk) => process.stderr.write(`[next] ${chunk}`));
   child.on("exit", (code, signal) => {
     if (code !== 0 && signal !== "SIGTERM") {
-      console.error(`Next dev server exited with code ${code ?? signal}.`);
+      console.error(`Next ${serverMode} server exited with code ${code ?? signal}.`);
     }
   });
   return child;
+}
+
+function startStandaloneServer() {
+  ensureStandaloneAssets();
+  const serverPath = path.join(appRoot, ".next", "standalone", "server.js");
+  const child = spawn(process.execPath, [serverPath], {
+    cwd: path.dirname(serverPath),
+    env: {
+      ...process.env,
+      HOSTNAME: host,
+      PORT: String(port),
+      NEXT_TELEMETRY_DISABLED: "1",
+    },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  child.stdout.on("data", (chunk) => process.stdout.write(`[standalone] ${chunk}`));
+  child.stderr.on("data", (chunk) => process.stderr.write(`[standalone] ${chunk}`));
+  child.on("exit", (code, signal) => {
+    if (code !== 0 && signal !== "SIGTERM") {
+      console.error(`Next standalone server exited with code ${code ?? signal}.`);
+    }
+  });
+  return child;
+}
+
+function ensureStandaloneAssets() {
+  const serverPath = path.join(appRoot, ".next", "standalone", "server.js");
+  if (!fs.existsSync(serverPath)) {
+    throw new Error("Standalone build is missing. Run `npm run build` before `npm run smoke:admin:ci`.");
+  }
+  copyIfExists(path.join(appRoot, ".next", "static"), path.join(appRoot, ".next", "standalone", ".next", "static"));
+  copyIfExists(path.join(appRoot, "public"), path.join(appRoot, ".next", "standalone", "public"));
+}
+
+function copyIfExists(source, target) {
+  if (!fs.existsSync(source)) {
+    return;
+  }
+  fs.cpSync(source, target, { recursive: true });
 }
 
 function waitForServer(url, timeoutMs) {
@@ -107,10 +153,48 @@ async function launchBrowser() {
     return await chromium.launch({ headless: true });
   } catch (error) {
     if (process.platform === "win32") {
-      return chromium.launch({ channel: "chrome", headless: true });
+      try {
+        return await chromium.launch({ channel: "chrome", headless: true });
+      } catch (fallbackError) {
+        throw browserLaunchError(fallbackError, error);
+      }
     }
-    throw error;
+    throw browserLaunchError(error);
   }
+}
+
+function browserLaunchError(error, primaryError) {
+  const details = [
+    "Unable to launch Playwright Chromium.",
+    "Install the browser runtime with `npx playwright install chromium` locally or `npx playwright install --with-deps chromium` in CI.",
+    `Original error: ${error.message}`,
+  ];
+  if (primaryError && primaryError !== error) {
+    details.push(`Primary launch error: ${primaryError.message}`);
+  }
+  return new Error(details.join("\n"));
+}
+
+function validateServerMode(value) {
+  if (value !== "dev" && value !== "start" && value !== "standalone") {
+    throw new Error(`Unsupported smoke server mode '${value}'. Use 'dev', 'start', or 'standalone'.`);
+  }
+}
+
+function parseArgs(argv) {
+  const parsed = {};
+  for (let index = 0; index < argv.length; index += 1) {
+    const value = argv[index];
+    if (value.startsWith("--server=")) {
+      parsed.server = value.slice("--server=".length);
+      continue;
+    }
+    if (value === "--server" && argv[index + 1]) {
+      parsed.server = argv[index + 1];
+      index += 1;
+    }
+  }
+  return parsed;
 }
 
 async function installApiMocks(page) {

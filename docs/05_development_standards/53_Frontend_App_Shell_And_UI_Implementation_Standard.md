@@ -334,8 +334,18 @@ cd frontend
 npm run smoke:admin
 ```
 
+CI smoke runs after the production build and uses the standalone server artifact:
+
+```bash
+cd frontend
+npx playwright install --with-deps chromium
+npm run build
+npm run smoke:admin:ci
+```
+
+Do not run `npm run smoke:admin`, `npm run smoke:admin:ci`, or `npm run build` in parallel because they read or write `.next`.
+
 Browser smoke dùng dữ liệu mock/intercept an toàn, không cần backend thật hoặc provider credential thật. Nếu command fail vì thiếu browser runtime trên máy mới, cài browser Playwright local bằng `npx playwright install chromium`, rồi chạy lại smoke.
-Không chạy `npm run smoke:admin` song song với `npm run build`, vì cả hai lệnh đều ghi vào thư mục `.next`.
 
 Nếu dùng package manager khác, ghi rõ:
 

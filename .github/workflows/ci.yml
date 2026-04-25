@@ -64,6 +64,10 @@ jobs:
         working-directory: frontend
         run: npm audit --omit=dev
 
+      - name: Install Playwright Chromium
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+
       - name: Sensitive frontend text guard
         working-directory: frontend
         run: npm run check:sensitive-text
@@ -75,6 +79,10 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         run: npm run build
+
+      - name: Admin browser smoke
+        working-directory: frontend
+        run: npm run smoke:admin:ci
 
   secret-scan:
     name: Basic secret scan
