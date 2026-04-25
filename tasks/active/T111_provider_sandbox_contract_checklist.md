@@ -1,9 +1,9 @@
 # T111 - Provider sandbox contract checklist
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: codex/t111-provider-sandbox-contract-checklist
-PR: -
+PR: pending
 Risk: docs/provider-ops
 Created: 2026-04-25
 Updated: 2026-04-25
@@ -33,3 +33,5 @@ Add a sandbox provider contract checklist so future real-provider work has clear
 ## Agent Log
 
 - 2026-04-25: Task created in the post-readiness hardening batch.
+- 2026-04-25: Codex claimed the task; adding sandbox provider contract checklist docs.
+- 2026-04-25: Added provider sandbox contract checklist, linked it from provisioning readiness docs, README, and manifest. Validation passed: `go run ./cmd/contractguard`, `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker ./cmd/contractguard`.
