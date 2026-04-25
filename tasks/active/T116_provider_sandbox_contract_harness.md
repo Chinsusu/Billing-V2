@@ -1,9 +1,9 @@
 # T116 - Provider sandbox contract harness
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: codex/t116-provider-sandbox-contract-harness
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/262
 Risk: provider/testing
 Created: 2026-04-25
 Updated: 2026-04-25
@@ -34,3 +34,6 @@ Create the first provider sandbox contract test harness shape so future real pro
 ## Agent Log
 
 - 2026-04-25: Task created in the board and delivery hardening batch.
+- 2026-04-25: Codex claimed the task; adding a provider sandbox contract harness shape without real credentials.
+- 2026-04-25: Added a local provider sandbox contract harness for health, quote/stock, provision, status, cancel/terminate, and idempotency repeat cases, with fake-adapter tests and checklist docs.
+- 2026-04-25: Opened PR #262. Validation passed: `go test ./internal/modules/provider -run SandboxContract`, `go run ./cmd/contractguard`, `go run ./cmd/errorcodeguard`, `go test ./...`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker ./cmd/contractguard ./cmd/taskguard ./cmd/errorcodeguard`, `git diff --check`.

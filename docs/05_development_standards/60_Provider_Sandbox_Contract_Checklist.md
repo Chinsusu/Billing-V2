@@ -98,6 +98,24 @@ Map each case to one of:
 
 If provider idempotency is weak or missing, adapter work must include an external lookup/reconciliation plan before retrying create.
 
+## Local Contract Harness
+
+Before using real sandbox credentials, run the local provider contract harness:
+
+```bash
+go test ./internal/modules/provider -run SandboxContract
+```
+
+The current adapter interface maps the sandbox contract cases as follows:
+
+- quote/readiness: `CheckStock`
+- order/create: `Provision`
+- status read: `GetStatus`
+- cancel/cleanup: `Terminate`
+- idempotency: repeated `Provision` with the same idempotency key
+
+The harness uses the in-repo fake adapter by default and does not require provider network access or credentials. Real provider sandbox tests should reuse the same cases after credentials are stored outside git.
+
 ## Error And Timeout Contract
 
 For sandbox evidence, capture redacted examples for:
