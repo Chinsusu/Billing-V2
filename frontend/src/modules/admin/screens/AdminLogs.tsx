@@ -4,8 +4,8 @@ import { FormEvent, useState } from "react";
 import { AUDIT_LOGS, AuditLog } from "@/mocks/billingData";
 import { billingApi } from "@/lib/api/billing";
 import { AdminAuditLogQuery } from "@/lib/api/types";
-import { compactDateTime, recordLabel, shortID } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
+import { mapAdminAuditLogView, type AdminAuditActorBadge, type AdminAuditLogView } from "@/lib/api/viewModels";
 import { AdminFilterBar, AdminFilterInput } from "../components/AdminFilterBar";
 import { hasActiveFilters, includesFilter, trimStringFilters } from "../lib/filterUtils";
 
@@ -15,7 +15,8 @@ const LEVEL_STYLE: Record<AuditLog["level"], string> = {
   error: "bg-red-50 text-red-700",
 };
 
-type ActorBadge = AuditLog["actor"] | "user" | "worker" | "provider_webhook";
+type ActorBadge = AdminAuditActorBadge;
+type AuditTableRow = AuditLog | AdminAuditLogView;
 
 const ACTOR_STYLE: Record<ActorBadge, string> = {
   system:   "bg-gray-100 text-gray-500",
@@ -45,19 +46,6 @@ function filterMockLogs(filters: AuditLogFilters) {
   ));
 }
 
-function mapActorType(actorType: string): ActorBadge {
-  switch (actorType) {
-    case "user":
-      return "user";
-    case "worker":
-      return "worker";
-    case "provider_webhook":
-      return "provider_webhook";
-    default:
-      return "system";
-  }
-}
-
 export function AdminLogs() {
   const [draftFilters, setDraftFilters] = useState(EMPTY_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(EMPTY_FILTERS);
@@ -66,18 +54,8 @@ export function AdminLogs() {
     JSON.stringify(appliedFilters),
   );
   const usingLive = logs.status === "success";
-  const rows = usingLive
-    ? (logs.data ?? []).map((log) => ({
-        id: log.id,
-        ts: compactDateTime(log.created_at),
-        level: "info" as AuditLog["level"],
-        actor: mapActorType(log.actor_type),
-        actorName: shortID(log.actor_id),
-        action: log.action,
-        target: `${log.target_type} ${recordLabel(log.display_id)}`,
-        detail: shortID(log.target_id),
-        requestId: shortID(log.correlation_id),
-      }))
+  const rows: AuditTableRow[] = usingLive
+    ? (logs.data ?? []).map(mapAdminAuditLogView)
     : filterMockLogs(appliedFilters);
   const activeFilters = hasActiveFilters(appliedFilters);
   const statusTone = logs.status === "error"
@@ -130,7 +108,7 @@ export function AdminLogs() {
             label="Actor / account"
             value={draftFilters.actor_id}
             onChange={(event) => updateFilter("actor_id", event.target.value)}
-            placeholder="actor_id"
+            placeholder="actor reference"
           />
           <AdminFilterInput
             label="Action"
@@ -149,7 +127,7 @@ export function AdminLogs() {
           <table className="min-w-[920px] w-full text-[13px] border-collapse">
             <thead>
               <tr className="bg-gray-50">
-                {["Time", "Level", "Actor", "Action", "Target", "Detail", "req_id"].map((h) => (
+                {["ID", "Time", "Level", "Actor", "Action", "Target", "Detail", "Request"].map((h) => (
                   <th key={h} className="text-left text-[11px] font-medium uppercase tracking-wide text-gray-400 p-4 p-4 border-b border-gray-200">
                     {h}
                   </th>
@@ -159,6 +137,7 @@ export function AdminLogs() {
             <tbody>
               {rows.map((log) => (
                 <tr key={log.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
+                  <td className="p-4 p-4 text-[11px] text-[#D50C2D]">{log.id}</td>
                   <td className="p-4 p-4 text-gray-400 text-[11px] tabular-nums whitespace-nowrap">{log.ts}</td>
                   <td className="p-4 p-4">
                     <span className={`text-[10px] font-medium uppercase px-1.5 py-0.5 rounded ${LEVEL_STYLE[log.level]}`}>
@@ -178,7 +157,7 @@ export function AdminLogs() {
                 </tr>
               ))}
               {usingLive && rows.length === 0 && (
-                <tr><td colSpan={7} className="p-4 text-center text-[12px] text-gray-400">No audit logs</td></tr>
+                <tr><td colSpan={8} className="p-4 text-center text-[12px] text-gray-400">No audit logs</td></tr>
               )}
             </tbody>
           </table>

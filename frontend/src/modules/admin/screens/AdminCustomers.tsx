@@ -2,8 +2,8 @@
 
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
-import { compactDateTime, recordLabel } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
+import { mapAdminAccountView } from "@/lib/api/viewModels";
 import { CUSTOMERS } from "@/mocks/billingData";
 import { fmtMoneyShort } from "@/mocks/sampleData";
 
@@ -32,17 +32,7 @@ export function AdminCustomers() {
   );
   const usingLive = customers.status === "success";
   const rows: CustomerRow[] = usingLive
-    ? (customers.data ?? []).map((customer) => ({
-        id: recordLabel(customer.display_id, "ACC-"),
-        name: customer.full_name || customer.email,
-        email: customer.email,
-        type: customer.user_type,
-        tenant: customer.tenant_name || customer.tenant_slug,
-        security: customer.two_factor_status,
-        status: customer.status,
-        created: compactDateTime(customer.created_at),
-        lastLogin: compactDateTime(customer.last_login_at),
-      }))
+    ? (customers.data ?? []).map(mapAdminAccountView)
     : CUSTOMERS.map((customer) => ({
         id: customer.id,
         name: customer.name,
