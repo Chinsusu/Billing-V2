@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` while T140 is in review:
+Current board snapshot on `2026-04-26` after T140 is done:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 136
+- `DONE` task files in `tasks/active/`: 137
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -67,14 +67,14 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T140 | [tasks/active/T140_audit_target_public_ids.md](tasks/active/T140_audit_target_public_ids.md) | REVIEW | Codex | codex/t140-audit-target-public-ids | Resolve service and provider-source public IDs in live audit logs. |
+| - | - | - | - | - | No task files are currently `IN_PROGRESS` or `REVIEW`. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T139`
+- `T011` to `T140`
 
 ## Removed Tasks
 
