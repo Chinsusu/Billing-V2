@@ -20,6 +20,7 @@ type errorEnvelope struct {
 		Code    string `json:"code"`
 		Message string `json:"message"`
 	} `json:"error"`
+	RequestID string `json:"request_id"`
 }
 
 type topupRequestBody struct {

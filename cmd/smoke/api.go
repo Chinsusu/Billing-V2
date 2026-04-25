@@ -55,7 +55,14 @@ func runDevAPISmoke(baseURL string, timeout time.Duration) error {
 		}
 		fmt.Printf("api check passed: %s %s\n", check.Name, check.Path)
 	}
-	fmt.Printf("dev API smoke passed: %d check(s)\n", len(checks))
+	rbacChecks := apiRBACNegativeChecks()
+	for _, check := range rbacChecks {
+		if err := runAPIRBACNegativeCheck(ctx, client, baseURL, check); err != nil {
+			return err
+		}
+		fmt.Printf("api RBAC negative check passed: %s %s %s\n", check.Name, check.Method, check.Path)
+	}
+	fmt.Printf("dev API smoke passed: %d check(s)\n", len(checks)+len(rbacChecks))
 	return nil
 }
 
@@ -91,10 +98,8 @@ func runAPICheck(ctx context.Context, client *http.Client, baseURL string, check
 			return "", fmt.Errorf("check %q response missing %q: %s", check.Name, expected, responseFailureBody(check, bodyText))
 		}
 	}
-	for _, blocked := range check.NotContains {
-		if strings.Contains(bodyText, blocked) {
-			return "", fmt.Errorf("check %q response exposed blocked field %q", check.Name, blocked)
-		}
+	if err := assertResponseOmitsTokens(check.Name, bodyText, check.NotContains); err != nil {
+		return "", err
 	}
 	summary, err := apiResponseSummary(check, bodyText)
 	if err != nil {
@@ -230,27 +235,7 @@ func apiSmokeChecks() []apiSmokeCheck {
 				`"state":`,
 				`"reason":`,
 			},
-			NotContains: []string{
-				`"capabilities"`,
-				`"capability_override"`,
-				`"capability_json"`,
-				`"capability_profile"`,
-				`"capability_snapshot"`,
-				`"access_token"`,
-				`"api_key"`,
-				`"credential"`,
-				`"credentials"`,
-				`"encrypted_payload_ref"`,
-				`"payload_json"`,
-				`"provider_account_id"`,
-				`"provider_credential"`,
-				`"provider_credentials"`,
-				`"raw_payload"`,
-				`"raw_response"`,
-				`"secret"`,
-				`"secret_version"`,
-				`"token"`,
-			},
+			NotContains:         sensitiveAPIRedactionTokens(),
 			RedactBodyOnFailure: true,
 			SummaryFields:       []string{"plan_display_id", "source_display_id"},
 		},
