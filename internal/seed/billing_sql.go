@@ -248,4 +248,67 @@ SET status = EXCLUDED.status,
     description = EXCLUDED.description,
     metadata = EXCLUDED.metadata,
     updated_at = NOW();
+
+INSERT INTO jobs (job_id, display_id, tenant_id, job_type, reference_type, reference_id, source_id, payload_json, status, priority, idempotency_key, attempt_count, max_attempts, next_attempt_at, last_error_code, last_error_message_redacted, manual_review_reason, correlation_id, created_at, updated_at)
+SELECT
+    '00000000-0000-0000-0000-000000000910',
+    53001,
+    orders.tenant_id,
+    'provider.provision',
+    'order',
+    orders.order_id,
+    '00000000-0000-0000-0000-000000000301',
+    '{"seed":"billing_flow","resource":"local-vps-405910"}'::jsonb,
+    'manual_review',
+    50,
+    'seed-provider-provision-1',
+    2,
+    5,
+    '2026-04-23T01:00:00Z'::timestamptz,
+    'provider_timeout',
+    'Provider timed out in seed smoke.',
+    'Verify provider state before retry.',
+    '00000000-0000-0000-0000-000000000910',
+    '2026-04-23T00:50:00Z'::timestamptz,
+    NOW()
+FROM orders
+WHERE orders.order_id = '00000000-0000-0000-0000-000000000903'
+ON CONFLICT (tenant_id, job_type, idempotency_key) WHERE tenant_id IS NOT NULL DO UPDATE
+SET status = EXCLUDED.status,
+    priority = EXCLUDED.priority,
+    attempt_count = EXCLUDED.attempt_count,
+    max_attempts = EXCLUDED.max_attempts,
+    next_attempt_at = EXCLUDED.next_attempt_at,
+    last_error_code = EXCLUDED.last_error_code,
+    last_error_message_redacted = EXCLUDED.last_error_message_redacted,
+    manual_review_reason = EXCLUDED.manual_review_reason,
+    updated_at = NOW();
+
+INSERT INTO audit_logs (audit_id, display_id, tenant_id, actor_id, actor_type, action, target_type, target_id, before_snapshot_redacted, after_snapshot_redacted, metadata_redacted, correlation_id, created_at)
+SELECT
+    '00000000-0000-0000-0000-000000000911',
+    70001,
+    job.tenant_id,
+    reviewer.user_id,
+    'user',
+    'job.retry',
+    'job',
+    job.job_id,
+    NULL,
+    NULL,
+    '{"seed":"billing_flow","job_display_id":53001}'::jsonb,
+    job.correlation_id,
+    '2026-04-23T00:55:00Z'::timestamptz
+FROM jobs job
+JOIN users reviewer ON reviewer.email = 'reseller@local.billing'
+WHERE job.job_id = '00000000-0000-0000-0000-000000000910'
+ON CONFLICT (audit_id) DO UPDATE
+SET actor_id = EXCLUDED.actor_id,
+    actor_type = EXCLUDED.actor_type,
+    action = EXCLUDED.action,
+    target_type = EXCLUDED.target_type,
+    target_id = EXCLUDED.target_id,
+    metadata_redacted = EXCLUDED.metadata_redacted,
+    correlation_id = EXCLUDED.correlation_id,
+    created_at = EXCLUDED.created_at;
 `

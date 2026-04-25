@@ -58,6 +58,8 @@ func TestDevStatementsIncludeBillingFlowData(t *testing.T) {
 		"wallet_ledger_entries",
 		"payment_transactions",
 		"seed-payment-1",
+		"seed-provider-provision-1",
+		"job.retry",
 		"local-vps-405910",
 	}
 	for _, value := range required {
