@@ -1,6 +1,6 @@
 # T137 - Client transaction public prefix
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t137-client-transaction-prefix
 PR: https://github.com/Chinsusu/Billing-V2/pull/305
@@ -34,3 +34,4 @@ Align client transaction labels with the shared `TX-` public ID prefix used by a
 - 2026-04-26: Replaced client checkout and transaction list labels from `TXN-` to `TX-`.
 - 2026-04-26: Local validation passed: `npm --prefix frontend run lint`, `npm --prefix frontend run check:sensitive-text`, `npm --prefix frontend run build`, `go run ./cmd/taskguard`, and `git diff --check`.
 - 2026-04-26: Opened PR https://github.com/Chinsusu/Billing-V2/pull/305 for review.
+- 2026-04-26: PR https://github.com/Chinsusu/Billing-V2/pull/305 merged into `main`; marking task done.
