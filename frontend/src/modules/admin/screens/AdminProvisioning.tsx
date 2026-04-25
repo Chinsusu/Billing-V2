@@ -1,16 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { canCancelJob, canMarkJobManualReview, canRetryJob, jobStatusLabel } from "@/lib/api/fulfillment";
 import { compactDateTime, recordLabel } from "@/lib/api/format";
-import type { CatalogProviderSource, Order, ProviderReadiness, ProvisioningJob, ServiceInstance } from "@/lib/api/types";
+import type { CatalogProviderSource, JobQuery, Order, ProviderReadiness, ProvisioningJob, ServiceInstance } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { hiddenReference, providerSourceLabel } from "@/lib/api/viewModels";
 import { PROVISIONING_JOBS } from "@/mocks/billingData";
+import { AdminFilterBar, AdminFilterInput } from "../components/AdminFilterBar";
 import { AdminJobTimelinePanel } from "../components/AdminJobTimelinePanel";
 import { AdminProvisioningSummaryPanel } from "../components/AdminProvisioningSummaryPanel";
+import { equalsFilter, hasActiveFilters, includesFilter, trimStringFilters } from "../lib/filterUtils";
 
 interface ProvisioningRow {
   id: string;
@@ -32,6 +34,13 @@ interface ProvisioningRow {
 }
 
 type JobAction = "retry" | "manual-review" | "cancel";
+type ProvisioningFilterFields = Required<Pick<JobQuery, "display_id" | "source_display_id" | "status">>;
+
+const EMPTY_FILTERS: ProvisioningFilterFields = {
+  display_id: "",
+  source_display_id: "",
+  status: "",
+};
 
 interface ActionState {
   id: string;
@@ -42,12 +51,14 @@ interface ActionState {
 
 export function AdminProvisioning() {
   const [refreshKey, setRefreshKey] = useState(0);
+  const [draftFilters, setDraftFilters] = useState(EMPTY_FILTERS);
+  const [appliedFilters, setAppliedFilters] = useState(EMPTY_FILTERS);
   const [manualReasons, setManualReasons] = useState<Record<string, string>>({});
   const [actionState, setActionState] = useState<ActionState | null>(null);
   const [selectedJobID, setSelectedJobID] = useState<string | null>(null);
   const jobs = useApiResource(
-    () => billingApi.listAdminJobs({ job_type: "provider.provision", limit: 100 }),
-    `admin-provisioning-jobs:${refreshKey}`,
+    () => billingApi.listAdminJobs({ job_type: "provider.provision", ...appliedFilters, limit: 100 }),
+    `admin-provisioning-jobs:${refreshKey}:${JSON.stringify(appliedFilters)}`,
   );
   const summary = useApiResource(
     () => billingApi.getAdminJobSummary({ job_type: "provider.provision" }),
@@ -72,18 +83,46 @@ export function AdminProvisioning() {
   const usingLive = jobs.status === "success";
   const rows = usingLive
     ? liveProvisioningRows(jobs.data ?? [], orders.data ?? [], services.data ?? [], providers.data ?? [], readiness.data ?? [])
-    : demoProvisioningRows();
+    : filterDemoProvisioningRows(demoProvisioningRows(), appliedFilters);
   const selectedRow = rows.find((row) => row.apiId === selectedJobID) ?? null;
   const manualReview = rows.filter((row) => row.status === "manual_review");
   const failed = rows.filter((row) => row.status === "failed_retryable" || row.status === "failed_terminal" || row.status === "failed").length;
   const extraError = orders.error ?? services.error ?? providers.error;
+  const activeFilters = hasActiveFilters(appliedFilters);
   let source = "Demo provisioning jobs";
   if (jobs.status === "error") {
-    source = "Live job API unavailable. Showing demo queue data.";
+    source = "Live job API unavailable. Showing demo queue data for the current filters.";
   } else if (jobs.status === "loading") {
     source = "Refreshing live provisioning jobs...";
   } else if (usingLive) {
-    source = extraError ? "Live jobs loaded. Order or service links may be incomplete." : "Live provisioning jobs";
+    source = extraError
+      ? "Live jobs loaded. Order or service links may be incomplete."
+      : activeFilters
+        ? "Live provisioning filters applied."
+        : "Live provisioning jobs";
+  } else if (activeFilters) {
+    source = "Filters are applied to demo provisioning data.";
+  }
+  const statusTone = jobs.status === "error"
+    ? "error"
+    : jobs.status === "loading"
+      ? "loading"
+      : usingLive
+        ? "success"
+        : "default";
+
+  function updateFilter(field: keyof ProvisioningFilterFields, value: string) {
+    setDraftFilters((current) => ({ ...current, [field]: value }));
+  }
+
+  function applyFilters(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setAppliedFilters(trimStringFilters(draftFilters));
+  }
+
+  function resetFilters() {
+    setDraftFilters(EMPTY_FILTERS);
+    setAppliedFilters(EMPTY_FILTERS);
   }
 
   function updateManualReason(jobID: string, reason: string) {
@@ -149,6 +188,28 @@ export function AdminProvisioning() {
             <h3 className="text-[13px] font-medium text-gray-900 m-0">Provisioning queue</h3>
             <span className="text-[11px] text-gray-400">{source}</span>
           </div>
+          <AdminFilterBar onSubmit={applyFilters} onReset={resetFilters} statusText={source} statusTone={statusTone}>
+            <AdminFilterInput
+              label="Job public ID"
+              value={draftFilters.display_id}
+              onChange={(event) => updateFilter("display_id", event.target.value)}
+              placeholder="71001"
+              inputMode="numeric"
+            />
+            <AdminFilterInput
+              label="Source public ID"
+              value={draftFilters.source_display_id}
+              onChange={(event) => updateFilter("source_display_id", event.target.value)}
+              placeholder="23001"
+              inputMode="numeric"
+            />
+            <AdminFilterInput
+              label="Status"
+              value={draftFilters.status}
+              onChange={(event) => updateFilter("status", event.target.value)}
+              placeholder="queued, failed, manual_review"
+            />
+          </AdminFilterBar>
           <div className="overflow-x-auto max-w-full">
             <table className="w-full text-[13px] border-collapse min-w-[1060px]">
               <thead>
@@ -293,6 +354,14 @@ function demoProvisioningRows(): ProvisioningRow[] {
     canReview: false,
     canCancel: false,
   }));
+}
+
+function filterDemoProvisioningRows(rows: ProvisioningRow[], filters: ProvisioningFilterFields): ProvisioningRow[] {
+  return rows.filter((row) => (
+    includesFilter(row.id, filters.display_id)
+    && includesFilter(row.provider, filters.source_display_id)
+    && equalsFilter(row.status, filters.status)
+  ));
 }
 
 interface JobRecoveryControlsProps {

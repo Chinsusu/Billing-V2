@@ -11,18 +11,25 @@ import { mapAdminInvoiceView } from "@/lib/api/viewModels";
 import { AdminFilterBar, AdminFilterInput } from "../components/AdminFilterBar";
 import { equalsFilter, hasActiveFilters, includesFilter, matchesAmountRange, trimStringFilters } from "../lib/filterUtils";
 
-const EMPTY_FILTERS: Required<AdminInvoiceQuery> = {
+type InvoiceFilterFields = Required<Pick<
+  AdminInvoiceQuery,
+  "display_id" | "buyer_display_id" | "order_display_id" | "status" | "amount_min" | "amount_max"
+>>;
+
+const EMPTY_FILTERS: InvoiceFilterFields = {
   display_id: "",
-  buyer_user_id: "",
+  buyer_display_id: "",
+  order_display_id: "",
   status: "",
   amount_min: "",
   amount_max: "",
 };
 
-function filterMockInvoices(filters: Required<AdminInvoiceQuery>) {
+function filterMockInvoices(filters: InvoiceFilterFields) {
   return INVOICES.filter((invoice) => (
     includesFilter(invoice.id, filters.display_id)
-    && includesFilter(invoice.customer, filters.buyer_user_id)
+    && includesFilter(invoice.customer, filters.buyer_display_id)
+    && includesFilter(invoice.id, filters.order_display_id)
     && equalsFilter(invoice.status, filters.status)
     && matchesAmountRange(invoice.amount, filters.amount_min, filters.amount_max)
   ));
@@ -56,12 +63,14 @@ export function AdminInvoices() {
     : invoices.status === "loading"
       ? "Refreshing live invoice data..."
       : usingLive
-        ? "Live invoice filters applied."
+        ? activeFilters
+          ? "Live invoice filters applied."
+          : "Live invoice data"
         : activeFilters
           ? "Filters are applied to demo data."
           : "Demo data is active until the live API responds.";
 
-  function updateFilter(field: keyof AdminInvoiceQuery, value: string) {
+  function updateFilter(field: keyof InvoiceFilterFields, value: string) {
     setDraftFilters((current) => ({ ...current, [field]: value }));
   }
 
@@ -91,10 +100,18 @@ export function AdminInvoices() {
             inputMode="numeric"
           />
           <AdminFilterInput
-            label="Customer / account"
-            value={draftFilters.buyer_user_id}
-            onChange={(event) => updateFilter("buyer_user_id", event.target.value)}
-            placeholder="account reference"
+            label="Customer public ID"
+            value={draftFilters.buyer_display_id}
+            onChange={(event) => updateFilter("buyer_display_id", event.target.value)}
+            placeholder="10002"
+            inputMode="numeric"
+          />
+          <AdminFilterInput
+            label="Order public ID"
+            value={draftFilters.order_display_id}
+            onChange={(event) => updateFilter("order_display_id", event.target.value)}
+            placeholder="30004"
+            inputMode="numeric"
           />
           <AdminFilterInput
             label="Status"

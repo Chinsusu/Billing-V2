@@ -32,9 +32,9 @@ REMOVED      archived by user decision and no longer part of the board
 
 Current board snapshot on `2026-04-25` after T121 is done:
 
-- `TODO`: 3
+- `TODO`: 2
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 118
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -61,7 +61,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T122 | [tasks/active/T122_admin_frontend_public_id_filters.md](tasks/active/T122_admin_frontend_public_id_filters.md) | codex/t122-admin-frontend-public-id-filters | frontend/API | Update admin frontend filters to use public ID language and queries. |
 | T123 | [tasks/active/T123_public_id_smoke_coverage.md](tasks/active/T123_public_id_smoke_coverage.md) | codex/t123-public-id-smoke-coverage | smoke/API/frontend | Cover public ID admin flows in smoke checks. |
 | T124 | [tasks/active/T124_admin_read_model_related_display_ids.md](tasks/active/T124_admin_read_model_related_display_ids.md) | codex/t124-admin-read-model-related-display-ids | API/frontend | Add safe related public IDs to admin read models. |
 
@@ -69,7 +68,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No task files are in progress or review. |
+| T122 | [tasks/active/T122_admin_frontend_public_id_filters.md](tasks/active/T122_admin_frontend_public_id_filters.md) | REVIEW | Codex | codex/t122-admin-frontend-public-id-filters | Update admin frontend filters to use public ID language and queries. |
 
 ## Done Task Files
 

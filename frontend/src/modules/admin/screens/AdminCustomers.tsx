@@ -1,11 +1,15 @@
 "use client";
 
+import { FormEvent, useState } from "react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
+import type { AdminAccountQuery } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { mapAdminAccountView } from "@/lib/api/viewModels";
 import { CUSTOMERS } from "@/mocks/billingData";
 import { fmtMoneyShort } from "@/mocks/sampleData";
+import { AdminFilterBar, AdminFilterInput } from "../components/AdminFilterBar";
+import { equalsFilter, hasActiveFilters, includesFilter, trimStringFilters } from "../lib/filterUtils";
 
 interface CustomerRow {
   id: string;
@@ -19,31 +23,81 @@ interface CustomerRow {
   lastLogin: string;
 }
 
+type CustomerFilterFields = Required<Pick<AdminAccountQuery, "display_id" | "email" | "type" | "status">>;
+
+const EMPTY_FILTERS: CustomerFilterFields = {
+  display_id: "",
+  email: "",
+  type: "",
+  status: "",
+};
+
 function sourceText(status: string, usingLive: boolean) {
   if (status === "error") return "Live API unavailable. Showing demo customer data.";
   if (status === "loading") return "Refreshing live customers...";
   return usingLive ? "Live customer accounts" : "Demo customer data";
 }
 
+function filterDemoCustomers(filters: CustomerFilterFields): CustomerRow[] {
+  return CUSTOMERS.map((customer) => ({
+    id: customer.id,
+    name: customer.name,
+    email: customer.email,
+    type: customer.plan,
+    tenant: customer.country,
+    security: `${customer.services} services`,
+    status: customer.status,
+    created: customer.since,
+    lastLogin: fmtMoneyShort(customer.mrr),
+  })).filter((customer) => (
+    includesFilter(customer.id, filters.display_id)
+    && includesFilter(customer.email, filters.email)
+    && includesFilter(customer.type, filters.type)
+    && equalsFilter(customer.status, filters.status)
+  ));
+}
+
 export function AdminCustomers() {
+  const [draftFilters, setDraftFilters] = useState(EMPTY_FILTERS);
+  const [appliedFilters, setAppliedFilters] = useState(EMPTY_FILTERS);
   const customers = useApiResource(
-    () => billingApi.listAdminCustomers({ limit: 100 }),
-    "admin-customers",
+    () => billingApi.listAdminCustomers({ ...appliedFilters, limit: 100 }),
+    `admin-customers:${JSON.stringify(appliedFilters)}`,
   );
   const usingLive = customers.status === "success";
   const rows: CustomerRow[] = usingLive
     ? (customers.data ?? []).map(mapAdminAccountView)
-    : CUSTOMERS.map((customer) => ({
-        id: customer.id,
-        name: customer.name,
-        email: customer.email,
-        type: customer.plan,
-        tenant: customer.country,
-        security: `${customer.services} services`,
-        status: customer.status,
-        created: customer.since,
-        lastLogin: fmtMoneyShort(customer.mrr),
-      }));
+    : filterDemoCustomers(appliedFilters);
+  const activeFilters = hasActiveFilters(appliedFilters);
+  const statusTone = customers.status === "error"
+    ? "error"
+    : customers.status === "loading"
+      ? "loading"
+      : usingLive
+        ? "success"
+        : "default";
+  const statusText = sourceText(customers.status, usingLive);
+  const filterStatusText = usingLive
+    ? activeFilters
+      ? "Live customer filters applied."
+      : statusText
+    : activeFilters
+      ? "Filters are applied to demo customer data."
+      : statusText;
+
+  function updateFilter(field: keyof CustomerFilterFields, value: string) {
+    setDraftFilters((current) => ({ ...current, [field]: value }));
+  }
+
+  function applyFilters(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setAppliedFilters(trimStringFilters(draftFilters));
+  }
+
+  function resetFilters() {
+    setDraftFilters(EMPTY_FILTERS);
+    setAppliedFilters(EMPTY_FILTERS);
+  }
 
   return (
     <div className="p-4">
@@ -55,6 +109,33 @@ export function AdminCustomers() {
             <span className="text-[11px] text-gray-400">{rows.length.toLocaleString()} total</span>
           </div>
         </div>
+        <AdminFilterBar onSubmit={applyFilters} onReset={resetFilters} statusText={filterStatusText} statusTone={statusTone}>
+          <AdminFilterInput
+            label="Account public ID"
+            value={draftFilters.display_id}
+            onChange={(event) => updateFilter("display_id", event.target.value)}
+            placeholder="20002"
+            inputMode="numeric"
+          />
+          <AdminFilterInput
+            label="Email"
+            value={draftFilters.email}
+            onChange={(event) => updateFilter("email", event.target.value)}
+            placeholder="buyer@example.com"
+          />
+          <AdminFilterInput
+            label="Type"
+            value={draftFilters.type}
+            onChange={(event) => updateFilter("type", event.target.value)}
+            placeholder="client, reseller"
+          />
+          <AdminFilterInput
+            label="Status"
+            value={draftFilters.status}
+            onChange={(event) => updateFilter("status", event.target.value)}
+            placeholder="active, suspended"
+          />
+        </AdminFilterBar>
         <div className="overflow-x-auto">
           <table className="min-w-[860px] w-full text-[13px] border-collapse">
             <thead>

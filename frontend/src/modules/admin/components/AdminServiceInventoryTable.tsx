@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { TablePagination } from "@/components/ui/TablePagination";
 import { billingApi } from "@/lib/api/billing";
 import { compactDateTime, recordLabel } from "@/lib/api/format";
-import type { ServiceInstance } from "@/lib/api/types";
+import type { AdminServiceQuery, ServiceInstance } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { hiddenReference } from "@/lib/api/viewModels";
+import { AdminFilterBar, AdminFilterInput } from "./AdminFilterBar";
+import { equalsFilter, hasActiveFilters, includesFilter, trimStringFilters } from "../lib/filterUtils";
 
 export type ServiceFamily = "proxy" | "vps" | "bandwidth";
 
@@ -42,6 +44,18 @@ interface AdminServiceInventoryTableProps {
   title: string;
   demoRows: AdminServiceDemoRow[];
 }
+
+type ServiceFilterFields = Required<Pick<
+  AdminServiceQuery,
+  "display_id" | "order_display_id" | "provider_source_display_id" | "status"
+>>;
+
+const EMPTY_FILTERS: ServiceFilterFields = {
+  display_id: "",
+  order_display_id: "",
+  provider_source_display_id: "",
+  status: "",
+};
 
 const FAMILY_LABELS: Record<ServiceFamily, string> = {
   proxy: "proxy",
@@ -144,20 +158,62 @@ function sourceText(status: string, usingLive: boolean, family: ServiceFamily) {
   return `Demo ${FAMILY_LABELS[family]} inventory`;
 }
 
+function filterDemoServices(rows: AdminServiceDemoRow[], filters: ServiceFilterFields): AdminServiceDemoRow[] {
+  return rows.filter((row) => (
+    includesFilter(row.id, filters.display_id)
+    && includesFilter(row.owner, filters.order_display_id)
+    && includesFilter(row.provider, filters.provider_source_display_id)
+    && equalsFilter(row.status, filters.status)
+  ));
+}
+
 export function AdminServiceInventoryTable({ family, title, demoRows }: AdminServiceInventoryTableProps) {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+  const [draftFilters, setDraftFilters] = useState(EMPTY_FILTERS);
+  const [appliedFilters, setAppliedFilters] = useState(EMPTY_FILTERS);
   const services = useApiResource(
-    () => billingApi.listAdminServices({ limit: 100 }),
-    `admin-services:${family}`,
+    () => billingApi.listAdminServices({ ...appliedFilters, limit: 100 }),
+    `admin-services:${family}:${JSON.stringify(appliedFilters)}`,
   );
   const usingLive = services.status === "success";
   const liveRows = (services.data ?? [])
     .map(liveRow)
     .filter((row) => row.family === family);
-  const rows: AdminServiceDemoRow[] = usingLive ? liveRows : demoRows;
+  const rows: AdminServiceDemoRow[] = usingLive ? liveRows : filterDemoServices(demoRows, appliedFilters);
   const displayed = limit === -1 ? rows : rows.slice((page - 1) * limit, page * limit);
   const statusText = sourceText(services.status, usingLive, family);
+  const activeFilters = hasActiveFilters(appliedFilters);
+  const statusTone = services.status === "error"
+    ? "error"
+    : services.status === "loading"
+      ? "loading"
+      : usingLive
+        ? "success"
+        : "default";
+  const filterStatusText = usingLive
+    ? activeFilters
+      ? `Live ${FAMILY_LABELS[family]} filters applied.`
+      : statusText
+    : activeFilters
+      ? `Filters are applied to demo ${FAMILY_LABELS[family]} data.`
+      : statusText;
+
+  function updateFilter(field: keyof ServiceFilterFields, value: string) {
+    setDraftFilters((current) => ({ ...current, [field]: value }));
+  }
+
+  function applyFilters(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setAppliedFilters(trimStringFilters(draftFilters));
+    setPage(1);
+  }
+
+  function resetFilters() {
+    setDraftFilters(EMPTY_FILTERS);
+    setAppliedFilters(EMPTY_FILTERS);
+    setPage(1);
+  }
 
   return (
     <div className="p-4">
@@ -169,6 +225,35 @@ export function AdminServiceInventoryTable({ family, title, demoRows }: AdminSer
             <span className="text-[11px] text-gray-400">{rows.length} services</span>
           </div>
         </div>
+        <AdminFilterBar onSubmit={applyFilters} onReset={resetFilters} statusText={filterStatusText} statusTone={statusTone}>
+          <AdminFilterInput
+            label="Service public ID"
+            value={draftFilters.display_id}
+            onChange={(event) => updateFilter("display_id", event.target.value)}
+            placeholder="50002"
+            inputMode="numeric"
+          />
+          <AdminFilterInput
+            label="Order public ID"
+            value={draftFilters.order_display_id}
+            onChange={(event) => updateFilter("order_display_id", event.target.value)}
+            placeholder="30005"
+            inputMode="numeric"
+          />
+          <AdminFilterInput
+            label="Source public ID"
+            value={draftFilters.provider_source_display_id}
+            onChange={(event) => updateFilter("provider_source_display_id", event.target.value)}
+            placeholder="23001"
+            inputMode="numeric"
+          />
+          <AdminFilterInput
+            label="Status"
+            value={draftFilters.status}
+            onChange={(event) => updateFilter("status", event.target.value)}
+            placeholder="active, suspended"
+          />
+        </AdminFilterBar>
         <div className="overflow-x-auto max-w-full">
           <table className="min-w-[980px] w-full text-left border-collapse">
             <thead>

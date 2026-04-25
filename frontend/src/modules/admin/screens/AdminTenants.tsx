@@ -1,10 +1,14 @@
 "use client";
 
+import { FormEvent, useState } from "react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { compactDateTime, recordLabel } from "@/lib/api/format";
+import type { AdminTenantQuery } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { TENANTS } from "@/mocks/billingData";
+import { AdminFilterBar, AdminFilterInput } from "../components/AdminFilterBar";
+import { equalsFilter, hasActiveFilters, includesFilter, trimStringFilters } from "../lib/filterUtils";
 
 interface TenantRow {
   id: string;
@@ -17,16 +21,43 @@ interface TenantRow {
   created: string;
 }
 
+type TenantFilterFields = Required<Pick<AdminTenantQuery, "display_id" | "type" | "status">>;
+
+const EMPTY_FILTERS: TenantFilterFields = {
+  display_id: "",
+  type: "",
+  status: "",
+};
+
 function sourceText(status: string, usingLive: boolean) {
   if (status === "error") return "Live API unavailable. Showing demo account data.";
   if (status === "loading") return "Refreshing live accounts...";
   return usingLive ? "Live tenant accounts" : "Demo account data";
 }
 
+function filterDemoTenants(filters: TenantFilterFields): TenantRow[] {
+  return TENANTS.map((tenant) => ({
+    id: tenant.id,
+    name: tenant.name,
+    type: tenant.type,
+    domain: tenant.domain,
+    users: tenant.clients.toLocaleString(),
+    currency: "demo",
+    status: tenant.status,
+    created: tenant.since ?? "-",
+  })).filter((tenant) => (
+    includesFilter(tenant.id, filters.display_id)
+    && equalsFilter(tenant.type, filters.type)
+    && equalsFilter(tenant.status, filters.status)
+  ));
+}
+
 export function AdminTenants() {
+  const [draftFilters, setDraftFilters] = useState(EMPTY_FILTERS);
+  const [appliedFilters, setAppliedFilters] = useState(EMPTY_FILTERS);
   const tenants = useApiResource(
-    () => billingApi.listAdminTenants({ limit: 100 }),
-    "admin-tenants",
+    () => billingApi.listAdminTenants({ ...appliedFilters, limit: 100 }),
+    `admin-tenants:${JSON.stringify(appliedFilters)}`,
   );
   const usingLive = tenants.status === "success";
   const rows: TenantRow[] = usingLive
@@ -40,16 +71,37 @@ export function AdminTenants() {
         status: tenant.status,
         created: compactDateTime(tenant.created_at),
       }))
-    : TENANTS.map((tenant) => ({
-        id: tenant.id,
-        name: tenant.name,
-        type: tenant.type,
-        domain: tenant.domain,
-        users: tenant.clients.toLocaleString(),
-        currency: "demo",
-        status: tenant.status,
-        created: tenant.since ?? "-",
-      }));
+    : filterDemoTenants(appliedFilters);
+  const activeFilters = hasActiveFilters(appliedFilters);
+  const statusTone = tenants.status === "error"
+    ? "error"
+    : tenants.status === "loading"
+      ? "loading"
+      : usingLive
+        ? "success"
+        : "default";
+  const statusText = sourceText(tenants.status, usingLive);
+  const filterStatusText = usingLive
+    ? activeFilters
+      ? "Live account filters applied."
+      : statusText
+    : activeFilters
+      ? "Filters are applied to demo account data."
+      : statusText;
+
+  function updateFilter(field: keyof TenantFilterFields, value: string) {
+    setDraftFilters((current) => ({ ...current, [field]: value }));
+  }
+
+  function applyFilters(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setAppliedFilters(trimStringFilters(draftFilters));
+  }
+
+  function resetFilters() {
+    setDraftFilters(EMPTY_FILTERS);
+    setAppliedFilters(EMPTY_FILTERS);
+  }
 
   return (
     <div className="p-4">
@@ -61,6 +113,27 @@ export function AdminTenants() {
             <span className="text-[11px] text-gray-400">{rows.length} accounts</span>
           </div>
         </div>
+        <AdminFilterBar onSubmit={applyFilters} onReset={resetFilters} statusText={filterStatusText} statusTone={statusTone}>
+          <AdminFilterInput
+            label="Account public ID"
+            value={draftFilters.display_id}
+            onChange={(event) => updateFilter("display_id", event.target.value)}
+            placeholder="10010"
+            inputMode="numeric"
+          />
+          <AdminFilterInput
+            label="Type"
+            value={draftFilters.type}
+            onChange={(event) => updateFilter("type", event.target.value)}
+            placeholder="admin, reseller"
+          />
+          <AdminFilterInput
+            label="Status"
+            value={draftFilters.status}
+            onChange={(event) => updateFilter("status", event.target.value)}
+            placeholder="active, suspended"
+          />
+        </AdminFilterBar>
         <div className="overflow-x-auto">
           <table className="min-w-[760px] w-full text-[13px] border-collapse">
             <thead>

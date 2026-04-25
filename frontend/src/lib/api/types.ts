@@ -11,10 +11,7 @@ export type ApiQueryValue = string | number | null | undefined;
 export type ApiQuery = object;
 export type ApiJson = unknown;
 
-export interface PageQuery {
-  limit?: string | number;
-  cursor?: string;
-}
+export interface PageQuery { limit?: string | number; cursor?: string; }
 
 export interface Wallet {
   id: string;
@@ -422,19 +419,26 @@ export interface TopupReviewBody {
 export interface AdminInvoiceQuery {
   display_id?: string;
   buyer_user_id?: string;
+  buyer_display_id?: string;
+  order_id?: string;
+  order_display_id?: string;
   status?: string;
   amount_min?: string;
   amount_max?: string;
 }
-
 export interface AdminTransactionQuery {
   display_id?: string;
   account_user_id?: string;
+  account_display_id?: string;
+  order_id?: string;
+  order_display_id?: string;
+  invoice_id?: string;
+  invoice_display_id?: string;
+  type?: string;
   status?: string;
   amount_min?: string;
   amount_max?: string;
 }
-
 export interface AdminAuditLogQuery extends PageQuery {
   display_id?: string;
   actor_id?: string;
@@ -442,50 +446,51 @@ export interface AdminAuditLogQuery extends PageQuery {
   target_type?: string;
   target_id?: string;
 }
-
 export interface AdminTenantQuery extends PageQuery {
   display_id?: string;
   parent_tenant_id?: string;
   type?: string;
   status?: string;
 }
-
 export interface AdminAccountQuery extends PageQuery {
   display_id?: string;
   type?: string;
   status?: string;
   email?: string;
 }
-
 export interface AdminOrderQuery extends PageQuery {
   buyer_user_id?: string;
+  buyer_display_id?: string;
   display_id?: string;
   status?: string;
   billing_status?: string;
   amount_min?: string;
   amount_max?: string;
 }
-
 export interface AdminServiceQuery extends PageQuery {
   buyer_user_id?: string;
+  buyer_display_id?: string;
   display_id?: string;
   order_id?: string;
   order_display_id?: string;
+  provider_source_display_id?: string;
   status?: string;
 }
-
 export interface JobQuery extends PageQuery {
-  display_id?: string; job_type?: string; status?: string;
-  reference_type?: string; reference_id?: string; source_id?: string;
+  display_id?: string;
+  job_type?: string;
+  status?: string;
+  reference_type?: string;
+  reference_id?: string;
+  source_id?: string;
+  source_display_id?: string;
 }
-
 export interface AdminWalletQuery extends PageQuery {
   display_id?: string;
   owner_type?: string;
   owner_id?: string;
   status?: string;
 }
-
 export interface LedgerQuery extends PageQuery {
   display_id?: string;
   direction?: string;
@@ -494,10 +499,11 @@ export interface LedgerQuery extends PageQuery {
   amount_min?: string;
   amount_max?: string;
 }
-
 export interface TopupRequestQuery extends PageQuery {
   wallet_id?: string;
+  wallet_display_id?: string;
   requested_by?: string;
+  requested_by_display_id?: string;
   display_id?: string;
   payment_method?: string;
   status?: string;
@@ -511,11 +517,14 @@ export interface CatalogQuery extends PageQuery {
 }
 
 export interface AdminProviderSourceQuery extends PageQuery {
+  display_id?: string;
   source_type?: string;
   status?: string;
 }
 
 export interface AdminProviderReadinessQuery extends PageQuery {
+  plan_display_id?: string;
+  source_display_id?: string;
   product_type?: string;
   status?: string;
 }
