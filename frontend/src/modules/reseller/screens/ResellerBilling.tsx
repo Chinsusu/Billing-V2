@@ -4,6 +4,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { fulfillmentForOrder } from "@/lib/api/fulfillment";
 import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
+import { resellerAccountLabel } from "@/lib/api/resellerViewModels";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { INVOICES, TRANSACTIONS } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
@@ -37,11 +38,13 @@ function ResellerInvoices() {
     "reseller-invoice-jobs",
   );
   const customerByID = new Map((customers.data ?? []).map((customer) => [customer.id, customer]));
+  const customerByDisplayID = new Map((customers.data ?? []).map((customer) => [customer.display_id, customer]));
   const orderByID = new Map((orders.data ?? []).map((order) => [order.id, order]));
   const usingLive = invoices.status === "success";
   const rows = usingLive
     ? (invoices.data ?? []).map((invoice) => {
-        const customer = customerByID.get(invoice.buyer_user_id);
+        const customer = customerByDisplayID.get(invoice.buyer_display_id ?? 0) ?? customerByID.get(invoice.buyer_user_id);
+        const buyerDisplayID = invoice.buyer_display_id ?? customer?.display_id;
         const fulfillment = fulfillmentForOrder(invoice.order_id ? orderByID.get(invoice.order_id) : undefined, services.data ?? [], {
           jobs: jobs.data ?? [],
           jobsUnavailable: jobs.status === "error",
@@ -49,7 +52,7 @@ function ResellerInvoices() {
         return {
           id: recordLabel(invoice.display_id, "INV-"),
           order: fulfillment.orderLabel,
-          customer: customer ? `${customer.full_name || customer.email} (${recordLabel(customer.display_id, "ACC-")})` : "-",
+          customer: resellerAccountLabel(buyerDisplayID, customer),
           issued: compactDateTime(invoice.issued_at),
           due: compactDateTime(invoice.due_at),
           amount: moneyMinor(invoice.total_minor, invoice.currency),
@@ -129,11 +132,13 @@ function ResellerTransactions() {
     "reseller-transaction-jobs",
   );
   const customerByID = new Map((customers.data ?? []).map((customer) => [customer.id, customer]));
+  const customerByDisplayID = new Map((customers.data ?? []).map((customer) => [customer.display_id, customer]));
   const orderByID = new Map((orders.data ?? []).map((order) => [order.id, order]));
   const usingLive = transactions.status === "success";
   const rows = usingLive
     ? (transactions.data ?? []).map((transaction) => {
-        const customer = customerByID.get(transaction.account_user_id);
+        const customer = customerByDisplayID.get(transaction.account_display_id ?? 0) ?? customerByID.get(transaction.account_user_id);
+        const accountDisplayID = transaction.account_display_id ?? customer?.display_id;
         const fulfillment = fulfillmentForOrder(transaction.order_id ? orderByID.get(transaction.order_id) : undefined, services.data ?? [], {
           jobs: jobs.data ?? [],
           jobsUnavailable: jobs.status === "error",
@@ -141,7 +146,7 @@ function ResellerTransactions() {
         return {
           id: recordLabel(transaction.display_id, "TX-"),
           time: compactDateTime(transaction.created_at),
-          customer: customer ? `${customer.full_name || customer.email} (${recordLabel(customer.display_id, "ACC-")})` : "-",
+          customer: resellerAccountLabel(accountDisplayID, customer),
           order: fulfillment.orderLabel,
           method: transaction.description ?? "wallet",
           type: transaction.type,

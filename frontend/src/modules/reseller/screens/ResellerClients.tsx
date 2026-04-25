@@ -44,24 +44,24 @@ export function ResellerClients() {
     "reseller-client-services",
   );
   const usingLive = customers.status === "success";
-  const orderCounts = new Map<string, number>();
-  const serviceCounts = new Map<string, number>();
-  const orderBuyers = new Map<string, string>();
+  const orderCounts = new Map<number, number>();
+  const serviceCounts = new Map<number, number>();
+  const orderBuyerDisplayIDs = new Map<string, number>();
   const walletByOwner = new Map(
     (wallets.data ?? []).map((wallet) => [wallet.owner_id, wallet]),
   );
 
   if (orders.status === "success") {
     for (const order of orders.data ?? []) {
-      if (!order.buyer_user_id) continue;
-      orderBuyers.set(order.id, order.buyer_user_id);
-      orderCounts.set(order.buyer_user_id, (orderCounts.get(order.buyer_user_id) ?? 0) + 1);
+      if (!order.buyer_display_id) continue;
+      orderBuyerDisplayIDs.set(order.id, order.buyer_display_id);
+      orderCounts.set(order.buyer_display_id, (orderCounts.get(order.buyer_display_id) ?? 0) + 1);
     }
   }
   if (orders.status === "success" && services.status === "success") {
     for (const service of services.data ?? []) {
-      const buyerID = orderBuyers.get(service.order_id);
-      if (buyerID) serviceCounts.set(buyerID, (serviceCounts.get(buyerID) ?? 0) + 1);
+      const buyerDisplayID = service.buyer_display_id ?? orderBuyerDisplayIDs.get(service.order_id);
+      if (buyerDisplayID) serviceCounts.set(buyerDisplayID, (serviceCounts.get(buyerDisplayID) ?? 0) + 1);
     }
   }
 
@@ -74,9 +74,9 @@ export function ResellerClients() {
           email: client.email,
           wallet: wallet ? moneyMinor(wallet.available_balance_minor, wallet.currency) : "-",
           services: services.status === "success" && orders.status === "success"
-            ? String(serviceCounts.get(client.id) ?? 0)
+            ? String(serviceCounts.get(client.display_id) ?? 0)
             : "-",
-          orders: orders.status === "success" ? String(orderCounts.get(client.id) ?? 0) : "-",
+          orders: orders.status === "success" ? String(orderCounts.get(client.display_id) ?? 0) : "-",
           status: client.status,
           lastLogin: compactDateTime(client.last_login_at),
           walletLow: wallet ? wallet.available_balance_minor < 2000 : false,

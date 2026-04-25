@@ -4,6 +4,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { fulfillmentForOrder, fulfillmentForService } from "@/lib/api/fulfillment";
 import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
+import { resellerAccountLabel } from "@/lib/api/resellerViewModels";
 import type { Order, ProvisioningJob, ServiceInstance } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { BANDWIDTH_SERVICES, PROXY_SERVICES, VPS_SERVICES } from "@/mocks/billingData";
@@ -185,20 +186,19 @@ function liveServiceRows(
   jobsUnavailable: boolean,
 ): ServiceRow[] {
   const ordersByID = new Map(orders.map((order) => [order.id, order]));
-  const customerByID = new Map(customers.map((customer) => [customer.id, customer]));
+  const customerByDisplayID = new Map(customers.map((customer) => [customer.display_id, customer]));
   const serviceRows = services
     .map((service) => {
       const order = ordersByID.get(service.order_id);
       const fulfillment = fulfillmentForService(service, order, { jobs, jobsUnavailable });
       const detected = detectedCategory(`${snapshotText(order?.product_snapshot)} ${snapshotText(order?.plan_snapshot)} ${service.external_resource_id}`);
-      const customer = order?.buyer_user_id ? customerByID.get(order.buyer_user_id) : undefined;
+      const buyerDisplayID = service.buyer_display_id ?? order?.buyer_display_id;
+      const customer = buyerDisplayID ? customerByDisplayID.get(buyerDisplayID) : undefined;
       return {
         id: recordLabel(service.display_id, "SVC-"),
         order: fulfillment.orderLabel,
-        label: service.external_resource_id || snapshotText(order?.plan_snapshot) || recordLabel(service.display_id, "SVC-"),
-        customer: customer
-          ? `${customer.full_name || customer.email} (${recordLabel(customer.display_id, "ACC-")})`
-          : "-",
+        label: snapshotText(order?.plan_snapshot) || recordLabel(service.display_id, "SVC-"),
+        customer: resellerAccountLabel(buyerDisplayID, customer),
         region: snapshotText(order?.product_snapshot, ["location", "region"]) || "-",
         usage: order ? `${recordLabel(order.display_id, "ORD-")} x ${order.quantity}` : "-",
         renewal: compactDateTime(service.term_end),
@@ -215,15 +215,13 @@ function liveServiceRows(
     .filter((order) => order.order_status === "paid" && order.billing_status === "paid" && !serviceOrderIDs.has(order.id))
     .map((order) => {
       const fulfillment = fulfillmentForOrder(order, [], { jobs, jobsUnavailable });
-      const customer = order.buyer_user_id ? customerByID.get(order.buyer_user_id) : undefined;
+      const customer = order.buyer_display_id ? customerByDisplayID.get(order.buyer_display_id) : undefined;
       const detected = detectedCategory(`${snapshotText(order.product_snapshot)} ${snapshotText(order.plan_snapshot)}`);
       return {
         id: "-",
         order: fulfillment.orderLabel,
         label: snapshotText(order.plan_snapshot) || fulfillment.label,
-        customer: customer
-          ? `${customer.full_name || customer.email} (${recordLabel(customer.display_id, "ACC-")})`
-          : "-",
+        customer: resellerAccountLabel(order.buyer_display_id, customer),
         region: snapshotText(order.product_snapshot, ["location", "region"]) || "-",
         usage: `${recordLabel(order.display_id, "ORD-")} x ${order.quantity}`,
         renewal: "-",
