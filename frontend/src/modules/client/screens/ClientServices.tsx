@@ -1,9 +1,8 @@
 "use client";
 
-import { useMemo } from "react";
-
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
+import { clientServiceCategory, clientServiceOrderLabel, clientServiceSourceLabel } from "@/lib/api/clientViewModels";
 import { compactDateTime, recordLabel } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
 
@@ -33,18 +32,14 @@ const CATEGORY_CONFIG: Record<ServiceCategory, { title: string; metric: string; 
 
 export function ClientServices({ category }: ClientServicesProps) {
   const services = useApiResource(billingApi.listClientServices);
-  const orders = useApiResource(billingApi.listClientOrders);
-  const ordersByID = useMemo(() => new Map((orders.data ?? []).map((order) => [order.id, order])), [orders.data]);
   const liveRows = services.status === "success"
     ? services.data?.map((service) => ({
         id: service.id,
-        category: inferCategory([service.external_resource_id, service.tenant_plan_id, service.provider_source_id]),
+        category: clientServiceCategory(service),
         label: recordLabel(service.display_id, "SVC-"),
         identifier: service.external_resource_id || "-",
-        region: service.provider_source_id ?? "-",
-        detail: service.order_id && ordersByID.get(service.order_id)
-          ? recordLabel(ordersByID.get(service.order_id)!.display_id, "ORD-")
-          : "-",
+        source: clientServiceSourceLabel(service),
+        detail: clientServiceOrderLabel(service),
         expiry: compactDateTime(service.term_end),
         status: service.status,
       })) ?? []
@@ -71,7 +66,7 @@ export function ClientServices({ category }: ClientServicesProps) {
           <table className="w-full text-[13px] border-collapse min-w-[760px]">
             <thead>
               <tr className="bg-gray-50">
-                {["Service", "Identifier", "Region", category === "bandwidth" ? "Usage" : "Cycle / Order", "Expires", "Status"].map((heading) => (
+                {["Service", "Identifier", "Region / Source", category === "bandwidth" ? "Usage" : "Cycle / Order", "Expires", "Status"].map((heading) => (
                   <th key={heading} className="text-left text-[11px] font-medium uppercase text-gray-400 p-4 border-b border-gray-200">
                     {heading}
                   </th>
@@ -83,7 +78,7 @@ export function ClientServices({ category }: ClientServicesProps) {
                 <tr key={service.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
                   <td className="p-4 font-medium text-gray-900">{service.label}</td>
                   <td className="p-4 text-[12px] text-gray-500">{service.identifier}</td>
-                  <td className="p-4 text-gray-500">{service.region}</td>
+                  <td className="p-4 text-gray-500">{service.source}</td>
                   <td className="p-4 text-gray-500">{service.detail}</td>
                   <td className="p-4 text-gray-500">{service.expiry}</td>
                   <td className="p-4"><StatusBadge status={service.status} dot /></td>
@@ -98,13 +93,6 @@ export function ClientServices({ category }: ClientServicesProps) {
       </div>
     </div>
   );
-}
-
-function inferCategory(values: Array<string | undefined>): ServiceCategory {
-  const text = values.filter(Boolean).join(" ").toLowerCase();
-  if (text.includes("bandwidth") || text.includes("traffic") || text.includes("gb")) return "bandwidth";
-  if (text.includes("vps") || text.includes("vm") || text.includes("server")) return "vps";
-  return "proxies";
 }
 
 function SummaryTile({ label, value, tone = "neutral" }: { label: string; value: string; tone?: "neutral" | "warn" }) {

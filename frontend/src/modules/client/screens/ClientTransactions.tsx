@@ -1,19 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
-
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
+import { hiddenReference } from "@/lib/api/viewModels";
 
 export function ClientTransactions() {
   const transactions = useApiResource(billingApi.listClientTransactions);
-  const invoices = useApiResource(billingApi.listClientInvoices);
-  const orders = useApiResource(billingApi.listClientOrders);
   const rows = transactions.data ?? [];
-  const invoicesByID = useMemo(() => new Map((invoices.data ?? []).map((invoice) => [invoice.id, invoice])), [invoices.data]);
-  const ordersByID = useMemo(() => new Map((orders.data ?? []).map((order) => [order.id, order])), [orders.data]);
   const postedTotal = rows
     .filter((txn) => txn.status === "posted" || txn.status === "paid")
     .reduce((total, txn) => total + txn.amount_minor, 0);
@@ -50,7 +45,7 @@ export function ClientTransactions() {
                   <td className="p-4 text-[12px] text-[#D50C2D] font-medium">{recordLabel(txn.display_id, "TXN-")}</td>
                   <td className="p-4 text-gray-500">{compactDateTime(txn.created_at)}</td>
                   <td className="p-4 text-gray-500">{txn.type}</td>
-                  <td className="p-4 text-[12px] text-gray-400">{transactionReference(txn, invoicesByID, ordersByID)}</td>
+                  <td className="p-4 text-[12px] text-gray-400">{transactionReference(txn)}</td>
                   <td className="p-4 text-gray-500 max-w-[260px] truncate">{txn.description ?? "-"}</td>
                   <td className="p-4 text-right font-medium tabular-nums">{moneyMinor(txn.amount_minor, txn.currency)}</td>
                   <td className="p-4"><StatusBadge status={txn.status} dot /></td>
@@ -68,19 +63,11 @@ export function ClientTransactions() {
 }
 
 function transactionReference(
-  transaction: { invoice_id?: string; order_id?: string },
-  invoicesByID: Map<string, { display_id: number }>,
-  ordersByID: Map<string, { display_id: number }>,
+  transaction: { invoice_display_id?: number; order_display_id?: number },
 ): string {
-  if (transaction.invoice_id) {
-    const invoice = invoicesByID.get(transaction.invoice_id);
-    if (invoice) return recordLabel(invoice.display_id, "INV-");
-  }
-  if (transaction.order_id) {
-    const order = ordersByID.get(transaction.order_id);
-    if (order) return recordLabel(order.display_id, "ORD-");
-  }
-  return "-";
+  if (transaction.invoice_display_id) return recordLabel(transaction.invoice_display_id, "INV-");
+  if (transaction.order_display_id) return recordLabel(transaction.order_display_id, "ORD-");
+  return hiddenReference("Reference");
 }
 
 function SummaryTile({ label, value, tone = "neutral" }: { label: string; value: string; tone?: "neutral" | "warn" }) {

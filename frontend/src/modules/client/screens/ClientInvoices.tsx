@@ -1,17 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
-
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
+import { hiddenReference } from "@/lib/api/viewModels";
 
 export function ClientInvoices() {
   const invoices = useApiResource(billingApi.listClientInvoices);
-  const orders = useApiResource(billingApi.listClientOrders);
   const rows = invoices.data ?? [];
-  const ordersByID = useMemo(() => new Map((orders.data ?? []).map((order) => [order.id, order])), [orders.data]);
   const openCount = rows.filter((invoice) => invoice.status === "issued" || invoice.status === "overdue").length;
   const paidTotal = rows
     .filter((invoice) => invoice.status === "paid")
@@ -47,9 +44,7 @@ export function ClientInvoices() {
                 <tr key={invoice.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
                   <td className="p-4 text-[12px] text-[#D50C2D] font-medium">{recordLabel(invoice.display_id, "INV-")}</td>
                   <td className="p-4 text-[12px] text-gray-400">
-                    {invoice.order_id && ordersByID.get(invoice.order_id)
-                      ? recordLabel(ordersByID.get(invoice.order_id)!.display_id, "ORD-")
-                      : "-"}
+                    {invoice.order_display_id ? recordLabel(invoice.order_display_id, "ORD-") : hiddenReference("Order")}
                   </td>
                   <td className="p-4 text-gray-500">{compactDateTime(invoice.issued_at)}</td>
                   <td className="p-4 text-gray-500">{compactDateTime(invoice.due_at)}</td>
