@@ -30,9 +30,9 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-25` after completing T118:
+Current board snapshot on `2026-04-25` after adding T119-T124:
 
-- `TODO`: 0
+- `TODO`: 6
 - `IN_PROGRESS`: 0
 - `REVIEW`: 0
 - `BLOCKED`: 0
@@ -61,6 +61,12 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
+| T119 | [tasks/active/T119_go_validation_package_scope_hygiene.md](tasks/active/T119_go_validation_package_scope_hygiene.md) | codex/t119-go-validation-package-scope-hygiene | tooling/CI | Keep Go validation from traversing frontend dependency packages. |
+| T120 | [tasks/active/T120_public_display_id_api_policy.md](tasks/active/T120_public_display_id_api_policy.md) | codex/t120-public-display-id-api-policy | API/docs | Document public numeric ID versus backend reference rules. |
+| T121 | [tasks/active/T121_admin_public_id_backend_filters.md](tasks/active/T121_admin_public_id_backend_filters.md) | codex/t121-admin-public-id-backend-filters | API/DB | Add admin backend filters for numeric public IDs. |
+| T122 | [tasks/active/T122_admin_frontend_public_id_filters.md](tasks/active/T122_admin_frontend_public_id_filters.md) | codex/t122-admin-frontend-public-id-filters | frontend/API | Update admin frontend filters to use public ID language and queries. |
+| T123 | [tasks/active/T123_public_id_smoke_coverage.md](tasks/active/T123_public_id_smoke_coverage.md) | codex/t123-public-id-smoke-coverage | smoke/API/frontend | Cover public ID admin flows in smoke checks. |
+| T124 | [tasks/active/T124_admin_read_model_related_display_ids.md](tasks/active/T124_admin_read_model_related_display_ids.md) | codex/t124-admin-read-model-related-display-ids | API/frontend | Add safe related public IDs to admin read models. |
 
 ## In-Flight Task Files
 

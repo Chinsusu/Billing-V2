@@ -1,0 +1,36 @@
+# T120 - Public display ID API policy
+
+Status: TODO
+Owner: -
+Branch: codex/t120-public-display-id-api-policy
+PR: -
+Risk: API/docs
+Created: 2026-04-25
+Updated: 2026-04-25
+
+## Summary
+
+Document the API rule for numeric public display IDs versus backend UUID references before adding more route behavior.
+
+## Scope
+
+- Define which fields are safe for frontend labels for accounts, tenants, providers, orders, services, invoices, transactions, jobs, top-ups, and audit logs.
+- Define when backend UUIDs may be used for API paths or actions but must not be shown as UI labels.
+- Add naming guidance for query filters that use public display IDs.
+- Link the policy from frontend and API operational docs.
+- Keep edited docs under 500 lines.
+
+## Acceptance Criteria
+
+- Agents can tell which ID to display in UI and PR descriptions.
+- API docs distinguish action/internal references from user-facing labels.
+- Related frontend/API docs link to the policy.
+- Docs validation commands pass.
+
+## Notes
+
+- This task should keep terminology simple: "public ID" for numeric display IDs, "backend reference" for UUIDs.
+
+## Agent Log
+
+- 2026-04-25: Task created in the public ID and validation hardening batch.
