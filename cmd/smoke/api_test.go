@@ -73,16 +73,20 @@ func TestAPISmokeChecksIncludeAdminPublicIDFilters(t *testing.T) {
 	checks := apiSmokeChecks()
 	expected := map[string]struct {
 		path        string
-		contains    string
+		contains    []string
 		notContains string
 	}{
 		"admin service public id filter": {
 			path:     "/admin/services?display_id=43001&order_display_id=42001&provider_source_display_id=10000",
-			contains: `"display_id":43001`,
+			contains: []string{`"display_id":43001`, `"order_display_id":42001`, `"provider_source_display_id":10000`},
 		},
 		"admin invoice public id filter": {
 			path:     "/admin/invoices?display_id=44001&buyer_display_id=10002&order_display_id=42001",
-			contains: `"display_id":44001`,
+			contains: []string{`"display_id":44001`, `"buyer_display_id":10002`, `"order_display_id":42001`},
+		},
+		"admin job public id filter": {
+			path:     "/admin/jobs?job_type=provider.provision&display_id=53001&source_display_id=10000",
+			contains: []string{`"display_id":53001`, `"source_display_id":10000`, `"reference_display_id":42001`},
 		},
 		"admin invoice public id filter miss": {
 			path:        "/admin/invoices?display_id=999999",
@@ -102,8 +106,10 @@ func TestAPISmokeChecksIncludeAdminPublicIDFilters(t *testing.T) {
 		if check.Headers["X-Actor-Type"] != "reseller_owner" {
 			t.Fatalf("expected admin actor headers for %q, got %+v", check.Name, check.Headers)
 		}
-		if want.contains != "" && !stringSliceContains(check.Contains, want.contains) {
-			t.Fatalf("public ID smoke check %q missing contains token %q", check.Name, want.contains)
+		for _, token := range want.contains {
+			if !stringSliceContains(check.Contains, token) {
+				t.Fatalf("public ID smoke check %q missing contains token %q", check.Name, token)
+			}
 		}
 		if want.notContains != "" && !stringSliceContains(check.NotContains, want.notContains) {
 			t.Fatalf("public ID smoke check %q missing not-contains token %q", check.Name, want.notContains)
@@ -112,6 +118,36 @@ func TestAPISmokeChecksIncludeAdminPublicIDFilters(t *testing.T) {
 	for name := range expected {
 		if !seen[name] {
 			t.Fatalf("missing public ID smoke check %q", name)
+		}
+	}
+}
+
+func TestAPISmokeChecksIncludeRelatedDisplayIDResponses(t *testing.T) {
+	checks := apiSmokeChecks()
+	expected := map[string][]string{
+		"admin service list":             {`"order_display_id":42001`, `"buyer_display_id":10002`, `"provider_source_display_id":10000`},
+		"admin topup list":               {`"wallet_display_id":41001`, `"requested_by_display_id":10002`, `"reviewed_by_display_id":10001`},
+		"admin transaction list":         {`"account_display_id":10002`, `"order_display_id":42001`, `"invoice_display_id":44001`},
+		"admin invoice public id filter": {`"buyer_display_id":10002`, `"order_display_id":42001`},
+		"admin job public id filter":     {`"source_display_id":10000`, `"reference_display_id":42001`},
+		"admin audit list":               {`"actor_display_id":10001`, `"target_display_id":53001`},
+	}
+	seen := map[string]bool{}
+	for _, check := range checks {
+		tokens, ok := expected[check.Name]
+		if !ok {
+			continue
+		}
+		seen[check.Name] = true
+		for _, token := range tokens {
+			if !stringSliceContains(check.Contains, token) {
+				t.Fatalf("smoke check %q missing related display ID token %q", check.Name, token)
+			}
+		}
+	}
+	for name := range expected {
+		if !seen[name] {
+			t.Fatalf("missing related display ID smoke check %q", name)
 		}
 	}
 }

@@ -34,7 +34,7 @@ Current board snapshot on `2026-04-25` after T121 is done:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 121
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No task files are in progress or review. |
+| T125 | [tasks/active/T125_public_id_response_smoke.md](tasks/active/T125_public_id_response_smoke.md) | REVIEW | Codex | codex/t125-public-id-response-smoke | Add smoke coverage for related public display IDs. |
 
 ## Done Task Files
 

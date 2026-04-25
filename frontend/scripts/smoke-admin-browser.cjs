@@ -37,10 +37,13 @@ async function main() {
       await openAdminScreen(page, /Provisioning queue/i);
       await expectVisibleText(page, "Live provisioning jobs");
       await expectVisibleText(page, "JOB-3301");
+      await expectVisibleText(page, "ORD-42001");
+      await expectVisibleText(page, "SRC-10001");
       await expectVisibleText(page, "Manual Review");
       await page.getByRole("button", { name: "JOB-3301" }).click();
       await expectVisibleText(page, "SOURCE READINESS");
       await expectVisibleText(page, "PLAN-10000 / vps-cx23-40gb-monthly / SRC-10001");
+      await assertNoVisibleText(page, ["job-uuid-1", "order-uuid-1", "source-ready", "tenant-uuid-1"], "provisioning public ID labels");
       await assertNoForbiddenText(page, "provisioning");
 
       await openAdminScreen(page, /Providers \/ Sources/i);
@@ -50,15 +53,28 @@ async function main() {
       await expectVisibleText(page, "Local Fake Hetzner Ready");
       await assertNoForbiddenText(page, "providers");
 
+      await openAdminScreen(page, /VPS/i);
+      await expectVisibleText(page, "Live VPS inventory");
+      await expectVisibleText(page, "SVC-43001");
+      await expectVisibleText(page, "ORD-42001");
+      await expectVisibleText(page, "ACC-10002");
+      await expectVisibleText(page, "SRC-10001");
+      await assertNoVisibleText(page, ["service-uuid-1", "order-uuid-1", "buyer-1", "source-ready", "tenant-uuid-1"], "service public ID labels");
+      await assertNoForbiddenText(page, "services");
+
       await openAdminScreen(page, /Top-up verification/i);
       await expectVisibleText(page, "Live top-up queue");
       await expectVisibleText(page, "TUP-51001");
+      await expectVisibleText(page, "WAL-60001");
+      await expectVisibleText(page, "ACC-10002");
       await expectVisibleText(page, "under_review");
+      await assertNoVisibleText(page, ["topup-uuid-1", "wallet-1", "buyer-1", "tenant-uuid-1"], "top-up public ID labels");
       await assertNoForbiddenText(page, "topups");
 
       await openAdminScreen(page, /^Invoices$/i);
       await expectVisibleText(page, "Live invoice data");
       await expectVisibleText(page, "INV-44001");
+      await expectVisibleText(page, "ACC-10002");
       await page.getByLabel("Display ID").fill("44001");
       await page.getByLabel("Customer public ID").fill("10002");
       const filteredInvoice = page.waitForResponse((response) => {
@@ -74,10 +90,21 @@ async function main() {
       await assertNoVisibleText(page, ["invoice-uuid-1", "buyer-1", "order-uuid-1", "tenant-uuid-1"], "invoice public ID filter");
       await assertNoForbiddenText(page, "invoice public ID filter");
 
+      await openAdminScreen(page, /^Transactions$/i);
+      await expectVisibleText(page, "Live transaction data");
+      await expectVisibleText(page, "TX-51001");
+      await expectVisibleText(page, "ACC-10002");
+      await assertNoVisibleText(page, ["txn-uuid-1", "buyer-1", "order-uuid-1", "invoice-uuid-1", "tenant-uuid-1"], "transaction public ID labels");
+      await assertNoForbiddenText(page, "transactions");
+
       await openAdminScreen(page, /Audit logs/i);
       await expectVisibleText(page, "Live audit filters applied.");
+      await expectVisibleText(page, "AUD-70001");
+      await expectVisibleText(page, "ACC-10001");
       await expectVisibleText(page, "job.retry");
+      await expectVisibleText(page, "job JOB-3301");
       await expectVisibleText(page, "req-smoke");
+      await assertNoVisibleText(page, ["audit-1", "admin-1", "job-uuid-1", "tenant-uuid-1"], "audit public ID labels");
       await assertNoForbiddenText(page, "audit logs");
     } finally {
       await browser.close();
@@ -236,37 +263,51 @@ async function installApiMocks(page) {
         ]);
       case "/backend/admin/services":
         return json(route, filterRows([
-          { id: "service-uuid-1", display_id: 43001, tenant_id: "tenant-uuid-1", order_id: "order-uuid-1", tenant_plan_id: "tenant-plan-1", provider_source_id: "source-ready", external_resource_id: "srv-local-1", status: "active", billing_status: "paid", term_end: "2026-05-24T08:00:00Z" },
+          { id: "service-uuid-1", display_id: 43001, tenant_id: "tenant-uuid-1", order_id: "order-uuid-1", order_display_id: 42001, buyer_display_id: 10002, tenant_plan_id: "tenant-plan-1", provider_source_id: "source-ready", provider_source_display_id: 10001, external_resource_id: "local-vps-405910", status: "active", billing_status: "paid", term_end: "2026-05-24T08:00:00Z", product_snapshot: { product_type: "vps", name: "VPS" }, plan_snapshot: { plan_code: "vps-cx23-40gb-monthly", name: "CX23 VPS 40GB", region: "eu-central" } },
         ], query, [
           ["display_id", (row) => row.display_id],
-          ["order_display_id", () => 42001],
-          ["provider_source_display_id", () => 10001],
+          ["order_display_id", (row) => row.order_display_id],
+          ["provider_source_display_id", (row) => row.provider_source_display_id],
           ["status", (row) => row.status],
         ]));
       case "/backend/admin/topup-requests":
         return json(route, filterRows([
-          { id: "topup-uuid-1", display_id: 51001, tenant_id: "tenant-uuid-1", wallet_id: "wallet-1", requested_by: "buyer-1", amount_minor: 50000, currency: "USD", payment_method: "bank_transfer", payment_reference: "LOCAL-REF-51001", status: "under_review", review_note: "", created_at: "2026-04-24T08:05:00Z" },
+          { id: "topup-uuid-1", display_id: 51001, tenant_id: "tenant-uuid-1", wallet_id: "wallet-1", wallet_display_id: 60001, requested_by: "buyer-1", requested_by_display_id: 10002, amount_minor: 50000, currency: "USD", payment_method: "bank_transfer", payment_reference: "LOCAL-REF-51001", status: "under_review", review_note: "", created_at: "2026-04-24T08:05:00Z" },
         ], query, [
           ["display_id", (row) => row.display_id],
-          ["wallet_display_id", () => 60001],
-          ["requested_by_display_id", () => 10002],
+          ["wallet_display_id", (row) => row.wallet_display_id],
+          ["requested_by_display_id", (row) => row.requested_by_display_id],
           ["status", (row) => row.status],
         ]));
       case "/backend/admin/invoices":
         return json(route, filterRows([
-          { id: "invoice-uuid-1", display_id: 44001, tenant_id: "tenant-uuid-1", buyer_user_id: "buyer-1", order_id: "order-uuid-1", status: "paid", currency: "USD", subtotal_minor: 1400, tax_minor: 0, discount_minor: 0, total_minor: 1400, issued_at: "2026-04-24T08:10:00Z", due_at: "2026-05-24T08:10:00Z", paid_at: "2026-04-24T08:12:00Z", created_at: "2026-04-24T08:10:00Z", updated_at: "2026-04-24T08:12:00Z" },
+          { id: "invoice-uuid-1", display_id: 44001, tenant_id: "tenant-uuid-1", buyer_user_id: "buyer-1", buyer_display_id: 10002, order_id: "order-uuid-1", order_display_id: 42001, status: "paid", currency: "USD", subtotal_minor: 1400, tax_minor: 0, discount_minor: 0, total_minor: 1400, issued_at: "2026-04-24T08:10:00Z", due_at: "2026-05-24T08:10:00Z", paid_at: "2026-04-24T08:12:00Z", created_at: "2026-04-24T08:10:00Z", updated_at: "2026-04-24T08:12:00Z" },
         ], query, [
           ["display_id", (row) => row.display_id],
-          ["buyer_display_id", () => 10002],
-          ["order_display_id", () => 42001],
+          ["buyer_display_id", (row) => row.buyer_display_id],
+          ["order_display_id", (row) => row.order_display_id],
           ["status", (row) => row.status],
         ]));
-      case "/backend/admin/jobs":
+      case "/backend/admin/transactions":
         return json(route, filterRows([
-          { id: "job-uuid-1", display_id: 3301, tenant_id: "tenant-uuid-1", job_type: "provider.provision", reference_type: "order", reference_id: "order-uuid-1", source_id: "source-ready", status: "manual_review", priority: 5, attempt_count: 2, max_attempts: 5, next_attempt_at: "2026-04-24T09:00:00Z", last_error_code: "PROVIDER_TIMEOUT", last_error_message_redacted: "Provider timed out", manual_review_reason: "Needs provider check", correlation_id: "req-smoke", created_at: "2026-04-24T08:00:00Z", updated_at: "2026-04-24T08:35:00Z" },
+          { id: "txn-uuid-1", display_id: 51001, tenant_id: "tenant-uuid-1", account_user_id: "buyer-1", account_display_id: 10002, order_id: "order-uuid-1", order_display_id: 42001, invoice_id: "invoice-uuid-1", invoice_display_id: 44001, type: "charge", status: "posted", currency: "USD", amount_minor: 1400, created_at: "2026-04-24T08:12:00Z" },
         ], query, [
           ["display_id", (row) => row.display_id],
-          ["source_display_id", () => 10001],
+          ["account_display_id", (row) => row.account_display_id],
+          ["order_display_id", (row) => row.order_display_id],
+          ["invoice_display_id", (row) => row.invoice_display_id],
+          ["status", (row) => row.status],
+        ]));
+      case "/backend/admin/payment-reconciliation":
+        return json(route, [
+          { transaction: { id: "txn-uuid-1", display_id: 51001, tenant_id: "tenant-uuid-1", account_user_id: "buyer-1", account_display_id: 10002, order_id: "order-uuid-1", order_display_id: 42001, invoice_id: "invoice-uuid-1", invoice_display_id: 44001, type: "charge", status: "posted", currency: "USD", amount_minor: 1400, created_at: "2026-04-24T08:12:00Z" }, provider: "wallet", invoice: { id: "invoice-uuid-1", display_id: 44001, status: "paid", total_minor: 1400 }, ledger: { id: "ledger-uuid-1", display_id: 50002, wallet_display_id: 60001, direction: "debit", entry_type: "purchase", status: "posted" } },
+        ]);
+      case "/backend/admin/jobs":
+        return json(route, filterRows([
+          { id: "job-uuid-1", display_id: 3301, tenant_id: "tenant-uuid-1", job_type: "provider.provision", reference_type: "order", reference_id: "order-uuid-1", reference_display_id: 42001, source_id: "source-ready", source_display_id: 10001, status: "manual_review", priority: 5, attempt_count: 2, max_attempts: 5, next_attempt_at: "2026-04-24T09:00:00Z", last_error_code: "PROVIDER_TIMEOUT", last_error_message_redacted: "Provider timed out", manual_review_reason: "Needs provider check", correlation_id: "req-smoke", created_at: "2026-04-24T08:00:00Z", updated_at: "2026-04-24T08:35:00Z" },
+        ], query, [
+          ["display_id", (row) => row.display_id],
+          ["source_display_id", (row) => row.source_display_id],
           ["status", (row) => row.status],
           ["job_type", (row) => row.job_type],
         ]));
@@ -302,7 +343,7 @@ async function installApiMocks(page) {
         ]));
       case "/backend/admin/audit-logs":
         return json(route, [
-          { id: "audit-1", display_id: 70001, actor_id: "admin-1", actor_type: "user", action: "job.retry", target_type: "job", target_id: "job-uuid-1", correlation_id: "req-smoke", created_at: "2026-04-24T08:40:00Z" },
+          { id: "audit-1", display_id: 70001, actor_id: "admin-1", actor_display_id: 10001, actor_type: "user", action: "job.retry", target_type: "job", target_id: "job-uuid-1", target_display_id: 3301, correlation_id: "req-smoke", created_at: "2026-04-24T08:40:00Z" },
         ]);
       default:
         return json(route, []);
