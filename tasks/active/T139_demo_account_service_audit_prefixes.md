@@ -1,6 +1,6 @@
 # T139 - Demo account service audit prefixes
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t139-demo-entity-prefixes
 PR: https://github.com/Chinsusu/Billing-V2/pull/309
@@ -37,3 +37,4 @@ Align remaining visible demo and fallback account, service, and audit log IDs wi
 - 2026-04-26: Replaced visible demo account, service, audit log, and provider-source references with `ACC-*`, `SVC-*`, `AUD-*`, and `SRC-*` public prefixes.
 - 2026-04-26: Local validation passed: `npm --prefix frontend run lint`, `npm --prefix frontend run check:sensitive-text`, `npm --prefix frontend run build`, `go run ./cmd/taskguard`, and `git diff --check`.
 - 2026-04-26: Opened PR https://github.com/Chinsusu/Billing-V2/pull/309 for review.
+- 2026-04-26: PR https://github.com/Chinsusu/Billing-V2/pull/309 merged into `main`; marking task done.
