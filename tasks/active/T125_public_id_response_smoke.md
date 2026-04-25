@@ -1,6 +1,6 @@
 # T125 - Public ID response smoke coverage
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t125-public-id-response-smoke
 PR: https://github.com/Chinsusu/Billing-V2/pull/281
@@ -35,3 +35,4 @@ Add smoke coverage for related public display IDs returned by admin APIs and ren
 - 2026-04-25: Added API smoke assertions, dev seed job/audit records, and admin browser smoke checks for related public ID labels.
 - 2026-04-25: Validation passed: `go test ./cmd/smoke ./internal/seed`, full Go package tests, Go build, frontend lint/build/sensitive-text, `npm run smoke:admin`, taskguard, and diff check.
 - 2026-04-25: Opened PR #281 for review.
+- 2026-04-25: PR https://github.com/Chinsusu/Billing-V2/pull/281 merged into `main`.
