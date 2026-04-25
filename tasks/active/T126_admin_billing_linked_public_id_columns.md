@@ -1,6 +1,6 @@
 # T126 - Admin billing linked public ID columns
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t126-admin-billing-linked-public-id-columns
 PR: https://github.com/Chinsusu/Billing-V2/pull/283
@@ -36,3 +36,4 @@ Show related public ID labels in admin billing tables so operators can trace inv
 - 2026-04-25: Added linked public ID columns to admin invoices and transactions, with browser smoke assertions for live labels.
 - 2026-04-25: Validation passed: frontend smoke, lint, build, sensitive-text guard, taskguard, and diff check.
 - 2026-04-25: Opened PR #283 for review.
+- 2026-04-25: PR https://github.com/Chinsusu/Billing-V2/pull/283 merged into `main`.
