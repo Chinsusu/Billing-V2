@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-25` after completing T115:
+Current board snapshot on `2026-04-25` after completing T116:
 
-- `TODO`: 3
+- `TODO`: 2
 - `IN_PROGRESS`: 0
 - `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 112
+- `DONE` task files in `tasks/active/`: 113
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -61,7 +61,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T116 | [tasks/active/T116_provider_sandbox_contract_harness.md](tasks/active/T116_provider_sandbox_contract_harness.md) | codex/t116-provider-sandbox-contract-harness | provider/testing | Add a provider sandbox contract test harness shape. |
 | T117 | [tasks/active/T117_frontend_api_view_model_boundary.md](tasks/active/T117_frontend_api_view_model_boundary.md) | codex/t117-frontend-api-view-model-boundary | frontend/API | Add shared frontend API-to-view mapping for safe admin display fields. |
 | T118 | [tasks/active/T118_smoke_runbook_command_matrix.md](tasks/active/T118_smoke_runbook_command_matrix.md) | codex/t118-smoke-runbook-command-matrix | docs/workflow | Unify smoke and validation command guidance. |
 
@@ -74,7 +73,7 @@ No task files are currently `IN_PROGRESS` or `REVIEW`.
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T115`
+- `T011` to `T116`
 
 ## Removed Tasks
 
