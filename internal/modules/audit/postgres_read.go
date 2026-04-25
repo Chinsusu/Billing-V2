@@ -119,7 +119,20 @@ WHERE tenant_id = $1`
         AND topup.tenant_id = audit_logs.tenant_id
         AND topup.display_id = $%d
     ))
-  )`, len(args), len(args), len(args), len(args))
+    OR (audit_logs.target_type IN ('service', 'service_instance') AND EXISTS (
+      SELECT 1
+      FROM service_instances svc
+      WHERE svc.service_instance_id = audit_logs.target_id
+        AND svc.tenant_id = audit_logs.tenant_id
+        AND svc.display_id = $%d
+    ))
+    OR (audit_logs.target_type IN ('provider_source', 'provider') AND EXISTS (
+      SELECT 1
+      FROM provider_sources source
+      WHERE source.source_id = audit_logs.target_id
+        AND source.display_id = $%d
+    ))
+  )`, len(args), len(args), len(args), len(args), len(args), len(args))
 	}
 	if !filter.CreatedFrom.IsZero() {
 		args = append(args, filter.CreatedFrom)

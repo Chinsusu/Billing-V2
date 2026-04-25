@@ -27,6 +27,10 @@ function auditTargetLabel(log: AuditLog): string {
     invoice: "INV-",
     job: "JOB-",
     order: "ORD-",
+    provider: "SRC-",
+    provider_source: "SRC-",
+    service: "SVC-",
+    service_instance: "SVC-",
     topup_request: "TUP-",
   };
   return `${log.target_type} ${adminDisplayLabel(log.target_display_id, prefixes[log.target_type] ?? "#")}`;
