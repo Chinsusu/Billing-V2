@@ -11,18 +11,27 @@ import { mapAdminTransactionView } from "@/lib/api/viewModels";
 import { AdminFilterBar, AdminFilterInput } from "../components/AdminFilterBar";
 import { equalsFilter, hasActiveFilters, includesFilter, matchesAmountRange, trimStringFilters } from "../lib/filterUtils";
 
-const EMPTY_FILTERS: Required<AdminTransactionQuery> = {
+type TransactionFilterFields = Required<Pick<
+  AdminTransactionQuery,
+  "display_id" | "account_display_id" | "order_display_id" | "invoice_display_id" | "status" | "amount_min" | "amount_max"
+>>;
+
+const EMPTY_FILTERS: TransactionFilterFields = {
   display_id: "",
-  account_user_id: "",
+  account_display_id: "",
+  order_display_id: "",
+  invoice_display_id: "",
   status: "",
   amount_min: "",
   amount_max: "",
 };
 
-function filterMockTransactions(filters: Required<AdminTransactionQuery>) {
+function filterMockTransactions(filters: TransactionFilterFields) {
   return TRANSACTIONS.filter((transaction) => (
     includesFilter(transaction.id, filters.display_id)
-    && includesFilter(transaction.customer, filters.account_user_id)
+    && includesFilter(transaction.customer, filters.account_display_id)
+    && includesFilter(transaction.id, filters.order_display_id)
+    && includesFilter(transaction.id, filters.invoice_display_id)
     && equalsFilter(transaction.status, filters.status)
     && matchesAmountRange(transaction.amount, filters.amount_min, filters.amount_max)
   ));
@@ -62,13 +71,15 @@ export function AdminTransactions() {
     : transactions.status === "loading"
       ? "Refreshing live transaction data..."
       : usingLive
-        ? "Live transaction filters applied."
+        ? activeFilters
+          ? "Live transaction filters applied."
+          : "Live transaction data"
         : activeFilters
           ? "Filters are applied to demo transaction data."
           : "Demo transaction data is active until the live API responds.";
   const reconciliationCount = usingLive ? (reconciliation.data?.length ?? 0) : rows.length;
 
-  function updateFilter(field: keyof AdminTransactionQuery, value: string) {
+  function updateFilter(field: keyof TransactionFilterFields, value: string) {
     setDraftFilters((current) => ({ ...current, [field]: value }));
   }
 
@@ -98,10 +109,25 @@ export function AdminTransactions() {
             inputMode="numeric"
           />
           <AdminFilterInput
-            label="Customer / account"
-            value={draftFilters.account_user_id}
-            onChange={(event) => updateFilter("account_user_id", event.target.value)}
-            placeholder="account reference"
+            label="Account public ID"
+            value={draftFilters.account_display_id}
+            onChange={(event) => updateFilter("account_display_id", event.target.value)}
+            placeholder="10002"
+            inputMode="numeric"
+          />
+          <AdminFilterInput
+            label="Order public ID"
+            value={draftFilters.order_display_id}
+            onChange={(event) => updateFilter("order_display_id", event.target.value)}
+            placeholder="30004"
+            inputMode="numeric"
+          />
+          <AdminFilterInput
+            label="Invoice public ID"
+            value={draftFilters.invoice_display_id}
+            onChange={(event) => updateFilter("invoice_display_id", event.target.value)}
+            placeholder="44001"
+            inputMode="numeric"
           />
           <AdminFilterInput
             label="Status"

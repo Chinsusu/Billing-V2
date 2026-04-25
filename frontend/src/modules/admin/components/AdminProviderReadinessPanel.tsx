@@ -1,8 +1,11 @@
+import { FormEvent, useState } from "react";
 import { billingApi } from "@/lib/api/billing";
 import { recordLabel } from "@/lib/api/format";
-import type { ProviderReadiness } from "@/lib/api/types";
+import type { AdminProviderReadinessQuery, ProviderReadiness } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
+import { AdminFilterBar, AdminFilterInput } from "./AdminFilterBar";
 import { ProviderReadinessStateBadge } from "./ProviderReadinessStateBadge";
+import { equalsFilter, hasActiveFilters, includesFilter, trimStringFilters } from "../lib/filterUtils";
 
 const DEMO_READINESS: ProviderReadiness[] = [
   {
@@ -55,15 +58,56 @@ const DEMO_READINESS: ProviderReadiness[] = [
   },
 ];
 
+type ReadinessFilterFields = Required<Pick<
+  AdminProviderReadinessQuery,
+  "plan_display_id" | "source_display_id" | "product_type" | "status"
+>>;
+
+const EMPTY_FILTERS: ReadinessFilterFields = {
+  plan_display_id: "",
+  source_display_id: "",
+  product_type: "",
+  status: "",
+};
+
 export function AdminProviderReadinessPanel() {
+  const [draftFilters, setDraftFilters] = useState(EMPTY_FILTERS);
+  const [appliedFilters, setAppliedFilters] = useState(EMPTY_FILTERS);
+  const readinessQuery = {
+    ...appliedFilters,
+    status: appliedFilters.status || "active",
+    limit: 100,
+  };
   const readiness = useApiResource(
-    () => billingApi.listAdminProviderReadiness({ status: "active", limit: 100 }),
-    "admin-provider-readiness",
+    () => billingApi.listAdminProviderReadiness(readinessQuery),
+    `admin-provider-readiness:${JSON.stringify(readinessQuery)}`,
   );
   const usingLive = readiness.status === "success";
-  const rows = usingLive ? readiness.data ?? [] : DEMO_READINESS;
+  const rows = usingLive ? readiness.data ?? [] : filterDemoReadiness(DEMO_READINESS, appliedFilters);
   const attentionCount = rows.filter((row) => row.state !== "ready").length;
+  const activeFilters = hasActiveFilters(appliedFilters);
   const statusText = readinessStatusText(readiness.status, usingLive);
+  const filterStatusText = usingLive
+    ? activeFilters
+      ? "Live readiness filters applied."
+      : statusText
+    : activeFilters
+      ? "Filters are applied to demo readiness data."
+      : statusText;
+
+  function updateFilter(field: keyof ReadinessFilterFields, value: string) {
+    setDraftFilters((current) => ({ ...current, [field]: value }));
+  }
+
+  function applyFilters(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setAppliedFilters(trimStringFilters(draftFilters));
+  }
+
+  function resetFilters() {
+    setDraftFilters(EMPTY_FILTERS);
+    setAppliedFilters(EMPTY_FILTERS);
+  }
 
   return (
     <section className="bg-white border border-gray-200 rounded">
@@ -78,6 +122,35 @@ export function AdminProviderReadinessPanel() {
           {statusText}
         </span>
       </div>
+
+      <AdminFilterBar onSubmit={applyFilters} onReset={resetFilters} statusText={filterStatusText} statusTone={filterTone(readiness.status, usingLive)}>
+        <AdminFilterInput
+          label="Plan public ID"
+          value={draftFilters.plan_display_id}
+          onChange={(event) => updateFilter("plan_display_id", event.target.value)}
+          placeholder="21001"
+          inputMode="numeric"
+        />
+        <AdminFilterInput
+          label="Source public ID"
+          value={draftFilters.source_display_id}
+          onChange={(event) => updateFilter("source_display_id", event.target.value)}
+          placeholder="23001"
+          inputMode="numeric"
+        />
+        <AdminFilterInput
+          label="Product"
+          value={draftFilters.product_type}
+          onChange={(event) => updateFilter("product_type", event.target.value)}
+          placeholder="vps, proxy"
+        />
+        <AdminFilterInput
+          label="Status"
+          value={draftFilters.status}
+          onChange={(event) => updateFilter("status", event.target.value)}
+          placeholder="active"
+        />
+      </AdminFilterBar>
 
       {readiness.status === "loading" && !readiness.data && (
         <div className="border-b border-gray-100 bg-gray-50 px-4 py-3 text-[12px] text-gray-400">
@@ -148,8 +221,23 @@ function statusTone(status: string, usingLive: boolean): string {
   return usingLive ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-gray-200 bg-white text-gray-500";
 }
 
+function filterTone(status: string, usingLive: boolean): "default" | "loading" | "success" | "error" {
+  if (status === "error") return "error";
+  if (status === "loading") return "loading";
+  return usingLive ? "success" : "default";
+}
+
 function sourceLabel(row: ProviderReadiness): string {
   return row.source_display_id ? recordLabel(row.source_display_id, "SRC-") : "-";
+}
+
+function filterDemoReadiness(rows: ProviderReadiness[], filters: ReadinessFilterFields): ProviderReadiness[] {
+  return rows.filter((row) => (
+    includesFilter(row.plan_display_id, filters.plan_display_id)
+    && includesFilter(row.source_display_id, filters.source_display_id)
+    && includesFilter(row.product_type, filters.product_type)
+    && equalsFilter(row.plan_status, filters.status)
+  ));
 }
 
 function SmallBadge({ children }: { children: string }) {

@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
+import type { TopupRequestQuery } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { mapAdminTopupView } from "@/lib/api/viewModels";
 import { TOPUP_REQUESTS } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
+import { AdminFilterBar, AdminFilterInput } from "../components/AdminFilterBar";
+import { equalsFilter, hasActiveFilters, includesFilter, trimStringFilters } from "../lib/filterUtils";
 
 const PENDING_TOPUP_STATUSES = new Set([
   "pending",
@@ -20,6 +23,17 @@ const PENDING_TOPUP_STATUSES = new Set([
 const REVIEWABLE_TOPUP_STATUSES = new Set(["submitted", "under_review"]);
 
 type TopupAction = "approve" | "reject";
+type TopupFilterFields = Required<Pick<
+  TopupRequestQuery,
+  "display_id" | "wallet_display_id" | "requested_by_display_id" | "status"
+>>;
+
+const EMPTY_FILTERS: TopupFilterFields = {
+  display_id: "",
+  wallet_display_id: "",
+  requested_by_display_id: "",
+  status: "",
+};
 
 interface TopupRow {
   id: string;
@@ -55,18 +69,29 @@ function errorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Top-up review failed.";
 }
 
+function filterDemoTopups(filters: TopupFilterFields) {
+  return TOPUP_REQUESTS.filter((request) => (
+    includesFilter(request.id, filters.display_id)
+    && includesFilter(request.tenant, filters.wallet_display_id)
+    && includesFilter(request.actor, filters.requested_by_display_id)
+    && equalsFilter(request.status, filters.status)
+  ));
+}
+
 export function AdminTopups() {
   const [refreshKey, setRefreshKey] = useState(0);
+  const [draftFilters, setDraftFilters] = useState(EMPTY_FILTERS);
+  const [appliedFilters, setAppliedFilters] = useState(EMPTY_FILTERS);
   const [rejectNotes, setRejectNotes] = useState<Record<string, string>>({});
   const [actionState, setActionState] = useState<ActionState | null>(null);
   const topups = useApiResource(
-    () => billingApi.listAdminTopupRequests({ limit: 50 }),
-    `admin-topups:${refreshKey}`,
+    () => billingApi.listAdminTopupRequests({ ...appliedFilters, limit: 50 }),
+    `admin-topups:${refreshKey}:${JSON.stringify(appliedFilters)}`,
   );
   const usingLive = topups.status === "success";
   const rows: TopupRow[] = usingLive
     ? (topups.data ?? []).map(mapAdminTopupView)
-    : TOPUP_REQUESTS.map((req) => ({
+    : filterDemoTopups(appliedFilters).map((req) => ({
         id: req.id,
         live: false,
         tenant: req.tenant,
@@ -80,13 +105,39 @@ export function AdminTopups() {
         note: req.reason,
       }));
   const pendingCount = rows.filter((req) => isPendingTopup(req.status)).length;
+  const activeFilters = hasActiveFilters(appliedFilters);
+  const statusTone = topups.status === "error"
+    ? "error"
+    : topups.status === "loading"
+      ? "loading"
+      : usingLive
+        ? "success"
+        : "default";
   const statusText = topups.status === "error"
-    ? "Live API unavailable. Showing demo top-up data until the backend responds."
+    ? "Live API unavailable. Showing demo top-up data for the current filters."
     : topups.status === "loading"
       ? "Refreshing live top-up queue..."
       : usingLive
-        ? "Live top-up queue"
-        : "Demo top-up queue";
+        ? activeFilters
+          ? "Live top-up filters applied."
+          : "Live top-up queue"
+        : activeFilters
+          ? "Filters are applied to demo top-up data."
+          : "Demo top-up queue";
+
+  function updateFilter(field: keyof TopupFilterFields, value: string) {
+    setDraftFilters((current) => ({ ...current, [field]: value }));
+  }
+
+  function applyFilters(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setAppliedFilters(trimStringFilters(draftFilters));
+  }
+
+  function resetFilters() {
+    setDraftFilters(EMPTY_FILTERS);
+    setAppliedFilters(EMPTY_FILTERS);
+  }
 
   function updateRejectNote(id: string, value: string) {
     setRejectNotes((current) => ({ ...current, [id]: value }));
@@ -148,6 +199,35 @@ export function AdminTopups() {
             <span className="text-[11px] text-gray-400">{pendingCount} pending</span>
           </div>
         </div>
+        <AdminFilterBar onSubmit={applyFilters} onReset={resetFilters} statusText={statusText} statusTone={statusTone}>
+          <AdminFilterInput
+            label="Top-up public ID"
+            value={draftFilters.display_id}
+            onChange={(event) => updateFilter("display_id", event.target.value)}
+            placeholder="62001"
+            inputMode="numeric"
+          />
+          <AdminFilterInput
+            label="Wallet public ID"
+            value={draftFilters.wallet_display_id}
+            onChange={(event) => updateFilter("wallet_display_id", event.target.value)}
+            placeholder="41001"
+            inputMode="numeric"
+          />
+          <AdminFilterInput
+            label="Requester public ID"
+            value={draftFilters.requested_by_display_id}
+            onChange={(event) => updateFilter("requested_by_display_id", event.target.value)}
+            placeholder="10002"
+            inputMode="numeric"
+          />
+          <AdminFilterInput
+            label="Status"
+            value={draftFilters.status}
+            onChange={(event) => updateFilter("status", event.target.value)}
+            placeholder="submitted, approved"
+          />
+        </AdminFilterBar>
         <div className="overflow-x-auto">
           <table className="min-w-[1120px] w-full text-[13px] border-collapse">
             <thead>

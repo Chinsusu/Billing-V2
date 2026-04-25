@@ -1,7 +1,7 @@
 # T122 - Admin frontend public ID filters
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t122-admin-frontend-public-id-filters
 PR: -
 Risk: frontend/API
@@ -34,3 +34,6 @@ Update admin frontend filters and labels to prefer numeric public IDs after back
 ## Agent Log
 
 - 2026-04-25: Task created in the public ID and validation hardening batch.
+- 2026-04-25: Codex claimed the task after T121 backend filters merged; reviewing frontend admin filter mapping.
+- 2026-04-25: Added admin public ID filter wiring for accounts, invoices, transactions, services, top-ups, provisioning, provider sources, and readiness; audit actor filter wording now avoids backend-reference language.
+- 2026-04-25: Local validation passed: frontend build, lint, sensitive-text guard, admin smoke, taskguard, and diff check.

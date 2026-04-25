@@ -105,10 +105,10 @@ export function AdminLogs() {
             inputMode="numeric"
           />
           <AdminFilterInput
-            label="Actor / account"
+            label="Actor name"
             value={draftFilters.actor_id}
             onChange={(event) => updateFilter("actor_id", event.target.value)}
-            placeholder="actor reference"
+            placeholder="billing worker or Minh Nguyen"
           />
           <AdminFilterInput
             label="Action"
