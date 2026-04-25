@@ -56,3 +56,4 @@ Development standards:
 - [Multi-agent task board conflict workflow](docs/05_development_standards/54_Multi_Agent_Task_Board_Conflict_Workflow.md)
 - [Local development runbook](docs/05_development_standards/55_Local_Development_Runbook.md)
 - [API contract drift guard](docs/05_development_standards/59_API_Contract_Drift_Guard.md)
+- [Provider sandbox contract checklist](docs/05_development_standards/60_Provider_Sandbox_Contract_Checklist.md)

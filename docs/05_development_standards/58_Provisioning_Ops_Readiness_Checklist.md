@@ -13,6 +13,7 @@ References:
 - API routes and response fields: `docs/05_development_standards/56_Billing_API_Operational_Reference.md`
 - Full billing operations runbook: `docs/05_development_standards/57_Billing_Operations_Runbook.md`
 - Local setup and smoke commands: `docs/05_development_standards/55_Local_Development_Runbook.md`
+- Provider sandbox contract: `docs/05_development_standards/60_Provider_Sandbox_Contract_Checklist.md`
 - Worker command: `cmd/worker`
 - Smoke command: `cmd/smoke dev-billing`
 
