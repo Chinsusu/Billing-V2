@@ -28,21 +28,23 @@ const ACTOR_STYLE: Record<ActorBadge, string> = {
   provider_webhook: "bg-cyan-50 text-cyan-700",
 };
 
-type AuditLogFilters = Required<Pick<AdminAuditLogQuery, "display_id" | "actor_id" | "action" | "target_type">>;
+type AuditLogFilters = Required<Pick<AdminAuditLogQuery, "display_id" | "actor_display_id" | "action" | "target_type" | "target_display_id">>;
 
 const EMPTY_FILTERS: AuditLogFilters = {
   display_id: "",
-  actor_id: "",
+  actor_display_id: "",
   action: "",
   target_type: "",
+  target_display_id: "",
 };
 
 function filterMockLogs(filters: AuditLogFilters) {
   return AUDIT_LOGS.filter((log) => (
     includesFilter(log.id, filters.display_id)
-    && includesFilter(log.actorName, filters.actor_id)
+    && includesFilter(log.actorName, filters.actor_display_id)
     && includesFilter(log.action, filters.action)
     && includesFilter(log.target, filters.target_type)
+    && includesFilter(log.target, filters.target_display_id)
   ));
 }
 
@@ -105,10 +107,11 @@ export function AdminLogs() {
             inputMode="numeric"
           />
           <AdminFilterInput
-            label="Actor name"
-            value={draftFilters.actor_id}
-            onChange={(event) => updateFilter("actor_id", event.target.value)}
-            placeholder="billing worker or Minh Nguyen"
+            label="Actor public ID"
+            value={draftFilters.actor_display_id}
+            onChange={(event) => updateFilter("actor_display_id", event.target.value)}
+            placeholder="10001"
+            inputMode="numeric"
           />
           <AdminFilterInput
             label="Action"
@@ -121,6 +124,13 @@ export function AdminLogs() {
             value={draftFilters.target_type}
             onChange={(event) => updateFilter("target_type", event.target.value)}
             placeholder="invoice"
+          />
+          <AdminFilterInput
+            label="Target public ID"
+            value={draftFilters.target_display_id}
+            onChange={(event) => updateFilter("target_display_id", event.target.value)}
+            placeholder="53001"
+            inputMode="numeric"
           />
         </AdminFilterBar>
         <div className="overflow-x-auto">

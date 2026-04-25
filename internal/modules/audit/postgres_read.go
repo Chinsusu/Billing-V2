@@ -56,6 +56,17 @@ WHERE tenant_id = $1`
 		args = append(args, filter.ActorID)
 		query += fmt.Sprintf("\n  AND actor_id = $%d", len(args))
 	}
+	if filter.ActorDisplayID > 0 {
+		args = append(args, filter.ActorDisplayID)
+		query += fmt.Sprintf(`
+  AND EXISTS (
+    SELECT 1
+    FROM users actor
+    WHERE actor.user_id = audit_logs.actor_id
+      AND actor.tenant_id = audit_logs.tenant_id
+      AND actor.display_id = $%d
+  )`, len(args))
+	}
 	if filter.ActorType != "" {
 		args = append(args, filter.ActorType)
 		query += fmt.Sprintf("\n  AND actor_type = $%d", len(args))
@@ -75,6 +86,40 @@ WHERE tenant_id = $1`
 	if !filter.TargetID.Empty() {
 		args = append(args, filter.TargetID)
 		query += fmt.Sprintf("\n  AND target_id = $%d", len(args))
+	}
+	if filter.TargetDisplayID > 0 {
+		args = append(args, filter.TargetDisplayID)
+		query += fmt.Sprintf(`
+  AND (
+    (audit_logs.target_type = 'invoice' AND EXISTS (
+      SELECT 1
+      FROM invoices inv
+      WHERE inv.invoice_id = audit_logs.target_id
+        AND inv.tenant_id = audit_logs.tenant_id
+        AND inv.display_id = $%d
+    ))
+    OR (audit_logs.target_type = 'order' AND EXISTS (
+      SELECT 1
+      FROM orders ord
+      WHERE ord.order_id = audit_logs.target_id
+        AND ord.tenant_id = audit_logs.tenant_id
+        AND ord.display_id = $%d
+    ))
+    OR (audit_logs.target_type = 'job' AND EXISTS (
+      SELECT 1
+      FROM jobs job
+      WHERE job.job_id = audit_logs.target_id
+        AND job.tenant_id = audit_logs.tenant_id
+        AND job.display_id = $%d
+    ))
+    OR (audit_logs.target_type = 'topup_request' AND EXISTS (
+      SELECT 1
+      FROM topup_requests topup
+      WHERE topup.topup_request_id = audit_logs.target_id
+        AND topup.tenant_id = audit_logs.tenant_id
+        AND topup.display_id = $%d
+    ))
+  )`, len(args), len(args), len(args), len(args))
 	}
 	if !filter.CreatedFrom.IsZero() {
 		args = append(args, filter.CreatedFrom)

@@ -16,7 +16,7 @@ func TestHTTPHandlerListAdminAuditLogsUsesFilters(t *testing.T) {
 	service := &fakeAuditHTTPService{logs: []Log{testAuditLog()}}
 	handler := registerAuditTestHandler(service)
 
-	request := httptest.NewRequest(http.MethodGet, "/admin/audit-logs?actor_id=actor_1&actor_type=user&display_id=70001&action=invoice.paid&target_type=invoice&target_id=target_1&created_from=2026-04-23T00:00:00Z&created_to=2026-04-24T00:00:00Z&limit=20", nil)
+	request := httptest.NewRequest(http.MethodGet, "/admin/audit-logs?actor_id=actor_1&actor_display_id=10002&actor_type=user&display_id=70001&action=invoice.paid&target_type=invoice&target_id=target_1&target_display_id=44001&created_from=2026-04-23T00:00:00Z&created_to=2026-04-24T00:00:00Z&limit=20", nil)
 	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
 	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
 	response := httptest.NewRecorder()
@@ -31,11 +31,13 @@ func TestHTTPHandlerListAdminAuditLogsUsesFilters(t *testing.T) {
 	}
 	if service.filter.TenantID != tenant.ID("tenant_1") ||
 		service.filter.ActorID != ActorID("actor_1") ||
+		service.filter.ActorDisplayID != 10002 ||
 		service.filter.ActorType != ActorTypeUser ||
 		service.filter.DisplayID != 70001 ||
 		service.filter.Action != "invoice.paid" ||
 		service.filter.TargetType != "invoice" ||
 		service.filter.TargetID != TargetID("target_1") ||
+		service.filter.TargetDisplayID != 44001 ||
 		service.filter.Limit != 20 {
 		t.Fatalf("unexpected audit filter: %+v", service.filter)
 	}

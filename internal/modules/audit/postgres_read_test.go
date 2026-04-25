@@ -13,16 +13,18 @@ func TestBuildListLogsQueryAddsFilters(t *testing.T) {
 	createdFrom := time.Date(2026, 4, 23, 0, 0, 0, 0, time.UTC)
 	createdTo := createdFrom.Add(24 * time.Hour)
 	query, args, err := buildListLogsQuery(Filter{
-		TenantID:    tenant.ID("tenant-1"),
-		ActorID:     ActorID("actor-1"),
-		ActorType:   ActorTypeUser,
-		DisplayID:   70001,
-		Action:      "invoice.paid",
-		TargetType:  "invoice",
-		TargetID:    TargetID("target-1"),
-		CreatedFrom: createdFrom,
-		CreatedTo:   createdTo,
-		Limit:       25,
+		TenantID:        tenant.ID("tenant-1"),
+		ActorID:         ActorID("actor-1"),
+		ActorDisplayID:  10002,
+		ActorType:       ActorTypeUser,
+		DisplayID:       70001,
+		Action:          "invoice.paid",
+		TargetType:      "invoice",
+		TargetID:        TargetID("target-1"),
+		TargetDisplayID: 44001,
+		CreatedFrom:     createdFrom,
+		CreatedTo:       createdTo,
+		Limit:           25,
 	})
 	if err != nil {
 		t.Fatalf("expected query: %v", err)
@@ -32,20 +34,25 @@ func TestBuildListLogsQueryAddsFilters(t *testing.T) {
 		"actor_display_id",
 		"target_display_id",
 		"actor_id = $2",
-		"actor_type = $3",
-		"display_id = $4",
-		"action = $5",
-		"target_type = $6",
-		"target_id = $7",
-		"created_at >= $8",
-		"created_at <= $9",
-		"LIMIT $10",
+		"actor.display_id = $3",
+		"actor_type = $4",
+		"display_id = $5",
+		"action = $6",
+		"target_type = $7",
+		"target_id = $8",
+		"inv.display_id = $9",
+		"ord.display_id = $9",
+		"job.display_id = $9",
+		"topup.display_id = $9",
+		"created_at >= $10",
+		"created_at <= $11",
+		"LIMIT $12",
 	} {
 		if !strings.Contains(query, clause) {
 			t.Fatalf("expected %q in query: %s", clause, query)
 		}
 	}
-	if len(args) != 10 || args[9] != 25 {
+	if len(args) != 12 || args[11] != 25 {
 		t.Fatalf("unexpected args: %#v", args)
 	}
 }

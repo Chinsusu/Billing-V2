@@ -84,6 +84,10 @@ func TestAPISmokeChecksIncludeAdminPublicIDFilters(t *testing.T) {
 			path:     "/admin/invoices?display_id=44001&buyer_display_id=10002&order_display_id=42001",
 			contains: []string{`"display_id":44001`, `"buyer_display_id":10002`, `"order_display_id":42001`},
 		},
+		"admin audit public id filter": {
+			path:     "/admin/audit-logs?actor_display_id=10001&target_type=job&target_display_id=53001",
+			contains: []string{`"display_id":70001`, `"actor_display_id":10001`, `"target_display_id":53001`},
+		},
 		"admin job public id filter": {
 			path:     "/admin/jobs?job_type=provider.provision&display_id=53001&source_display_id=10000",
 			contains: []string{`"display_id":53001`, `"source_display_id":10000`, `"reference_display_id":42001`},
@@ -131,6 +135,7 @@ func TestAPISmokeChecksIncludeRelatedDisplayIDResponses(t *testing.T) {
 		"admin invoice public id filter": {`"buyer_display_id":10002`, `"order_display_id":42001`},
 		"admin job public id filter":     {`"source_display_id":10000`, `"reference_display_id":42001`},
 		"admin audit list":               {`"actor_display_id":10001`, `"target_display_id":53001`},
+		"admin audit public id filter":   {`"actor_display_id":10001`, `"target_display_id":53001`},
 	}
 	seen := map[string]bool{}
 	for _, check := range checks {
