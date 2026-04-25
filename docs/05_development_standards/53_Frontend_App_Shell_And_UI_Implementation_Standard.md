@@ -316,6 +316,15 @@ npm install
 npm run build
 ```
 
+Truoc khi mo PR frontend, chay static guard de chan field backend nhay cam bi dua vao UI copy hoac mock data:
+
+```bash
+cd frontend
+npm run check:sensitive-text
+```
+
+Guard nay chi cho phep ngoai le hep trong API type definitions va explicit redaction tests. Khong render hoac hardcode cac field nhu `payload_json`, `capability_profile`, `provider_account_id`, `secret`, `raw_response`, credential/token variants trong component hoac mock data.
+
 `npm run preview` dùng để smoke test thủ công sau build. Không dùng lệnh preview như CI gate nếu command giữ server chạy liên tục.
 
 Khi task thay đổi admin navigation, admin screen, API adapter, mock data, hoặc response mapping, chạy thêm browser smoke:

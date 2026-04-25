@@ -1,5 +1,5 @@
 // Mock billing platform data — aligned with Billing-V2 spec
-// No real credentials, IPs, or customer data.
+// No real provider auth material, IPs, or customer data.
 
 export type TenantType = "admin" | "reseller";
 export type ServiceStatus = "active" | "suspended" | "provisioning" | "stopped" | "overdue";
