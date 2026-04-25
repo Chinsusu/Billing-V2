@@ -105,6 +105,11 @@ Bản v1.10 bổ sung local development runbook để dev mới có thể setup 
 - `05_development_standards/56_Billing_API_Operational_Reference.md`
 - `05_development_standards/57_Billing_Operations_Runbook.md`
 - `05_development_standards/58_Provisioning_Ops_Readiness_Checklist.md`
+- `05_development_standards/59_API_Contract_Drift_Guard.md`
+- `05_development_standards/60_Provider_Sandbox_Contract_Checklist.md`
+- `05_development_standards/61_Task_Board_Consistency_Guard.md`
+- `05_development_standards/62_API_Error_Code_Drift_Guard.md`
+- `05_development_standards/63_Validation_Command_Matrix.md`
 
 ### Tài liệu tổng hợp và ghi chú
 - `VPS_Proxy_Project_Master_Document.md`
@@ -397,3 +402,15 @@ This package adds the billing operations reference layer `56-58`:
 ```
 
 The v1.11 layer defines billing API routes, paid-order fulfillment checks, provisioning worker run modes, job recovery actions, smoke verification, and local/sandbox no-go rules for money and provider-state safety.
+
+## v1.12 Validation command matrix addendum
+
+**Date:** 2026-04-25
+
+This package adds one source of truth for validation and smoke commands:
+
+```text
+05_development_standards/63_Validation_Command_Matrix.md
+```
+
+The v1.12 layer maps docs-only, backend, frontend, DB, provider, full-stack, CI, and task-board changes to the local commands agents should run before PR review.

@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-25` after completing T117:
+Current board snapshot on `2026-04-25` while T118 is in review:
 
-- `TODO`: 1
+- `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 114
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -61,11 +61,12 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T118 | [tasks/active/T118_smoke_runbook_command_matrix.md](tasks/active/T118_smoke_runbook_command_matrix.md) | codex/t118-smoke-runbook-command-matrix | docs/workflow | Unify smoke and validation command guidance. |
 
 ## In-Flight Task Files
 
-No task files are currently `IN_PROGRESS` or `REVIEW`.
+| ID | Task File | Status | Owner | Branch | Summary |
+| --- | --- | --- | --- | --- | --- |
+| T118 | [tasks/active/T118_smoke_runbook_command_matrix.md](tasks/active/T118_smoke_runbook_command_matrix.md) | REVIEW | Codex | codex/t118-smoke-runbook-command-matrix | Unify smoke and validation command guidance. |
 
 ## Done Task Files
 

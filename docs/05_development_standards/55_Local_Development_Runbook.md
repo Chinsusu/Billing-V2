@@ -4,6 +4,8 @@
 **Date:** 2026-04-22  
 **Scope:** Local backend setup, environment loading, API run commands, migration runner usage, and local validation gates.
 
+Central validation matrix: `docs/05_development_standards/63_Validation_Command_Matrix.md`.
+
 ## Mục tiêu
 
 Tài liệu này mô tả cách chạy backend Go trên máy local bằng các script hiện có trong repo. Mục tiêu là developer mới có thể boot API, kiểm tra health/readiness, validate migration và chạy quality gate mà không cần secret thật hoặc môi trường production.
