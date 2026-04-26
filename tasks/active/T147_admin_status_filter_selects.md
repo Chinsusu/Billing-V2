@@ -1,6 +1,6 @@
 # T147 - Admin status filter selects
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t147-admin-status-filter-selects
 PR: https://github.com/Chinsusu/Billing-V2/pull/325
@@ -36,3 +36,4 @@ Replace admin status free-text filters with dropdowns for screens that use fixed
 - 2026-04-26: Added shared admin status filter options, replaced fixed status text filters with selects, and expanded smoke coverage for selected status query values.
 - 2026-04-26: Validation passed: frontend lint, sensitive-text check, build, admin browser smoke, taskguard, and diff check.
 - 2026-04-26: Opened PR https://github.com/Chinsusu/Billing-V2/pull/325 for review.
+- 2026-04-26: PR https://github.com/Chinsusu/Billing-V2/pull/325 merged into main; marking task done.
