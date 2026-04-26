@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import { AUDIT_LOGS, AuditLog } from "@/mocks/billingData";
 import { billingApi } from "@/lib/api/billing";
-import { AUDIT_ACTION_OPTIONS, accountTypeLabel, auditActionLabel } from "@/lib/api/displayLabels";
+import { AUDIT_ACTION_OPTIONS, accountTypeLabel, auditActionLabel, technicalCodeLabel } from "@/lib/api/displayLabels";
 import { AdminAuditLogQuery } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { mapAdminAuditLogView, type AdminAuditActorBadge, type AdminAuditLogView } from "@/lib/api/viewModels";
@@ -58,6 +58,12 @@ const MOCK_TARGET_PREFIXES: Record<string, string> = {
   topup_request: "tup-",
 };
 
+const DEMO_ACTOR_LABELS: Record<string, string> = {
+  "billing-worker": "Billing Worker",
+  "health-worker": "Health Worker",
+  "prov-worker": "Provisioning Worker",
+};
+
 function matchesMockTargetType(target: string, targetType: string) {
   if (!targetType) return true;
   const prefix = MOCK_TARGET_PREFIXES[targetType];
@@ -74,6 +80,25 @@ function filterMockLogs(filters: AuditLogFilters) {
   ));
 }
 
+function mapDemoAuditLog(log: AuditLog): AuditLog {
+  return {
+    ...log,
+    actorName: demoAuditActorName(log.actorName),
+    detail: demoAuditDetail(log.detail),
+  };
+}
+
+function demoAuditActorName(actorName: string): string {
+  return DEMO_ACTOR_LABELS[actorName] ?? (/[._-]/.test(actorName) ? technicalCodeLabel(actorName) : actorName);
+}
+
+function demoAuditDetail(detail: string): string {
+  return detail
+    .replace(/\bmanual_review\b/g, "manual review")
+    .replace(/\b0003_rbac\b/g, "RBAC migration")
+    .replace(/\bvps-scrape-02\b/g, "VPS scrape 02");
+}
+
 export function AdminLogs() {
   const [draftFilters, setDraftFilters] = useState(EMPTY_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(EMPTY_FILTERS);
@@ -84,7 +109,7 @@ export function AdminLogs() {
   const usingLive = logs.status === "success";
   const rows: AuditTableRow[] = usingLive
     ? (logs.data ?? []).map(mapAdminAuditLogView)
-    : filterMockLogs(appliedFilters);
+    : filterMockLogs(appliedFilters).map(mapDemoAuditLog);
   const activeFilters = hasActiveFilters(appliedFilters);
   const statusTone = logs.status === "error"
     ? "error"

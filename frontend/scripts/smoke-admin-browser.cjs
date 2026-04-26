@@ -187,6 +187,7 @@ async function main() {
       await expectVisibleText(page, "Request not shown");
       await assertNoVisibleText(page, ["audit-1", "admin-1", "job-uuid-1", "tenant-uuid-1", "req-smoke", "job.retry"], "audit public ID labels");
       await assertNoForbiddenText(page, "audit logs");
+      await smokeAuditFallback(browser);
     } finally {
       await browser.close();
     }
@@ -501,6 +502,23 @@ async function smokeTopupFallback(browser) {
     await expectVisibleText(page, "Ref provided");
     await assertNoVisibleText(page, ["reseller_wallet", "client_wallet", "pending_verification"], "top-up demo fallback labels");
     await assertNoForbiddenText(page, "top-up demo fallback");
+  } finally {
+    await page.close();
+  }
+}
+
+async function smokeAuditFallback(browser) {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  try {
+    await installApiMocks(page, { failPaths: new Set(["/backend/admin/audit-logs"]) });
+    await page.goto(baseURL, { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(800);
+    await openAdminScreen(page, /Audit logs/i);
+    await expectVisibleText(page, "Live API unavailable. Showing demo audit data");
+    await expectVisibleText(page, "Provisioning Worker");
+    await expectVisibleText(page, "manual review threshold exceeded");
+    await assertNoVisibleText(page, ["prov-worker", "billing-worker", "health-worker", "manual_review", "0003_rbac", "vps-scrape-02"], "audit demo fallback labels");
+    await assertNoForbiddenText(page, "audit demo fallback");
   } finally {
     await page.close();
   }
