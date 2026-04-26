@@ -1,5 +1,6 @@
 import { TICKETS } from "@/mocks/billingData";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { ticketPriorityLabel } from "@/lib/api/displayLabels";
 
 const PRIORITY_CLASS: Record<string, string> = {
   high: "text-red-600 font-medium",
@@ -31,7 +32,7 @@ export function AdminTickets() {
                 <td className="p-4 p-4 text-[12px] text-[#D50C2D]">{t.id}</td>
                 <td className="p-4 p-4 text-gray-800 max-w-[300px] truncate">{t.subject}</td>
                 <td className="p-4 p-4 text-gray-500">{t.customer}</td>
-                <td className={`p-4 p-4 text-[12px] capitalize ${PRIORITY_CLASS[t.priority]}`}>{t.priority}</td>
+                <td className={`p-4 p-4 text-[12px] ${PRIORITY_CLASS[t.priority]}`}>{ticketPriorityLabel(t.priority)}</td>
                 <td className="p-4 p-4"><StatusBadge status={t.status} dot /></td>
                 <td className="p-4 p-4 text-gray-400">{t.updated}</td>
                 <td className="p-4 p-4 text-gray-500">{t.assignee}</td>
