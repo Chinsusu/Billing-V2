@@ -23,8 +23,3 @@ export function compactDateTime(value?: string): string {
 export function recordLabel(displayID: number | string, prefix = "#"): string {
   return `${prefix}${displayID}`;
 }
-
-export function shortID(value?: string): string {
-  if (!value) return "-";
-  return value.length > 12 ? `${value.slice(0, 8)}…${value.slice(-4)}` : value;
-}
