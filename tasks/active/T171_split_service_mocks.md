@@ -1,9 +1,9 @@
 # T171 - Split service mock data
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t171-split-service-mocks
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/373
 Risk: frontend mock data organization
 Created: 2026-04-26
 Updated: 2026-04-26
@@ -32,3 +32,4 @@ Reduce `frontend/src/mocks/billingData.ts` size by moving service-related mock t
 
 - 2026-04-26: Task created and claimed by Codex.
 - 2026-04-26: Split service/customer/reseller mock data into `serviceData.ts`; local gates pass.
+- 2026-04-26: Opened PR #373 and moved task to REVIEW.
