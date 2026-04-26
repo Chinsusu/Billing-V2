@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` after T152 was merged:
+Current board snapshot on `2026-04-26` after T153 is ready for review:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 149
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | No task files are currently in progress or review. |
+| T153 | [tasks/active/T153_status_badge_label_source.md](tasks/active/T153_status_badge_label_source.md) | REVIEW | Codex | codex/t153-status-badge-label-source | Move status badge labels out of mocks. |
 
 ## Done Task Files
 
