@@ -67,6 +67,12 @@ const SECURITY_STATUS_LABELS: Record<string, string> = {
   required: "Two-factor required",
 };
 
+const TICKET_PRIORITY_LABELS: Record<string, string> = {
+  high: "High",
+  low: "Low",
+  medium: "Medium",
+};
+
 const STATUS_LABELS: Record<string, string> = {
   active: "Active",
   approved: "Approved",
@@ -181,6 +187,10 @@ export function statusVariant(status: string): StatusVariant {
 
 export function tenantTypeLabel(type: string): string {
   return accountTypeLabel(type);
+}
+
+export function ticketPriorityLabel(priority: string): string {
+  return labelFromKey(priority, TICKET_PRIORITY_LABELS);
 }
 
 function labelFromKey(value: string, knownLabels: Record<string, string> = {}): string {
