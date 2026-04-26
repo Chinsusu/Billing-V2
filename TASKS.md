@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` while T171 is in review:
+Current board snapshot on `2026-04-26` after T171 was merged:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 167
+- `DONE` task files in `tasks/active/`: 168
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -67,14 +67,14 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T171 | [tasks/active/T171_split_service_mocks.md](tasks/active/T171_split_service_mocks.md) | REVIEW | Codex | codex/t171-split-service-mocks | Split service mock data out of billingData. |
+| - | - | - | - | - | No in-flight tasks are currently open. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T170`
+- `T011` to `T171`
 
 ## Removed Tasks
 
