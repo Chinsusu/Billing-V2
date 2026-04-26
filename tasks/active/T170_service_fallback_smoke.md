@@ -1,6 +1,6 @@
 # T170 - Service fallback smoke coverage
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t170-service-fallback-smoke
 PR: https://github.com/Chinsusu/Billing-V2/pull/371
@@ -32,3 +32,4 @@ Add browser smoke coverage for admin service inventory fallback labels so demo s
 
 - 2026-04-26: Task created and claimed by Codex.
 - 2026-04-26: Opened PR #371 after frontend lint, sensitive-text guard, build, admin smoke, taskguard, and diff check passed.
+- 2026-04-26: PR #371 merged into main.
