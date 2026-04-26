@@ -276,12 +276,12 @@ export const CUSTOMERS: Customer[] = [
 
 export const SERVICES: Service[] = [
   { id: "SVC-61001", type: "residential", label: "US Residential Pool", customer: "Acme Proxy Co.", region: "US-EAST", bandwidth: "2.4 TB", price: 380, status: "active", renewsIn: 12 },
-  { id: "SVC-61002", type: "vps-linux", label: "vps-prod-01 · 8 vCPU · 32GB", customer: "DataMine Inc.", region: "EU-HEL", bandwidth: "—", price: 89, status: "active", renewsIn: 8 },
+  { id: "SVC-61002", type: "vps-linux", label: "Production Linux VPS · 8 vCPU · 32GB", customer: "DataMine Inc.", region: "EU-HEL", bandwidth: "—", price: 89, status: "active", renewsIn: 8 },
   { id: "SVC-61003", type: "datacenter", label: "DC Pool Alpha · 500 IPs", customer: "Scrapers Ltd", region: "US-WEST", bandwidth: "1.1 TB", price: 240, status: "active", renewsIn: 22 },
-  { id: "SVC-61004", type: "vps-win", label: "win-rdp-gamma · 4 vCPU · 16GB", customer: "Kenji Watanabe", region: "APAC-TYO", bandwidth: "—", price: 64, status: "overdue", renewsIn: -3 },
+  { id: "SVC-61004", type: "vps-win", label: "Windows RDP Workspace · 4 vCPU · 16GB", customer: "Kenji Watanabe", region: "APAC-TYO", bandwidth: "—", price: 64, status: "overdue", renewsIn: -3 },
   { id: "SVC-61005", type: "mobile", label: "Mobile 4G · 20 ports", customer: "CloudHarvest", region: "US-EAST", bandwidth: "842 GB", price: 620, status: "active", renewsIn: 5 },
   { id: "SVC-61006", type: "isp", label: "ISP Static · 100 IPs", customer: "Marie Dubois", region: "EU-FRA", bandwidth: "680 GB", price: 180, status: "active", renewsIn: 18 },
-  { id: "SVC-61007", type: "vps-linux", label: "vps-scrape-02 · 2 vCPU · 4GB", customer: "Proxy Garden", region: "EU-HEL", bandwidth: "—", price: 19, status: "provisioning", renewsIn: 30 },
+  { id: "SVC-61007", type: "vps-linux", label: "Proxy Automation VPS · 2 vCPU · 4GB", customer: "Proxy Garden", region: "EU-HEL", bandwidth: "—", price: 19, status: "provisioning", renewsIn: 30 },
   { id: "SVC-61008", type: "residential", label: "EU Residential · Premium", customer: "Linh Tran", region: "EU-MULTI", bandwidth: "128 GB", price: 62, status: "active", renewsIn: 14 },
   { id: "SVC-61009", type: "datacenter", label: "DC Pool Beta · 1000 IPs", customer: "Acme Proxy Co.", region: "GLOBAL", bandwidth: "3.2 TB", price: 440, status: "active", renewsIn: 9 },
   { id: "SVC-61010", type: "residential", label: "APAC Residential", customer: "Alex Rodriguez", region: "APAC-SIN", bandwidth: "184 GB", price: 118, status: "suspended", renewsIn: -7 },
@@ -301,13 +301,13 @@ export const PROXY_SERVICES: ProxyService[] = [
 ];
 
 export const VPS_SERVICES: VpsService[] = [
-  { id: "SVC-61002", os: "linux",   label: "vps-prod-01",      customer: "DataMine Inc.",   tenant: "HANetwork",  region: "EU-HEL",   cpu: 8,  ram: 32,  disk: 320,  ip: "95.216.x.x",   provider: "Hetzner",  price: 89,  status: "active",       renewsIn: 8  },
-  { id: "SVC-61004", os: "windows", label: "win-rdp-gamma",    customer: "Kenji Watanabe",  tenant: "ProxyVN",    region: "APAC-TYO", cpu: 4,  ram: 16,  disk: 160,  ip: "45.77.x.x",    provider: "OVH",      price: 64,  status: "overdue",      renewsIn: -3 },
-  { id: "SVC-61007", os: "linux",   label: "vps-scrape-02",    customer: "Proxy Garden",    tenant: "ProxyVN",    region: "EU-HEL",   cpu: 2,  ram: 4,   disk: 40,   ip: "—",            provider: "Proxmox",  price: 19,  status: "provisioning", renewsIn: 30 },
-  { id: "SVC-61014", os: "linux",   label: "vps-api-gateway",  customer: "Acme Proxy Co.",  tenant: "HANetwork",  region: "US-EAST",  cpu: 4,  ram: 8,   disk: 80,   ip: "104.21.x.x",   provider: "Hetzner",  price: 34,  status: "active",       renewsIn: 15 },
-  { id: "SVC-61015", os: "linux",   label: "vps-db-replica",   customer: "CloudHarvest",    tenant: "HANetwork",  region: "US-WEST",  cpu: 8,  ram: 32,  disk: 640,  ip: "34.102.x.x",   provider: "OVH",      price: 102, status: "active",       renewsIn: 6  },
-  { id: "SVC-61016", os: "windows", label: "win-dev-01",       customer: "Marie Dubois",    tenant: "ProxyVN",    region: "EU-FRA",   cpu: 2,  ram: 8,   disk: 80,   ip: "51.75.x.x",    provider: "OVH",      price: 44,  status: "suspended",    renewsIn: -1 },
-  { id: "SVC-61017", os: "linux",   label: "vps-worker-03",    customer: "Scrapers Ltd",    tenant: "HANetwork",  region: "EU-HEL",   cpu: 16, ram: 64,  disk: 960,  ip: "65.108.x.x",   provider: "Hetzner",  price: 188, status: "active",       renewsIn: 19 },
+  { id: "SVC-61002", os: "linux",   label: "Production Linux VPS",      customer: "DataMine Inc.",   tenant: "HANetwork",  region: "EU-HEL",   cpu: 8,  ram: 32,  disk: 320,  ip: "95.216.x.x",   provider: "Hetzner",  price: 89,  status: "active",       renewsIn: 8  },
+  { id: "SVC-61004", os: "windows", label: "Windows RDP Workspace",     customer: "Kenji Watanabe",  tenant: "ProxyVN",    region: "APAC-TYO", cpu: 4,  ram: 16,  disk: 160,  ip: "45.77.x.x",    provider: "OVH",      price: 64,  status: "overdue",      renewsIn: -3 },
+  { id: "SVC-61007", os: "linux",   label: "Proxy Automation VPS",      customer: "Proxy Garden",    tenant: "ProxyVN",    region: "EU-HEL",   cpu: 2,  ram: 4,   disk: 40,   ip: "—",            provider: "Proxmox",  price: 19,  status: "provisioning", renewsIn: 30 },
+  { id: "SVC-61014", os: "linux",   label: "API Gateway VPS",           customer: "Acme Proxy Co.",  tenant: "HANetwork",  region: "US-EAST",  cpu: 4,  ram: 8,   disk: 80,   ip: "104.21.x.x",   provider: "Hetzner",  price: 34,  status: "active",       renewsIn: 15 },
+  { id: "SVC-61015", os: "linux",   label: "Database Replica VPS",      customer: "CloudHarvest",    tenant: "HANetwork",  region: "US-WEST",  cpu: 8,  ram: 32,  disk: 640,  ip: "34.102.x.x",   provider: "OVH",      price: 102, status: "active",       renewsIn: 6  },
+  { id: "SVC-61016", os: "windows", label: "Windows Development VPS",   customer: "Marie Dubois",    tenant: "ProxyVN",    region: "EU-FRA",   cpu: 2,  ram: 8,   disk: 80,   ip: "51.75.x.x",    provider: "OVH",      price: 44,  status: "suspended",    renewsIn: -1 },
+  { id: "SVC-61017", os: "linux",   label: "Batch Worker VPS",          customer: "Scrapers Ltd",    tenant: "HANetwork",  region: "EU-HEL",   cpu: 16, ram: 64,  disk: 960,  ip: "65.108.x.x",   provider: "Hetzner",  price: 188, status: "active",       renewsIn: 19 },
 ];
 
 export const BANDWIDTH_SERVICES: BandwidthService[] = [
@@ -394,9 +394,9 @@ export const RESELLER_CATALOG: ResellerCatalogItem[] = [
 
 export const CLIENT_SERVICES: ClientService[] = [
   { id: "SVC-69281", type: "residential", label: "Residential EU · Premium", identifier: "res-eu-prm-9281", region: "EU-MULTI", bandwidth: "4.2 / 10 GB", expiry: "2026-05-14", status: "active", cycle: "month_30d" },
-  { id: "SVC-64421", type: "vps-linux", label: "vps-scrape-01 · 2C/4G/60G", identifier: "103.28.44.21", region: "VN-HCM", bandwidth: "—", expiry: "2026-05-08", status: "active", cycle: "calendar_month" },
+  { id: "SVC-64421", type: "vps-linux", label: "Proxy Automation VPS · 2C/4G/60G", identifier: "103.28.44.21", region: "VN-HCM", bandwidth: "—", expiry: "2026-05-08", status: "active", cycle: "calendar_month" },
   { id: "SVC-68102", type: "datacenter", label: "DC Shared · 10 IPs", identifier: "dc-us-8102", region: "US-EAST", bandwidth: "—", expiry: "2026-04-28", status: "active", cycle: "month_30d" },
-  { id: "SVC-64422", type: "vps-linux", label: "vps-test · 1C/2G/20G", identifier: "103.28.44.22", region: "VN-HAN", bandwidth: "—", expiry: "2026-04-24", status: "suspended", cycle: "calendar_month", note: "Grace: 2 days left" },
+  { id: "SVC-64422", type: "vps-linux", label: "Small Linux VPS · 1C/2G/20G", identifier: "103.28.44.22", region: "VN-HAN", bandwidth: "—", expiry: "2026-04-24", status: "suspended", cycle: "calendar_month", note: "Grace: 2 days left" },
   { id: "SVC-62109", type: "mobile", label: "Mobile 4G · 2 ports", identifier: "mob-vn-2109", region: "VN", bandwidth: "188 GB", expiry: "2026-06-02", status: "active", cycle: "month_30d" },
 ];
 
@@ -466,7 +466,7 @@ export const AUDIT_LOGS: AuditLog[] = [
   { id: "AUD-70084", ts: "2026-04-22 12:01", level: "info",  actor: "admin",    actorName: "Minh Nguyen",     action: "product.price.updated",        target: "VPS-SMALL",   detail: "$12→$14/mo, effective next renewal",        requestId: "Request not shown", tenantId: "T-0001" },
   { id: "AUD-70083", ts: "2026-04-22 11:50", level: "warn",  actor: "system",   actorName: "health-worker",   action: "provider.health.degraded",     target: "SRC-23004", detail: "Error rate 2.8% over 30min window",         requestId: "Request not shown", tenantId: "T-0001" },
   { id: "AUD-70082", ts: "2026-04-22 11:17", level: "info",  actor: "client",   actorName: "Linh Tran",       action: "wallet.topup.approved",        target: "TUP-9088",    detail: "Credited $500 to client wallet",             requestId: "Request not shown", tenantId: "T-0042" },
-  { id: "AUD-70081", ts: "2026-04-22 10:44", level: "info",  actor: "system",   actorName: "prov-worker",     action: "service.provisioned",          target: "SVC-65512",  detail: "VPS vps-scrape-02 active on OVH",           requestId: "Request not shown", tenantId: "T-0031" },
+  { id: "AUD-70081", ts: "2026-04-22 10:44", level: "info",  actor: "system",   actorName: "prov-worker",     action: "service.provisioned",          target: "SVC-65512",  detail: "Proxy automation VPS active on OVH",        requestId: "Request not shown", tenantId: "T-0031" },
   { id: "AUD-70080", ts: "2026-04-22 10:15", level: "warn",  actor: "system",   actorName: "billing-worker",  action: "tenant.wallet.low_balance",    target: "T-0018",      detail: "DataMine Inc. balance $41.20 below floor",  requestId: "Request not shown", tenantId: "T-0001" },
   { id: "AUD-70079", ts: "2026-04-22 09:44", level: "warn",  actor: "system",   actorName: "health-worker",   action: "provider.node.high_memory",    target: "SRC-23001", detail: "91% memory utilisation on Proxmox node",    requestId: "Request not shown", tenantId: "T-0001" },
   { id: "AUD-70078", ts: "2026-04-22 09:01", level: "info",  actor: "reseller", actorName: "ProxyVN",         action: "catalog.price.updated",        target: "RES-PROX-4G", detail: "Markup adjusted from 35%→40%",              requestId: "Request not shown", tenantId: "T-0042" },

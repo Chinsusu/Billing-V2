@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` after T168 was merged:
+Current board snapshot on `2026-04-26` while T169 is in progress:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 165
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | No task files are currently in progress or review. |
+| T169 | [tasks/active/T169_demo_service_vps_labels.md](tasks/active/T169_demo_service_vps_labels.md) | IN_PROGRESS | Codex | codex/t169-demo-service-vps-labels | Humanize demo service and VPS labels. |
 
 ## Done Task Files
 

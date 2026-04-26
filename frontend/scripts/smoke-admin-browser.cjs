@@ -16,6 +16,15 @@ const forbiddenText = [
   "provider_account_id", // sensitive-text-allowlist: browser smoke forbidden text
   "secret", // sensitive-text-allowlist: browser smoke forbidden text
   "raw_response", // sensitive-text-allowlist: browser smoke forbidden text
+  "vps-prod-01",
+  "vps-scrape-01",
+  "vps-scrape-02",
+  "vps-test",
+  "vps-api-gateway",
+  "vps-db-replica",
+  "vps-worker-03",
+  "win-rdp-gamma",
+  "win-dev-01",
 ];
 
 async function main() {
@@ -26,7 +35,7 @@ async function main() {
     const browser = await launchBrowser();
     try {
       const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-      await installApiMocks(page);
+      await installApiMocks(page, { failPaths: new Set(["/backend/client/services", "/backend/reseller/services"]) });
       await page.goto(baseURL, { waitUntil: "domcontentloaded" });
       await page.waitForTimeout(800);
 
@@ -195,6 +204,20 @@ async function main() {
       await expectVisibleText(page, "Provider timeout on OVH.");
       await assertNoVisibleText(page, ["manual_review"], "admin alert labels");
       await assertNoForbiddenText(page, "admin alerts");
+
+      await page.getByRole("button", { name: "Reseller · ProxyVN" }).click();
+      await page.waitForTimeout(500);
+      await openAdminScreen(page, /^VPS$/i);
+      await expectVisibleText(page, "Windows RDP Workspace");
+      await expectVisibleText(page, "Proxy Automation VPS");
+      await assertNoForbiddenText(page, "reseller service demo labels");
+
+      await page.getByRole("button", { name: "Client · Linh Tran" }).click();
+      await page.waitForTimeout(500);
+      await expectVisibleText(page, "My services");
+      await expectVisibleText(page, "Proxy Automation VPS");
+      await expectVisibleText(page, "Small Linux VPS");
+      await assertNoForbiddenText(page, "client service demo labels");
     } finally {
       await browser.close();
     }
