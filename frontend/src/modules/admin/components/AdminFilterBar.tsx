@@ -1,7 +1,7 @@
 "use client";
 
 import { Filter, RotateCcw } from "lucide-react";
-import { FormEvent, InputHTMLAttributes, ReactNode } from "react";
+import { FormEvent, InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from "react";
 
 type AdminFilterTone = "default" | "loading" | "success" | "error";
 
@@ -20,6 +20,11 @@ interface AdminFilterFieldProps {
 
 interface AdminFilterInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
+}
+
+interface AdminFilterSelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
+  label: string;
+  options: Array<{ value: string; label: string }>;
 }
 
 const STATUS_CLASSES: Record<AdminFilterTone, string> = {
@@ -86,6 +91,26 @@ export function AdminFilterInput({ label, className = "", ...props }: AdminFilte
   return (
     <AdminFilterField label={label}>
       <input {...props} className={`${INPUT_CLASS_NAME} ${className}`.trim()} />
+    </AdminFilterField>
+  );
+}
+
+export function AdminFilterSelect({
+  label,
+  options,
+  className = "",
+  "aria-label": ariaLabel,
+  ...props
+}: AdminFilterSelectProps) {
+  return (
+    <AdminFilterField label={label}>
+      <select {...props} aria-label={ariaLabel ?? label} className={`${INPUT_CLASS_NAME} ${className}`.trim()}>
+        {options.map((option) => (
+          <option key={option.value || "all"} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
     </AdminFilterField>
   );
 }

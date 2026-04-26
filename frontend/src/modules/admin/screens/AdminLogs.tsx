@@ -6,7 +6,7 @@ import { billingApi } from "@/lib/api/billing";
 import { AdminAuditLogQuery } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { mapAdminAuditLogView, type AdminAuditActorBadge, type AdminAuditLogView } from "@/lib/api/viewModels";
-import { AdminFilterBar, AdminFilterInput } from "../components/AdminFilterBar";
+import { AdminFilterBar, AdminFilterInput, AdminFilterSelect } from "../components/AdminFilterBar";
 import { hasActiveFilters, includesFilter, trimStringFilters } from "../lib/filterUtils";
 
 const LEVEL_STYLE: Record<AuditLog["level"], string> = {
@@ -38,12 +38,37 @@ const EMPTY_FILTERS: AuditLogFilters = {
   target_display_id: "",
 };
 
+const TARGET_TYPE_OPTIONS = [
+  { value: "", label: "All targets" },
+  { value: "invoice", label: "Invoice" },
+  { value: "order", label: "Order" },
+  { value: "job", label: "Job" },
+  { value: "service", label: "Service" },
+  { value: "provider_source", label: "Provider" },
+  { value: "topup_request", label: "Top-up" },
+];
+
+const MOCK_TARGET_PREFIXES: Record<string, string> = {
+  invoice: "inv-",
+  order: "ord-",
+  job: "job-",
+  service: "svc-",
+  provider_source: "src-",
+  topup_request: "tup-",
+};
+
+function matchesMockTargetType(target: string, targetType: string) {
+  if (!targetType) return true;
+  const prefix = MOCK_TARGET_PREFIXES[targetType];
+  return includesFilter(target, targetType) || (prefix ? target.toLowerCase().includes(prefix) : false);
+}
+
 function filterMockLogs(filters: AuditLogFilters) {
   return AUDIT_LOGS.filter((log) => (
     includesFilter(log.id, filters.display_id)
     && includesFilter(log.actorName, filters.actor_display_id)
     && includesFilter(log.action, filters.action)
-    && includesFilter(log.target, filters.target_type)
+    && matchesMockTargetType(log.target, filters.target_type)
     && includesFilter(log.target, filters.target_display_id)
   ));
 }
@@ -119,11 +144,11 @@ export function AdminLogs() {
             onChange={(event) => updateFilter("action", event.target.value)}
             placeholder="invoice.paid"
           />
-          <AdminFilterInput
-            label="Target Type"
+          <AdminFilterSelect
+            label="Target"
             value={draftFilters.target_type}
             onChange={(event) => updateFilter("target_type", event.target.value)}
-            placeholder="invoice"
+            options={TARGET_TYPE_OPTIONS}
           />
           <AdminFilterInput
             label="Target public ID"

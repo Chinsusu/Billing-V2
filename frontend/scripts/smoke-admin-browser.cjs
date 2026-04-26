@@ -107,11 +107,13 @@ async function main() {
       await expectVisibleText(page, "job.retry");
       await expectVisibleText(page, "Job JOB-3301");
       await page.getByLabel("Actor public ID").fill("10001");
+      await page.getByLabel("Target", { exact: true }).selectOption("job");
       await page.getByLabel("Target public ID").fill("3301");
       const filteredAudit = page.waitForResponse((response) => {
         const url = new URL(response.url());
         return url.pathname === "/backend/admin/audit-logs"
           && url.searchParams.get("actor_display_id") === "10001"
+          && url.searchParams.get("target_type") === "job"
           && url.searchParams.get("target_display_id") === "3301";
       });
       await page.getByRole("button", { name: "Apply" }).click();
