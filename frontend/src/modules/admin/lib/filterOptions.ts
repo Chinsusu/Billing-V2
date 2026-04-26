@@ -3,6 +3,16 @@ export type AdminFilterOption = {
   label: string;
 };
 
+export const ACCOUNT_TYPE_OPTIONS: AdminFilterOption[] = [
+  { value: "", label: "All types" },
+  { value: "admin", label: "Admin" },
+  { value: "reseller", label: "Reseller" },
+  { value: "client", label: "Client" },
+  { value: "user", label: "User" },
+  { value: "worker", label: "Worker" },
+  { value: "provider_webhook", label: "Provider webhook" },
+];
+
 export const ACCOUNT_STATUS_OPTIONS: AdminFilterOption[] = [
   { value: "", label: "All statuses" },
   { value: "active", label: "Active" },
@@ -35,6 +45,20 @@ export const PROVIDER_STATUS_OPTIONS: AdminFilterOption[] = [
   { value: "failed", label: "Failed" },
 ];
 
+export const PRODUCT_TYPE_OPTIONS: AdminFilterOption[] = [
+  { value: "", label: "All products" },
+  { value: "vps", label: "VPS" },
+  { value: "proxy", label: "Proxy" },
+  { value: "bandwidth", label: "Bandwidth" },
+];
+
+export const PROVIDER_SOURCE_TYPE_OPTIONS: AdminFilterOption[] = [
+  { value: "", label: "All source types" },
+  { value: "hetzner", label: "Hetzner" },
+  { value: "proxmox", label: "Proxmox" },
+  { value: "manual", label: "Manual pool" },
+];
+
 export const SERVICE_STATUS_OPTIONS: AdminFilterOption[] = [
   { value: "", label: "All statuses" },
   { value: "active", label: "Active" },
@@ -59,4 +83,11 @@ export const TRANSACTION_STATUS_OPTIONS: AdminFilterOption[] = [
   { value: "pending", label: "Pending" },
   { value: "failed", label: "Failed" },
   { value: "refunded", label: "Refunded" },
+];
+
+export const TENANT_TYPE_OPTIONS: AdminFilterOption[] = [
+  { value: "", label: "All types" },
+  { value: "admin", label: "Admin" },
+  { value: "reseller", label: "Reseller" },
+  { value: "client", label: "Client" },
 ];

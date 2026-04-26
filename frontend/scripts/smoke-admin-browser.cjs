@@ -60,6 +60,23 @@ async function main() {
       await expectVisibleText(page, "PLAN-10000");
       await expectVisibleText(page, "SRC-10001");
       await expectVisibleText(page, "Local Fake Hetzner Ready");
+      await page.getByLabel("Product", { exact: true }).selectOption("vps");
+      const filteredReadiness = page.waitForResponse((response) => {
+        const url = new URL(response.url());
+        return url.pathname === "/backend/admin/catalog/provider-readiness"
+          && url.searchParams.get("product_type") === "vps";
+      });
+      await page.locator("form").filter({ has: page.getByLabel("Product", { exact: true }) }).getByRole("button", { name: "Apply" }).click();
+      await filteredReadiness;
+      await page.getByLabel("Source type", { exact: true }).selectOption("hetzner");
+      const filteredProviderSource = page.waitForResponse((response) => {
+        const url = new URL(response.url());
+        return url.pathname === "/backend/admin/catalog/provider-sources"
+          && url.searchParams.get("source_type") === "hetzner";
+      });
+      await page.locator("form").filter({ has: page.getByLabel("Source type", { exact: true }) }).getByRole("button", { name: "Apply" }).click();
+      await filteredProviderSource;
+      await expectVisibleText(page, "Live provider source filters applied.");
       await assertNoForbiddenText(page, "providers");
 
       await openAdminScreen(page, /VPS/i);
