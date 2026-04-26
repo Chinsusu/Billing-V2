@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` after T165 was merged:
+Current board snapshot on `2026-04-26` while T166 is in progress:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 162
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | No task files are currently in progress or review. |
+| T166 | [tasks/active/T166_demo_audit_labels.md](tasks/active/T166_demo_audit_labels.md) | IN_PROGRESS | Codex | codex/t166-demo-audit-labels | Humanize audit log demo fallback labels. |
 
 ## Done Task Files
 
