@@ -210,7 +210,8 @@ function planReadinessLabel(readiness: ProviderReadiness): string {
 
 function workerLabel(workerID?: string): string {
   if (!workerID) return "Worker not assigned";
-  return `Worker ${technicalCodeLabel(workerID)}`;
+  const label = technicalCodeLabel(workerID);
+  return label.toLowerCase().startsWith("worker ") ? label : `Worker ${label}`;
 }
 
 function attemptErrorLabel(attempt: ProvisioningJobAttempt): string {
