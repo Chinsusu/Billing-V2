@@ -4,12 +4,11 @@ import { useMemo, useState } from "react";
 
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
-import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
+import { compactDateTime, moneyMinor, recordLabel, fmtMoney } from "@/lib/api/format";
 import type { Invoice, InvoiceWalletPayment, Order, TenantCatalogPlan, Wallet } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { hiddenReference } from "@/lib/api/viewModels";
 import { PRODUCTS } from "@/mocks/billingData";
-import { fmtMoney } from "@/mocks/sampleData";
 
 type Notice = { type: "success" | "error"; text: string };
 type CheckoutSummary = {

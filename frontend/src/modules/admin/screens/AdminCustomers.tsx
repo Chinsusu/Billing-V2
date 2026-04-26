@@ -7,7 +7,7 @@ import type { AdminAccountQuery } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { mapAdminAccountView } from "@/lib/api/viewModels";
 import { CUSTOMERS } from "@/mocks/billingData";
-import { fmtMoneyShort } from "@/mocks/sampleData";
+import { fmtMoneyShort } from "@/lib/api/format";
 import { AdminFilterBar, AdminFilterInput, AdminFilterSelect } from "../components/AdminFilterBar";
 import { ACCOUNT_STATUS_OPTIONS, ACCOUNT_TYPE_OPTIONS } from "../lib/filterOptions";
 import { equalsFilter, hasActiveFilters, includesFilter, trimStringFilters } from "../lib/filterUtils";

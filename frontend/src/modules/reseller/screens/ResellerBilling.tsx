@@ -3,12 +3,11 @@
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { fulfillmentForOrder } from "@/lib/api/fulfillment";
-import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
+import { compactDateTime, moneyMinor, recordLabel, fmtMoney } from "@/lib/api/format";
 import { paymentTransactionTypeLabel } from "@/lib/api/paymentViewModels";
 import { resellerAccountLabel } from "@/lib/api/resellerViewModels";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { INVOICES, TRANSACTIONS } from "@/mocks/billingData";
-import { fmtMoney } from "@/mocks/sampleData";
 
 type BillingKind = "invoices" | "transactions";
 

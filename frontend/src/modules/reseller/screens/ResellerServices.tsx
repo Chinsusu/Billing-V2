@@ -3,12 +3,11 @@
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { fulfillmentForOrder, fulfillmentForService } from "@/lib/api/fulfillment";
-import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
+import { compactDateTime, moneyMinor, recordLabel, fmtMoney } from "@/lib/api/format";
 import { resellerAccountLabel } from "@/lib/api/resellerViewModels";
 import type { Order, ProvisioningJob, ServiceInstance } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { BANDWIDTH_SERVICES, PROXY_SERVICES, VPS_SERVICES } from "@/mocks/billingData";
-import { fmtMoney } from "@/mocks/sampleData";
 
 type ResellerServiceCategory = "proxies" | "vps" | "bandwidth";
 

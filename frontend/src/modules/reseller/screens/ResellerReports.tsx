@@ -1,5 +1,5 @@
 import { RESELLER_CATALOG, RESELLER_CLIENTS } from "@/mocks/billingData";
-import { fmtMoney } from "@/mocks/sampleData";
+import { fmtMoney } from "@/lib/api/format";
 
 export function ResellerReports() {
   const walletTotal = RESELLER_CLIENTS.reduce((total, client) => total + client.wallet, 0);

@@ -1,7 +1,7 @@
 import type { AdminServiceDemoRow } from "../components/AdminServiceInventoryTable";
 import { AdminServiceInventoryTable } from "../components/AdminServiceInventoryTable";
 import { PROXY_SERVICES } from "@/mocks/billingData";
-import { fmtMoney } from "@/mocks/sampleData";
+import { fmtMoney } from "@/lib/api/format";
 
 function renewsInText(days: number) {
   return days < 0 ? `${Math.abs(days)}d overdue` : `${days}d left`;

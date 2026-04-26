@@ -5,12 +5,11 @@ import { useState } from "react";
 
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
-import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
+import { compactDateTime, moneyMinor, recordLabel, fmtMoney } from "@/lib/api/format";
 import { paymentMethodLabel } from "@/lib/api/paymentViewModels";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { walletLedgerEntryTypeLabel, walletLedgerReferenceLabel } from "@/lib/api/walletViewModels";
 import { CLIENT_LEDGER } from "@/mocks/billingData";
-import { fmtMoney } from "@/mocks/sampleData";
 
 type Notice = { type: "success" | "error"; text: string };
 

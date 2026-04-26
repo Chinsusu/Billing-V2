@@ -8,7 +8,7 @@ import type { TopupRequestQuery } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { mapAdminTopupView } from "@/lib/api/viewModels";
 import { TOPUP_REQUESTS } from "@/mocks/billingData";
-import { fmtMoney } from "@/mocks/sampleData";
+import { fmtMoney } from "@/lib/api/format";
 import { AdminFilterBar, AdminFilterInput, AdminFilterSelect } from "../components/AdminFilterBar";
 import { TOPUP_STATUS_OPTIONS } from "../lib/filterOptions";
 import { equalsFilter, hasActiveFilters, includesFilter, trimStringFilters } from "../lib/filterUtils";

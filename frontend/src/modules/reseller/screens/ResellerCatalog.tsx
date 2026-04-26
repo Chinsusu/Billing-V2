@@ -3,11 +3,10 @@
 import { useState } from "react";
 
 import { billingApi } from "@/lib/api/billing";
-import { moneyMinor } from "@/lib/api/format";
+import { moneyMinor, fmtMoney } from "@/lib/api/format";
 import type { CatalogPlan, TenantCatalogPlan, TenantCatalogProduct } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { RESELLER_CATALOG } from "@/mocks/billingData";
-import { fmtMoney } from "@/mocks/sampleData";
 
 interface CatalogRow {
   key: string;
