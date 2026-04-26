@@ -115,6 +115,7 @@ async function main() {
       await expectVisibleText(page, "Live top-up filters applied.");
       await assertNoVisibleText(page, ["topup-uuid-1", "wallet-1", "buyer-1", "tenant-uuid-1"], "top-up public ID labels");
       await assertNoForbiddenText(page, "topups");
+      await smokeTopupFallback(browser);
 
       await openAdminScreen(page, /^Invoices$/i);
       await expectVisibleText(page, "Live invoice data");
@@ -482,6 +483,24 @@ async function smokeProvisioningFallback(browser) {
     await expectVisibleText(page, "Partial Success: External ID Unknown");
     await assertNoVisibleText(page, ["provider_timeout", "auth_failed", "partial_success", "external_id", "proxy-cheap", "cor_"], "provisioning demo fallback labels");
     await assertNoForbiddenText(page, "provisioning demo fallback");
+  } finally {
+    await page.close();
+  }
+}
+
+async function smokeTopupFallback(browser) {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  try {
+    await installApiMocks(page, { failPaths: new Set(["/backend/admin/topup-requests"]) });
+    await page.goto(baseURL, { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(800);
+    await openAdminScreen(page, /Top-up verification/i);
+    await expectVisibleText(page, "Live API unavailable. Showing demo top-up data");
+    await expectVisibleText(page, "Reseller Wallet");
+    await expectVisibleText(page, "Client Wallet");
+    await expectVisibleText(page, "Ref provided");
+    await assertNoVisibleText(page, ["reseller_wallet", "client_wallet", "pending_verification"], "top-up demo fallback labels");
+    await assertNoForbiddenText(page, "top-up demo fallback");
   } finally {
     await page.close();
   }
