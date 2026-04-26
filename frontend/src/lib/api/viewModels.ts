@@ -22,7 +22,18 @@ function publicIDLabel(displayID: number | undefined, prefix: string, fallback: 
 }
 
 function auditTargetLabel(log: AuditLog): string {
-  if (!log.target_display_id) return `${log.target_type} target`;
+  const targetLabels: Record<string, string> = {
+    invoice: "Invoice",
+    job: "Job",
+    order: "Order",
+    provider: "Provider",
+    provider_source: "Provider",
+    service: "Service",
+    service_instance: "Service",
+    topup_request: "Top-up",
+  };
+  const targetLabel = targetLabels[log.target_type] ?? "Target";
+  if (!log.target_display_id) return `${targetLabel} not shown`;
   const prefixes: Record<string, string> = {
     invoice: "INV-",
     job: "JOB-",
@@ -33,7 +44,7 @@ function auditTargetLabel(log: AuditLog): string {
     service_instance: "SVC-",
     topup_request: "TUP-",
   };
-  return `${log.target_type} ${adminDisplayLabel(log.target_display_id, prefixes[log.target_type] ?? "#")}`;
+  return `${targetLabel} ${adminDisplayLabel(log.target_display_id, prefixes[log.target_type] ?? "#")}`;
 }
 
 export function requestLabel(): string {
