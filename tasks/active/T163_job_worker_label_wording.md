@@ -1,6 +1,6 @@
 # T163 - Job worker label wording
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t163-job-worker-label-wording
 PR: https://github.com/Chinsusu/Billing-V2/pull/357
@@ -32,3 +32,4 @@ Clean up provisioning job timeline worker labels so readable worker names are no
 
 - 2026-04-26: Task created and claimed by Codex.
 - 2026-04-26: Opened PR #357 after lint, sensitive-text guard, build, admin smoke, taskguard, and diff check passed.
+- 2026-04-26: PR #357 merged into main.
