@@ -104,15 +104,17 @@ async function main() {
       await expectVisibleText(page, "Live audit filters applied.");
       await expectVisibleText(page, "AUD-70001");
       await expectVisibleText(page, "ACC-10001");
-      await expectVisibleText(page, "job.retry");
+      await page.getByRole("cell", { name: "Retry job", exact: true }).waitFor({ timeout: 10_000 });
       await expectVisibleText(page, "Job JOB-3301");
       await page.getByLabel("Actor public ID").fill("10001");
+      await page.getByLabel("Action", { exact: true }).selectOption("job.retry");
       await page.getByLabel("Target", { exact: true }).selectOption("job");
       await page.getByLabel("Target public ID").fill("3301");
       const filteredAudit = page.waitForResponse((response) => {
         const url = new URL(response.url());
         return url.pathname === "/backend/admin/audit-logs"
           && url.searchParams.get("actor_display_id") === "10001"
+          && url.searchParams.get("action") === "job.retry"
           && url.searchParams.get("target_type") === "job"
           && url.searchParams.get("target_display_id") === "3301";
       });

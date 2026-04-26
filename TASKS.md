@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` after T144 was merged:
+Current board snapshot on `2026-04-26` after T145 is ready for review:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 141
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | No task files are currently in progress or review. |
+| T145 | [tasks/active/T145_audit_action_filter_select.md](tasks/active/T145_audit_action_filter_select.md) | REVIEW | Codex | codex/t145-audit-action-filter-select | Replace audit action text filter with a plain dropdown. |
 
 ## Done Task Files
 
