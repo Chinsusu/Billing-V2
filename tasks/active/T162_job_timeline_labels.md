@@ -1,9 +1,9 @@
 # T162 - Job timeline labels
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t162-job-timeline-labels
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/355
 Risk: frontend
 Created: 2026-04-26
 Updated: 2026-04-26
@@ -34,3 +34,4 @@ Show readable labels in the admin job timeline and source readiness detail inste
 - 2026-04-26: Added shared technical code label helper and applied it to provisioning summary, queue rows, source readiness detail, worker labels, and attempt errors.
 - 2026-04-26: Updated admin browser smoke to verify readable plan/error labels and block raw job codes/worker IDs on the provisioning screen.
 - 2026-04-26: Validation passed: frontend lint, sensitive-text check, production build, admin browser smoke, and taskguard.
+- 2026-04-26: Opened review PR https://github.com/Chinsusu/Billing-V2/pull/355.

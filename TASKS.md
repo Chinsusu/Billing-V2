@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` after T162 was claimed:
+Current board snapshot on `2026-04-26` after T162 PR was opened:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 158
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T162 | [tasks/active/T162_job_timeline_labels.md](tasks/active/T162_job_timeline_labels.md) | IN_PROGRESS | Codex | codex/t162-job-timeline-labels | Show readable admin job timeline labels. |
+| T162 | [tasks/active/T162_job_timeline_labels.md](tasks/active/T162_job_timeline_labels.md) | REVIEW | Codex | codex/t162-job-timeline-labels | Show readable admin job timeline labels. |
 
 ## Done Task Files
 
