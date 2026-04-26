@@ -105,7 +105,7 @@ async function main() {
       await expectVisibleText(page, "AUD-70001");
       await expectVisibleText(page, "ACC-10001");
       await expectVisibleText(page, "job.retry");
-      await expectVisibleText(page, "job JOB-3301");
+      await expectVisibleText(page, "Job JOB-3301");
       await page.getByLabel("Actor public ID").fill("10001");
       await page.getByLabel("Target public ID").fill("3301");
       const filteredAudit = page.waitForResponse((response) => {
