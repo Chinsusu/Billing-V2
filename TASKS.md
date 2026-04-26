@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` after T162 PR was opened:
+Current board snapshot on `2026-04-26` after T162 was merged:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 158
+- `DONE` task files in `tasks/active/`: 159
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -67,14 +67,14 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T162 | [tasks/active/T162_job_timeline_labels.md](tasks/active/T162_job_timeline_labels.md) | REVIEW | Codex | codex/t162-job-timeline-labels | Show readable admin job timeline labels. |
+| - | - | - | - | No task files are currently in progress or review. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T161`
+- `T011` to `T162`
 
 ## Removed Tasks
 
