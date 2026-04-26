@@ -1,6 +1,6 @@
 # T164 - Demo provisioning labels
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t164-demo-provisioning-labels
 PR: https://github.com/Chinsusu/Billing-V2/pull/359
@@ -32,3 +32,4 @@ Clean up provisioning demo fallback labels so operators do not see raw error key
 
 - 2026-04-26: Task created and claimed by Codex.
 - 2026-04-26: Opened PR #359 after lint, sensitive-text guard, build, admin smoke, taskguard, and diff check passed.
+- 2026-04-26: PR #359 merged into main.
