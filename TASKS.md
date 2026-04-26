@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` while T169 is in review:
+Current board snapshot on `2026-04-26` after T169 was merged:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 165
+- `DONE` task files in `tasks/active/`: 166
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -67,14 +67,14 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T169 | [tasks/active/T169_demo_service_vps_labels.md](tasks/active/T169_demo_service_vps_labels.md) | REVIEW | Codex | codex/t169-demo-service-vps-labels | Humanize demo service and VPS labels. |
+| - | - | - | - | No task files are currently in progress or review. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T168`
+- `T011` to `T169`
 
 ## Removed Tasks
 
