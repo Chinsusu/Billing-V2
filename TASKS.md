@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` after T157 PR was opened:
+Current board snapshot on `2026-04-26` after T157 was merged:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 153
+- `DONE` task files in `tasks/active/`: 154
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -67,14 +67,14 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T157 | [tasks/active/T157_provider_readiness_label_cleanup.md](tasks/active/T157_provider_readiness_label_cleanup.md) | REVIEW | Codex | codex/t157-provider-readiness-labels | Show readable provider readiness product/source labels. |
+| - | - | - | - | No task files are currently in progress or review. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T156`
+- `T011` to `T157`
 
 ## Removed Tasks
 
