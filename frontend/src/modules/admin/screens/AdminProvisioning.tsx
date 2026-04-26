@@ -356,15 +356,29 @@ function demoProvisioningRows(): ProvisioningRow[] {
     order: job.order,
     service: job.service,
     tenant: job.tenant,
-    provider: job.provider,
+    provider: demoProviderLabel(job.provider),
     status: job.status === "provisioning" ? "running" : job.status,
     attempt: String(job.attempt),
     created: job.age,
-    error: job.error || "-",
+    error: demoErrorLabel(job.error),
     canRetry: false,
     canReview: false,
     canCancel: false,
   }));
+}
+
+function demoProviderLabel(provider: string): string {
+  return provider.includes("-") && !provider.includes(" ") ? technicalCodeLabel(provider) : provider;
+}
+
+function demoErrorLabel(error: string): string {
+  const normalized = error.trim();
+  if (!normalized) return "-";
+  return normalized
+    .split(/\s+(?:-|\u2014)\s+/)
+    .filter(Boolean)
+    .map((part) => technicalCodeLabel(part.replace(/\s+/g, "_")))
+    .join(": ");
 }
 
 function filterDemoProvisioningRows(rows: ProvisioningRow[], filters: ProvisioningFilterFields): ProvisioningRow[] {
