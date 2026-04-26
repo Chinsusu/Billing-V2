@@ -4,7 +4,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
-import { walletLedgerReferenceLabel } from "@/lib/api/walletViewModels";
+import { walletLedgerEntryTypeLabel, walletLedgerReferenceLabel } from "@/lib/api/walletViewModels";
 import { TOPUP_REQUESTS } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
 
@@ -35,7 +35,7 @@ export function ResellerWallet() {
         const signedMinor = entry.direction === "debit" ? -entry.amount_minor : entry.amount_minor;
         return {
           ts: compactDateTime(entry.created_at),
-          type: entry.entry_type,
+          type: walletLedgerEntryTypeLabel(entry.entry_type),
           amountMinor: signedMinor,
           amount: moneyMinor(signedMinor, entry.currency),
           ref: walletLedgerReferenceLabel(entry),
@@ -44,7 +44,7 @@ export function ResellerWallet() {
       })
     : DEMO_LEDGER.map((entry) => ({
         ts: entry.ts,
-        type: entry.type,
+        type: walletLedgerEntryTypeLabel(entry.type),
         amountMinor: Math.round(entry.amount * 100),
         amount: fmtMoney(entry.amount),
         ref: entry.ref,

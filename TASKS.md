@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` after T148 was merged:
+Current board snapshot on `2026-04-26` after T149 is ready for review:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 145
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | No task files are currently in progress or review. |
+| T149 | [tasks/active/T149_humanize_wallet_entry_types.md](tasks/active/T149_humanize_wallet_entry_types.md) | REVIEW | Codex | codex/t149-humanize-wallet-entry-types | Show readable wallet ledger entry labels. |
 
 ## Done Task Files
 
