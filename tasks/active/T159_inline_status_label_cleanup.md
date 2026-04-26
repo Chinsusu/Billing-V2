@@ -1,6 +1,6 @@
 # T159 - Inline status label cleanup
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t159-inline-status-labels
 PR: https://github.com/Chinsusu/Billing-V2/pull/349
@@ -34,3 +34,4 @@ Show readable labels for inline status text that appears outside the shared stat
 - 2026-04-26: Applied shared status labels to admin top-up activity and client/reseller wallet summaries; added overview smoke coverage for readable top-up status.
 - 2026-04-26: Validation passed: frontend lint, sensitive-text check, production build, admin browser smoke, and taskguard.
 - 2026-04-26: Opened review PR https://github.com/Chinsusu/Billing-V2/pull/349.
+- 2026-04-26: Merged PR https://github.com/Chinsusu/Billing-V2/pull/349 into main; marking task done.
