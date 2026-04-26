@@ -1,6 +1,6 @@
 # T155 - Remove unused sample data helper
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t155-remove-unused-sample-data
 PR: https://github.com/Chinsusu/Billing-V2/pull/341
@@ -34,3 +34,4 @@ Remove the unused mock sample data helper file after production helpers were mov
 - 2026-04-26: Removed the unused sample data helper file after confirming no frontend imports remain.
 - 2026-04-26: Validation passed: frontend lint, sensitive-text check, production build, admin browser smoke, taskguard, and diff check.
 - 2026-04-26: Opened review PR https://github.com/Chinsusu/Billing-V2/pull/341.
+- 2026-04-26: Merged PR https://github.com/Chinsusu/Billing-V2/pull/341 into main; marking task done.
