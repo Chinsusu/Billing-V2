@@ -1,6 +1,6 @@
 # T161 - Ticket priority labels
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t161-ticket-priority-labels
 PR: https://github.com/Chinsusu/Billing-V2/pull/353
@@ -34,3 +34,4 @@ Show readable support ticket priority labels in admin and reseller ticket tables
 - 2026-04-26: Added shared ticket priority label helper and applied it to admin and reseller support ticket tables.
 - 2026-04-26: Validation passed: frontend lint, sensitive-text check, production build, admin browser smoke, and taskguard.
 - 2026-04-26: Opened review PR https://github.com/Chinsusu/Billing-V2/pull/353.
+- 2026-04-26: Merged PR https://github.com/Chinsusu/Billing-V2/pull/353 into main; marking task done.
