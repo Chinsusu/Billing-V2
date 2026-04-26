@@ -7,7 +7,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
-import { walletLedgerReferenceLabel } from "@/lib/api/walletViewModels";
+import { walletLedgerEntryTypeLabel, walletLedgerReferenceLabel } from "@/lib/api/walletViewModels";
 import { CLIENT_LEDGER } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
 
@@ -48,7 +48,7 @@ export function ClientWallet() {
   const rows = usingLive
     ? (ledger.data ?? []).map((entry) => ({
         ts: compactDateTime(entry.created_at),
-        type: entry.entry_type,
+        type: walletLedgerEntryTypeLabel(entry.entry_type),
         amountMinor: entry.direction === "debit" ? -entry.amount_minor : entry.amount_minor,
         amountText: moneyMinor(entry.direction === "debit" ? -entry.amount_minor : entry.amount_minor, entry.currency),
         ref: walletLedgerReferenceLabel(entry),
@@ -56,7 +56,7 @@ export function ClientWallet() {
       }))
     : CLIENT_LEDGER.map((entry) => ({
         ts: entry.ts,
-        type: entry.type,
+        type: walletLedgerEntryTypeLabel(entry.type),
         amountMinor: entry.amount,
         amountText: fmtMoney(entry.amount),
         ref: entry.ref,

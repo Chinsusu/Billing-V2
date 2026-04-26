@@ -16,3 +16,32 @@ export function walletLedgerReferenceLabel(entry: WalletLedgerReference): string
   }
   return recordLabel(entry.display_id, "LED-");
 }
+
+const ENTRY_TYPE_LABELS: Record<string, string> = {
+  "purchase.client_wallet.debit": "Purchase",
+  "renewal.client_wallet.debit": "Service renewal",
+  "settlement.reseller.debit": "Reseller settlement",
+  "topup.credit.client": "Top-up credit",
+  "topup.credit.reseller": "Top-up credit",
+};
+
+const ENTRY_WORD_LABELS: Record<string, string> = {
+  credit: "Credit",
+  debit: "Debit",
+  renewal: "Renewal",
+  reseller: "Reseller",
+  settlement: "Settlement",
+  topup: "Top-up",
+};
+
+export function walletLedgerEntryTypeLabel(entryType: string): string {
+  const knownLabel = ENTRY_TYPE_LABELS[entryType];
+  if (knownLabel) return knownLabel;
+
+  return entryType
+    .split(/[._-]/)
+    .filter(Boolean)
+    .filter((part) => part !== "client" && part !== "wallet")
+    .map((part) => ENTRY_WORD_LABELS[part] ?? part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
