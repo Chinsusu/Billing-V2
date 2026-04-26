@@ -6,26 +6,6 @@ export const SAMPLE_SERIES = {
   bandwidthDaily: [184,192,201,198,215,223,219,234,229,245,251,248,262,268,271,284,278,291,295,302,298,311,315,309,322,318,331,327,339,342],
 };
 
-export const STATUS_LABEL: Record<string, string> = {
-  active: "Active", running: "Running", paid: "Paid", open: "Open",
-  pending: "Pending", overdue: "Overdue", failed: "Failed",
-  suspended: "Suspended", stopped: "Stopped", provisioning: "Provisioning",
-  manual_review: "Manual Review", queued: "Queued", claimed: "Claimed",
-  succeeded: "Succeeded", failed_retryable: "Retryable", failed_terminal: "Terminal Failed",
-  cancelled: "Cancelled", unknown: "Unknown",
-  pending_verification: "Pending verification", submitted: "Submitted", under_review: "Under review",
-  approved: "Approved", rejected: "Rejected", posted: "Posted",
-};
-
-export const STATUS_VARIANT: Record<string, "ok" | "warn" | "danger" | "info" | "muted"> = {
-  active: "ok", running: "info", paid: "ok", approved: "ok", succeeded: "ok", posted: "ok",
-  open: "info", provisioning: "info", claimed: "info",
-  pending: "warn", manual_review: "warn", pending_verification: "warn", submitted: "warn", under_review: "warn",
-  queued: "warn", failed_retryable: "warn",
-  overdue: "danger", failed: "danger", rejected: "danger", failed_terminal: "danger",
-  suspended: "muted", stopped: "muted", cancelled: "muted", unknown: "muted",
-};
-
 export function fmtMoney(v: number): string {
   const sign = v < 0 ? "-" : "";
   return sign + "$" + Math.abs(v).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });

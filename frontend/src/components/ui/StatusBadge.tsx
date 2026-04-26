@@ -1,4 +1,4 @@
-import { STATUS_LABEL, STATUS_VARIANT } from "@/mocks/sampleData";
+import { statusLabel, statusVariant } from "@/lib/api/displayLabels";
 
 interface StatusBadgeProps {
   status: string;
@@ -14,8 +14,8 @@ const VARIANT_CLASSES: Record<string, string> = {
 };
 
 export function StatusBadge({ status, dot = false }: StatusBadgeProps) {
-  const variant = STATUS_VARIANT[status] ?? "muted";
-  const label = STATUS_LABEL[status] ?? status;
+  const variant = statusVariant(status);
+  const label = statusLabel(status);
   return (
     <span className={`inline-flex items-center gap-1 px-1.5 py-px text-[11px] font-medium border rounded-sm ${VARIANT_CLASSES[variant]}`}>
       {dot && <span className="w-1.5 h-1.5 rounded-full bg-current" />}
