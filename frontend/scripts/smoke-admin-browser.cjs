@@ -67,7 +67,16 @@ async function main() {
       await expectVisibleText(page, "TUP-51001");
       await expectVisibleText(page, "WAL-60001");
       await expectVisibleText(page, "ACC-10002");
-      await expectVisibleText(page, "under_review");
+      await page.getByRole("cell", { name: "Under review", exact: true }).waitFor({ timeout: 10_000 });
+      await page.getByLabel("Status", { exact: true }).selectOption("under_review");
+      const filteredTopup = page.waitForResponse((response) => {
+        const url = new URL(response.url());
+        return url.pathname === "/backend/admin/topup-requests"
+          && url.searchParams.get("status") === "under_review";
+      });
+      await page.getByRole("button", { name: "Apply" }).click();
+      await filteredTopup;
+      await expectVisibleText(page, "Live top-up filters applied.");
       await assertNoVisibleText(page, ["topup-uuid-1", "wallet-1", "buyer-1", "tenant-uuid-1"], "top-up public ID labels");
       await assertNoForbiddenText(page, "topups");
 
