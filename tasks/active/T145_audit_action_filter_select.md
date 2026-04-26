@@ -1,6 +1,6 @@
 # T145 - Audit action filter select
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t145-audit-action-filter-select
 PR: https://github.com/Chinsusu/Billing-V2/pull/321
@@ -37,3 +37,4 @@ Replace the audit action free-text filter with a plain dropdown and show readabl
 - 2026-04-26: Added audit action dropdown options, readable action labels, and smoke coverage for the submitted action value.
 - 2026-04-26: Validation passed: frontend lint, sensitive-text check, build, admin browser smoke, taskguard, and diff check.
 - 2026-04-26: Opened PR https://github.com/Chinsusu/Billing-V2/pull/321 for review.
+- 2026-04-26: PR https://github.com/Chinsusu/Billing-V2/pull/321 merged into main; marking task done.
