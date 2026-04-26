@@ -48,6 +48,33 @@ const TARGET_TYPE_OPTIONS = [
   { value: "topup_request", label: "Top-up" },
 ];
 
+const AUDIT_ACTION_LABELS: Record<string, string> = {
+  "auth.login.new_ip": "New login location",
+  "catalog.price.updated": "Catalog price changed",
+  "db.migration.applied": "Database update applied",
+  "invoice.auto_charged": "Invoice charged",
+  "invoice.charge.failed": "Payment failed",
+  "job.cancel": "Cancel job",
+  "job.manual_review": "Manual review",
+  "job.retry": "Retry job",
+  "product.price.updated": "Product price changed",
+  "provider.health.degraded": "Provider health degraded",
+  "provider.node.high_memory": "Provider memory high",
+  "provisioning.job.stuck": "Job needs review",
+  "service.provisioned": "Service provisioned",
+  "service.renewed": "Service renewed",
+  "tenant.topup.approved": "Top-up approved",
+  "tenant.wallet.low_balance": "Low wallet balance",
+  "ticket.opened": "Ticket opened",
+  "wallet.topup.approved": "Wallet credited",
+  "wallet.topup.submitted": "Top-up submitted",
+};
+
+const ACTION_OPTIONS = [
+  { value: "", label: "All actions" },
+  ...Object.entries(AUDIT_ACTION_LABELS).map(([value, label]) => ({ value, label })),
+];
+
 const MOCK_TARGET_PREFIXES: Record<string, string> = {
   invoice: "inv-",
   order: "ord-",
@@ -61,6 +88,16 @@ function matchesMockTargetType(target: string, targetType: string) {
   if (!targetType) return true;
   const prefix = MOCK_TARGET_PREFIXES[targetType];
   return includesFilter(target, targetType) || (prefix ? target.toLowerCase().includes(prefix) : false);
+}
+
+function auditActionLabel(action: string) {
+  const knownLabel = AUDIT_ACTION_LABELS[action];
+  if (knownLabel) return knownLabel;
+  return action
+    .split(/[._-]/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 }
 
 function filterMockLogs(filters: AuditLogFilters) {
@@ -138,11 +175,11 @@ export function AdminLogs() {
             placeholder="10001"
             inputMode="numeric"
           />
-          <AdminFilterInput
+          <AdminFilterSelect
             label="Action"
             value={draftFilters.action}
             onChange={(event) => updateFilter("action", event.target.value)}
-            placeholder="invoice.paid"
+            options={ACTION_OPTIONS}
           />
           <AdminFilterSelect
             label="Target"
@@ -185,7 +222,7 @@ export function AdminLogs() {
                     </span>
                     <span className="text-gray-600">{log.actorName}</span>
                   </td>
-                  <td className="p-4 p-4 text-[11px] text-gray-700">{log.action}</td>
+                  <td className="p-4 p-4 text-[11px] text-gray-700">{auditActionLabel(log.action)}</td>
                   <td className="p-4 p-4 text-[11px] text-[#D50C2D]">{log.target}</td>
                   <td className="p-4 p-4 text-gray-500 max-w-[260px] truncate">{log.detail}</td>
                   <td className="p-4 p-4 text-[11px] text-gray-300">{log.requestId}</td>
