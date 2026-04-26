@@ -1,6 +1,6 @@
 # T156 - Humanize security audit cycle labels
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t156-humanize-security-audit-cycle-labels
 PR: https://github.com/Chinsusu/Billing-V2/pull/343
@@ -35,3 +35,4 @@ Show readable security, audit action, actor, and billing cycle labels instead of
 - 2026-04-26: Added shared display helpers for audit actions, account actors, security status, and billing cycles; applied them to admin logs, reports, recovery audit, account rows, and reseller catalog.
 - 2026-04-26: Validation passed: frontend lint, sensitive-text check, production build, admin browser smoke, taskguard, and diff check.
 - 2026-04-26: Opened review PR https://github.com/Chinsusu/Billing-V2/pull/343.
+- 2026-04-26: Merged PR https://github.com/Chinsusu/Billing-V2/pull/343 into main; marking task done.
