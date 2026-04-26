@@ -409,7 +409,7 @@ export const CLIENT_LEDGER: LedgerEntry[] = [
 ];
 
 export const PLATFORM_ALERTS = [
-  { text: "3 provisioning jobs in manual_review > 1h", type: "danger" as const, screen: "admin-provisioning" },
+  { text: "3 provisioning jobs in manual review > 1h", type: "danger" as const, screen: "admin-provisioning" },
   { text: "2 reseller tenants below wallet threshold", type: "warn" as const, screen: "admin-topups" },
   { text: "OVH API degraded — 2.8% fail rate", type: "warn" as const, screen: "admin-providers" },
 ];
@@ -429,7 +429,7 @@ export interface PlatformAlert {
 }
 
 export const ALERTS: PlatformAlert[] = [
-  { id: "ALT-001", severity: "danger", category: "provisioning", title: "3 jobs stuck in manual_review > 1h", detail: "Jobs JOB-3301, JOB-3298, JOB-3291 have not progressed. Provider timeout on OVH.", screen: "admin-provisioning", ts: "2026-04-22 14:05", resolved: false },
+  { id: "ALT-001", severity: "danger", category: "provisioning", title: "3 jobs stuck in manual review > 1h", detail: "Jobs JOB-3301, JOB-3298, JOB-3291 have not progressed. Provider timeout on OVH.", screen: "admin-provisioning", ts: "2026-04-22 14:05", resolved: false },
   { id: "ALT-002", severity: "danger", category: "billing",      title: "Charge failed: Kenji Watanabe", detail: "Visa •• 0914 declined. Invoice INV-8821 overdue $82.00. Auto-suspend in 24h.", screen: "admin-invoices", ts: "2026-04-22 12:32", resolved: false },
   { id: "ALT-003", severity: "warn",   category: "provider",     title: "OVH API degraded — 2.8% fail rate", detail: "Error rate above threshold over last 30 min. Provisioning continues but monitored.", screen: "admin-providers", ts: "2026-04-22 11:50", resolved: false },
   { id: "ALT-004", severity: "warn",   category: "billing",      title: "2 reseller tenants below wallet threshold", detail: "DataMine Inc. ($41.20) and Proxy Garden ($18.80) are below $50 floor.", screen: "admin-tenants", ts: "2026-04-22 10:15", resolved: false },
