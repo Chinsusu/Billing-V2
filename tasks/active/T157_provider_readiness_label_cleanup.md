@@ -1,9 +1,9 @@
 # T157 - Provider readiness label cleanup
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t157-provider-readiness-labels
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/345
 Risk: frontend
 Created: 2026-04-26
 Updated: 2026-04-26
@@ -33,3 +33,4 @@ Show readable product and provider source labels in the admin provider readiness
 - 2026-04-26: Codex created and claimed the task after T156 was marked done; starting provider readiness label cleanup.
 - 2026-04-26: Applied shared display helpers to readiness product/source badges and added browser smoke coverage for the readable product label.
 - 2026-04-26: Validation passed: frontend lint, sensitive-text check, production build, admin browser smoke, and taskguard.
+- 2026-04-26: Opened review PR https://github.com/Chinsusu/Billing-V2/pull/345.
