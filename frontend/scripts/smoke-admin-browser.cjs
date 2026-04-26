@@ -53,8 +53,9 @@ async function main() {
       await expectVisibleText(page, "Live provisioning filters applied.");
       await page.getByRole("button", { name: "JOB-3301" }).click();
       await expectVisibleText(page, "SOURCE READINESS");
-      await expectVisibleText(page, "PLAN-10000 / vps-cx23-40gb-monthly / SRC-10001");
-      await assertNoVisibleText(page, ["job-uuid-1", "order-uuid-1", "source-ready", "tenant-uuid-1"], "provisioning public ID labels");
+      await expectVisibleText(page, "PLAN-10000 / CX23 VPS 40GB / SRC-10001");
+      await expectVisibleText(page, "Provider timeout");
+      await assertNoVisibleText(page, ["job-uuid-1", "order-uuid-1", "source-ready", "tenant-uuid-1", "vps-cx23-40gb-monthly", "PROVIDER_TIMEOUT", "worker-a"], "provisioning public ID labels");
       await assertNoForbiddenText(page, "provisioning");
 
       await openAdminScreen(page, /Providers \/ Sources/i);

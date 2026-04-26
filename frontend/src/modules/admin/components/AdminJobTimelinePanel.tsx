@@ -2,6 +2,7 @@
 
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
+import { technicalCodeLabel } from "@/lib/api/displayLabels";
 import { compactDateTime, recordLabel } from "@/lib/api/format";
 import type { ProvisioningJobAttempt } from "@/lib/api/jobTypes";
 import type { ProviderReadiness, ProvisioningJob } from "@/lib/api/types";
@@ -131,7 +132,7 @@ function SourceReadinessHint({
       </div>
       <p className="m-0 mt-2 text-gray-700">{readiness.reason}</p>
       <p className="m-0 mt-2 text-[11px] text-gray-400">
-        {recordLabel(readiness.plan_display_id, "PLAN-")} / {readiness.plan_code} / {readiness.source_display_id ? recordLabel(readiness.source_display_id, "SRC-") : "No source"}
+        {recordLabel(readiness.plan_display_id, "PLAN-")} / {planReadinessLabel(readiness)} / {readiness.source_display_id ? recordLabel(readiness.source_display_id, "SRC-") : "No source"}
       </p>
     </div>
   );
@@ -177,14 +178,14 @@ function AttemptTimeline({
             <span className="text-[11px] text-gray-400">#{attempt.attempt_number}</span>
           </div>
           <div className="mt-1 grid grid-cols-2 gap-x-3 gap-y-1 text-[11px] text-gray-500">
-            <span>Worker {attempt.worker_id || "-"}</span>
+            <span>{workerLabel(attempt.worker_id)}</span>
             <span>{durationLabel(attempt.duration_ms)}</span>
             <span>{compactDateTime(attempt.started_at)}</span>
             <span>{compactDateTime(attempt.finished_at)}</span>
           </div>
           {(attempt.error_code || attempt.error_message_redacted) && (
             <p className="m-0 mt-2 text-[11px] text-red-600">
-              {[attempt.error_code, attempt.error_message_redacted].filter(Boolean).join(" / ")}
+              {attemptErrorLabel(attempt)}
             </p>
           )}
         </li>
@@ -194,11 +195,28 @@ function AttemptTimeline({
 }
 
 function latestJobIssue(job: ProvisioningJob): string {
-  return job.last_error_message_redacted || job.last_error_code || "-";
+  return job.last_error_message_redacted || technicalCodeLabel(job.last_error_code) || "-";
 }
 
 function durationLabel(value?: number): string {
   if (value === undefined || value === null) return "-";
   if (value < 1000) return `${value}ms`;
   return `${(value / 1000).toFixed(1)}s`;
+}
+
+function planReadinessLabel(readiness: ProviderReadiness): string {
+  return readiness.plan_name || technicalCodeLabel(readiness.plan_code);
+}
+
+function workerLabel(workerID?: string): string {
+  if (!workerID) return "Worker not assigned";
+  return `Worker ${technicalCodeLabel(workerID)}`;
+}
+
+function attemptErrorLabel(attempt: ProvisioningJobAttempt): string {
+  const codeLabel = technicalCodeLabel(attempt.error_code);
+  if (codeLabel && attempt.error_message_redacted) {
+    return `${codeLabel}: ${attempt.error_message_redacted}`;
+  }
+  return attempt.error_message_redacted || codeLabel || "-";
 }

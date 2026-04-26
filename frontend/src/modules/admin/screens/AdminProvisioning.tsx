@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
+import { technicalCodeLabel } from "@/lib/api/displayLabels";
 import { canCancelJob, canMarkJobManualReview, canRetryJob, jobStatusLabel } from "@/lib/api/fulfillment";
 import { compactDateTime, recordLabel } from "@/lib/api/format";
 import type { CatalogProviderSource, JobQuery, Order, ProviderReadiness, ProvisioningJob, ServiceInstance } from "@/lib/api/types";
@@ -298,7 +299,7 @@ function liveProvisioningRows(
     const provider = job.source_id ? providersByID.get(job.source_id) : undefined;
     const sourceDisplayID = provider?.display_id ?? job.source_display_id;
     const providerReadiness = readinessForJobSource(readinessRows, sourceDisplayID, order);
-    const error = job.manual_review_reason || job.last_error_message_redacted || job.last_error_code || "-";
+    const error = job.manual_review_reason || job.last_error_message_redacted || technicalCodeLabel(job.last_error_code) || "-";
     return {
       id: recordLabel(job.display_id, "JOB-"),
       apiId: job.id,

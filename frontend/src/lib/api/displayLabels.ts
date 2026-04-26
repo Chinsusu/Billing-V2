@@ -193,6 +193,12 @@ export function ticketPriorityLabel(priority: string): string {
   return labelFromKey(priority, TICKET_PRIORITY_LABELS);
 }
 
+export function technicalCodeLabel(value?: string): string {
+  const normalized = value?.trim();
+  if (!normalized) return "";
+  return labelFromKey(normalized.toLowerCase());
+}
+
 function labelFromKey(value: string, knownLabels: Record<string, string> = {}): string {
   const normalized = value.trim();
   if (!normalized) return "-";

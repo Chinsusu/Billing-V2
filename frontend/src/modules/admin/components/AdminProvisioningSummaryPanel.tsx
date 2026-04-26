@@ -1,6 +1,7 @@
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { technicalCodeLabel } from "@/lib/api/displayLabels";
 import { compactDateTime, recordLabel } from "@/lib/api/format";
-import type { JobSummary } from "@/lib/api/jobTypes";
+import type { JobSummary, JobSummaryFailure } from "@/lib/api/jobTypes";
 
 interface AdminProvisioningSummaryPanelProps {
   summary: JobSummary | null;
@@ -51,9 +52,7 @@ export function AdminProvisioningSummaryPanel({ summary, loading, error }: Admin
       {summary?.latest_failure && (
         <div className="border-t border-gray-100 px-4 py-3 text-[12px] text-gray-500">
           <span className="font-medium text-gray-700">Latest issue: </span>
-          {[summary.latest_failure.last_error_code, summary.latest_failure.last_error_message_redacted, summary.latest_failure.manual_review_reason]
-            .filter(Boolean)
-            .join(" / ") || "No redacted failure detail."}
+          {latestFailureIssue(summary.latest_failure)}
         </div>
       )}
     </section>
@@ -112,4 +111,13 @@ function ageLabel(seconds: number): string {
   const hours = Math.floor(minutes / 60);
   const restMinutes = minutes % 60;
   return restMinutes > 0 ? `${hours}h ${restMinutes}m` : `${hours}h`;
+}
+
+function latestFailureIssue(failure: JobSummaryFailure): string {
+  const values = [
+    technicalCodeLabel(failure.last_error_code),
+    failure.last_error_message_redacted,
+    failure.manual_review_reason,
+  ].filter(Boolean);
+  return values.join(" / ") || "No redacted failure detail.";
 }
