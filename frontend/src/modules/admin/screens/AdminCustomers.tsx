@@ -9,7 +9,7 @@ import { mapAdminAccountView } from "@/lib/api/viewModels";
 import { CUSTOMERS } from "@/mocks/billingData";
 import { fmtMoneyShort } from "@/mocks/sampleData";
 import { AdminFilterBar, AdminFilterInput, AdminFilterSelect } from "../components/AdminFilterBar";
-import { ACCOUNT_STATUS_OPTIONS } from "../lib/filterOptions";
+import { ACCOUNT_STATUS_OPTIONS, ACCOUNT_TYPE_OPTIONS } from "../lib/filterOptions";
 import { equalsFilter, hasActiveFilters, includesFilter, trimStringFilters } from "../lib/filterUtils";
 
 interface CustomerRow {
@@ -124,11 +124,11 @@ export function AdminCustomers() {
             onChange={(event) => updateFilter("email", event.target.value)}
             placeholder="buyer@example.com"
           />
-          <AdminFilterInput
+          <AdminFilterSelect
             label="Type"
             value={draftFilters.type}
             onChange={(event) => updateFilter("type", event.target.value)}
-            placeholder="client, reseller"
+            options={ACCOUNT_TYPE_OPTIONS}
           />
           <AdminFilterSelect
             label="Status"

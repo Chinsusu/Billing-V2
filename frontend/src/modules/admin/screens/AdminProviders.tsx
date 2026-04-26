@@ -9,7 +9,7 @@ import { mapAdminProviderSourceView } from "@/lib/api/viewModels";
 import { PROVIDERS } from "@/mocks/billingData";
 import { AdminFilterBar, AdminFilterInput, AdminFilterSelect } from "../components/AdminFilterBar";
 import { AdminProviderReadinessPanel } from "../components/AdminProviderReadinessPanel";
-import { PROVIDER_STATUS_OPTIONS } from "../lib/filterOptions";
+import { PROVIDER_SOURCE_TYPE_OPTIONS, PROVIDER_STATUS_OPTIONS } from "../lib/filterOptions";
 import { equalsFilter, hasActiveFilters, includesFilter, trimStringFilters } from "../lib/filterUtils";
 
 interface ProviderRow {
@@ -117,11 +117,11 @@ export function AdminProviders() {
             placeholder="23001"
             inputMode="numeric"
           />
-          <AdminFilterInput
+          <AdminFilterSelect
             label="Source type"
             value={draftFilters.source_type}
             onChange={(event) => updateFilter("source_type", event.target.value)}
-            placeholder="hetzner, manual"
+            options={PROVIDER_SOURCE_TYPE_OPTIONS}
           />
           <AdminFilterSelect
             label="Status"

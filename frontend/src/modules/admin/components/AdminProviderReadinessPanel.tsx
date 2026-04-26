@@ -5,7 +5,7 @@ import type { AdminProviderReadinessQuery, ProviderReadiness } from "@/lib/api/t
 import { useApiResource } from "@/lib/api/useApiResource";
 import { AdminFilterBar, AdminFilterInput, AdminFilterSelect } from "./AdminFilterBar";
 import { ProviderReadinessStateBadge } from "./ProviderReadinessStateBadge";
-import { PROVIDER_STATUS_OPTIONS } from "../lib/filterOptions";
+import { PRODUCT_TYPE_OPTIONS, PROVIDER_STATUS_OPTIONS } from "../lib/filterOptions";
 import { equalsFilter, hasActiveFilters, includesFilter, trimStringFilters } from "../lib/filterUtils";
 
 const DEMO_READINESS: ProviderReadiness[] = [
@@ -139,11 +139,11 @@ export function AdminProviderReadinessPanel() {
           placeholder="23001"
           inputMode="numeric"
         />
-        <AdminFilterInput
+        <AdminFilterSelect
           label="Product"
           value={draftFilters.product_type}
           onChange={(event) => updateFilter("product_type", event.target.value)}
-          placeholder="vps, proxy"
+          options={PRODUCT_TYPE_OPTIONS}
         />
         <AdminFilterSelect
           label="Status"

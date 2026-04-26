@@ -9,7 +9,7 @@ import { useApiResource } from "@/lib/api/useApiResource";
 import { TENANTS } from "@/mocks/billingData";
 import { AdminFilterBar, AdminFilterInput, AdminFilterSelect } from "../components/AdminFilterBar";
 import { equalsFilter, hasActiveFilters, includesFilter, trimStringFilters } from "../lib/filterUtils";
-import { ACCOUNT_STATUS_OPTIONS } from "../lib/filterOptions";
+import { ACCOUNT_STATUS_OPTIONS, TENANT_TYPE_OPTIONS } from "../lib/filterOptions";
 
 interface TenantRow {
   id: string;
@@ -122,11 +122,11 @@ export function AdminTenants() {
             placeholder="10010"
             inputMode="numeric"
           />
-          <AdminFilterInput
+          <AdminFilterSelect
             label="Type"
             value={draftFilters.type}
             onChange={(event) => updateFilter("type", event.target.value)}
-            placeholder="admin, reseller"
+            options={TENANT_TYPE_OPTIONS}
           />
           <AdminFilterSelect
             label="Status"
