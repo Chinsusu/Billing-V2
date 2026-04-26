@@ -1,5 +1,11 @@
 import { compactDateTime, moneyMinor, recordLabel } from "./format";
-import { accountTypeLabel, inventoryModeLabel, providerSourceTypeLabel, riskLevelLabel } from "./displayLabels";
+import {
+  accountTypeLabel,
+  inventoryModeLabel,
+  providerSourceTypeLabel,
+  riskLevelLabel,
+  securityStatusLabel,
+} from "./displayLabels";
 import { paymentMethodLabel, paymentTransactionTypeLabel } from "./paymentViewModels";
 import type {
   AdminAccount,
@@ -72,7 +78,7 @@ export function mapAdminAccountView(account: AdminAccount): AdminAccountView {
     email: account.email,
     type: accountTypeLabel(account.user_type),
     tenant: account.tenant_name || account.tenant_slug,
-    security: account.two_factor_status,
+    security: securityStatusLabel(account.two_factor_status),
     status: account.status,
     created: compactDateTime(account.created_at),
     lastLogin: compactDateTime(account.last_login_at),

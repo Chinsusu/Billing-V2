@@ -1,4 +1,5 @@
 import { billingApi } from "@/lib/api/billing";
+import { accountTypeLabel, auditActionLabel } from "@/lib/api/displayLabels";
 import type { ProvisioningJob } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { mapAdminAuditLogView, type AdminAuditLogView } from "@/lib/api/viewModels";
@@ -8,12 +9,6 @@ interface AdminJobRecoveryAuditPanelProps {
 }
 
 const RECOVERY_ACTIONS = new Set(["job.retry", "job.manual_review", "job.cancel"]);
-
-const ACTION_LABEL: Record<string, string> = {
-  "job.retry": "Retry",
-  "job.manual_review": "Manual review",
-  "job.cancel": "Cancel",
-};
 
 const ACTION_STYLE: Record<string, string> = {
   "job.retry": "bg-emerald-50 text-emerald-700",
@@ -76,10 +71,10 @@ function RecoveryAuditContent({
         <li key={log.id} className="rounded border border-gray-100 bg-gray-50 p-3">
           <div className="flex flex-wrap items-center gap-2">
             <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${ACTION_STYLE[log.action] ?? "bg-gray-100 text-gray-500"}`}>
-              {ACTION_LABEL[log.action] ?? log.action}
+              {auditActionLabel(log.action)}
             </span>
             <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${actorStyle(log.actor)}`}>
-              {log.actor}
+              {accountTypeLabel(log.actor)}
             </span>
             <span className="text-[11px] text-gray-500">{log.actorName}</span>
           </div>

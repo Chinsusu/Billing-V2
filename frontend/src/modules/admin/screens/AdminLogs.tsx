@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { AUDIT_LOGS, AuditLog } from "@/mocks/billingData";
 import { billingApi } from "@/lib/api/billing";
+import { AUDIT_ACTION_OPTIONS, accountTypeLabel, auditActionLabel } from "@/lib/api/displayLabels";
 import { AdminAuditLogQuery } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { mapAdminAuditLogView, type AdminAuditActorBadge, type AdminAuditLogView } from "@/lib/api/viewModels";
@@ -48,33 +49,6 @@ const TARGET_TYPE_OPTIONS = [
   { value: "topup_request", label: "Top-up" },
 ];
 
-const AUDIT_ACTION_LABELS: Record<string, string> = {
-  "auth.login.new_ip": "New login location",
-  "catalog.price.updated": "Catalog price changed",
-  "db.migration.applied": "Database update applied",
-  "invoice.auto_charged": "Invoice charged",
-  "invoice.charge.failed": "Payment failed",
-  "job.cancel": "Cancel job",
-  "job.manual_review": "Manual review",
-  "job.retry": "Retry job",
-  "product.price.updated": "Product price changed",
-  "provider.health.degraded": "Provider health degraded",
-  "provider.node.high_memory": "Provider memory high",
-  "provisioning.job.stuck": "Job needs review",
-  "service.provisioned": "Service provisioned",
-  "service.renewed": "Service renewed",
-  "tenant.topup.approved": "Top-up approved",
-  "tenant.wallet.low_balance": "Low wallet balance",
-  "ticket.opened": "Ticket opened",
-  "wallet.topup.approved": "Wallet credited",
-  "wallet.topup.submitted": "Top-up submitted",
-};
-
-const ACTION_OPTIONS = [
-  { value: "", label: "All actions" },
-  ...Object.entries(AUDIT_ACTION_LABELS).map(([value, label]) => ({ value, label })),
-];
-
 const MOCK_TARGET_PREFIXES: Record<string, string> = {
   invoice: "inv-",
   order: "ord-",
@@ -88,16 +62,6 @@ function matchesMockTargetType(target: string, targetType: string) {
   if (!targetType) return true;
   const prefix = MOCK_TARGET_PREFIXES[targetType];
   return includesFilter(target, targetType) || (prefix ? target.toLowerCase().includes(prefix) : false);
-}
-
-function auditActionLabel(action: string) {
-  const knownLabel = AUDIT_ACTION_LABELS[action];
-  if (knownLabel) return knownLabel;
-  return action
-    .split(/[._-]/)
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
 }
 
 function filterMockLogs(filters: AuditLogFilters) {
@@ -179,7 +143,7 @@ export function AdminLogs() {
             label="Action"
             value={draftFilters.action}
             onChange={(event) => updateFilter("action", event.target.value)}
-            options={ACTION_OPTIONS}
+            options={AUDIT_ACTION_OPTIONS}
           />
           <AdminFilterSelect
             label="Target"
@@ -218,7 +182,7 @@ export function AdminLogs() {
                   </td>
                   <td className="p-4 p-4 whitespace-nowrap">
                     <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded mr-1 ${ACTOR_STYLE[log.actor]}`}>
-                      {log.actor}
+                      {accountTypeLabel(log.actor)}
                     </span>
                     <span className="text-gray-600">{log.actorName}</span>
                   </td>
