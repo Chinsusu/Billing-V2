@@ -58,6 +58,7 @@ async function main() {
       await expectVisibleText(page, "Worker A");
       await assertNoVisibleText(page, ["job-uuid-1", "order-uuid-1", "source-ready", "tenant-uuid-1", "vps-cx23-40gb-monthly", "PROVIDER_TIMEOUT", "worker-a"], "provisioning public ID labels");
       await assertNoForbiddenText(page, "provisioning");
+      await smokeProvisioningFallback(browser);
 
       await openAdminScreen(page, /Providers \/ Sources/i);
       await expectVisibleText(page, "Provider readiness");
@@ -321,12 +322,19 @@ function parseArgs(argv) {
   return parsed;
 }
 
-async function installApiMocks(page) {
+async function installApiMocks(page, options = {}) {
   await page.route("**/backend/**", (route) => {
     const request = route.request();
     const url = new URL(request.url());
     const pathname = url.pathname;
     const query = url.searchParams;
+    if (options.failPaths?.has(pathname)) {
+      return route.fulfill({
+        status: 503,
+        contentType: "application/json",
+        body: JSON.stringify({ error: { message: "Smoke fallback failure" } }),
+      });
+    }
     if (request.method() !== "GET") {
       return json(route, []);
     }
@@ -459,6 +467,24 @@ function json(route, data) {
 async function openAdminScreen(page, name) {
   await page.getByRole("button", { name }).click();
   await page.waitForTimeout(500);
+}
+
+async function smokeProvisioningFallback(browser) {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  try {
+    await installApiMocks(page, { failPaths: new Set(["/backend/admin/jobs"]) });
+    await page.goto(baseURL, { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(800);
+    await openAdminScreen(page, /Provisioning queue/i);
+    await expectVisibleText(page, "Live job API unavailable. Showing demo queue data");
+    await expectVisibleText(page, "Provider Timeout: Resource State Unknown");
+    await expectVisibleText(page, "Auth Failed");
+    await expectVisibleText(page, "Partial Success: External ID Unknown");
+    await assertNoVisibleText(page, ["provider_timeout", "auth_failed", "partial_success", "external_id", "proxy-cheap", "cor_"], "provisioning demo fallback labels");
+    await assertNoForbiddenText(page, "provisioning demo fallback");
+  } finally {
+    await page.close();
+  }
 }
 
 async function expectVisibleText(page, text) {
