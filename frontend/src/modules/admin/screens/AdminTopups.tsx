@@ -6,6 +6,7 @@ import { billingApi } from "@/lib/api/billing";
 import type { TopupRequestQuery } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { mapAdminTopupView } from "@/lib/api/viewModels";
+import { paymentMethodLabel } from "@/lib/api/walletViewModels";
 import { TOPUP_REQUESTS } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
 import { AdminFilterBar, AdminFilterInput, AdminFilterSelect } from "../components/AdminFilterBar";
@@ -98,7 +99,7 @@ export function AdminTopups() {
         tenant: req.tenant,
         actor: req.actor,
         amount: fmtMoney(req.amount),
-        method: req.method,
+        method: paymentMethodLabel(req.method),
         ref: req.ref,
         created: req.created,
         proof: req.proof ? "Ref provided" : "No ref",

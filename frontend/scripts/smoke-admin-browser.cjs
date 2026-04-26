@@ -93,6 +93,7 @@ async function main() {
       await expectVisibleText(page, "TUP-51001");
       await expectVisibleText(page, "WAL-60001");
       await expectVisibleText(page, "ACC-10002");
+      await page.getByRole("cell", { name: "Bank transfer", exact: true }).waitFor({ timeout: 10_000 });
       await page.getByRole("cell", { name: "Under review", exact: true }).waitFor({ timeout: 10_000 });
       await page.getByLabel("Status", { exact: true }).selectOption("under_review");
       const filteredTopup = page.waitForResponse((response) => {

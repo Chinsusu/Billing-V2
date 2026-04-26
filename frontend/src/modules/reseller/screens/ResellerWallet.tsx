@@ -4,7 +4,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
-import { walletLedgerEntryTypeLabel, walletLedgerReferenceLabel } from "@/lib/api/walletViewModels";
+import { paymentMethodLabel, walletLedgerEntryTypeLabel, walletLedgerReferenceLabel } from "@/lib/api/walletViewModels";
 import { TOPUP_REQUESTS } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
 
@@ -55,7 +55,7 @@ export function ResellerWallet() {
         id: recordLabel(request.display_id, "TUP-"),
         amount: moneyMinor(request.amount_minor, request.currency),
         amountMinor: request.amount_minor,
-        method: request.payment_method,
+        method: paymentMethodLabel(request.payment_method),
         created: compactDateTime(request.created_at),
         status: request.status,
       }))
@@ -63,7 +63,7 @@ export function ResellerWallet() {
         id: request.id,
         amount: fmtMoney(request.amount),
         amountMinor: Math.round(request.amount * 100),
-        method: request.method,
+        method: paymentMethodLabel(request.method),
         created: request.created,
         status: request.status,
       }));
