@@ -1,9 +1,9 @@
 # T168 - Overview activity labels
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t168-overview-activity-labels
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/367
 Risk: frontend fallback display
 Created: 2026-04-26
 Updated: 2026-04-26
@@ -30,3 +30,4 @@ Clean up demo Overview activity feed copy so the first admin screen does not sho
 ## Agent Log
 
 - 2026-04-26: Task created and claimed by Codex.
+- 2026-04-26: Opened PR #367 after lint, sensitive-text guard, build, admin smoke, taskguard, and diff check passed.
