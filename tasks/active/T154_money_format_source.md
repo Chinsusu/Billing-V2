@@ -1,6 +1,6 @@
 # T154 - Move money format helpers out of mocks
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t154-money-format-source
 PR: https://github.com/Chinsusu/Billing-V2/pull/339
@@ -35,3 +35,4 @@ Make money formatting helpers production utilities instead of mock data exports.
 - 2026-04-26: Moved money format helpers into the production format module and updated frontend screen imports away from mock sample data.
 - 2026-04-26: Validation passed: frontend lint, sensitive-text check, production build, admin browser smoke, taskguard, and diff check.
 - 2026-04-26: Opened review PR https://github.com/Chinsusu/Billing-V2/pull/339.
+- 2026-04-26: Merged PR https://github.com/Chinsusu/Billing-V2/pull/339 into main; marking task done.
