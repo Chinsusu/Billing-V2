@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` after T169 was merged:
+Current board snapshot on `2026-04-26` while T170 is in review:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 166
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | No task files are currently in progress or review. |
+| T170 | [tasks/active/T170_service_fallback_smoke.md](tasks/active/T170_service_fallback_smoke.md) | REVIEW | Codex | codex/t170-service-fallback-smoke | Cover admin service fallback labels in smoke. |
 
 ## Done Task Files
 

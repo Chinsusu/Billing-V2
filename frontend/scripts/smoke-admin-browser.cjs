@@ -105,6 +105,7 @@ async function main() {
       await expectVisibleText(page, "SRC-10001");
       await assertNoVisibleText(page, ["service-uuid-1", "order-uuid-1", "buyer-1", "source-ready", "tenant-uuid-1"], "service public ID labels");
       await assertNoForbiddenText(page, "services");
+      await smokeAdminServiceFallback(browser);
 
       await openAdminScreen(page, /Top-up verification/i);
       await expectVisibleText(page, "Live top-up queue");
@@ -549,6 +550,23 @@ async function smokeAuditFallback(browser) {
     await expectVisibleText(page, "manual review threshold exceeded");
     await assertNoVisibleText(page, ["prov-worker", "billing-worker", "health-worker", "manual_review", "0003_rbac", "vps-scrape-02"], "audit demo fallback labels");
     await assertNoForbiddenText(page, "audit demo fallback");
+  } finally {
+    await page.close();
+  }
+}
+
+async function smokeAdminServiceFallback(browser) {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  try {
+    await installApiMocks(page, { failPaths: new Set(["/backend/admin/services"]) });
+    await page.goto(baseURL, { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(800);
+    await openAdminScreen(page, /VPS/i);
+    await expectVisibleText(page, "Live API unavailable. Showing demo VPS data.");
+    await expectVisibleText(page, "Production Linux VPS");
+    await expectVisibleText(page, "API Gateway VPS");
+    await expectVisibleText(page, "Database Replica VPS");
+    await assertNoForbiddenText(page, "admin service demo fallback");
   } finally {
     await page.close();
   }
