@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { billingCycleLabel } from "@/lib/api/displayLabels";
 import { moneyMinor, fmtMoney } from "@/lib/api/format";
@@ -49,6 +50,17 @@ function statusText(catalogStatus: string, masterStatus: string, usingLive: bool
   if (catalogStatus === "error" || masterStatus === "error") return "Live catalog partially unavailable.";
   if (catalogStatus === "loading" || masterStatus === "loading") return "Refreshing live catalog...";
   return usingLive ? "Live catalog" : "Demo catalog data";
+}
+
+function catalogSourceLabel(source: string) {
+  const labels: Record<string, string> = {
+    catalog: "Catalog",
+    low: "Low stock",
+    master: "Master plan",
+    ok: "Available",
+    out: "Out of stock",
+  };
+  return labels[source] ?? source;
 }
 
 function clonePlanBody(plan: CatalogPlan, tenantProductID: string, sellingPriceMinor: number) {
@@ -233,9 +245,9 @@ export function ResellerCatalog() {
                       {item.margin == null ? "-" : `${item.margin < 0 ? "" : "+"}${item.margin}%`}
                     </span>
                   </td>
-                  <td className="p-4 text-gray-500">{item.stock}</td>
+                  <td className="p-4 text-gray-500">{catalogSourceLabel(item.stock)}</td>
                   <td className="p-4">
-                    <span className="text-[11px] px-1.5 py-px rounded-sm bg-green-50 text-green-700 border border-green-200">{item.status}</span>
+                    <StatusBadge status={item.status} dot />
                   </td>
                   <td className="p-4">
                     {item.masterPlan && !item.tenantPlan ? (
