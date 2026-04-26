@@ -5,6 +5,7 @@ import { TRANSACTIONS } from "@/mocks/billingData";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { fmtMoney } from "@/mocks/sampleData";
 import { billingApi } from "@/lib/api/billing";
+import { paymentTransactionTypeLabel } from "@/lib/api/paymentViewModels";
 import { AdminTransactionQuery } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { mapAdminTransactionView } from "@/lib/api/viewModels";
@@ -60,6 +61,7 @@ export function AdminTransactions() {
         order: "Order not shown",
         invoice: "Invoice not shown",
         amount: fmtMoney(tx.amount),
+        type: paymentTransactionTypeLabel(tx.type),
       }));
   const activeFilters = hasActiveFilters(appliedFilters);
   const statusTone = transactions.status === "error"

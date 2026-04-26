@@ -3,8 +3,9 @@
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
+import { paymentMethodLabel } from "@/lib/api/paymentViewModels";
 import { useApiResource } from "@/lib/api/useApiResource";
-import { paymentMethodLabel, walletLedgerEntryTypeLabel, walletLedgerReferenceLabel } from "@/lib/api/walletViewModels";
+import { walletLedgerEntryTypeLabel, walletLedgerReferenceLabel } from "@/lib/api/walletViewModels";
 import { TOPUP_REQUESTS } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
 

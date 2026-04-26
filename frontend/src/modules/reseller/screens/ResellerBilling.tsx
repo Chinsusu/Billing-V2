@@ -4,6 +4,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { fulfillmentForOrder } from "@/lib/api/fulfillment";
 import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
+import { paymentTransactionTypeLabel } from "@/lib/api/paymentViewModels";
 import { resellerAccountLabel } from "@/lib/api/resellerViewModels";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { INVOICES, TRANSACTIONS } from "@/mocks/billingData";
@@ -147,7 +148,7 @@ function ResellerTransactions() {
           customer: resellerAccountLabel(accountDisplayID, customer),
           order: fulfillment.orderLabel,
           method: transaction.description ?? "wallet",
-          type: transaction.type,
+          type: paymentTransactionTypeLabel(transaction.type),
           amount: moneyMinor(transaction.amount_minor, transaction.currency),
           amountMinor: transaction.amount_minor,
           status: transaction.status,
@@ -160,7 +161,7 @@ function ResellerTransactions() {
         customer: transaction.customer,
         order: "-",
         method: transaction.method,
-        type: transaction.type,
+        type: paymentTransactionTypeLabel(transaction.type),
         amount: fmtMoney(transaction.amount),
         amountMinor: Math.round(transaction.amount * 100),
         status: transaction.status,

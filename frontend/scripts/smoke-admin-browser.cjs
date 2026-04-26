@@ -135,6 +135,7 @@ async function main() {
       await expectVisibleText(page, "ACC-10002");
       await expectVisibleText(page, "ORD-42001");
       await expectVisibleText(page, "INV-44001");
+      await page.getByRole("cell", { name: "Charge", exact: true }).waitFor({ timeout: 10_000 });
       await page.getByLabel("Status", { exact: true }).selectOption("posted");
       const filteredTransaction = page.waitForResponse((response) => {
         const url = new URL(response.url());
