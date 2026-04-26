@@ -1,6 +1,6 @@
 # T143 - Audit target labels
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t143-audit-target-labels
 PR: https://github.com/Chinsusu/Billing-V2/pull/317
@@ -34,3 +34,4 @@ Use plain audit target labels in the frontend instead of raw backend target type
 - 2026-04-26: Mapped live audit target types to plain labels and updated admin smoke expectation from `job JOB-*` to `Job JOB-*`.
 - 2026-04-26: Local validation passed: `npm --prefix frontend run lint`, `npm --prefix frontend run check:sensitive-text`, `npm --prefix frontend run build`, `npm --prefix frontend run smoke:admin:ci`, `go run ./cmd/taskguard`, and `git diff --check`.
 - 2026-04-26: Opened PR https://github.com/Chinsusu/Billing-V2/pull/317 for review.
+- 2026-04-26: PR https://github.com/Chinsusu/Billing-V2/pull/317 merged into `main`; marking task done.
