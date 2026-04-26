@@ -7,7 +7,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
-import { walletLedgerEntryTypeLabel, walletLedgerReferenceLabel } from "@/lib/api/walletViewModels";
+import { paymentMethodLabel, walletLedgerEntryTypeLabel, walletLedgerReferenceLabel } from "@/lib/api/walletViewModels";
 import { CLIENT_LEDGER } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
 
@@ -168,7 +168,7 @@ export function ClientWallet() {
                 <tr key={request.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
                   <td className="p-4 text-[#D50C2D] text-[12px]">{recordLabel(request.display_id, "TUP-")}</td>
                   <td className="p-4 tabular-nums font-medium">{moneyMinor(request.amount_minor, request.currency)}</td>
-                  <td className="p-4 text-gray-500">{request.payment_method}</td>
+                  <td className="p-4 text-gray-500">{paymentMethodLabel(request.payment_method)}</td>
                   <td className="p-4 text-gray-400">{compactDateTime(request.created_at)}</td>
                   <td className="p-4"><StatusBadge status={request.status} dot /></td>
                 </tr>

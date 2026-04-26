@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` after T149 was merged:
+Current board snapshot on `2026-04-26` after T150 is ready for review:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 146
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | No task files are currently in progress or review. |
+| T150 | [tasks/active/T150_humanize_payment_method_labels.md](tasks/active/T150_humanize_payment_method_labels.md) | REVIEW | Codex | codex/t150-humanize-payment-method-labels | Show readable payment method labels. |
 
 ## Done Task Files
 

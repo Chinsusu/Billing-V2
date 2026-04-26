@@ -1,4 +1,5 @@
 import { compactDateTime, moneyMinor, recordLabel } from "./format";
+import { paymentMethodLabel } from "./walletViewModels";
 import type {
   AdminAccount,
   AuditLog,
@@ -151,7 +152,7 @@ export function mapAdminTransactionView(
     customer: publicIDLabel(transaction.account_display_id, "ACC-", "Account"),
     order: publicIDLabel(transaction.order_display_id, "ORD-", "Order"),
     invoice: publicIDLabel(transaction.invoice_display_id, "INV-", "Invoice"),
-    method: reconciliation?.provider ?? "wallet",
+    method: paymentMethodLabel(reconciliation?.provider ?? "wallet"),
     type: transaction.type,
     amount: moneyMinor(transaction.amount_minor, transaction.currency),
     status: transaction.status,
@@ -230,7 +231,7 @@ export function mapAdminTopupView(request: TopupRequest): AdminTopupView {
     tenant: publicIDLabel(request.wallet_display_id, "WAL-", "Wallet"),
     actor: publicIDLabel(request.requested_by_display_id, "ACC-", "Requester"),
     amount: moneyMinor(request.amount_minor, request.currency),
-    method: request.payment_method,
+    method: paymentMethodLabel(request.payment_method),
     ref: request.payment_reference ?? "-",
     created: compactDateTime(request.created_at),
     proof: request.payment_reference ? "Ref provided" : "No ref",
