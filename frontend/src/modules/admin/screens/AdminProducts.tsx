@@ -2,6 +2,7 @@
 
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
+import { productTypeLabel } from "@/lib/api/displayLabels";
 import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
 import type { CatalogPlan } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
@@ -53,7 +54,7 @@ export function AdminProducts() {
         return {
           id: recordLabel(product.display_id, "PROD-"),
           name: product.name,
-          type: product.product_type,
+          type: productTypeLabel(product.product_type),
           plans: productPlans.length > 0 ? `${activePlans}/${productPlans.length} active` : "No plans",
           price: lowestSuggestedPrice(productPlans),
           status: product.status,

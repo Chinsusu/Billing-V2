@@ -76,6 +76,9 @@ async function main() {
       });
       await page.locator("form").filter({ has: page.getByLabel("Source type", { exact: true }) }).getByRole("button", { name: "Apply" }).click();
       await filteredProviderSource;
+      await page.getByRole("cell", { name: "Hetzner", exact: true }).waitFor({ timeout: 10_000 });
+      await page.getByRole("cell", { name: "Provider live", exact: true }).waitFor({ timeout: 10_000 });
+      await page.getByRole("cell", { name: "Medium", exact: true }).waitFor({ timeout: 10_000 });
       await expectVisibleText(page, "Live provider source filters applied.");
       await assertNoForbiddenText(page, "providers");
 

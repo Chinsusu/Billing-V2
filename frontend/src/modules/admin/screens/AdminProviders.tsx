@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
+import { providerSourceTypeLabel } from "@/lib/api/displayLabels";
 import type { AdminProviderSourceQuery } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { mapAdminProviderSourceView } from "@/lib/api/viewModels";
@@ -42,7 +43,7 @@ function filterDemoProviders(filters: ProviderFilterFields): ProviderRow[] {
   return PROVIDERS.map((provider) => ({
     id: provider.id,
     name: provider.name,
-    type: provider.type,
+    type: providerSourceTypeLabel(provider.type),
     status: provider.health === "ok" ? "active" : provider.health === "degraded" ? "pending" : "failed",
     location: "-",
     inventory: `${provider.capacity}% capacity`,

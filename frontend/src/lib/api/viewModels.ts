@@ -1,4 +1,5 @@
 import { compactDateTime, moneyMinor, recordLabel } from "./format";
+import { accountTypeLabel, inventoryModeLabel, providerSourceTypeLabel, riskLevelLabel } from "./displayLabels";
 import { paymentMethodLabel, paymentTransactionTypeLabel } from "./paymentViewModels";
 import type {
   AdminAccount,
@@ -69,7 +70,7 @@ export function mapAdminAccountView(account: AdminAccount): AdminAccountView {
     id: adminDisplayLabel(account.display_id, "ACC-"),
     name: account.full_name || account.email,
     email: account.email,
-    type: account.user_type,
+    type: accountTypeLabel(account.user_type),
     tenant: account.tenant_name || account.tenant_slug,
     security: account.two_factor_status,
     status: account.status,
@@ -98,11 +99,11 @@ export function mapAdminProviderSourceView(provider: CatalogProviderSource): Adm
   return {
     id: adminDisplayLabel(provider.display_id, "SRC-"),
     name: provider.name,
-    type: provider.source_type,
+    type: providerSourceTypeLabel(provider.source_type),
     status: provider.status,
     location: provider.location || "-",
-    inventory: provider.inventory_mode,
-    risk: provider.risk_level,
+    inventory: inventoryModeLabel(provider.inventory_mode),
+    risk: riskLevelLabel(provider.risk_level),
     account: hiddenReference("Account"),
     updated: compactDateTime(provider.updated_at),
   };
