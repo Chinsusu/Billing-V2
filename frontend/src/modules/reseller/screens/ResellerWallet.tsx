@@ -2,6 +2,7 @@
 
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
+import { statusLabel } from "@/lib/api/displayLabels";
 import { compactDateTime, moneyMinor, recordLabel, fmtMoney } from "@/lib/api/format";
 import { paymentMethodLabel } from "@/lib/api/paymentViewModels";
 import { useApiResource } from "@/lib/api/useApiResource";
@@ -89,7 +90,7 @@ export function ResellerWallet() {
               {wallet ? moneyMinor(wallet.available_balance_minor, wallet.currency) : "$4,820.50"}
             </div>
             <div className="text-[12px] text-gray-400 mt-1">
-              {wallet ? `${recordLabel(wallet.display_id, "WAL-")} / ${wallet.status}` : "ProxyVN / demo wallet"}
+              {wallet ? `${recordLabel(wallet.display_id, "WAL-")} / ${statusLabel(wallet.status)}` : "ProxyVN / demo wallet"}
             </div>
           </div>
           <span className="text-[11px] text-gray-400 text-right">{source}</span>

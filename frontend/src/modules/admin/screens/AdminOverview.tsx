@@ -5,6 +5,7 @@ import { CreditCard, Headphones, Server, User, Wallet, XCircle } from "lucide-re
 import { KpiCard } from "@/components/ui/KpiCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
+import { statusLabel } from "@/lib/api/displayLabels";
 import { compactDateTime, moneyMinor, fmtMoney } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { adminDisplayLabel, mapAdminInvoiceView } from "@/lib/api/viewModels";
@@ -116,7 +117,7 @@ export function AdminOverview() {
     ? liveTopups.slice(0, 7).map((req) => ({
         t: compactDateTime(req.created_at),
         icon: "wallet",
-        text: `Top-up ${adminDisplayLabel(req.display_id, "TUP-")} ${req.status} (${moneyMinor(req.amount_minor, req.currency)})`,
+        text: `Top-up ${adminDisplayLabel(req.display_id, "TUP-")} ${statusLabel(req.status)} (${moneyMinor(req.amount_minor, req.currency)})`,
         type: topupActivityTone(req.status),
       }))
     : ACTIVITY_FEED;
