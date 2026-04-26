@@ -1,6 +1,6 @@
 # T166 - Demo audit labels
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t166-demo-audit-labels
 PR: https://github.com/Chinsusu/Billing-V2/pull/363
@@ -32,3 +32,4 @@ Clean up audit log demo fallback labels so operators do not see raw worker keys 
 
 - 2026-04-26: Task created and claimed by Codex.
 - 2026-04-26: Opened PR #363 after lint, sensitive-text guard, build, admin smoke, taskguard, and diff check passed.
+- 2026-04-26: PR #363 merged into main.
