@@ -1,6 +1,6 @@
 # T158 - Payment provider label cleanup
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t158-payment-provider-labels
 PR: https://github.com/Chinsusu/Billing-V2/pull/347
@@ -34,3 +34,4 @@ Show readable payment provider and method labels in report and reseller billing 
 - 2026-04-26: Applied payment label helpers to admin reports reconciliation providers and reseller transaction fallback methods; added admin Reports browser smoke coverage.
 - 2026-04-26: Validation passed: frontend lint, sensitive-text check, production build, admin browser smoke, and taskguard.
 - 2026-04-26: Opened review PR https://github.com/Chinsusu/Billing-V2/pull/347.
+- 2026-04-26: Merged PR https://github.com/Chinsusu/Billing-V2/pull/347 into main; marking task done.
