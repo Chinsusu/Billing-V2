@@ -1,6 +1,6 @@
 # T144 - Audit target filter select
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t144-audit-target-filter-select
 PR: https://github.com/Chinsusu/Billing-V2/pull/319
@@ -36,3 +36,4 @@ Replace the audit target type text filter with a plain dropdown.
 - 2026-04-26: Added a reusable admin filter select, changed audit target type to human labels, and updated smoke coverage for the submitted API value.
 - 2026-04-26: Validation passed: frontend lint, sensitive-text check, build, admin browser smoke, taskguard, and diff check.
 - 2026-04-26: Opened PR https://github.com/Chinsusu/Billing-V2/pull/319 for review.
+- 2026-04-26: PR https://github.com/Chinsusu/Billing-V2/pull/319 merged into main; marking task done.
