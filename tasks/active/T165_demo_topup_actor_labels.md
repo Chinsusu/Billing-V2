@@ -1,6 +1,6 @@
 # T165 - Demo top-up actor labels
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t165-demo-topup-actor-labels
 PR: https://github.com/Chinsusu/Billing-V2/pull/361
@@ -31,3 +31,4 @@ Clean up top-up demo fallback requester labels so operators do not see raw walle
 
 - 2026-04-26: Task created and claimed by Codex.
 - 2026-04-26: Opened PR #361 after lint, sensitive-text guard, build, admin smoke, taskguard, and diff check passed.
+- 2026-04-26: PR #361 merged into main.
