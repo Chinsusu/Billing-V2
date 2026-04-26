@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
+import { technicalCodeLabel } from "@/lib/api/displayLabels";
 import { paymentMethodLabel } from "@/lib/api/paymentViewModels";
 import type { TopupRequestQuery } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
@@ -97,7 +98,7 @@ export function AdminTopups() {
         id: req.id,
         live: false,
         tenant: req.tenant,
-        actor: req.actor,
+        actor: technicalCodeLabel(req.actor),
         amount: fmtMoney(req.amount),
         method: paymentMethodLabel(req.method),
         ref: req.ref,

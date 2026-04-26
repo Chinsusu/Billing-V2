@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` after T164 was merged:
+Current board snapshot on `2026-04-26` while T165 is in progress:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 161
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | No task files are currently in progress or review. |
+| T165 | [tasks/active/T165_demo_topup_actor_labels.md](tasks/active/T165_demo_topup_actor_labels.md) | IN_PROGRESS | Codex | codex/t165-demo-topup-actor-labels | Humanize top-up demo fallback actor labels. |
 
 ## Done Task Files
 
