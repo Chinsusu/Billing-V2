@@ -1,4 +1,4 @@
-import { compactDateTime, moneyMinor, recordLabel, shortID } from "./format";
+import { compactDateTime, moneyMinor, recordLabel } from "./format";
 import type {
   AdminAccount,
   AuditLog,
@@ -36,8 +36,8 @@ function auditTargetLabel(log: AuditLog): string {
   return `${log.target_type} ${adminDisplayLabel(log.target_display_id, prefixes[log.target_type] ?? "#")}`;
 }
 
-export function requestLabel(value?: string): string {
-  return shortID(value);
+export function requestLabel(): string {
+  return hiddenReference("Request");
 }
 
 export interface AdminAccountView {
@@ -192,7 +192,7 @@ export function mapAdminAuditLogView(log: AuditLog): AdminAuditLogView {
     action: log.action,
     target: auditTargetLabel(log),
     detail: log.target_display_id ? "Public target linked" : hiddenReference("Target"),
-    requestId: requestLabel(log.correlation_id),
+    requestId: requestLabel(),
   };
 }
 

@@ -86,7 +86,7 @@ function RecoveryAuditContent({
           <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-[11px] text-gray-500">
             <span>{log.id}</span>
             <span>{log.ts}</span>
-            <span>Request {log.requestId}</span>
+            <span>{log.requestId}</span>
             <span>{log.detail}</span>
           </div>
         </li>

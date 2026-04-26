@@ -2,7 +2,7 @@
 
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
-import { compactDateTime, recordLabel, shortID } from "@/lib/api/format";
+import { compactDateTime, recordLabel } from "@/lib/api/format";
 import type { ProvisioningJobAttempt } from "@/lib/api/jobTypes";
 import type { ProviderReadiness, ProvisioningJob } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
@@ -91,7 +91,7 @@ export function AdminJobTimelinePanel({
       <AdminJobRecoveryAuditPanel job={job} />
 
       <div className="border-t border-gray-100 p-4 text-[11px] text-gray-400">
-        Request {shortID(job.correlation_id)}
+        Request not shown
       </div>
     </aside>
   );

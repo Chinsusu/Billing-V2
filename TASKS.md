@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` after T140 is done:
+Current board snapshot on `2026-04-26` while T141 is in review:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 137
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No task files are currently `IN_PROGRESS` or `REVIEW`. |
+| T141 | [tasks/active/T141_hide_request_trace_ids.md](tasks/active/T141_hide_request_trace_ids.md) | REVIEW | Codex | codex/t141-hide-internal-ui-ids | Hide internal request/correlation IDs from frontend audit and job panels. |
 
 ## Done Task Files
 
