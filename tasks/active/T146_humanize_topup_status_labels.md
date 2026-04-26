@@ -1,6 +1,6 @@
 # T146 - Humanize top-up status labels
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t146-humanize-topup-status-labels
 PR: https://github.com/Chinsusu/Billing-V2/pull/323
@@ -36,3 +36,4 @@ Show readable top-up status labels and replace the admin top-up status text filt
 - 2026-04-26: Added readable top-up status labels, changed admin top-up status filter to a dropdown, and updated smoke coverage for the submitted status value.
 - 2026-04-26: Validation passed: frontend lint, sensitive-text check, build, admin browser smoke, taskguard, and diff check.
 - 2026-04-26: Opened PR https://github.com/Chinsusu/Billing-V2/pull/323 for review.
+- 2026-04-26: PR https://github.com/Chinsusu/Billing-V2/pull/323 merged into main; marking task done.
