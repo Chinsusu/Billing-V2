@@ -9,9 +9,10 @@ import type { CatalogProviderSource, JobQuery, Order, ProviderReadiness, Provisi
 import { useApiResource } from "@/lib/api/useApiResource";
 import { hiddenReference, providerSourceLabel } from "@/lib/api/viewModels";
 import { PROVISIONING_JOBS } from "@/mocks/billingData";
-import { AdminFilterBar, AdminFilterInput } from "../components/AdminFilterBar";
+import { AdminFilterBar, AdminFilterInput, AdminFilterSelect } from "../components/AdminFilterBar";
 import { AdminJobTimelinePanel } from "../components/AdminJobTimelinePanel";
 import { AdminProvisioningSummaryPanel } from "../components/AdminProvisioningSummaryPanel";
+import { JOB_STATUS_OPTIONS } from "../lib/filterOptions";
 import { equalsFilter, hasActiveFilters, includesFilter, trimStringFilters } from "../lib/filterUtils";
 
 interface ProvisioningRow {
@@ -203,11 +204,11 @@ export function AdminProvisioning() {
               placeholder="23001"
               inputMode="numeric"
             />
-            <AdminFilterInput
+            <AdminFilterSelect
               label="Status"
               value={draftFilters.status}
               onChange={(event) => updateFilter("status", event.target.value)}
-              placeholder="queued, failed, manual_review"
+              options={JOB_STATUS_OPTIONS}
             />
           </AdminFilterBar>
           <div className="overflow-x-auto max-w-full">

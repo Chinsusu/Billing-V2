@@ -7,8 +7,9 @@ import { compactDateTime, recordLabel } from "@/lib/api/format";
 import type { AdminTenantQuery } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { TENANTS } from "@/mocks/billingData";
-import { AdminFilterBar, AdminFilterInput } from "../components/AdminFilterBar";
+import { AdminFilterBar, AdminFilterInput, AdminFilterSelect } from "../components/AdminFilterBar";
 import { equalsFilter, hasActiveFilters, includesFilter, trimStringFilters } from "../lib/filterUtils";
+import { ACCOUNT_STATUS_OPTIONS } from "../lib/filterOptions";
 
 interface TenantRow {
   id: string;
@@ -127,11 +128,11 @@ export function AdminTenants() {
             onChange={(event) => updateFilter("type", event.target.value)}
             placeholder="admin, reseller"
           />
-          <AdminFilterInput
+          <AdminFilterSelect
             label="Status"
             value={draftFilters.status}
             onChange={(event) => updateFilter("status", event.target.value)}
-            placeholder="active, suspended"
+            options={ACCOUNT_STATUS_OPTIONS}
           />
         </AdminFilterBar>
         <div className="overflow-x-auto">

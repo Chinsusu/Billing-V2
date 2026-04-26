@@ -8,7 +8,8 @@ import { useApiResource } from "@/lib/api/useApiResource";
 import { mapAdminAccountView } from "@/lib/api/viewModels";
 import { CUSTOMERS } from "@/mocks/billingData";
 import { fmtMoneyShort } from "@/mocks/sampleData";
-import { AdminFilterBar, AdminFilterInput } from "../components/AdminFilterBar";
+import { AdminFilterBar, AdminFilterInput, AdminFilterSelect } from "../components/AdminFilterBar";
+import { ACCOUNT_STATUS_OPTIONS } from "../lib/filterOptions";
 import { equalsFilter, hasActiveFilters, includesFilter, trimStringFilters } from "../lib/filterUtils";
 
 interface CustomerRow {
@@ -129,11 +130,11 @@ export function AdminCustomers() {
             onChange={(event) => updateFilter("type", event.target.value)}
             placeholder="client, reseller"
           />
-          <AdminFilterInput
+          <AdminFilterSelect
             label="Status"
             value={draftFilters.status}
             onChange={(event) => updateFilter("status", event.target.value)}
-            placeholder="active, suspended"
+            options={ACCOUNT_STATUS_OPTIONS}
           />
         </AdminFilterBar>
         <div className="overflow-x-auto">

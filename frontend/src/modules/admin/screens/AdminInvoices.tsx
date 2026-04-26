@@ -8,7 +8,8 @@ import { billingApi } from "@/lib/api/billing";
 import { AdminInvoiceQuery } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { mapAdminInvoiceView } from "@/lib/api/viewModels";
-import { AdminFilterBar, AdminFilterInput } from "../components/AdminFilterBar";
+import { AdminFilterBar, AdminFilterInput, AdminFilterSelect } from "../components/AdminFilterBar";
+import { INVOICE_STATUS_OPTIONS } from "../lib/filterOptions";
 import { equalsFilter, hasActiveFilters, includesFilter, matchesAmountRange, trimStringFilters } from "../lib/filterUtils";
 
 type InvoiceFilterFields = Required<Pick<
@@ -114,11 +115,11 @@ export function AdminInvoices() {
             placeholder="30004"
             inputMode="numeric"
           />
-          <AdminFilterInput
+          <AdminFilterSelect
             label="Status"
             value={draftFilters.status}
             onChange={(event) => updateFilter("status", event.target.value)}
-            placeholder="open, paid, overdue"
+            options={INVOICE_STATUS_OPTIONS}
           />
           <AdminFilterInput
             label="Amount Min"

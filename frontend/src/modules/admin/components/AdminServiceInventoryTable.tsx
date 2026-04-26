@@ -8,7 +8,8 @@ import { compactDateTime, recordLabel } from "@/lib/api/format";
 import type { AdminServiceQuery, ServiceInstance } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { hiddenReference } from "@/lib/api/viewModels";
-import { AdminFilterBar, AdminFilterInput } from "./AdminFilterBar";
+import { AdminFilterBar, AdminFilterInput, AdminFilterSelect } from "./AdminFilterBar";
+import { SERVICE_STATUS_OPTIONS } from "../lib/filterOptions";
 import { equalsFilter, hasActiveFilters, includesFilter, trimStringFilters } from "../lib/filterUtils";
 
 export type ServiceFamily = "proxy" | "vps" | "bandwidth";
@@ -247,11 +248,11 @@ export function AdminServiceInventoryTable({ family, title, demoRows }: AdminSer
             placeholder="23001"
             inputMode="numeric"
           />
-          <AdminFilterInput
+          <AdminFilterSelect
             label="Status"
             value={draftFilters.status}
             onChange={(event) => updateFilter("status", event.target.value)}
-            placeholder="active, suspended"
+            options={SERVICE_STATUS_OPTIONS}
           />
         </AdminFilterBar>
         <div className="overflow-x-auto max-w-full">
