@@ -3,11 +3,10 @@
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { productTypeLabel } from "@/lib/api/displayLabels";
-import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
+import { compactDateTime, moneyMinor, recordLabel, fmtMoney, fmtMoneyShort } from "@/lib/api/format";
 import type { CatalogPlan } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { PRODUCTS } from "@/mocks/billingData";
-import { fmtMoney, fmtMoneyShort } from "@/mocks/sampleData";
 
 interface ProductRow {
   id: string;

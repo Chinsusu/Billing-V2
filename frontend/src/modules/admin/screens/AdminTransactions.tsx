@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import { TRANSACTIONS } from "@/mocks/billingData";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { fmtMoney } from "@/mocks/sampleData";
+import { fmtMoney } from "@/lib/api/format";
 import { billingApi } from "@/lib/api/billing";
 import { paymentTransactionTypeLabel } from "@/lib/api/paymentViewModels";
 import { AdminTransactionQuery } from "@/lib/api/types";

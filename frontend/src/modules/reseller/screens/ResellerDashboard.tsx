@@ -3,10 +3,9 @@
 import { KpiCard } from "@/components/ui/KpiCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
-import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
+import { compactDateTime, moneyMinor, recordLabel, fmtMoney } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { RESELLER_CLIENTS } from "@/mocks/billingData";
-import { fmtMoney } from "@/mocks/sampleData";
 
 interface DashboardClientRow {
   id: string;

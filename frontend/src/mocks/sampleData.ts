@@ -5,13 +5,3 @@ export const SAMPLE_SERIES = {
   customers30d: [2640,2658,2671,2682,2694,2706,2718,2731,2744,2752,2763,2775,2781,2792,2803,2811,2819,2828,2836,2840,2843,2847,2849,2851,2853,2854,2846,2847,2847,2847],
   bandwidthDaily: [184,192,201,198,215,223,219,234,229,245,251,248,262,268,271,284,278,291,295,302,298,311,315,309,322,318,331,327,339,342],
 };
-
-export function fmtMoney(v: number): string {
-  const sign = v < 0 ? "-" : "";
-  return sign + "$" + Math.abs(v).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-export function fmtMoneyShort(v: number): string {
-  if (Math.abs(v) >= 1000) return "$" + (v / 1000).toFixed(1) + "k";
-  return "$" + v.toFixed(0);
-}

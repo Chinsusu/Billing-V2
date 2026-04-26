@@ -5,11 +5,10 @@ import { CreditCard, Headphones, Server, User, Wallet, XCircle } from "lucide-re
 import { KpiCard } from "@/components/ui/KpiCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
-import { compactDateTime, moneyMinor } from "@/lib/api/format";
+import { compactDateTime, moneyMinor, fmtMoney } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { adminDisplayLabel, mapAdminInvoiceView } from "@/lib/api/viewModels";
 import { ACTIVITY_FEED, ActivityEvent, INVOICES, TOPUP_REQUESTS } from "@/mocks/billingData";
-import { fmtMoney } from "@/mocks/sampleData";
 
 const ACTIVITY_ICONS: Record<ActivityEvent["icon"], ReactNode> = {
   payment: <CreditCard size={11} />,

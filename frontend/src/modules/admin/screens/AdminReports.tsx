@@ -3,12 +3,11 @@
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { KpiCard } from "@/components/ui/KpiCard";
 import { billingApi } from "@/lib/api/billing";
-import { moneyMinor, recordLabel } from "@/lib/api/format";
+import { moneyMinor, recordLabel, fmtMoney, fmtMoneyShort } from "@/lib/api/format";
 import type { PaymentTransaction } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { mapAdminAuditLogView } from "@/lib/api/viewModels";
 import { AUDIT_LOGS, INVOICES, TRANSACTIONS } from "@/mocks/billingData";
-import { fmtMoney, fmtMoneyShort } from "@/mocks/sampleData";
 
 interface ReconciliationRow {
   id: string;

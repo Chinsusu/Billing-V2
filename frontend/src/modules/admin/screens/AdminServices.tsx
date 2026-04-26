@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { PROXY_SERVICES, VPS_SERVICES, BANDWIDTH_SERVICES } from "@/mocks/billingData";
-import { fmtMoney } from "@/mocks/sampleData";
+import { fmtMoney } from "@/lib/api/format";
 
 type Tab = "proxies" | "vps" | "bandwidth";
 

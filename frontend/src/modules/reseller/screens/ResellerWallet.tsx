@@ -2,12 +2,11 @@
 
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
-import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
+import { compactDateTime, moneyMinor, recordLabel, fmtMoney } from "@/lib/api/format";
 import { paymentMethodLabel } from "@/lib/api/paymentViewModels";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { walletLedgerEntryTypeLabel, walletLedgerReferenceLabel } from "@/lib/api/walletViewModels";
 import { TOPUP_REQUESTS } from "@/mocks/billingData";
-import { fmtMoney } from "@/mocks/sampleData";
 
 const DEMO_LEDGER = [
   { ts: "2026-04-22 14:02", type: "settlement.reseller.debit", amount: -62.00, ref: "ORD-48291 / VPS 4C/8G", balance: 4820.50 },

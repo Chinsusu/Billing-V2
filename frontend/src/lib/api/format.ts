@@ -8,6 +8,16 @@ export function moneyMinor(amountMinor: number, currency = "USD"): string {
   }).format(amount);
 }
 
+export function fmtMoney(value: number): string {
+  const sign = value < 0 ? "-" : "";
+  return `${sign}$${Math.abs(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+export function fmtMoneyShort(value: number): string {
+  if (Math.abs(value) >= 1000) return `$${(value / 1000).toFixed(1)}k`;
+  return `$${value.toFixed(0)}`;
+}
+
 export function compactDateTime(value?: string): string {
   if (!value) return "-";
   const date = new Date(value);
