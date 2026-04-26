@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
+import { tenantTypeLabel } from "@/lib/api/displayLabels";
 import { compactDateTime, recordLabel } from "@/lib/api/format";
 import type { AdminTenantQuery } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
@@ -40,7 +41,7 @@ function filterDemoTenants(filters: TenantFilterFields): TenantRow[] {
   return TENANTS.map((tenant) => ({
     id: tenant.id,
     name: tenant.name,
-    type: tenant.type,
+    type: tenantTypeLabel(tenant.type),
     domain: tenant.domain,
     users: tenant.clients.toLocaleString(),
     currency: "demo",
@@ -65,7 +66,7 @@ export function AdminTenants() {
     ? (tenants.data ?? []).map((tenant) => ({
         id: recordLabel(tenant.display_id, "TEN-"),
         name: tenant.name,
-        type: tenant.tenant_type,
+        type: tenantTypeLabel(tenant.tenant_type),
         domain: tenant.primary_domain || tenant.slug,
         users: tenant.user_count.toLocaleString(),
         currency: tenant.default_currency,
