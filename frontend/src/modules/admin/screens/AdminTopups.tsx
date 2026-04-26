@@ -9,6 +9,7 @@ import { mapAdminTopupView } from "@/lib/api/viewModels";
 import { TOPUP_REQUESTS } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
 import { AdminFilterBar, AdminFilterInput, AdminFilterSelect } from "../components/AdminFilterBar";
+import { TOPUP_STATUS_OPTIONS } from "../lib/filterOptions";
 import { equalsFilter, hasActiveFilters, includesFilter, trimStringFilters } from "../lib/filterUtils";
 
 const PENDING_TOPUP_STATUSES = new Set([
@@ -34,15 +35,6 @@ const EMPTY_FILTERS: TopupFilterFields = {
   requested_by_display_id: "",
   status: "",
 };
-
-const TOPUP_STATUS_OPTIONS = [
-  { value: "", label: "All statuses" },
-  { value: "submitted", label: "Submitted" },
-  { value: "under_review", label: "Under review" },
-  { value: "pending_verification", label: "Pending verification" },
-  { value: "approved", label: "Approved" },
-  { value: "rejected", label: "Rejected" },
-];
 
 interface TopupRow {
   id: string;

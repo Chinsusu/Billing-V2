@@ -8,7 +8,8 @@ import { billingApi } from "@/lib/api/billing";
 import { AdminTransactionQuery } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { mapAdminTransactionView } from "@/lib/api/viewModels";
-import { AdminFilterBar, AdminFilterInput } from "../components/AdminFilterBar";
+import { AdminFilterBar, AdminFilterInput, AdminFilterSelect } from "../components/AdminFilterBar";
+import { TRANSACTION_STATUS_OPTIONS } from "../lib/filterOptions";
 import { equalsFilter, hasActiveFilters, includesFilter, matchesAmountRange, trimStringFilters } from "../lib/filterUtils";
 
 type TransactionFilterFields = Required<Pick<
@@ -131,11 +132,11 @@ export function AdminTransactions() {
             placeholder="44001"
             inputMode="numeric"
           />
-          <AdminFilterInput
+          <AdminFilterSelect
             label="Status"
             value={draftFilters.status}
             onChange={(event) => updateFilter("status", event.target.value)}
-            placeholder="posted, paid, failed"
+            options={TRANSACTION_STATUS_OPTIONS}
           />
           <AdminFilterInput
             label="Amount Min"

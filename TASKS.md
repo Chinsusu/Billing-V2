@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` after T146 was merged:
+Current board snapshot on `2026-04-26` after T147 is ready for review:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 143
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | No task files are currently in progress or review. |
+| T147 | [tasks/active/T147_admin_status_filter_selects.md](tasks/active/T147_admin_status_filter_selects.md) | REVIEW | Codex | codex/t147-admin-status-filter-selects | Replace fixed-value admin status text filters with dropdowns. |
 
 ## Done Task Files
 

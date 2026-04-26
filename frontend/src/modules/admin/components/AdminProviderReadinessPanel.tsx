@@ -3,8 +3,9 @@ import { billingApi } from "@/lib/api/billing";
 import { recordLabel } from "@/lib/api/format";
 import type { AdminProviderReadinessQuery, ProviderReadiness } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
-import { AdminFilterBar, AdminFilterInput } from "./AdminFilterBar";
+import { AdminFilterBar, AdminFilterInput, AdminFilterSelect } from "./AdminFilterBar";
 import { ProviderReadinessStateBadge } from "./ProviderReadinessStateBadge";
+import { PROVIDER_STATUS_OPTIONS } from "../lib/filterOptions";
 import { equalsFilter, hasActiveFilters, includesFilter, trimStringFilters } from "../lib/filterUtils";
 
 const DEMO_READINESS: ProviderReadiness[] = [
@@ -144,11 +145,11 @@ export function AdminProviderReadinessPanel() {
           onChange={(event) => updateFilter("product_type", event.target.value)}
           placeholder="vps, proxy"
         />
-        <AdminFilterInput
+        <AdminFilterSelect
           label="Status"
           value={draftFilters.status}
           onChange={(event) => updateFilter("status", event.target.value)}
-          placeholder="active"
+          options={PROVIDER_STATUS_OPTIONS}
         />
       </AdminFilterBar>
 

@@ -39,7 +39,16 @@ async function main() {
       await expectVisibleText(page, "JOB-3301");
       await expectVisibleText(page, "ORD-42001");
       await expectVisibleText(page, "SRC-10001");
-      await expectVisibleText(page, "Manual Review");
+      await page.getByRole("cell", { name: "Manual Review", exact: true }).waitFor({ timeout: 10_000 });
+      await page.getByLabel("Status", { exact: true }).selectOption("manual_review");
+      const filteredJobs = page.waitForResponse((response) => {
+        const url = new URL(response.url());
+        return url.pathname === "/backend/admin/jobs"
+          && url.searchParams.get("status") === "manual_review";
+      });
+      await page.getByRole("button", { name: "Apply" }).click();
+      await filteredJobs;
+      await expectVisibleText(page, "Live provisioning filters applied.");
       await page.getByRole("button", { name: "JOB-3301" }).click();
       await expectVisibleText(page, "SOURCE READINESS");
       await expectVisibleText(page, "PLAN-10000 / vps-cx23-40gb-monthly / SRC-10001");
@@ -87,11 +96,13 @@ async function main() {
       await expectVisibleText(page, "ORD-42001");
       await page.getByLabel("Display ID").fill("44001");
       await page.getByLabel("Customer public ID").fill("10002");
+      await page.getByLabel("Status", { exact: true }).selectOption("paid");
       const filteredInvoice = page.waitForResponse((response) => {
         const url = new URL(response.url());
         return url.pathname === "/backend/admin/invoices"
           && url.searchParams.get("display_id") === "44001"
-          && url.searchParams.get("buyer_display_id") === "10002";
+          && url.searchParams.get("buyer_display_id") === "10002"
+          && url.searchParams.get("status") === "paid";
       });
       await page.getByRole("button", { name: "Apply" }).click();
       await filteredInvoice;
@@ -106,6 +117,15 @@ async function main() {
       await expectVisibleText(page, "ACC-10002");
       await expectVisibleText(page, "ORD-42001");
       await expectVisibleText(page, "INV-44001");
+      await page.getByLabel("Status", { exact: true }).selectOption("posted");
+      const filteredTransaction = page.waitForResponse((response) => {
+        const url = new URL(response.url());
+        return url.pathname === "/backend/admin/transactions"
+          && url.searchParams.get("status") === "posted";
+      });
+      await page.getByRole("button", { name: "Apply" }).click();
+      await filteredTransaction;
+      await expectVisibleText(page, "Live transaction filters applied.");
       await assertNoVisibleText(page, ["txn-uuid-1", "buyer-1", "order-uuid-1", "invoice-uuid-1", "tenant-uuid-1"], "transaction public ID labels");
       await assertNoForbiddenText(page, "transactions");
 
