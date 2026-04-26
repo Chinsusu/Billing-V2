@@ -1,6 +1,6 @@
 # T148 - Admin type filter selects
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t148-admin-type-filter-selects
 PR: https://github.com/Chinsusu/Billing-V2/pull/327
@@ -36,3 +36,4 @@ Replace fixed-value admin type/product/source text filters with dropdowns.
 - 2026-04-26: Added shared type/product/source option sets, replaced matching text filters with selects, and expanded provider smoke coverage for selected query values.
 - 2026-04-26: Validation passed: frontend lint, sensitive-text check, build, admin browser smoke, taskguard, and diff check.
 - 2026-04-26: Opened PR https://github.com/Chinsusu/Billing-V2/pull/327 for review.
+- 2026-04-26: PR https://github.com/Chinsusu/Billing-V2/pull/327 merged into main; marking task done.
