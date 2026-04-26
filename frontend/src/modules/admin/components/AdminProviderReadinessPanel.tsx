@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react";
 import { billingApi } from "@/lib/api/billing";
+import { productTypeLabel, providerSourceTypeLabel } from "@/lib/api/displayLabels";
 import { recordLabel } from "@/lib/api/format";
 import type { AdminProviderReadinessQuery, ProviderReadiness } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
@@ -187,10 +188,10 @@ export function AdminProviderReadinessPanel() {
                   <div className="mt-1 text-[11px] text-gray-400">{row.source_name || "No source linked"}</div>
                 </td>
                 <td className="p-4">
-                  <SmallBadge>{row.product_type}</SmallBadge>
+                  <SmallBadge>{productTypeLabel(row.product_type)}</SmallBadge>
                 </td>
                 <td className="p-4">
-                  <SmallBadge>{row.source_type || "-"}</SmallBadge>
+                  <SmallBadge>{providerReadinessSourceTypeLabel(row)}</SmallBadge>
                 </td>
                 <td className="p-4">
                   <ProviderReadinessStateBadge state={row.state} />
@@ -230,6 +231,10 @@ function filterTone(status: string, usingLive: boolean): "default" | "loading" |
 
 function sourceLabel(row: ProviderReadiness): string {
   return row.source_display_id ? recordLabel(row.source_display_id, "SRC-") : "-";
+}
+
+function providerReadinessSourceTypeLabel(row: ProviderReadiness): string {
+  return row.source_type ? providerSourceTypeLabel(row.source_type) : "-";
 }
 
 function filterDemoReadiness(rows: ProviderReadiness[], filters: ReadinessFilterFields): ProviderReadiness[] {

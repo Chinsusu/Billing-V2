@@ -60,6 +60,7 @@ async function main() {
       await expectVisibleText(page, "PLAN-10000");
       await expectVisibleText(page, "SRC-10001");
       await expectVisibleText(page, "Local Fake Hetzner Ready");
+      await page.getByRole("cell", { name: "VPS", exact: true }).waitFor({ timeout: 10_000 });
       await page.getByLabel("Product", { exact: true }).selectOption("vps");
       const filteredReadiness = page.waitForResponse((response) => {
         const url = new URL(response.url());
@@ -76,7 +77,7 @@ async function main() {
       });
       await page.locator("form").filter({ has: page.getByLabel("Source type", { exact: true }) }).getByRole("button", { name: "Apply" }).click();
       await filteredProviderSource;
-      await page.getByRole("cell", { name: "Hetzner", exact: true }).waitFor({ timeout: 10_000 });
+      await page.getByRole("cell", { name: "Hetzner", exact: true }).first().waitFor({ timeout: 10_000 });
       await page.getByRole("cell", { name: "Provider live", exact: true }).waitFor({ timeout: 10_000 });
       await page.getByRole("cell", { name: "Medium", exact: true }).waitFor({ timeout: 10_000 });
       await expectVisibleText(page, "Live provider source filters applied.");
