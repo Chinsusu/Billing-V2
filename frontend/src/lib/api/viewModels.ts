@@ -1,5 +1,5 @@
 import { compactDateTime, moneyMinor, recordLabel } from "./format";
-import { paymentMethodLabel } from "./walletViewModels";
+import { paymentMethodLabel, paymentTransactionTypeLabel } from "./paymentViewModels";
 import type {
   AdminAccount,
   AuditLog,
@@ -153,7 +153,7 @@ export function mapAdminTransactionView(
     order: publicIDLabel(transaction.order_display_id, "ORD-", "Order"),
     invoice: publicIDLabel(transaction.invoice_display_id, "INV-", "Invoice"),
     method: paymentMethodLabel(reconciliation?.provider ?? "wallet"),
-    type: transaction.type,
+    type: paymentTransactionTypeLabel(transaction.type),
     amount: moneyMinor(transaction.amount_minor, transaction.currency),
     status: transaction.status,
   };

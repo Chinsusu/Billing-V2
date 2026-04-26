@@ -3,10 +3,10 @@
 import { FormEvent, useState } from "react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
+import { paymentMethodLabel } from "@/lib/api/paymentViewModels";
 import type { TopupRequestQuery } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { mapAdminTopupView } from "@/lib/api/viewModels";
-import { paymentMethodLabel } from "@/lib/api/walletViewModels";
 import { TOPUP_REQUESTS } from "@/mocks/billingData";
 import { fmtMoney } from "@/mocks/sampleData";
 import { AdminFilterBar, AdminFilterInput, AdminFilterSelect } from "../components/AdminFilterBar";

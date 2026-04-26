@@ -3,6 +3,7 @@
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
+import { paymentTransactionTypeLabel } from "@/lib/api/paymentViewModels";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { hiddenReference } from "@/lib/api/viewModels";
 
@@ -44,7 +45,7 @@ export function ClientTransactions() {
                 <tr key={txn.id} className="hover:bg-gray-50 border-b border-gray-100 last:border-0">
                   <td className="p-4 text-[12px] text-[#D50C2D] font-medium">{recordLabel(txn.display_id, "TX-")}</td>
                   <td className="p-4 text-gray-500">{compactDateTime(txn.created_at)}</td>
-                  <td className="p-4 text-gray-500">{txn.type}</td>
+                  <td className="p-4 text-gray-500">{paymentTransactionTypeLabel(txn.type)}</td>
                   <td className="p-4 text-[12px] text-gray-400">{transactionReference(txn)}</td>
                   <td className="p-4 text-gray-500 max-w-[260px] truncate">{txn.description ?? "-"}</td>
                   <td className="p-4 text-right font-medium tabular-nums">{moneyMinor(txn.amount_minor, txn.currency)}</td>
