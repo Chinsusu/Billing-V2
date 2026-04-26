@@ -1,6 +1,6 @@
 # T169 - Demo service VPS labels
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t169-demo-service-vps-labels
 PR: https://github.com/Chinsusu/Billing-V2/pull/369
@@ -32,3 +32,4 @@ Clean up demo service and VPS labels so client, reseller, and admin screens do n
 
 - 2026-04-26: Task created and claimed by Codex.
 - 2026-04-26: Opened PR #369 after npm ci, frontend lint, sensitive-text guard, build, admin smoke, taskguard, and diff check passed.
+- 2026-04-26: PR #369 merged into main.
