@@ -1,9 +1,9 @@
 # T163 - Job worker label wording
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t163-job-worker-label-wording
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/357
 Risk: frontend display labels
 Created: 2026-04-26
 Updated: 2026-04-26
@@ -31,3 +31,4 @@ Clean up provisioning job timeline worker labels so readable worker names are no
 ## Agent Log
 
 - 2026-04-26: Task created and claimed by Codex.
+- 2026-04-26: Opened PR #357 after lint, sensitive-text guard, build, admin smoke, taskguard, and diff check passed.
