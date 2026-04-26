@@ -1,6 +1,6 @@
 # T153 - Move status badge labels out of mocks
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t153-status-badge-label-source
 PR: https://github.com/Chinsusu/Billing-V2/pull/337
@@ -35,3 +35,4 @@ Make status badge labels a production display helper instead of mock data.
 - 2026-04-26: Moved status labels and variants into the shared display helper module and updated StatusBadge to use it.
 - 2026-04-26: Validation passed: frontend lint, sensitive-text check, production build, admin browser smoke, taskguard, and diff check.
 - 2026-04-26: Opened review PR https://github.com/Chinsusu/Billing-V2/pull/337.
+- 2026-04-26: Merged PR https://github.com/Chinsusu/Billing-V2/pull/337 into main; marking task done.
