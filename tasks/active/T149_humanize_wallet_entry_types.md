@@ -1,6 +1,6 @@
 # T149 - Humanize wallet entry types
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t149-humanize-wallet-entry-types
 PR: https://github.com/Chinsusu/Billing-V2/pull/329
@@ -35,3 +35,4 @@ Show readable wallet ledger entry labels instead of raw backend entry type keys.
 - 2026-04-26: Added a shared wallet ledger entry type label helper and applied it to reseller/client wallet ledger rows; no frontend unit test runner exists for focused helper tests.
 - 2026-04-26: Validation passed: frontend lint, sensitive-text check, build, admin browser smoke, taskguard, and diff check.
 - 2026-04-26: Opened PR https://github.com/Chinsusu/Billing-V2/pull/329 for review.
+- 2026-04-26: PR https://github.com/Chinsusu/Billing-V2/pull/329 merged into main; marking task done.
