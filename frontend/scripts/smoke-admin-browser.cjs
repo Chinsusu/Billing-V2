@@ -188,6 +188,13 @@ async function main() {
       await assertNoVisibleText(page, ["audit-1", "admin-1", "job-uuid-1", "tenant-uuid-1", "req-smoke", "job.retry"], "audit public ID labels");
       await assertNoForbiddenText(page, "audit logs");
       await smokeAuditFallback(browser);
+
+      await openAdminScreen(page, /Alerts/i);
+      await expectVisibleText(page, "Open alerts");
+      await expectVisibleText(page, "3 jobs stuck in manual review > 1h");
+      await expectVisibleText(page, "Provider timeout on OVH.");
+      await assertNoVisibleText(page, ["manual_review"], "admin alert labels");
+      await assertNoForbiddenText(page, "admin alerts");
     } finally {
       await browser.close();
     }
