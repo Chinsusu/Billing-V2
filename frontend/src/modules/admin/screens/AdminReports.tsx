@@ -5,6 +5,7 @@ import { KpiCard } from "@/components/ui/KpiCard";
 import { billingApi } from "@/lib/api/billing";
 import { accountTypeLabel, auditActionLabel } from "@/lib/api/displayLabels";
 import { moneyMinor, recordLabel, fmtMoney, fmtMoneyShort } from "@/lib/api/format";
+import { paymentMethodLabel } from "@/lib/api/paymentViewModels";
 import type { PaymentTransaction } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { mapAdminAuditLogView } from "@/lib/api/viewModels";
@@ -70,7 +71,7 @@ export function AdminReports() {
   const transactionRows: ReconciliationRow[] = usingLiveReconciliation
     ? (reconciliation.data ?? []).slice(0, 8).map((item) => ({
         id: recordLabel(item.transaction.display_id, "TX-"),
-        provider: item.provider ?? "wallet",
+        provider: paymentMethodLabel(item.provider ?? "wallet"),
         invoice: item.invoice ? recordLabel(item.invoice.display_id, "INV-") : "-",
         ledger: item.ledger ? recordLabel(item.ledger.display_id, "LED-") : "-",
         amount: moneyMinor(item.transaction.amount_minor, item.transaction.currency),

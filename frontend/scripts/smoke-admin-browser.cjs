@@ -152,6 +152,12 @@ async function main() {
       await assertNoVisibleText(page, ["txn-uuid-1", "buyer-1", "order-uuid-1", "invoice-uuid-1", "tenant-uuid-1"], "transaction public ID labels");
       await assertNoForbiddenText(page, "transactions");
 
+      await openAdminScreen(page, /^Reports$/i);
+      await expectVisibleText(page, "Payment reconciliation");
+      await page.getByRole("cell", { name: "Wallet", exact: true }).waitFor({ timeout: 10_000 });
+      await assertNoVisibleText(page, ["wallet"], "reports payment provider labels");
+      await assertNoForbiddenText(page, "reports");
+
       await openAdminScreen(page, /Audit logs/i);
       await expectVisibleText(page, "Live audit filters applied.");
       await expectVisibleText(page, "AUD-70001");

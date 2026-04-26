@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` after T157 was merged:
+Current board snapshot on `2026-04-26` after T158 was claimed:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 154
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | No task files are currently in progress or review. |
+| T158 | [tasks/active/T158_payment_provider_label_cleanup.md](tasks/active/T158_payment_provider_label_cleanup.md) | IN_PROGRESS | Codex | codex/t158-payment-provider-labels | Show readable payment provider/method labels. |
 
 ## Done Task Files
 
