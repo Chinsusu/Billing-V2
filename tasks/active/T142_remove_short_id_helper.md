@@ -1,6 +1,6 @@
 # T142 - Remove short ID helper
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t142-remove-short-id-helper
 PR: https://github.com/Chinsusu/Billing-V2/pull/315
@@ -34,3 +34,4 @@ Remove the unused frontend helper that shortens internal IDs for display.
 - 2026-04-26: Removed `shortID` from frontend format utilities and confirmed there are no frontend call sites left.
 - 2026-04-26: Local validation passed: `npm --prefix frontend run lint`, `npm --prefix frontend run check:sensitive-text`, `npm --prefix frontend run build`, `go run ./cmd/taskguard`, and `git diff --check`.
 - 2026-04-26: Opened PR https://github.com/Chinsusu/Billing-V2/pull/315 for review.
+- 2026-04-26: PR https://github.com/Chinsusu/Billing-V2/pull/315 merged into `main`; marking task done.
