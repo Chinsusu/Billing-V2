@@ -172,7 +172,7 @@ async function main() {
       await page.getByRole("button", { name: "Apply" }).click();
       await filteredAudit;
       await expectVisibleText(page, "Request not shown");
-      await assertNoVisibleText(page, ["audit-1", "admin-1", "job-uuid-1", "tenant-uuid-1", "req-smoke"], "audit public ID labels");
+      await assertNoVisibleText(page, ["audit-1", "admin-1", "job-uuid-1", "tenant-uuid-1", "req-smoke", "job.retry"], "audit public ID labels");
       await assertNoForbiddenText(page, "audit logs");
     } finally {
       await browser.close();

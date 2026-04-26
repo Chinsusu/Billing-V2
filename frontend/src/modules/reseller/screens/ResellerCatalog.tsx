@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { billingApi } from "@/lib/api/billing";
+import { billingCycleLabel } from "@/lib/api/displayLabels";
 import { moneyMinor, fmtMoney } from "@/lib/api/format";
 import type { CatalogPlan, TenantCatalogPlan, TenantCatalogProduct } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
@@ -20,10 +21,6 @@ interface CatalogRow {
   status: string;
   masterPlan?: CatalogPlan;
   tenantPlan?: TenantCatalogPlan;
-}
-
-function billingCycleText(plan: CatalogPlan) {
-  return `${plan.billing_cycle.value} ${plan.billing_cycle.type}`;
 }
 
 function draftPrice(plan: CatalogPlan, drafts: Record<string, string>) {
@@ -143,7 +140,7 @@ export function ResellerCatalog() {
     return {
       key: tenantPlan?.id ?? plan.id,
       plan: tenantPlan ? snapshotText(tenantPlan.plan_snapshot) ?? plan.name : plan.name,
-      unit: tenantPlan?.visibility ?? billingCycleText(plan),
+      unit: tenantPlan?.visibility ?? billingCycleLabel(plan.billing_cycle),
       cost: moneyMinor(tenantPlan?.reseller_cost_minor ?? plan.base_cost_minor, plan.currency),
       sellingMinor,
       currency: tenantPlan?.currency ?? plan.currency,

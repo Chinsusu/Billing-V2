@@ -3,6 +3,7 @@
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { KpiCard } from "@/components/ui/KpiCard";
 import { billingApi } from "@/lib/api/billing";
+import { accountTypeLabel, auditActionLabel } from "@/lib/api/displayLabels";
 import { moneyMinor, recordLabel, fmtMoney, fmtMoneyShort } from "@/lib/api/format";
 import type { PaymentTransaction } from "@/lib/api/types";
 import { useApiResource } from "@/lib/api/useApiResource";
@@ -90,8 +91,8 @@ export function AdminReports() {
         return {
           id: row.id,
           time: row.ts,
-          actor: `${row.actor} ${row.actorName}`,
-          action: row.action,
+          actor: `${accountTypeLabel(row.actor)} ${row.actorName}`,
+          action: auditActionLabel(row.action),
           target: row.target,
           request: row.requestId,
         };
@@ -99,8 +100,8 @@ export function AdminReports() {
     : AUDIT_LOGS.slice(0, 8).map((log) => ({
         id: log.id,
         time: log.ts,
-        actor: `${log.actor} ${log.actorName}`,
-        action: log.action,
+        actor: `${accountTypeLabel(log.actor)} ${log.actorName}`,
+        action: auditActionLabel(log.action),
         target: log.target,
         request: log.requestId,
       }));

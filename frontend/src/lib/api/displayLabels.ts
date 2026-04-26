@@ -8,6 +8,33 @@ const ACCOUNT_TYPE_LABELS: Record<string, string> = {
   worker: "Worker",
 };
 
+const AUDIT_ACTION_LABELS: Record<string, string> = {
+  "auth.login.new_ip": "New login location",
+  "catalog.price.updated": "Catalog price changed",
+  "db.migration.applied": "Database update applied",
+  "invoice.auto_charged": "Invoice charged",
+  "invoice.charge.failed": "Payment failed",
+  "job.cancel": "Cancel job",
+  "job.manual_review": "Manual review",
+  "job.retry": "Retry job",
+  "product.price.updated": "Product price changed",
+  "provider.health.degraded": "Provider health degraded",
+  "provider.node.high_memory": "Provider memory high",
+  "provisioning.job.stuck": "Job needs review",
+  "service.provisioned": "Service provisioned",
+  "service.renewed": "Service renewed",
+  "tenant.topup.approved": "Top-up approved",
+  "tenant.wallet.low_balance": "Low wallet balance",
+  "ticket.opened": "Ticket opened",
+  "wallet.topup.approved": "Wallet credited",
+  "wallet.topup.submitted": "Top-up submitted",
+};
+
+export const AUDIT_ACTION_OPTIONS = [
+  { value: "", label: "All actions" },
+  ...Object.entries(AUDIT_ACTION_LABELS).map(([value, label]) => ({ value, label })),
+];
+
 const INVENTORY_MODE_LABELS: Record<string, string> = {
   manual: "Manual",
   provider_live: "Provider live",
@@ -32,6 +59,12 @@ const PROVIDER_SOURCE_TYPE_LABELS: Record<string, string> = {
   proxmox: "Proxmox",
   "self-host": "Self-hosted",
   upstream: "Upstream",
+};
+
+const SECURITY_STATUS_LABELS: Record<string, string> = {
+  disabled: "Two-factor disabled",
+  enabled: "Two-factor enabled",
+  required: "Two-factor required",
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -104,6 +137,20 @@ export function accountTypeLabel(type: string): string {
   return labelFromKey(type, ACCOUNT_TYPE_LABELS);
 }
 
+export function auditActionLabel(action: string): string {
+  return labelFromKey(action, AUDIT_ACTION_LABELS);
+}
+
+export function billingCycleLabel(cycle: { type: string; value: number }): string {
+  if (cycle.type === "month_30d") {
+    return cycle.value === 1 ? "30 days" : `${cycle.value * 30} days`;
+  }
+  if (cycle.type === "calendar_month") {
+    return cycle.value === 1 ? "Calendar month" : `${cycle.value} calendar months`;
+  }
+  return `${cycle.value} ${labelFromKey(cycle.type).toLowerCase()}`;
+}
+
 export function inventoryModeLabel(mode: string): string {
   return labelFromKey(mode, INVENTORY_MODE_LABELS);
 }
@@ -118,6 +165,10 @@ export function providerSourceTypeLabel(type: string): string {
 
 export function riskLevelLabel(level: string): string {
   return labelFromKey(level);
+}
+
+export function securityStatusLabel(status: string): string {
+  return labelFromKey(status, SECURITY_STATUS_LABELS);
 }
 
 export function statusLabel(status: string): string {
