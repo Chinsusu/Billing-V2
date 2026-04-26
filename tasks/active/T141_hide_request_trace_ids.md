@@ -1,6 +1,6 @@
 # T141 - Hide request trace IDs
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t141-hide-internal-ui-ids
 PR: https://github.com/Chinsusu/Billing-V2/pull/313
@@ -38,3 +38,4 @@ Stop showing internal request/correlation IDs in frontend audit and provisioning
 - 2026-04-26: Opened PR https://github.com/Chinsusu/Billing-V2/pull/313 for review.
 - 2026-04-26: CI frontend gate failed because smoke still expected `req-smoke`; updated smoke to expect `Request not shown` and assert `req-smoke` stays hidden.
 - 2026-04-26: Re-validation passed: `npm --prefix frontend run smoke:admin:ci`, `npm --prefix frontend run lint`, `npm --prefix frontend run check:sensitive-text`, `npm --prefix frontend run build`, `go run ./cmd/taskguard`, and `git diff --check`.
+- 2026-04-26: PR https://github.com/Chinsusu/Billing-V2/pull/313 merged into `main`; marking task done.
