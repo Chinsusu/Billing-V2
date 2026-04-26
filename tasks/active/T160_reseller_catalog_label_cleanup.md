@@ -1,6 +1,6 @@
 # T160 - Reseller catalog label cleanup
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t160-reseller-catalog-labels
 PR: https://github.com/Chinsusu/Billing-V2/pull/351
@@ -34,3 +34,4 @@ Show readable source and status labels in the reseller catalog table instead of 
 - 2026-04-26: Replaced raw reseller catalog source/status rendering with readable source labels and the shared status badge.
 - 2026-04-26: Validation passed: frontend lint, sensitive-text check, production build, admin browser smoke, and taskguard.
 - 2026-04-26: Opened review PR https://github.com/Chinsusu/Billing-V2/pull/351.
+- 2026-04-26: Merged PR https://github.com/Chinsusu/Billing-V2/pull/351 into main; marking task done.
