@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
+import { statusLabel } from "@/lib/api/displayLabels";
 import { compactDateTime, moneyMinor, recordLabel, fmtMoney } from "@/lib/api/format";
 import { paymentMethodLabel } from "@/lib/api/paymentViewModels";
 import { useApiResource } from "@/lib/api/useApiResource";
@@ -104,7 +105,7 @@ export function ClientWallet() {
             {wallet ? moneyMinor(wallet.available_balance_minor, wallet.currency) : "$128.40"}
           </div>
           <div className="text-[12px] text-gray-400 mt-1">
-            {wallet ? `${recordLabel(wallet.display_id, "WAL-")} - ${wallet.status}` : "Linh Tran - via ProxyVN"}
+            {wallet ? `${recordLabel(wallet.display_id, "WAL-")} - ${statusLabel(wallet.status)}` : "Linh Tran - via ProxyVN"}
           </div>
           {notice && (
             <div className={`text-[12px] font-medium mt-4 ${notice.type === "error" ? "text-red-600" : "text-green-700"}`}>

@@ -32,6 +32,8 @@ async function main() {
 
       await expectVisibleText(page, "Overview");
       await expectVisibleText(page, "INV-44001");
+      await expectVisibleText(page, "Under review");
+      await assertNoVisibleText(page, ["under_review"], "overview top-up status label");
       await assertNoForbiddenText(page, "overview");
 
       await openAdminScreen(page, /Provisioning queue/i);

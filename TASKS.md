@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` after T158 was merged:
+Current board snapshot on `2026-04-26` after T159 was claimed:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 155
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | No task files are currently in progress or review. |
+| T159 | [tasks/active/T159_inline_status_label_cleanup.md](tasks/active/T159_inline_status_label_cleanup.md) | IN_PROGRESS | Codex | codex/t159-inline-status-labels | Show readable inline status labels outside badges. |
 
 ## Done Task Files
 

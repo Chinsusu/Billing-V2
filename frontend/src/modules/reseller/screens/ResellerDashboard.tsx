@@ -3,6 +3,7 @@
 import { KpiCard } from "@/components/ui/KpiCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
+import { statusLabel } from "@/lib/api/displayLabels";
 import { compactDateTime, moneyMinor, recordLabel, fmtMoney } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { RESELLER_CLIENTS } from "@/mocks/billingData";
@@ -111,7 +112,7 @@ export function ResellerDashboard() {
             {wallet ? moneyMinor(wallet.available_balance_minor, wallet.currency) : "$4,820.50"}
           </div>
           <div className="text-[12px] text-gray-400 mt-1">
-            {wallet ? `${recordLabel(wallet.display_id, "WAL-")} / ${wallet.status}` : "Available balance / demo"}
+            {wallet ? `${recordLabel(wallet.display_id, "WAL-")} / ${statusLabel(wallet.status)}` : "Available balance / demo"}
           </div>
         </div>
         <span className="text-[11px] text-gray-400 text-right">{source}</span>
