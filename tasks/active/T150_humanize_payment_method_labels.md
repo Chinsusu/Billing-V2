@@ -1,6 +1,6 @@
 # T150 - Humanize payment method labels
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t150-humanize-payment-method-labels
 PR: https://github.com/Chinsusu/Billing-V2/pull/331
@@ -36,3 +36,4 @@ Show readable payment method labels instead of raw backend keys.
 - 2026-04-26: Added a shared payment method label helper, applied it to top-up/transaction displays, and updated admin smoke coverage for the visible label.
 - 2026-04-26: Validation passed: frontend lint, sensitive-text check, production build, admin browser smoke, taskguard, and diff check.
 - 2026-04-26: Opened review PR https://github.com/Chinsusu/Billing-V2/pull/331.
+- 2026-04-26: Merged PR https://github.com/Chinsusu/Billing-V2/pull/331 into main; marking task done.
