@@ -1,6 +1,6 @@
 # T151 - Humanize transaction type labels
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t151-humanize-transaction-type-labels
 PR: https://github.com/Chinsusu/Billing-V2/pull/333
@@ -36,3 +36,4 @@ Show readable transaction type labels instead of raw backend keys.
 - 2026-04-26: Added shared payment label helpers, applied transaction type labels across admin/reseller/client transaction tables, and updated admin smoke coverage.
 - 2026-04-26: Validation passed: frontend lint, sensitive-text check, production build, admin browser smoke, taskguard, and diff check.
 - 2026-04-26: Opened review PR https://github.com/Chinsusu/Billing-V2/pull/333.
+- 2026-04-26: Merged PR https://github.com/Chinsusu/Billing-V2/pull/333 into main; marking task done.

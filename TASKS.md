@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` after T151 is ready for review:
+Current board snapshot on `2026-04-26` after T151 was merged:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 147
+- `DONE` task files in `tasks/active/`: 148
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -67,14 +67,14 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T151 | [tasks/active/T151_humanize_transaction_type_labels.md](tasks/active/T151_humanize_transaction_type_labels.md) | REVIEW | Codex | codex/t151-humanize-transaction-type-labels | Show readable transaction type labels. |
+| - | - | - | - | No task files are currently in progress or review. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T150`
+- `T011` to `T151`
 
 ## Removed Tasks
 
