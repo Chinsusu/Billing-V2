@@ -4,7 +4,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { billingApi } from "@/lib/api/billing";
 import { fulfillmentForOrder } from "@/lib/api/fulfillment";
 import { compactDateTime, moneyMinor, recordLabel, fmtMoney } from "@/lib/api/format";
-import { paymentTransactionTypeLabel } from "@/lib/api/paymentViewModels";
+import { paymentMethodLabel, paymentTransactionTypeLabel } from "@/lib/api/paymentViewModels";
 import { resellerAccountLabel } from "@/lib/api/resellerViewModels";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { INVOICES, TRANSACTIONS } from "@/mocks/billingData";
@@ -146,7 +146,7 @@ function ResellerTransactions() {
           time: compactDateTime(transaction.created_at),
           customer: resellerAccountLabel(accountDisplayID, customer),
           order: fulfillment.orderLabel,
-          method: transaction.description ?? "wallet",
+          method: paymentMethodLabel(transaction.description ?? "wallet"),
           type: paymentTransactionTypeLabel(transaction.type),
           amount: moneyMinor(transaction.amount_minor, transaction.currency),
           amountMinor: transaction.amount_minor,
