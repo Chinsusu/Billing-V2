@@ -1,6 +1,6 @@
 # T173 - Add agent behavior guidelines
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t173-agent-behavior-guidelines
 PR: https://github.com/Chinsusu/Billing-V2/pull/377
@@ -33,3 +33,4 @@ Add the requested behavioral guidelines to `AGENTS.md` so future coding agents f
 - 2026-04-27: Task created and claimed by Codex.
 - 2026-04-27: Added behavioral guidelines to `AGENTS.md`; taskguard and diff check pass.
 - 2026-04-27: Opened PR #377 and moved task to REVIEW.
+- 2026-04-27: PR #377 merged into main; task marked DONE.
