@@ -148,11 +148,11 @@ export const TENANTS: Tenant[] = [
 export const PROVIDERS: Provider[] = [
   { id: "SRC-23001", name: "Proxmox · VN-HCM", type: "self-host", health: "ok", capacity: 82, failRate: 0.2, lastSync: "2m ago" },
   { id: "SRC-23002", name: "Proxmox · VN-HAN", type: "self-host", health: "ok", capacity: 64, failRate: 0.1, lastSync: "1m ago" },
-  { id: "SRC-23003", name: "proxy-manager (self)", type: "self-host", health: "ok", capacity: 91, failRate: 0.3, lastSync: "4m ago" },
+  { id: "SRC-23003", name: "Self-hosted Proxy Manager", type: "self-host", health: "ok", capacity: 91, failRate: 0.3, lastSync: "4m ago" },
   { id: "SRC-23004", name: "OVH", type: "upstream", health: "degraded", capacity: 54, failRate: 2.8, lastSync: "12m ago" },
   { id: "SRC-23005", name: "Hetzner", type: "upstream", health: "ok", capacity: 78, failRate: 0.4, lastSync: "3m ago" },
   { id: "SRC-23006", name: "Smarthost", type: "upstream", health: "ok", capacity: 42, failRate: 0.9, lastSync: "5m ago" },
-  { id: "SRC-23007", name: "proxy-cheap", type: "upstream", health: "ok", capacity: 88, failRate: 0.5, lastSync: "2m ago" },
+  { id: "SRC-23007", name: "Budget Proxy Upstream", type: "upstream", health: "ok", capacity: 88, failRate: 0.5, lastSync: "2m ago" },
 ];
 
 export const PROVISIONING_JOBS: ProvisioningJob[] = [
