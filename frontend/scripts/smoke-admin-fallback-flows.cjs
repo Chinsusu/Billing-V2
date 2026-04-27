@@ -27,6 +27,7 @@ function createFallbackSmokeFlows(context) {
       await expectVisibleText(page, "Provider Timeout: Resource State Unknown");
       await expectVisibleText(page, "Auth Failed");
       await expectVisibleText(page, "Partial Success: External ID Unknown");
+      await expectVisibleText(page, "Budget Proxy Upstream");
       await assertNoVisibleText(page, ["provider_timeout", "auth_failed", "partial_success", "external_id", "proxy-cheap", "cor_"], "provisioning demo fallback labels");
       await assertNoForbiddenText(page, "provisioning demo fallback");
     });

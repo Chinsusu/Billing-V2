@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-27` after T177 was merged:
+Current board snapshot on `2026-04-28` while T178 is in progress:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 174
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No in-flight tasks are currently open. |
+| T178 | [tasks/active/T178_provisioning_demo_provider_labels.md](tasks/active/T178_provisioning_demo_provider_labels.md) | IN_PROGRESS | Codex | codex/t178-demo-provider-job-labels | Humanize provisioning demo provider labels and cover fallback smoke. |
 
 ## Done Task Files
 
