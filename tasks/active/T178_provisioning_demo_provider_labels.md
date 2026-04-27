@@ -1,9 +1,9 @@
 # T178 - Provisioning demo provider labels
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t178-demo-provider-job-labels
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/387
 Risk: frontend demo labels and smoke coverage
 Created: 2026-04-28
 Updated: 2026-04-28
@@ -32,3 +32,4 @@ Humanize provisioning demo job provider names at the mock data source and cover 
 
 - 2026-04-28: Task created and claimed by Codex.
 - 2026-04-28: Humanized provisioning demo provider names and added smoke coverage for the fallback label; local gates pass.
+- 2026-04-28: Opened PR #387 for review.
