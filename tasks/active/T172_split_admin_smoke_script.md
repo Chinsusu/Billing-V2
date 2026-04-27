@@ -1,6 +1,6 @@
 # T172 - Split admin smoke script
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t172-split-admin-smoke
 PR: https://github.com/Chinsusu/Billing-V2/pull/375
@@ -34,3 +34,4 @@ Reduce `frontend/scripts/smoke-admin-browser.cjs` below the repository 500-line 
 - 2026-04-27: Task created and claimed by Codex.
 - 2026-04-27: Split API mock routing into `smoke-admin-api-mocks.cjs`; all local gates pass.
 - 2026-04-27: Opened PR #375 and moved task to REVIEW.
+- 2026-04-27: PR #375 merged into main; task marked DONE.
