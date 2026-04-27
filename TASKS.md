@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-27` after T172 was merged:
+Current board snapshot on `2026-04-27` while T173 is in progress:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 169
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No in-flight tasks are currently open. |
+| T173 | [tasks/active/T173_agent_behavior_guidelines.md](tasks/active/T173_agent_behavior_guidelines.md) | IN_PROGRESS | Codex | codex/t173-agent-behavior-guidelines | Add behavioral coding guidelines to AGENTS.md. |
 
 ## Done Task Files
 
