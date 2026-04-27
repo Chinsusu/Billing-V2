@@ -26,6 +26,9 @@ const forbiddenText = [
   "vps-worker-03",
   "win-rdp-gamma",
   "win-dev-01",
+  "vps-linux-small",
+  "proxy-residential",
+  "proxy-dc-shared",
 ];
 
 async function main() {
@@ -97,6 +100,7 @@ async function main() {
       await page.getByRole("cell", { name: "Medium", exact: true }).waitFor({ timeout: 10_000 });
       await expectVisibleText(page, "Live provider source filters applied.");
       await assertNoForbiddenText(page, "providers");
+      await smokeProviderReadinessFallback(browser);
 
       await openAdminScreen(page, /VPS/i);
       await expectVisibleText(page, "Live VPS inventory");
@@ -426,6 +430,24 @@ async function smokeAdminServiceFallback(browser) {
     await expectVisibleText(page, "API Gateway VPS");
     await expectVisibleText(page, "Database Replica VPS");
     await assertNoForbiddenText(page, "admin service demo fallback");
+  } finally {
+    await page.close();
+  }
+}
+
+async function smokeProviderReadinessFallback(browser) {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  try {
+    await installApiMocks(page, { failPaths: new Set(["/backend/admin/catalog/provider-readiness"]) });
+    await page.goto(baseURL, { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(800);
+    await openAdminScreen(page, /Providers \/ Sources/i);
+    await expectVisibleText(page, "Live readiness API unavailable. Demo rows are shown.");
+    await expectVisibleText(page, "VPS Linux Small");
+    await expectVisibleText(page, "Residential Proxy");
+    await expectVisibleText(page, "Datacenter Shared");
+    await assertNoVisibleText(page, ["vps-linux-small", "proxy-residential", "proxy-dc-shared"], "provider readiness demo labels");
+    await assertNoForbiddenText(page, "provider readiness demo fallback");
   } finally {
     await page.close();
   }
