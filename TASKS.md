@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-26` after T171 was merged:
+Current board snapshot on `2026-04-27` while T172 is in review:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 168
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No in-flight tasks are currently open. |
+| T172 | [tasks/active/T172_split_admin_smoke_script.md](tasks/active/T172_split_admin_smoke_script.md) | REVIEW | Codex | codex/t172-split-admin-smoke | Split admin smoke script below file-size limit. |
 
 ## Done Task Files
 
