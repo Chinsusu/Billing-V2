@@ -19,6 +19,7 @@ const forbiddenText = [
   "secret", // sensitive-text-allowlist: browser smoke forbidden text
   "raw_response", // sensitive-text-allowlist: browser smoke forbidden text
   "proxy-manager",
+  "proxy-cheap",
   "vps-prod-01",
   "vps-scrape-01",
   "vps-scrape-02",
