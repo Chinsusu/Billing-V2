@@ -1,6 +1,6 @@
 # T175 - Provider readiness demo labels
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t175-provider-readiness-demo-labels
 PR: https://github.com/Chinsusu/Billing-V2/pull/381
@@ -33,3 +33,4 @@ Prevent raw provider readiness demo plan codes such as `vps-linux-small`, `proxy
 - 2026-04-27: Task created and claimed by Codex.
 - 2026-04-27: Humanized provider readiness plan labels and added smoke fallback coverage; local gates pass.
 - 2026-04-27: Opened PR #381 and moved task to REVIEW.
+- 2026-04-27: PR #381 merged into main; task marked DONE.
