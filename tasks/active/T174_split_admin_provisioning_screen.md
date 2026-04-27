@@ -1,6 +1,6 @@
 # T174 - Split admin provisioning screen
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t174-split-admin-provisioning
 PR: https://github.com/Chinsusu/Billing-V2/pull/379
@@ -33,3 +33,4 @@ Reduce `frontend/src/modules/admin/screens/AdminProvisioning.tsx` file-size risk
 - 2026-04-27: Task created and claimed by Codex.
 - 2026-04-27: Moved provisioning queue table and recovery controls into `AdminProvisioningQueueTable`; local gates pass.
 - 2026-04-27: Opened PR #379 and moved task to REVIEW.
+- 2026-04-27: PR #379 merged into main; task marked DONE.
