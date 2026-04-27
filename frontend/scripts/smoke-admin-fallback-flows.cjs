@@ -74,7 +74,17 @@ function createFallbackSmokeFlows(context) {
     });
   }
 
-  return { adminService, audit, providerReadiness, provisioning, topup };
+  function providerSources(browser) {
+    return withFallbackPage(browser, ["/backend/admin/catalog/provider-sources"], /Providers \/ Sources/i, async (page) => {
+      await expectVisibleText(page, "Live API unavailable. Showing demo provider data.");
+      await expectVisibleText(page, "Self-hosted Proxy Manager");
+      await expectVisibleText(page, "Budget Proxy Upstream");
+      await assertNoVisibleText(page, ["proxy-manager", "proxy-cheap"], "provider source demo fallback labels");
+      await assertNoForbiddenText(page, "provider source demo fallback");
+    });
+  }
+
+  return { adminService, audit, providerReadiness, providerSources, provisioning, topup };
 }
 
 module.exports = { createFallbackSmokeFlows };

@@ -18,6 +18,7 @@ const forbiddenText = [
   "provider_account_id", // sensitive-text-allowlist: browser smoke forbidden text
   "secret", // sensitive-text-allowlist: browser smoke forbidden text
   "raw_response", // sensitive-text-allowlist: browser smoke forbidden text
+  "proxy-manager",
   "vps-prod-01",
   "vps-scrape-01",
   "vps-scrape-02",
@@ -109,6 +110,7 @@ async function main() {
       await page.getByRole("cell", { name: "Medium", exact: true }).waitFor({ timeout: 10_000 });
       await expectVisibleText(page, "Live provider source filters applied.");
       await assertNoForbiddenText(page, "providers");
+      await fallbackSmoke.providerSources(browser);
       await fallbackSmoke.providerReadiness(browser);
 
       await openAdminScreen(page, /VPS/i);
