@@ -1,9 +1,9 @@
 # T176 - Split smoke fallback flows
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t176-split-smoke-fallback-flows
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/383
 Risk: frontend smoke test organization
 Created: 2026-04-27
 Updated: 2026-04-27
@@ -33,3 +33,4 @@ Reduce `frontend/scripts/smoke-admin-browser.cjs` file-size risk by moving admin
 
 - 2026-04-27: Task created and claimed by Codex.
 - 2026-04-27: Split admin fallback smoke flows into `smoke-admin-fallback-flows.cjs`; local gates pass.
+- 2026-04-27: Opened PR #383 for review.
