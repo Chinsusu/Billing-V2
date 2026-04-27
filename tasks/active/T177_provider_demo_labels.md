@@ -1,9 +1,9 @@
 # T177 - Provider demo labels
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t177-provider-demo-labels
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/385
 Risk: frontend demo labels and smoke coverage
 Created: 2026-04-27
 Updated: 2026-04-27
@@ -32,3 +32,4 @@ Humanize provider source demo fallback names and add admin smoke coverage for th
 
 - 2026-04-27: Task created and claimed by Codex.
 - 2026-04-27: Humanized provider source demo names and added provider source fallback smoke coverage; local gates pass.
+- 2026-04-27: Opened PR #385 for review.
