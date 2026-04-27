@@ -181,7 +181,7 @@ export function AdminProviderReadinessPanel() {
               <tr key={`${row.plan_display_id}-${row.source_display_id ?? "missing"}`} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
                 <td className="p-4">
                   <div className="font-medium text-[#D50C2D]">{recordLabel(row.plan_display_id, "PLAN-")}</div>
-                  <div className="mt-1 text-[11px] text-gray-500">{row.plan_code || row.plan_name}</div>
+                  <div className="mt-1 text-[11px] text-gray-500">{planLabel(row)}</div>
                 </td>
                 <td className="p-4">
                   <div className="font-medium text-gray-900">{sourceLabel(row)}</div>
@@ -233,6 +233,12 @@ function sourceLabel(row: ProviderReadiness): string {
   return row.source_display_id ? recordLabel(row.source_display_id, "SRC-") : "-";
 }
 
+function planLabel(row: ProviderReadiness): string {
+  if (row.plan_name) return row.plan_name;
+  if (row.plan_code) return productTypeLabel(row.plan_code);
+  return "-";
+}
+
 function providerReadinessSourceTypeLabel(row: ProviderReadiness): string {
   return row.source_type ? providerSourceTypeLabel(row.source_type) : "-";
 }
@@ -253,4 +259,3 @@ function SmallBadge({ children }: { children: string }) {
     </span>
   );
 }
-
