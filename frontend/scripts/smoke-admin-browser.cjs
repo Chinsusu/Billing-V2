@@ -4,6 +4,7 @@ const path = require("path");
 const { spawn } = require("child_process");
 const { chromium } = require("playwright");
 const { installApiMocks } = require("./smoke-admin-api-mocks.cjs");
+const { createFallbackSmokeFlows } = require("./smoke-admin-fallback-flows.cjs");
 
 const args = parseArgs(process.argv.slice(2));
 const appRoot = path.resolve(__dirname, "..");
@@ -30,6 +31,14 @@ const forbiddenText = [
   "proxy-residential",
   "proxy-dc-shared",
 ];
+const fallbackSmoke = createFallbackSmokeFlows({
+  baseURL,
+  installApiMocks,
+  openAdminScreen,
+  expectVisibleText,
+  assertNoVisibleText,
+  assertNoForbiddenText,
+});
 
 async function main() {
   validateServerMode(serverMode);
@@ -71,7 +80,7 @@ async function main() {
       await expectVisibleText(page, "Worker A");
       await assertNoVisibleText(page, ["job-uuid-1", "order-uuid-1", "source-ready", "tenant-uuid-1", "vps-cx23-40gb-monthly", "PROVIDER_TIMEOUT", "worker-a"], "provisioning public ID labels");
       await assertNoForbiddenText(page, "provisioning");
-      await smokeProvisioningFallback(browser);
+      await fallbackSmoke.provisioning(browser);
 
       await openAdminScreen(page, /Providers \/ Sources/i);
       await expectVisibleText(page, "Provider readiness");
@@ -100,7 +109,7 @@ async function main() {
       await page.getByRole("cell", { name: "Medium", exact: true }).waitFor({ timeout: 10_000 });
       await expectVisibleText(page, "Live provider source filters applied.");
       await assertNoForbiddenText(page, "providers");
-      await smokeProviderReadinessFallback(browser);
+      await fallbackSmoke.providerReadiness(browser);
 
       await openAdminScreen(page, /VPS/i);
       await expectVisibleText(page, "Live VPS inventory");
@@ -110,7 +119,7 @@ async function main() {
       await expectVisibleText(page, "SRC-10001");
       await assertNoVisibleText(page, ["service-uuid-1", "order-uuid-1", "buyer-1", "source-ready", "tenant-uuid-1"], "service public ID labels");
       await assertNoForbiddenText(page, "services");
-      await smokeAdminServiceFallback(browser);
+      await fallbackSmoke.adminService(browser);
 
       await openAdminScreen(page, /Top-up verification/i);
       await expectVisibleText(page, "Live top-up queue");
@@ -130,7 +139,7 @@ async function main() {
       await expectVisibleText(page, "Live top-up filters applied.");
       await assertNoVisibleText(page, ["topup-uuid-1", "wallet-1", "buyer-1", "tenant-uuid-1"], "top-up public ID labels");
       await assertNoForbiddenText(page, "topups");
-      await smokeTopupFallback(browser);
+      await fallbackSmoke.topup(browser);
 
       await openAdminScreen(page, /^Invoices$/i);
       await expectVisibleText(page, "Live invoice data");
@@ -202,7 +211,7 @@ async function main() {
       await expectVisibleText(page, "Request not shown");
       await assertNoVisibleText(page, ["audit-1", "admin-1", "job-uuid-1", "tenant-uuid-1", "req-smoke", "job.retry"], "audit public ID labels");
       await assertNoForbiddenText(page, "audit logs");
-      await smokeAuditFallback(browser);
+      await fallbackSmoke.audit(browser);
 
       await openAdminScreen(page, /Alerts/i);
       await expectVisibleText(page, "Open alerts");
@@ -363,94 +372,6 @@ function parseArgs(argv) {
 async function openAdminScreen(page, name) {
   await page.getByRole("button", { name }).click();
   await page.waitForTimeout(500);
-}
-
-async function smokeProvisioningFallback(browser) {
-  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-  try {
-    await installApiMocks(page, { failPaths: new Set(["/backend/admin/jobs"]) });
-    await page.goto(baseURL, { waitUntil: "domcontentloaded" });
-    await page.waitForTimeout(800);
-    await openAdminScreen(page, /Provisioning queue/i);
-    await expectVisibleText(page, "Live job API unavailable. Showing demo queue data");
-    await expectVisibleText(page, "Provider Timeout: Resource State Unknown");
-    await expectVisibleText(page, "Auth Failed");
-    await expectVisibleText(page, "Partial Success: External ID Unknown");
-    await assertNoVisibleText(page, ["provider_timeout", "auth_failed", "partial_success", "external_id", "proxy-cheap", "cor_"], "provisioning demo fallback labels");
-    await assertNoForbiddenText(page, "provisioning demo fallback");
-  } finally {
-    await page.close();
-  }
-}
-
-async function smokeTopupFallback(browser) {
-  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-  try {
-    await installApiMocks(page, { failPaths: new Set(["/backend/admin/topup-requests"]) });
-    await page.goto(baseURL, { waitUntil: "domcontentloaded" });
-    await page.waitForTimeout(800);
-    await openAdminScreen(page, /Top-up verification/i);
-    await expectVisibleText(page, "Live API unavailable. Showing demo top-up data");
-    await expectVisibleText(page, "Reseller Wallet");
-    await expectVisibleText(page, "Client Wallet");
-    await expectVisibleText(page, "Ref provided");
-    await assertNoVisibleText(page, ["reseller_wallet", "client_wallet", "pending_verification"], "top-up demo fallback labels");
-    await assertNoForbiddenText(page, "top-up demo fallback");
-  } finally {
-    await page.close();
-  }
-}
-
-async function smokeAuditFallback(browser) {
-  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-  try {
-    await installApiMocks(page, { failPaths: new Set(["/backend/admin/audit-logs"]) });
-    await page.goto(baseURL, { waitUntil: "domcontentloaded" });
-    await page.waitForTimeout(800);
-    await openAdminScreen(page, /Audit logs/i);
-    await expectVisibleText(page, "Live API unavailable. Showing demo audit data");
-    await expectVisibleText(page, "Provisioning Worker");
-    await expectVisibleText(page, "manual review threshold exceeded");
-    await assertNoVisibleText(page, ["prov-worker", "billing-worker", "health-worker", "manual_review", "0003_rbac", "vps-scrape-02"], "audit demo fallback labels");
-    await assertNoForbiddenText(page, "audit demo fallback");
-  } finally {
-    await page.close();
-  }
-}
-
-async function smokeAdminServiceFallback(browser) {
-  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-  try {
-    await installApiMocks(page, { failPaths: new Set(["/backend/admin/services"]) });
-    await page.goto(baseURL, { waitUntil: "domcontentloaded" });
-    await page.waitForTimeout(800);
-    await openAdminScreen(page, /VPS/i);
-    await expectVisibleText(page, "Live API unavailable. Showing demo VPS data.");
-    await expectVisibleText(page, "Production Linux VPS");
-    await expectVisibleText(page, "API Gateway VPS");
-    await expectVisibleText(page, "Database Replica VPS");
-    await assertNoForbiddenText(page, "admin service demo fallback");
-  } finally {
-    await page.close();
-  }
-}
-
-async function smokeProviderReadinessFallback(browser) {
-  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-  try {
-    await installApiMocks(page, { failPaths: new Set(["/backend/admin/catalog/provider-readiness"]) });
-    await page.goto(baseURL, { waitUntil: "domcontentloaded" });
-    await page.waitForTimeout(800);
-    await openAdminScreen(page, /Providers \/ Sources/i);
-    await expectVisibleText(page, "Live readiness API unavailable. Demo rows are shown.");
-    await expectVisibleText(page, "VPS Linux Small");
-    await expectVisibleText(page, "Residential Proxy");
-    await expectVisibleText(page, "Datacenter Shared");
-    await assertNoVisibleText(page, ["vps-linux-small", "proxy-residential", "proxy-dc-shared"], "provider readiness demo labels");
-    await assertNoForbiddenText(page, "provider readiness demo fallback");
-  } finally {
-    await page.close();
-  }
 }
 
 async function expectVisibleText(page, text) {
