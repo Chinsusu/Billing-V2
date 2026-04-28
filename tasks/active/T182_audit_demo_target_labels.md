@@ -1,6 +1,6 @@
 # T182 - Audit demo target labels
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t182-audit-demo-target-labels
 PR: https://github.com/Chinsusu/Billing-V2/pull/395
@@ -33,3 +33,4 @@ Humanize audit demo target labels that still expose raw plan, session, or migrat
 - 2026-04-28: Task created and claimed by Codex.
 - 2026-04-28: Humanized audit demo target labels and added audit fallback smoke guards; local gates pass.
 - 2026-04-28: Opened PR #395 for review.
+- 2026-04-28: PR #395 merged into `main`; task marked DONE.
