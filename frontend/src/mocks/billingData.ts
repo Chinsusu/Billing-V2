@@ -222,7 +222,7 @@ export const ACTIVITY_FEED: ActivityEvent[] = [
   { t: "14:11", icon: "user",    text: "New customer signup: startup-dev-42@proton.me", type: "info" },
   { t: "14:02", icon: "server",  text: "VPS service provisioned for Proxy Garden", type: "info" },
   { t: "13:48", icon: "payment", text: "Payment of $6,240.00 from CloudHarvest", type: "ok" },
-  { t: "13:17", icon: "ticket",  text: "New ticket T-8124 opened by Acme Proxy Co. (high)", type: "warn" },
+  { t: "13:17", icon: "ticket",  text: "New high-priority ticket opened by Acme Proxy Co.", type: "warn" },
   { t: "12:32", icon: "error",   text: "Charge failed: Kenji Watanabe — Visa •• 0914", type: "danger" },
   { t: "11:17", icon: "wallet",  text: "Wallet top-up of $500.00 from Linh Tran", type: "ok" },
 ];

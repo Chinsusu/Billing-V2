@@ -57,8 +57,9 @@ async function main() {
       await expectVisibleText(page, "Overview");
       await expectVisibleText(page, "INV-44001");
       await expectVisibleText(page, "Under review");
-      await assertNoVisibleText(page, ["under_review", "vps-scrape-02"], "overview top-up and activity labels");
+      await assertNoVisibleText(page, ["under_review", "vps-scrape-02", "T-8124"], "overview top-up and activity labels");
       await assertNoForbiddenText(page, "overview");
+      await fallbackSmoke.overview(browser);
 
       await openAdminScreen(page, /Provisioning queue/i);
       await expectVisibleText(page, "Live provisioning jobs");
