@@ -156,12 +156,12 @@ export const PROVIDERS: Provider[] = [
 ];
 
 export const PROVISIONING_JOBS: ProvisioningJob[] = [
-  { id: "JOB-3301", order: "ORD-48291", service: "VPS 4C/8G · HCM", tenant: "ProxyVN", provider: "Proxmox · VN-HCM", status: "manual_review", attempt: 2, error: "provider_timeout — resource state unknown", correlation: "cor_9a21f8", age: "18m" },
-  { id: "JOB-3298", order: "ORD-48290", service: "Residential · 5GB", tenant: "CloudBase", provider: "Budget Proxy Upstream", status: "failed", attempt: 3, error: "auth_failed", correlation: "cor_9a20c4", age: "22m" },
-  { id: "JOB-3291", order: "ORD-48289", service: "VPS 2C/4G · SG", tenant: "HANetwork", provider: "OVH", status: "provisioning", attempt: 1, error: "", correlation: "cor_9a19a1", age: "3m" },
-  { id: "JOB-3288", order: "ORD-48288", service: "DC Proxy · 100 IPs", tenant: "Saigon Proxy", provider: "Budget Proxy Upstream", status: "provisioning", attempt: 1, error: "", correlation: "cor_9a18e2", age: "1m" },
-  { id: "JOB-3287", order: "ORD-48287", service: "VPS 8C/16G · HEL", tenant: "HANetwork", provider: "Hetzner", status: "queued", attempt: 0, error: "", correlation: "cor_9a17b8", age: "0m" },
-  { id: "JOB-3286", order: "ORD-48286", service: "ISP Static · 50 IPs", tenant: "ProxyVN", provider: "Smarthost", status: "manual_review", attempt: 1, error: "partial_success — external_id unknown", correlation: "cor_9a16d3", age: "1h 04m" },
+  { id: "JOB-3301", order: "ORD-48291", service: "VPS 4C/8G · HCM", tenant: "ProxyVN", provider: "Proxmox · VN-HCM", status: "manual_review", attempt: 2, error: "Provider timeout: resource state unknown", correlation: "Request not shown", age: "18m" },
+  { id: "JOB-3298", order: "ORD-48290", service: "Residential · 5GB", tenant: "CloudBase", provider: "Budget Proxy Upstream", status: "failed", attempt: 3, error: "Auth failed", correlation: "Request not shown", age: "22m" },
+  { id: "JOB-3291", order: "ORD-48289", service: "VPS 2C/4G · SG", tenant: "HANetwork", provider: "OVH", status: "provisioning", attempt: 1, error: "", correlation: "Request not shown", age: "3m" },
+  { id: "JOB-3288", order: "ORD-48288", service: "DC Proxy · 100 IPs", tenant: "Saigon Proxy", provider: "Budget Proxy Upstream", status: "provisioning", attempt: 1, error: "", correlation: "Request not shown", age: "1m" },
+  { id: "JOB-3287", order: "ORD-48287", service: "VPS 8C/16G · HEL", tenant: "HANetwork", provider: "Hetzner", status: "queued", attempt: 0, error: "", correlation: "Request not shown", age: "0m" },
+  { id: "JOB-3286", order: "ORD-48286", service: "ISP Static · 50 IPs", tenant: "ProxyVN", provider: "Smarthost", status: "manual_review", attempt: 1, error: "Partial success: external ID unknown", correlation: "Request not shown", age: "1h 04m" },
 ];
 
 export const TOPUP_REQUESTS: TopupRequest[] = [

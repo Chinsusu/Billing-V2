@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-28` after T178 was merged:
+Current board snapshot on `2026-04-28` while T179 is in progress:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 175
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No in-flight tasks are currently open. |
+| T179 | [tasks/active/T179_provisioning_demo_error_labels.md](tasks/active/T179_provisioning_demo_error_labels.md) | IN_PROGRESS | Codex | codex/t179-demo-provisioning-error-labels | Humanize provisioning demo error labels and trace placeholders. |
 
 ## Done Task Files
 
