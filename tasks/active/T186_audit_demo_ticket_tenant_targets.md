@@ -1,9 +1,9 @@
 # T186 - Audit demo ticket and tenant targets
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t186-audit-demo-ticket-tenant-targets
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/403
 Risk: frontend demo labels and smoke coverage
 Created: 2026-04-28
 Updated: 2026-04-28
@@ -34,3 +34,4 @@ Humanize audit demo ticket and tenant target labels that still expose raw `T-*` 
 
 - 2026-04-28: Task created and claimed by Codex.
 - 2026-04-28: Humanized audit demo ticket and tenant targets and added smoke guards; local gates pass.
+- 2026-04-28: Opened PR #403 for review.
