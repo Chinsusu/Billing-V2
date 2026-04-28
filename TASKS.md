@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-28` with T184 in progress:
+Current board snapshot on `2026-04-28` with T184 in review:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 180
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T184 | [tasks/active/T184_audit_demo_provider_target_labels.md](tasks/active/T184_audit_demo_provider_target_labels.md) | IN_PROGRESS | Codex | `codex/t184-audit-demo-provider-target-labels` | Humanize audit demo provider target labels. |
+| T184 | [tasks/active/T184_audit_demo_provider_target_labels.md](tasks/active/T184_audit_demo_provider_target_labels.md) | REVIEW | Codex | `codex/t184-audit-demo-provider-target-labels` | Humanize audit demo provider target labels. |
 
 ## Done Task Files
 
