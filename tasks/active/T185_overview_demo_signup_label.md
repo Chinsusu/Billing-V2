@@ -1,9 +1,9 @@
 # T185 - Overview demo signup label
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t185-overview-demo-signup-label
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/401
 Risk: frontend demo labels and smoke coverage
 Created: 2026-04-28
 Updated: 2026-04-28
@@ -32,3 +32,4 @@ Humanize the Overview demo signup activity that still exposes a raw email-style 
 
 - 2026-04-28: Task created and claimed by Codex.
 - 2026-04-28: Humanized Overview fallback signup activity and added smoke guard; local gates pass.
+- 2026-04-28: Opened PR #401 for review.
