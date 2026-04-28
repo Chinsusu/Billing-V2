@@ -260,10 +260,10 @@ export const ALERTS: PlatformAlert[] = [
   { id: "ALT-002", severity: "danger", category: "billing",      title: "Charge failed: Kenji Watanabe", detail: "Visa •• 0914 declined. Invoice INV-8821 overdue $82.00. Auto-suspend in 24h.", screen: "admin-invoices", ts: "2026-04-22 12:32", resolved: false },
   { id: "ALT-003", severity: "warn",   category: "provider",     title: "OVH API degraded — 2.8% fail rate", detail: "Error rate above threshold over last 30 min. Provisioning continues but monitored.", screen: "admin-providers", ts: "2026-04-22 11:50", resolved: false },
   { id: "ALT-004", severity: "warn",   category: "billing",      title: "2 reseller tenants below wallet threshold", detail: "DataMine Inc. ($41.20) and Proxy Garden ($18.80) are below $50 floor.", screen: "admin-tenants", ts: "2026-04-22 10:15", resolved: false },
-  { id: "ALT-005", severity: "warn",   category: "provisioning", title: "Proxmox source SRC-23001 at 91% memory", detail: "High memory utilisation on source. New VPS provisioning on this source may fail.", screen: "admin-providers", ts: "2026-04-22 09:44", resolved: false },
-  { id: "ALT-006", severity: "info",   category: "system",       title: "DB migration 0003 applied successfully", detail: "Migration ran in 1.2s. No rollback needed.", screen: "admin-settings", ts: "2026-04-21 22:01", resolved: true },
+  { id: "ALT-005", severity: "warn",   category: "provisioning", title: "Proxmox source near memory limit", detail: "High memory utilisation on the Proxmox source. New VPS provisioning on this source may fail.", screen: "admin-providers", ts: "2026-04-22 09:44", resolved: false },
+  { id: "ALT-006", severity: "info",   category: "system",       title: "RBAC migration applied successfully", detail: "Migration ran in 1.2s. No rollback needed.", screen: "admin-settings", ts: "2026-04-21 22:01", resolved: true },
   { id: "ALT-007", severity: "info",   category: "security",     title: "New admin login from new IP", detail: "User Minh Nguyen logged in from 103.21.x.x — Vietnam. Session flagged for review.", screen: "admin-settings", ts: "2026-04-21 18:30", resolved: true },
-  { id: "ALT-008", severity: "danger", category: "security",     title: "API key rotation overdue — Hetzner", detail: "Provider source SRC-23005 key has not been rotated in 90 days.", screen: "admin-providers", ts: "2026-04-20 08:00", resolved: false },
+  { id: "ALT-008", severity: "danger", category: "security",     title: "Hetzner API key rotation overdue", detail: "Hetzner provider key has not been rotated in 90 days.", screen: "admin-providers", ts: "2026-04-20 08:00", resolved: false },
 ];
 
 export type AuditLogLevel = "info" | "warn" | "error";
