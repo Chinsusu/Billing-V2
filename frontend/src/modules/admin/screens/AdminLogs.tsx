@@ -67,6 +67,8 @@ const DEMO_ACTOR_LABELS: Record<string, string> = {
 const DEMO_TARGET_LABELS: Record<string, string> = {
   "SRC-23001": "Proxmox VN-HCM node",
   "SRC-23004": "OVH upstream source",
+  "T-0018": "DataMine tenant account",
+  "T-8124": "Acme Proxy support ticket",
 };
 
 function matchesMockTargetType(target: string, targetType: string) {

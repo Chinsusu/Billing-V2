@@ -62,8 +62,10 @@ function createFallbackSmokeFlows(context) {
       await expectVisibleText(page, "VPS Small plan");
       await expectVisibleText(page, "OVH upstream source");
       await expectVisibleText(page, "Proxmox VN-HCM node");
+      await expectVisibleText(page, "DataMine tenant account");
+      await expectVisibleText(page, "Acme Proxy support ticket");
       await expectVisibleText(page, "Session not shown");
-      await assertNoVisibleText(page, ["prov-worker", "billing-worker", "health-worker", "manual_review", "0003_rbac", "vps-scrape-02", "VPS-SMALL", "RES-PROX-4G", "SRC-23004", "SRC-23001", "session-991"], "audit demo fallback labels");
+      await assertNoVisibleText(page, ["prov-worker", "billing-worker", "health-worker", "manual_review", "0003_rbac", "vps-scrape-02", "VPS-SMALL", "RES-PROX-4G", "SRC-23004", "SRC-23001", "T-0018", "T-8124", "session-991"], "audit demo fallback labels");
       await assertNoForbiddenText(page, "audit demo fallback");
     });
   }

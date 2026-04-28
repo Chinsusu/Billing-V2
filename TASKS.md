@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-28` after T185 was merged:
+Current board snapshot on `2026-04-28` with T186 in progress:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 182
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No in-flight tasks are currently open. |
+| T186 | [tasks/active/T186_audit_demo_ticket_tenant_targets.md](tasks/active/T186_audit_demo_ticket_tenant_targets.md) | IN_PROGRESS | Codex | `codex/t186-audit-demo-ticket-tenant-targets` | Humanize audit demo ticket and tenant target labels. |
 
 ## Done Task Files
 
