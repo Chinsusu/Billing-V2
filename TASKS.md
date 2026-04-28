@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-28` after T181 was merged:
+Current board snapshot on `2026-04-28` while T182 is in progress:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 178
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No in-flight tasks are currently open. |
+| T182 | [tasks/active/T182_audit_demo_target_labels.md](tasks/active/T182_audit_demo_target_labels.md) | IN_PROGRESS | Codex | codex/t182-audit-demo-target-labels | Humanize audit demo target labels and cover smoke guard. |
 
 ## Done Task Files
 
