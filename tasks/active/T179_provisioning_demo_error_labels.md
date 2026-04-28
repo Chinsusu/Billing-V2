@@ -1,9 +1,9 @@
 # T179 - Provisioning demo error labels
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t179-demo-provisioning-error-labels
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/389
 Risk: frontend demo labels and smoke coverage
 Created: 2026-04-28
 Updated: 2026-04-28
@@ -33,3 +33,4 @@ Humanize provisioning demo job error and trace labels at the mock data source wh
 
 - 2026-04-28: Task created and claimed by Codex.
 - 2026-04-28: Humanized provisioning demo error and trace source values; local gates pass.
+- 2026-04-28: Opened PR #389 for review.
