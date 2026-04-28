@@ -1,9 +1,9 @@
 # T183 - Overview ticket activity label
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t183-overview-ticket-activity-label
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/397
 Risk: frontend demo labels and smoke coverage
 Created: 2026-04-28
 Updated: 2026-04-28
@@ -32,3 +32,4 @@ Humanize the Overview demo activity item that still exposes a raw ticket identif
 
 - 2026-04-28: Task created and claimed by Codex.
 - 2026-04-28: Humanized Overview fallback ticket activity and added smoke coverage; local gates pass.
+- 2026-04-28: Opened PR #397 for review.

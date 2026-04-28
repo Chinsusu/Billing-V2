@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-28` with T183 in progress:
+Current board snapshot on `2026-04-28` with T183 in review:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 179
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T183 | [tasks/active/T183_overview_ticket_activity_label.md](tasks/active/T183_overview_ticket_activity_label.md) | IN_PROGRESS | Codex | `codex/t183-overview-ticket-activity-label` | Humanize Overview demo ticket activity label. |
+| T183 | [tasks/active/T183_overview_ticket_activity_label.md](tasks/active/T183_overview_ticket_activity_label.md) | REVIEW | Codex | `codex/t183-overview-ticket-activity-label` | Humanize Overview demo ticket activity label. |
 
 ## Done Task Files
 
