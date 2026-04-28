@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-28` with T185 in review:
+Current board snapshot on `2026-04-28` after T185 was merged:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 181
+- `DONE` task files in `tasks/active/`: 182
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -67,14 +67,14 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T185 | [tasks/active/T185_overview_demo_signup_label.md](tasks/active/T185_overview_demo_signup_label.md) | REVIEW | Codex | `codex/t185-overview-demo-signup-label` | Humanize Overview demo signup label. |
+| - | - | - | - | - | No in-flight tasks are currently open. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T184`
+- `T011` to `T185`
 
 ## Removed Tasks
 
