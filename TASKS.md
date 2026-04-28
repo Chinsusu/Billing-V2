@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-28` after T179 was merged:
+Current board snapshot on `2026-04-28` while T180 is in progress:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 176
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No in-flight tasks are currently open. |
+| T180 | [tasks/active/T180_audit_demo_source_labels.md](tasks/active/T180_audit_demo_source_labels.md) | IN_PROGRESS | Codex | codex/t180-audit-demo-source-labels | Humanize audit demo source labels and cover fallback smoke. |
 
 ## Done Task Files
 

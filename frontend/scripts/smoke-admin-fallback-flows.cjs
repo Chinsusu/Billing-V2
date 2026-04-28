@@ -49,6 +49,7 @@ function createFallbackSmokeFlows(context) {
       await expectVisibleText(page, "Live API unavailable. Showing demo audit data");
       await expectVisibleText(page, "Provisioning Worker");
       await expectVisibleText(page, "manual review threshold exceeded");
+      await expectVisibleText(page, "RBAC migration");
       await assertNoVisibleText(page, ["prov-worker", "billing-worker", "health-worker", "manual_review", "0003_rbac", "vps-scrape-02"], "audit demo fallback labels");
       await assertNoForbiddenText(page, "audit demo fallback");
     });
