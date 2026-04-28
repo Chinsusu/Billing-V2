@@ -220,7 +220,10 @@ async function main() {
       await expectVisibleText(page, "Open alerts");
       await expectVisibleText(page, "3 jobs stuck in manual review > 1h");
       await expectVisibleText(page, "Provider timeout on OVH.");
-      await assertNoVisibleText(page, ["manual_review"], "admin alert labels");
+      await expectVisibleText(page, "Proxmox source near memory limit");
+      await expectVisibleText(page, "RBAC migration applied successfully");
+      await expectVisibleText(page, "Hetzner API key rotation overdue");
+      await assertNoVisibleText(page, ["manual_review", "SRC-23001", "SRC-23005", "DB migration 0003"], "admin alert labels");
       await assertNoForbiddenText(page, "admin alerts");
 
       await page.getByRole("button", { name: "Reseller · ProxyVN" }).click();
