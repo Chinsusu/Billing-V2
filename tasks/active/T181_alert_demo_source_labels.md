@@ -1,9 +1,9 @@
 # T181 - Alert demo source labels
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t181-alert-demo-source-labels
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/393
 Risk: frontend demo labels and smoke coverage
 Created: 2026-04-28
 Updated: 2026-04-28
@@ -32,3 +32,4 @@ Humanize alert demo source labels that still expose provider source or migration
 
 - 2026-04-28: Task created and claimed by Codex.
 - 2026-04-28: Humanized alert demo source labels and added admin alert smoke guards; local gates pass.
+- 2026-04-28: Opened PR #393 for review.
