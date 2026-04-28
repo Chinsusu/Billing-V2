@@ -1,6 +1,6 @@
 # T184 - Audit demo provider target labels
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t184-audit-demo-provider-target-labels
 PR: https://github.com/Chinsusu/Billing-V2/pull/399
@@ -35,3 +35,4 @@ Humanize audit demo provider-source target labels that still expose raw source i
 - 2026-04-28: Task created and claimed by Codex.
 - 2026-04-28: Humanized audit demo provider-source targets and added smoke guards; local gates pass.
 - 2026-04-28: Opened PR #399 for review.
+- 2026-04-28: PR #399 merged into `main`; task marked DONE.
