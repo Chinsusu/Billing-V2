@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-28` after T184 was merged:
+Current board snapshot on `2026-04-28` with T185 in progress:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 181
@@ -67,7 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No in-flight tasks are currently open. |
+| T185 | [tasks/active/T185_overview_demo_signup_label.md](tasks/active/T185_overview_demo_signup_label.md) | IN_PROGRESS | Codex | `codex/t185-overview-demo-signup-label` | Humanize Overview demo signup label. |
 
 ## Done Task Files
 

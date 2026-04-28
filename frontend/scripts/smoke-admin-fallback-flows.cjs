@@ -46,8 +46,9 @@ function createFallbackSmokeFlows(context) {
 
   function overview(browser) {
     return withFallbackPage(browser, ["/backend/admin/topup-requests"], /Overview/i, async (page) => {
+      await expectVisibleText(page, "New customer signup from Startup Dev Studio");
       await expectVisibleText(page, "New high-priority ticket opened by Acme Proxy Co.");
-      await assertNoVisibleText(page, ["under_review", "vps-scrape-02", "T-8124"], "overview demo fallback labels");
+      await assertNoVisibleText(page, ["under_review", "vps-scrape-02", "T-8124", "startup-dev-42@proton.me"], "overview demo fallback labels");
       await assertNoForbiddenText(page, "overview demo fallback");
     });
   }
