@@ -44,6 +44,14 @@ function createFallbackSmokeFlows(context) {
     });
   }
 
+  function overview(browser) {
+    return withFallbackPage(browser, ["/backend/admin/topup-requests"], /Overview/i, async (page) => {
+      await expectVisibleText(page, "New high-priority ticket opened by Acme Proxy Co.");
+      await assertNoVisibleText(page, ["under_review", "vps-scrape-02", "T-8124"], "overview demo fallback labels");
+      await assertNoForbiddenText(page, "overview demo fallback");
+    });
+  }
+
   function audit(browser) {
     return withFallbackPage(browser, ["/backend/admin/audit-logs"], /Audit logs/i, async (page) => {
       await expectVisibleText(page, "Live API unavailable. Showing demo audit data");
@@ -88,7 +96,7 @@ function createFallbackSmokeFlows(context) {
     });
   }
 
-  return { adminService, audit, providerReadiness, providerSources, provisioning, topup };
+  return { adminService, audit, overview, providerReadiness, providerSources, provisioning, topup };
 }
 
 module.exports = { createFallbackSmokeFlows };
