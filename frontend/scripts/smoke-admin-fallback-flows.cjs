@@ -59,8 +59,10 @@ function createFallbackSmokeFlows(context) {
       await expectVisibleText(page, "manual review threshold exceeded");
       await expectVisibleText(page, "RBAC migration");
       await expectVisibleText(page, "VPS Small plan");
+      await expectVisibleText(page, "OVH upstream source");
+      await expectVisibleText(page, "Proxmox VN-HCM node");
       await expectVisibleText(page, "Session not shown");
-      await assertNoVisibleText(page, ["prov-worker", "billing-worker", "health-worker", "manual_review", "0003_rbac", "vps-scrape-02", "VPS-SMALL", "RES-PROX-4G", "session-991"], "audit demo fallback labels");
+      await assertNoVisibleText(page, ["prov-worker", "billing-worker", "health-worker", "manual_review", "0003_rbac", "vps-scrape-02", "VPS-SMALL", "RES-PROX-4G", "SRC-23004", "SRC-23001", "session-991"], "audit demo fallback labels");
       await assertNoForbiddenText(page, "audit demo fallback");
     });
   }

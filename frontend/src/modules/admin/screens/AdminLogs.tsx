@@ -64,6 +64,11 @@ const DEMO_ACTOR_LABELS: Record<string, string> = {
   "prov-worker": "Provisioning Worker",
 };
 
+const DEMO_TARGET_LABELS: Record<string, string> = {
+  "SRC-23001": "Proxmox VN-HCM node",
+  "SRC-23004": "OVH upstream source",
+};
+
 function matchesMockTargetType(target: string, targetType: string) {
   if (!targetType) return true;
   const prefix = MOCK_TARGET_PREFIXES[targetType];
@@ -84,12 +89,17 @@ function mapDemoAuditLog(log: AuditLog): AuditLog {
   return {
     ...log,
     actorName: demoAuditActorName(log.actorName),
+    target: demoAuditTarget(log.target),
     detail: demoAuditDetail(log.detail),
   };
 }
 
 function demoAuditActorName(actorName: string): string {
   return DEMO_ACTOR_LABELS[actorName] ?? (/[._-]/.test(actorName) ? technicalCodeLabel(actorName) : actorName);
+}
+
+function demoAuditTarget(target: string): string {
+  return DEMO_TARGET_LABELS[target] ?? target;
 }
 
 function demoAuditDetail(detail: string): string {
