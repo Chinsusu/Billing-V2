@@ -1,9 +1,9 @@
 # T187 - Launch gap task backlog
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t187-launch-gap-task-backlog
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/405
 Risk: task planning for launch-readiness P0/P1 work
 Created: 2026-05-13
 Updated: 2026-05-13
@@ -33,3 +33,4 @@ Create the remaining launch-readiness task backlog so implementation can proceed
 
 - 2026-05-13: Task created and claimed by Codex.
 - 2026-05-13: Added launch-readiness TODO backlog T188-T205; taskguard and diff check pass locally.
+- 2026-05-13: Opened PR #405 for review.

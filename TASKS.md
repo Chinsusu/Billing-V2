@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` with launch-readiness backlog created:
+Current board snapshot on `2026-05-13` with launch-readiness backlog in review:
 
 - `TODO`: 18
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 183
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -84,7 +84,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T187 | [tasks/active/T187_launch_gap_task_backlog.md](tasks/active/T187_launch_gap_task_backlog.md) | IN_PROGRESS | Codex | `codex/t187-launch-gap-task-backlog` | Create launch-readiness backlog for remaining work. |
+| T187 | [tasks/active/T187_launch_gap_task_backlog.md](tasks/active/T187_launch_gap_task_backlog.md) | REVIEW | Codex | `codex/t187-launch-gap-task-backlog` | Create launch-readiness backlog for remaining work. |
 
 ## Done Task Files
 
