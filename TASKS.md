@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` after launch-readiness backlog creation:
+Current board snapshot on `2026-05-13` with T188 in review:
 
-- `TODO`: 18
+- `TODO`: 17
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 184
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -61,7 +61,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T188 | [tasks/active/T188_mvp_launch_gap_audit.md](tasks/active/T188_mvp_launch_gap_audit.md) | `codex/t188-mvp-launch-gap-audit` | Launch readiness | Map MVP and launch checklist gaps against current code evidence. |
 | T189 | [tasks/active/T189_auth_session_baseline.md](tasks/active/T189_auth_session_baseline.md) | `codex/t189-auth-session-baseline` | Auth/Security | Add real authentication and session baseline. |
 | T190 | [tasks/active/T190_admin_2fa_enforcement.md](tasks/active/T190_admin_2fa_enforcement.md) | `codex/t190-admin-2fa-enforcement` | Auth/Security | Enforce admin 2FA for privileged access. |
 | T191 | [tasks/active/T191_auth_rate_limits_and_password_reset.md](tasks/active/T191_auth_rate_limits_and_password_reset.md) | `codex/t191-auth-rate-limits-password-reset` | Auth/Security | Add login protection and password reset primitives. |
@@ -84,7 +83,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No task files are currently `IN_PROGRESS` or `REVIEW`. |
+| T188 | [tasks/active/T188_mvp_launch_gap_audit.md](tasks/active/T188_mvp_launch_gap_audit.md) | REVIEW | Codex | `codex/t188-mvp-launch-gap-audit` | Map MVP and launch checklist gaps against current code evidence. |
 
 ## Done Task Files
 
