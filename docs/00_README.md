@@ -79,6 +79,7 @@ Bản v1.10 bổ sung local development runbook để dev mới có thể setup 
 - `03_execution_operations_launch/34_Beta_Pilot_Program_And_Feedback_Loop.md`
 - `03_execution_operations_launch/35_Reseller_Acquisition_And_Enablement_Playbook.md`
 - `03_execution_operations_launch/36_Go_To_Market_Positioning_And_Offer_Strategy.md`
+- `03_execution_operations_launch/65_MVP_Launch_Gap_Audit.md`
 
 ### Tài liệu architecture deep dive thêm ở bản v1.4
 - `04_architecture_deep_dive/37_Go_Backend_Architecture_And_Module_Boundaries.md`
