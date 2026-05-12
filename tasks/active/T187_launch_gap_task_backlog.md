@@ -1,6 +1,6 @@
 # T187 - Launch gap task backlog
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t187-launch-gap-task-backlog
 PR: https://github.com/Chinsusu/Billing-V2/pull/405
@@ -37,3 +37,4 @@ Create the remaining launch-readiness task backlog so implementation can proceed
 - 2026-05-13: Added launch-readiness TODO backlog T188-T205; taskguard and diff check pass locally.
 - 2026-05-13: Opened PR #405 for review.
 - 2026-05-13: Updated Next.js patch dependency to clear the GitHub Actions frontend audit blocker.
+- 2026-05-13: PR #405 passed GitHub Actions and was merged into main.
