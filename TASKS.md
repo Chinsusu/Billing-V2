@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-04-28` after T186 was merged:
+Current board snapshot on `2026-05-13` with launch-readiness backlog in review:
 
-- `TODO`: 0
+- `TODO`: 18
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 183
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -61,13 +61,30 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| - | - | - | - | No TODO tasks are currently open. |
+| T188 | [tasks/active/T188_mvp_launch_gap_audit.md](tasks/active/T188_mvp_launch_gap_audit.md) | `codex/t188-mvp-launch-gap-audit` | Launch readiness | Map MVP and launch checklist gaps against current code evidence. |
+| T189 | [tasks/active/T189_auth_session_baseline.md](tasks/active/T189_auth_session_baseline.md) | `codex/t189-auth-session-baseline` | Auth/Security | Add real authentication and session baseline. |
+| T190 | [tasks/active/T190_admin_2fa_enforcement.md](tasks/active/T190_admin_2fa_enforcement.md) | `codex/t190-admin-2fa-enforcement` | Auth/Security | Enforce admin 2FA for privileged access. |
+| T191 | [tasks/active/T191_auth_rate_limits_and_password_reset.md](tasks/active/T191_auth_rate_limits_and_password_reset.md) | `codex/t191-auth-rate-limits-password-reset` | Auth/Security | Add login protection and password reset primitives. |
+| T192 | [tasks/active/T192_credential_encrypted_storage.md](tasks/active/T192_credential_encrypted_storage.md) | `codex/t192-credential-encrypted-storage` | Credentials | Add encrypted-at-rest credential storage. |
+| T193 | [tasks/active/T193_credential_reveal_audit.md](tasks/active/T193_credential_reveal_audit.md) | `codex/t193-credential-reveal-audit` | Credentials | Add controlled credential reveal with audit. |
+| T194 | [tasks/active/T194_refund_adjustment_ledger.md](tasks/active/T194_refund_adjustment_ledger.md) | `codex/t194-refund-adjustment-ledger` | Billing | Add refund and adjustment ledger behavior. |
+| T195 | [tasks/active/T195_daily_reconciliation_report.md](tasks/active/T195_daily_reconciliation_report.md) | `codex/t195-daily-reconciliation-report` | Finance | Add daily reconciliation reporting. |
+| T196 | [tasks/active/T196_reservation_ttl_concurrency.md](tasks/active/T196_reservation_ttl_concurrency.md) | `codex/t196-reservation-ttl-concurrency` | Checkout | Verify and complete reservation TTL and concurrency behavior. |
+| T197 | [tasks/active/T197_service_lifecycle_transitions.md](tasks/active/T197_service_lifecycle_transitions.md) | `codex/t197-service-lifecycle-transitions` | Lifecycle | Add service lifecycle transitions. |
+| T198 | [tasks/active/T198_lifecycle_scheduler_jobs.md](tasks/active/T198_lifecycle_scheduler_jobs.md) | `codex/t198-lifecycle-scheduler-jobs` | Scheduler | Add lifecycle scheduler jobs. |
+| T199 | [tasks/active/T199_provider_sandbox_readiness.md](tasks/active/T199_provider_sandbox_readiness.md) | `codex/t199-provider-sandbox-readiness` | Provider | Prove provider sandbox readiness. |
+| T200 | [tasks/active/T200_notification_foundation.md](tasks/active/T200_notification_foundation.md) | `codex/t200-notification-foundation` | Notifications | Add basic launch-critical notification infrastructure. |
+| T201 | [tasks/active/T201_support_abuse_basic_backend.md](tasks/active/T201_support_abuse_basic_backend.md) | `codex/t201-support-abuse-basic-backend` | Support/Abuse | Add support and abuse backend basics. |
+| T202 | [tasks/active/T202_frontend_production_integration_pass.md](tasks/active/T202_frontend_production_integration_pass.md) | `codex/t202-frontend-production-integration-pass` | Frontend | Replace remaining critical demo-only frontend behavior with production-safe API paths. |
+| T203 | [tasks/active/T203_backup_restore_ops_drill.md](tasks/active/T203_backup_restore_ops_drill.md) | `codex/t203-backup-restore-ops-drill` | Ops | Add and verify backup/restore drill. |
+| T204 | [tasks/active/T204_full_e2e_quality_gate.md](tasks/active/T204_full_e2e_quality_gate.md) | `codex/t204-full-e2e-quality-gate` | QA/CI | Create repeatable full E2E launch quality gate. |
+| T205 | [tasks/active/T205_launch_go_no_go_execution.md](tasks/active/T205_launch_go_no_go_execution.md) | `codex/t205-launch-go-no-go-execution` | Launch | Execute final launch go/no-go readiness record. |
 
 ## In-Flight Task Files
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No in-flight tasks are currently open. |
+| T187 | [tasks/active/T187_launch_gap_task_backlog.md](tasks/active/T187_launch_gap_task_backlog.md) | REVIEW | Codex | `codex/t187-launch-gap-task-backlog` | Create launch-readiness backlog for remaining work. |
 
 ## Done Task Files
 
