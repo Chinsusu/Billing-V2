@@ -47,16 +47,26 @@ func scanLedgerEntryRead(row ledgerEntryScanner) (LedgerEntry, error) {
 	return scanLedgerEntryFields(row, true)
 }
 
-func scanLedgerEntryFields(row ledgerEntryScanner, includeReferenceDisplayID bool) (LedgerEntry, error) {
+func scanPostLedgerEntryResult(row ledgerEntryScanner) (PostLedgerEntryResult, error) {
+	var created bool
+	entry, err := scanLedgerEntryFields(row, false, &created)
+	if err != nil {
+		return PostLedgerEntryResult{}, err
+	}
+	return PostLedgerEntryResult{Entry: entry, Created: created}, nil
+}
+
+func scanLedgerEntryFields(row ledgerEntryScanner, includeReferenceDisplayID bool, leadingDestinations ...interface{}) (LedgerEntry, error) {
 	var record LedgerEntry
 	var id, walletID, tenantID, direction, currency, entryType, status, referenceType, referenceID, idempotencyKey, correlationID string
 	var referenceDisplayID sql.NullInt64
 	var createdBy, reason sql.NullString
-	destinations := []interface{}{
+	destinations := append([]interface{}{}, leadingDestinations...)
+	destinations = append(destinations,
 		&id, &record.DisplayID, &walletID, &tenantID, &direction, &record.AmountMinor, &currency,
 		&entryType, &status, &record.BalanceAfterMinor, &referenceType, &referenceID, &idempotencyKey,
 		&createdBy, &reason, &correlationID, &record.CreatedAt,
-	}
+	)
 	if includeReferenceDisplayID {
 		destinations = append(destinations, &referenceDisplayID)
 	}

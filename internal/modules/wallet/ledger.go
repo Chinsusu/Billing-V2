@@ -96,6 +96,9 @@ func (input CreateLedgerEntryInput) Validate() error {
 	if input.EntryType == EntryTypeAdjustment && input.Reason == "" {
 		return ErrReasonMissing
 	}
+	if input.EntryType == EntryTypeAdjustment && input.CreatedBy == "" {
+		return identity.ErrActorIDMissing
+	}
 	if input.CorrelationID == "" {
 		return ErrCorrelationIDMissing
 	}

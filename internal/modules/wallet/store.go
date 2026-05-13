@@ -66,6 +66,7 @@ type Store interface {
 	GetWallet(ctx context.Context, lookup WalletLookup) (Wallet, error)
 	CreateLedgerEntry(ctx context.Context, input CreateLedgerEntryInput) (LedgerEntry, error)
 	PostLedgerEntry(ctx context.Context, input PostLedgerEntryInput) (LedgerEntry, error)
+	PostLedgerEntryResult(ctx context.Context, input PostLedgerEntryInput) (PostLedgerEntryResult, error)
 	ListLedgerEntries(ctx context.Context, filter LedgerEntryFilter) ([]LedgerEntry, error)
 	GetLedgerEntry(ctx context.Context, lookup LedgerEntryLookup) (LedgerEntry, error)
 	CreateTopupRequest(ctx context.Context, input CreateTopupRequestInput) (TopupRequest, error)

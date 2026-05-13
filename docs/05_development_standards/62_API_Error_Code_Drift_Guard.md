@@ -46,6 +46,7 @@ It is not a full static analyzer for every validation field code. Track codes th
 - `tenant.context_mismatch`
 - `auth.actor_required`
 - `auth.permission_denied`
+- `auth.reason_required`
 
 ### Route-specific codes
 
@@ -53,7 +54,7 @@ It is not a full static analyzer for every validation field code. Track codes th
 - orders: `order.not_found`, `order.status_conflict`, `order.status_transition_invalid`, `order.provisioning_source_not_found`
 - services: `service.not_found`, `service.status_invalid`, `credential.not_found`, `credential.reveal_rate_limited`, `credential.reveal_denied`
 - invoices: `invoice.not_found`, `invoice.status_conflict`
-- wallets: `wallet.not_found`, `wallet.ledger_not_found`, `wallet.topup_not_found`, `wallet.topup_status_conflict`, `wallet.payment_method_invalid`, `wallet.insufficient_balance`
+- wallets: `wallet.not_found`, `wallet.ledger_not_found`, `wallet.topup_not_found`, `wallet.topup_status_conflict`, `wallet.payment_method_invalid`, `wallet.status_conflict`, `wallet.currency_mismatch`, `wallet.idempotency_conflict`, `wallet.insufficient_balance`
 - checkout: `checkout.order_not_checkoutable`
 - payment: `payment.transaction_not_found`, `payment.invoice_not_payable`, `payment.idempotency_conflict`, `payment.wallet_currency_mismatch`
 - jobs: `job.not_found`, `job.status_invalid`, `job.status_conflict`, `job.manual_review_reason_missing`

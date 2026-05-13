@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` after T193 merged:
+Current board snapshot on `2026-05-13` while T194 is in review:
 
-- `TODO`: 12
+- `TODO`: 11
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 190
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -61,7 +61,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T194 | [tasks/active/T194_refund_adjustment_ledger.md](tasks/active/T194_refund_adjustment_ledger.md) | `codex/t194-refund-adjustment-ledger` | Billing | Add refund and adjustment ledger behavior. |
 | T195 | [tasks/active/T195_daily_reconciliation_report.md](tasks/active/T195_daily_reconciliation_report.md) | `codex/t195-daily-reconciliation-report` | Finance | Add daily reconciliation reporting. |
 | T196 | [tasks/active/T196_reservation_ttl_concurrency.md](tasks/active/T196_reservation_ttl_concurrency.md) | `codex/t196-reservation-ttl-concurrency` | Checkout | Verify and complete reservation TTL and concurrency behavior. |
 | T197 | [tasks/active/T197_service_lifecycle_transitions.md](tasks/active/T197_service_lifecycle_transitions.md) | `codex/t197-service-lifecycle-transitions` | Lifecycle | Add service lifecycle transitions. |
@@ -78,6 +77,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T194 | [tasks/active/T194_refund_adjustment_ledger.md](tasks/active/T194_refund_adjustment_ledger.md) | REVIEW | Codex | `codex/t194-refund-adjustment-ledger` | Add refund and adjustment ledger behavior. |
 
 ## Done Task Files
 

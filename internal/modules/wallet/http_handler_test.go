@@ -271,27 +271,33 @@ func registerWalletTestHandler(service HTTPService) http.Handler {
 }
 
 type fakeWalletHTTPService struct {
-	wallets          []Wallet
-	wallet           Wallet
-	entries          []LedgerEntry
-	topup            TopupRequest
-	topups           []TopupRequest
-	walletFilter     WalletFilter
-	walletLookup     WalletLookup
-	ledgerFilter     LedgerEntryFilter
-	topupInput       CreateTopupRequestInput
-	topupFilter      TopupRequestFilter
-	topupLookup      TopupRequestLookup
-	approveInput     ApproveTopupRequestInput
-	rejectInput      RejectTopupRequestInput
-	listWalletCalls  int
-	getWalletCalls   int
-	listLedgerCalls  int
-	createTopupCalls int
-	listTopupCalls   int
-	getTopupCalls    int
-	approveCalls     int
-	rejectCalls      int
+	wallets               []Wallet
+	wallet                Wallet
+	entries               []LedgerEntry
+	refundEntry           LedgerEntry
+	adjustmentEntry       LedgerEntry
+	topup                 TopupRequest
+	topups                []TopupRequest
+	walletFilter          WalletFilter
+	walletLookup          WalletLookup
+	ledgerFilter          LedgerEntryFilter
+	refundInput           CreateWalletRefundInput
+	adjustmentInput       CreateWalletAdjustmentInput
+	topupInput            CreateTopupRequestInput
+	topupFilter           TopupRequestFilter
+	topupLookup           TopupRequestLookup
+	approveInput          ApproveTopupRequestInput
+	rejectInput           RejectTopupRequestInput
+	listWalletCalls       int
+	getWalletCalls        int
+	listLedgerCalls       int
+	createRefundCalls     int
+	createAdjustmentCalls int
+	createTopupCalls      int
+	listTopupCalls        int
+	getTopupCalls         int
+	approveCalls          int
+	rejectCalls           int
 }
 
 func (service *fakeWalletHTTPService) ListWallets(ctx context.Context, filter WalletFilter) ([]Wallet, error) {
@@ -310,6 +316,26 @@ func (service *fakeWalletHTTPService) ListLedgerEntries(ctx context.Context, fil
 	service.listLedgerCalls++
 	service.ledgerFilter = filter
 	return service.entries, nil
+}
+
+func (service *fakeWalletHTTPService) CreateWalletRefund(ctx context.Context, input CreateWalletRefundInput) (LedgerEntry, error) {
+	service.createRefundCalls++
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return LedgerEntry{}, err
+	}
+	service.refundInput = input
+	return service.refundEntry, nil
+}
+
+func (service *fakeWalletHTTPService) CreateWalletAdjustment(ctx context.Context, input CreateWalletAdjustmentInput) (LedgerEntry, error) {
+	service.createAdjustmentCalls++
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return LedgerEntry{}, err
+	}
+	service.adjustmentInput = input
+	return service.adjustmentEntry, nil
 }
 
 func (service *fakeWalletHTTPService) CreateTopupRequest(ctx context.Context, input CreateTopupRequestInput) (TopupRequest, error) {
