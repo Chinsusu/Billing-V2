@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS service_credential_reveal_rate_limits;

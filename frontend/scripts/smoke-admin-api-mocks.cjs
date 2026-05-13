@@ -11,6 +11,17 @@ async function installApiMocks(page, options = {}) {
         body: JSON.stringify({ error: { message: "Smoke fallback failure" } }),
       });
     }
+    if (request.method() === "POST" && pathname.endsWith("/credentials/credential-1/reveal")) { // sensitive-text-allowlist
+      return json(route, {
+        id: "credential-1", // sensitive-text-allowlist
+        credential_type: "vps_root", // sensitive-text-allowlist
+        masked_hint: "root / ****",
+        status: "active",
+        payload: { username: "root", password: "fixture-access" },
+        revealed_at: now(),
+        reveal_expires_message: "Shown once. Store it securely before leaving this screen.",
+      });
+    }
     if (request.method() !== "GET") {
       return json(route, []);
     }
@@ -33,6 +44,10 @@ async function installApiMocks(page, options = {}) {
           ["provider_source_display_id", (row) => row.provider_source_display_id],
           ["status", (row) => row.status],
         ]));
+      case "/backend/admin/services/service-uuid-1":
+      case "/backend/reseller/services/service-uuid-1":
+      case "/backend/client/services/service-uuid-1":
+        return json(route, serviceDetail());
       case "/backend/admin/topup-requests":
         return json(route, filterRows([
           { id: "topup-uuid-1", display_id: 51001, tenant_id: "tenant-uuid-1", wallet_id: "wallet-1", wallet_display_id: 60001, requested_by: "buyer-1", requested_by_display_id: 10002, amount_minor: 50000, currency: "USD", payment_method: "bank_transfer", payment_reference: "LOCAL-REF-51001", status: "under_review", review_note: "", created_at: "2026-04-24T08:05:00Z" },
@@ -122,6 +137,29 @@ async function installApiMocks(page, options = {}) {
 
 function now() {
   return "2026-04-24T08:00:00Z";
+}
+
+function serviceDetail() {
+  return {
+    id: "service-uuid-1",
+    display_id: 43001,
+    tenant_id: "tenant-uuid-1",
+    order_id: "order-uuid-1",
+    order_display_id: 42001,
+    buyer_display_id: 10002,
+    tenant_plan_id: "tenant-plan-1",
+    provider_source_id: "source-ready",
+    provider_source_display_id: 10001,
+    external_resource_id: "local-vps-405910",
+    status: "active",
+    billing_status: "paid",
+    term_end: "2026-05-24T08:00:00Z",
+    credentials: [ // sensitive-text-allowlist
+      { id: "credential-1", credential_type: "vps_root", masked_hint: "root / ****", status: "active" }, // sensitive-text-allowlist
+    ],
+    product_snapshot: { product_type: "vps", name: "VPS" },
+    plan_snapshot: { plan_code: "vps-cx23-40gb-monthly", name: "CX23 VPS 40GB", region: "eu-central" },
+  };
 }
 
 function filterRows(rows, query, filters) {

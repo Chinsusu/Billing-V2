@@ -119,7 +119,8 @@ Operation error:
 | Admin and reseller job read | `order.view` |
 | Admin job retry | `provisioning.job.retry` |
 | Admin job manual review or cancel | `provisioning.manual_review.resolve` |
-| Client and admin services | `service.view` |
+| Client and admin service read | `service.view` |
+| Admin and reseller service credential reveal | `service.credential.reveal` |
 | Client and admin invoices | `wallet.view` |
 | Client and admin wallets | `wallet.view` |
 | Client and admin transactions | `wallet.view` |
@@ -142,6 +143,8 @@ Operation error:
 `service` response fields:
 
 `id`, `display_id`, `tenant_id`, `order_id`, `tenant_plan_id`, `provider_source_id`, `external_resource_id`, `status`, `billing_status`, `suspension_reason`, `term_start`, `term_end`, `created_at`, `updated_at`
+
+Service detail may include `credentials[]` metadata with `id`, `credential_type`, `masked_hint`, `status`, and optional `last_revealed_at`. Detail responses never include `encrypted_payload` or plaintext credentials.
 
 ### 3.3 Invoice
 
@@ -280,7 +283,13 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 
 - `GET /client/services/{service_id}`
   - auth: client actor, `service.view`
-  - response: one `service`
+  - response: one `service`; active credential metadata may be included as masked hints only
+
+- `POST /client/services/{service_id}/credentials/{credential_id}/reveal`
+  - auth: client actor, `service.view`
+  - body: optional `reason`
+  - response: credential payload once, `masked_hint`, `revealed_at`, and `reveal_expires_message`
+  - note: backend forces buyer scope to the current actor, rate-limits by actor and service, sets `Cache-Control: no-store`, and writes `credential.revealed` audit without plaintext
 
 - `GET /admin/services`
   - auth: admin actor, `service.view`
@@ -295,7 +304,23 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 
 - `GET /admin/services/{service_id}`
   - auth: admin actor, `service.view`
-  - response: one `service`
+  - response: one `service`; active credential metadata may be included as masked hints only
+
+- `GET /reseller/services/{service_id}`
+  - auth: reseller actor, `service.view`
+  - response: one `service`; active credential metadata may be included as masked hints only
+
+- `POST /admin/services/{service_id}/credentials/{credential_id}/reveal`
+  - auth: admin actor, `service.credential.reveal`
+  - body: optional `reason`
+  - response: credential payload once, `masked_hint`, `revealed_at`, and `reveal_expires_message`
+  - note: platform staff must satisfy admin session 2FA when session auth is active; reveal is rate-limited and audited without plaintext
+
+- `POST /reseller/services/{service_id}/credentials/{credential_id}/reveal`
+  - auth: reseller actor, `service.credential.reveal`
+  - body: optional `reason`
+  - response: credential payload once, `masked_hint`, `revealed_at`, and `reveal_expires_message`
+  - note: reveal is tenant-scoped, rate-limited, and audited without plaintext
 
 ### 4.3 Invoices
 
@@ -598,7 +623,7 @@ Shared errors:
 Route-specific errors that frontend and agents should expect:
 
 - orders: `order.not_found`, `order.status_conflict`, `order.status_transition_invalid`
-- services: `service.not_found`, `service.status_invalid`
+- services: `service.not_found`, `service.status_invalid`, `credential.not_found`, `credential.reveal_rate_limited`, `credential.reveal_denied`
 - invoices: `invoice.not_found`, `invoice.status_conflict`
 - wallets: `wallet.not_found`, `wallet.ledger_not_found`
 - top-up: `wallet.topup_not_found`, `wallet.topup_status_conflict`, `wallet.payment_method_invalid`

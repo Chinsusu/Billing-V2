@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { ServiceAccessReveal } from "@/components/ui/ServiceAccessReveal";
 import { TablePagination } from "@/components/ui/TablePagination";
 import { billingApi } from "@/lib/api/billing";
 import { compactDateTime, recordLabel } from "@/lib/api/format";
@@ -16,6 +17,7 @@ export type ServiceFamily = "proxy" | "vps" | "bandwidth";
 
 export interface AdminServiceDemoRow {
   id: string;
+  apiId?: string;
   service: string;
   owner: string;
   tenant: string;
@@ -130,6 +132,7 @@ function liveRow(service: ServiceInstance): ServiceInventoryRow {
 
   return {
     id: recordLabel(service.display_id, "SVC-"),
+    apiId: service.id,
     service: planName || productName || recordLabel(service.display_id, "Service "),
     owner: service.order_display_id ? recordLabel(service.order_display_id, "ORD-") : hiddenReference("Order"),
     tenant: service.buyer_display_id ? recordLabel(service.buyer_display_id, "ACC-") : hiddenReference("Account"),
@@ -291,9 +294,13 @@ export function AdminServiceInventoryTable({ family, title, demoRows }: AdminSer
                   <td className="p-3 text-[11px] text-gray-400">{service.expires}</td>
                   <td className="p-3 text-[11px] text-gray-500">{service.provider}</td>
                   <td className="p-3">
-                    <span className="inline-flex h-8 items-center justify-center rounded-md border border-gray-200 bg-gray-50 px-3 text-[12px] font-medium text-gray-400">
-                      Read-only
-                    </span>
+                    {service.apiId ? (
+                      <ServiceAccessReveal scope="admin" serviceId={service.apiId} reason="Admin service support reveal" />
+                    ) : (
+                      <span className="inline-flex h-8 items-center justify-center rounded-md border border-gray-200 bg-gray-50 px-3 text-[12px] font-medium text-gray-400">
+                        Read-only
+                      </span>
+                    )}
                   </td>
                 </tr>
               ))}

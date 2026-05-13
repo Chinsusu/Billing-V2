@@ -24,12 +24,17 @@ type serviceInstanceResponse struct {
 	SuspensionReason        SuspensionReason            `json:"suspension_reason,omitempty"`
 	TermStart               time.Time                   `json:"term_start"`
 	TermEnd                 time.Time                   `json:"term_end"`
+	Credentials             []serviceCredentialResponse `json:"credentials,omitempty"`
 	CreatedAt               time.Time                   `json:"created_at"`
 	UpdatedAt               time.Time                   `json:"updated_at"`
 }
 
 func newServiceInstanceResponse(service ServiceInstance) serviceInstanceResponse {
-	return serviceInstanceResponse{
+	return newServiceInstanceResponseWithCredentials(service, nil)
+}
+
+func newServiceInstanceResponseWithCredentials(service ServiceInstance, credentials []ServiceCredential) serviceInstanceResponse {
+	response := serviceInstanceResponse{
 		ID:                      service.ID,
 		DisplayID:               service.DisplayID,
 		TenantID:                service.TenantID,
@@ -48,6 +53,10 @@ func newServiceInstanceResponse(service ServiceInstance) serviceInstanceResponse
 		CreatedAt:               service.CreatedAt,
 		UpdatedAt:               service.UpdatedAt,
 	}
+	if len(credentials) > 0 {
+		response.Credentials = newServiceCredentialResponses(credentials)
+	}
+	return response
 }
 
 func newServiceInstanceResponses(services []ServiceInstance) []serviceInstanceResponse {

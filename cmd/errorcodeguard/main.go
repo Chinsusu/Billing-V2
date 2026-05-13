@@ -131,7 +131,7 @@ func containsCode(doc string, code string) bool {
 func trackedErrorCodeContracts() []errorCodeContract {
 	return []errorCodeContract{
 		code("validation.failed", source(responseSourcePath, "WriteValidationError")),
-		code("request.invalid_json", source("internal/modules/order/http_handler.go")),
+		code("request.invalid_json", source("internal/modules/order/http_shared.go")),
 		code("request.method_not_allowed", source("internal/platform/middleware/method.go")),
 		code("request.limit_invalid", source("internal/modules/jobs/http_handler.go")),
 		code("request.limit_too_large", source("internal/modules/jobs/http_handler.go")),
@@ -152,6 +152,9 @@ func trackedErrorCodeContracts() []errorCodeContract {
 		code("order.provisioning_source_not_found", source("internal/modules/payment/http_handler.go")),
 		code("service.not_found", source("internal/modules/order/http_handler.go")),
 		code("service.status_invalid", source("internal/modules/order/http_handler.go")),
+		code("credential.not_found", source("internal/modules/order/http_handler.go")),
+		code("credential.reveal_rate_limited", source("internal/modules/order/http_handler.go")),
+		code("credential.reveal_denied", source("internal/modules/order/http_handler.go")),
 		code("invoice.not_found", source("internal/modules/invoice/http_handler.go")),
 		code("invoice.status_conflict", source("internal/modules/payment/http_handler.go")),
 

@@ -19,6 +19,39 @@ DO UPDATE SET
     updated_at = NOW()
 RETURNING ` + serviceCredentialColumns
 
+const listServiceCredentialsSQL = `
+SELECT ` + serviceCredentialColumns + `
+FROM service_credentials
+WHERE tenant_id = $1
+  AND service_instance_id = $2
+ORDER BY created_at DESC`
+
+const listServiceCredentialsByStatusSQL = `
+SELECT ` + serviceCredentialColumns + `
+FROM service_credentials
+WHERE tenant_id = $1
+  AND service_instance_id = $2
+  AND status = $3
+ORDER BY created_at DESC`
+
+const getServiceCredentialSQL = `
+SELECT ` + serviceCredentialColumns + `
+FROM service_credentials
+WHERE credential_id = $1
+  AND tenant_id = $2
+  AND service_instance_id = $3`
+
+const markServiceCredentialRevealedSQL = `
+UPDATE service_credentials
+SET last_revealed_at = $4,
+    last_revealed_by = $5,
+    updated_at = NOW()
+WHERE credential_id = $1
+  AND tenant_id = $2
+  AND service_instance_id = $3
+  AND status = 'active'
+RETURNING ` + serviceCredentialColumns
+
 func (store *PostgresStore) CreateServiceCredential(ctx context.Context, input CreateServiceCredentialInput) (ServiceCredential, error) {
 	if err := store.ready(); err != nil {
 		return ServiceCredential{}, err
@@ -28,6 +61,69 @@ func (store *PostgresStore) CreateServiceCredential(ctx context.Context, input C
 		return ServiceCredential{}, err
 	}
 	return scanServiceCredential(store.executor.QueryRowContext(ctx, createServiceCredentialSQL, args...))
+}
+
+func (store *PostgresStore) ListServiceCredentials(ctx context.Context, filter ServiceCredentialFilter) ([]ServiceCredential, error) {
+	if err := store.ready(); err != nil {
+		return nil, err
+	}
+	filter = filter.Normalize()
+	if err := filter.Validate(); err != nil {
+		return nil, err
+	}
+	query := listServiceCredentialsSQL
+	args := []interface{}{filter.TenantID, filter.ServiceID}
+	if filter.Status != "" {
+		query = listServiceCredentialsByStatusSQL
+		args = append(args, filter.Status)
+	}
+	rows, err := store.executor.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	credentials := make([]ServiceCredential, 0)
+	for rows.Next() {
+		record, err := scanServiceCredential(rows)
+		if err != nil {
+			return nil, err
+		}
+		credentials = append(credentials, record)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return credentials, nil
+}
+
+func (store *PostgresStore) GetServiceCredential(ctx context.Context, lookup ServiceCredentialLookup) (ServiceCredential, error) {
+	if err := store.ready(); err != nil {
+		return ServiceCredential{}, err
+	}
+	lookup = lookup.Normalize()
+	if err := lookup.Validate(); err != nil {
+		return ServiceCredential{}, err
+	}
+	return scanServiceCredential(store.executor.QueryRowContext(ctx, getServiceCredentialSQL, lookup.ID, lookup.TenantID, lookup.ServiceID))
+}
+
+func (store *PostgresStore) MarkServiceCredentialRevealed(ctx context.Context, input MarkServiceCredentialRevealedInput) (ServiceCredential, error) {
+	if err := store.ready(); err != nil {
+		return ServiceCredential{}, err
+	}
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return ServiceCredential{}, err
+	}
+	return scanServiceCredential(store.executor.QueryRowContext(
+		ctx,
+		markServiceCredentialRevealedSQL,
+		input.ID,
+		input.TenantID,
+		input.ServiceID,
+		input.RevealedAt,
+		input.ActorID,
+	))
 }
 
 func createServiceCredentialArgs(input CreateServiceCredentialInput) ([]interface{}, error) {

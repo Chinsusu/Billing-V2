@@ -2,9 +2,7 @@ package order
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
-	"io"
 	"net/http"
 	"sort"
 	"strings"
@@ -31,16 +29,27 @@ type HTTPService interface {
 	GetServiceInstance(ctx context.Context, lookup ServiceInstanceLookup) (ServiceInstance, error)
 }
 
+type HTTPCredentialReader interface {
+	ListServiceCredentials(ctx context.Context, filter ServiceCredentialFilter) ([]ServiceCredential, error)
+}
+
+type HTTPCredentialRevealer interface {
+	RevealServiceCredential(ctx context.Context, input RevealServiceCredentialInput) (RevealServiceCredentialResult, error)
+}
+
 type RouteMiddleware func(http.HandlerFunc) http.HandlerFunc
 
 type HTTPHandlerOptions struct {
-	AdminMiddleware           RouteMiddleware
-	AdminManageMiddleware     RouteMiddleware
-	AdminServiceMiddleware    RouteMiddleware
-	ResellerMiddleware        RouteMiddleware
-	ResellerServiceMiddleware RouteMiddleware
-	ClientMiddleware          RouteMiddleware
-	ClientServiceMiddleware   RouteMiddleware
+	AdminMiddleware              RouteMiddleware
+	AdminManageMiddleware        RouteMiddleware
+	AdminServiceMiddleware       RouteMiddleware
+	AdminCredentialMiddleware    RouteMiddleware
+	ResellerMiddleware           RouteMiddleware
+	ResellerServiceMiddleware    RouteMiddleware
+	ResellerCredentialMiddleware RouteMiddleware
+	ClientMiddleware             RouteMiddleware
+	ClientServiceMiddleware      RouteMiddleware
+	ClientCredentialMiddleware   RouteMiddleware
 }
 
 type HTTPHandler struct {
@@ -49,10 +58,11 @@ type HTTPHandler struct {
 }
 
 const (
-	adminOrderPrefix    = "/admin/orders/"
-	clientOrderPrefix   = "/client/orders/"
-	adminServicePrefix  = "/admin/services/"
-	clientServicePrefix = "/client/services/"
+	adminOrderPrefix      = "/admin/orders/"
+	clientOrderPrefix     = "/client/orders/"
+	adminServicePrefix    = "/admin/services/"
+	resellerServicePrefix = "/reseller/services/"
+	clientServicePrefix   = "/client/services/"
 )
 
 func NewHTTPHandler(service HTTPService) *HTTPHandler {
@@ -73,6 +83,7 @@ func (handler *HTTPHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/services/", handler.adminServiceRoute)
 	mux.HandleFunc("/reseller/orders", handler.resellerOrdersRoute)
 	mux.HandleFunc("/reseller/services", handler.resellerServicesRoute)
+	mux.HandleFunc("/reseller/services/", handler.resellerServiceRoute)
 	mux.HandleFunc("/client/orders", handler.clientOrdersRoute)
 	mux.HandleFunc("/client/orders/", handler.clientOrderRoute)
 	mux.HandleFunc("/client/services", handler.clientServicesRoute)
@@ -295,60 +306,6 @@ func (handler *HTTPHandler) ready(w http.ResponseWriter, r *http.Request) bool {
 	return true
 }
 
-func decodeOrderJSON(w http.ResponseWriter, r *http.Request, target interface{}) bool {
-	r.Body = http.MaxBytesReader(w, r.Body, maxJSONBodyBytes)
-	decoder := json.NewDecoder(r.Body)
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(target); err != nil {
-		httpserver.WriteError(w, r, http.StatusBadRequest, "request.invalid_json", "Request body must be valid JSON.")
-		return false
-	}
-	if err := decoder.Decode(&struct{}{}); !errors.Is(err, io.EOF) {
-		httpserver.WriteError(w, r, http.StatusBadRequest, "request.invalid_json", "Request body must contain one JSON object.")
-		return false
-	}
-	return true
-}
-
-func tenantIDFromContext(w http.ResponseWriter, r *http.Request) (tenant.ID, bool) {
-	tenantContext, err := tenant.RequireContext(r.Context())
-	if err != nil {
-		writeOrderError(w, r, err)
-		return "", false
-	}
-	return tenantContext.EffectiveTenantID, true
-}
-
-func actorFromContext(w http.ResponseWriter, r *http.Request) (identity.Actor, bool) {
-	actor, err := identity.RequireActor(r.Context())
-	if err != nil {
-		writeOrderError(w, r, err)
-		return identity.Actor{}, false
-	}
-	return actor, true
-}
-
-func idempotencyKeyFromHeader(r *http.Request) IdempotencyKey {
-	return IdempotencyKey(strings.TrimSpace(r.Header.Get(IdempotencyKeyHeader)))
-}
-
-func adminOrderIDFromPath(w http.ResponseWriter, r *http.Request) (OrderID, bool) {
-	return orderIDFromPrefix(w, r, adminOrderPrefix)
-}
-
-func orderIDFromPath(w http.ResponseWriter, r *http.Request) (OrderID, bool) {
-	return orderIDFromPrefix(w, r, clientOrderPrefix)
-}
-
-func orderIDFromPrefix(w http.ResponseWriter, r *http.Request, prefix string) (OrderID, bool) {
-	value := strings.TrimSpace(strings.TrimPrefix(r.URL.Path, prefix))
-	if value == "" || strings.Contains(value, "/") {
-		writeOrderError(w, r, ErrOrderIDMissing)
-		return "", false
-	}
-	return OrderID(value), true
-}
-
 func orderFilterFromRequest(w http.ResponseWriter, r *http.Request) (OrderFilter, httpserver.CursorPageRequest, bool) {
 	page, ok := pageFromRequest(w, r)
 	if !ok {
@@ -422,6 +379,12 @@ func writeOrderError(w http.ResponseWriter, r *http.Request, err error) {
 		httpserver.WriteError(w, r, http.StatusNotFound, "order.not_found", "Order was not found.")
 	case errors.Is(err, ErrServiceNotFound):
 		httpserver.WriteError(w, r, http.StatusNotFound, "service.not_found", "Service instance was not found.")
+	case errors.Is(err, ErrCredentialNotFound):
+		httpserver.WriteError(w, r, http.StatusNotFound, "credential.not_found", "Credential was not found.")
+	case errors.Is(err, ErrCredentialRevealRateLimited):
+		httpserver.WriteError(w, r, http.StatusTooManyRequests, "credential.reveal_rate_limited", "Credential reveal limit was reached.")
+	case errors.Is(err, ErrCredentialStatusInvalid):
+		httpserver.WriteError(w, r, http.StatusForbidden, "credential.reveal_denied", "Credential cannot be revealed.")
 	case errors.Is(err, ErrOrderStatusConflict):
 		httpserver.WriteError(w, r, http.StatusConflict, "order.status_conflict", "Order status no longer matches the expected value.")
 	case errors.Is(err, identity.ErrActorContextMissing),
@@ -429,7 +392,11 @@ func writeOrderError(w http.ResponseWriter, r *http.Request, err error) {
 		errors.Is(err, identity.ErrActorTypeMissing),
 		errors.Is(err, identity.ErrActorTenantMissing):
 		httpserver.WriteError(w, r, http.StatusUnauthorized, "auth.actor_required", "Actor context is required.")
-	case errors.Is(err, ErrServiceStoreMissing), errors.Is(err, ErrStoreExecutorMissing):
+	case errors.Is(err, ErrServiceStoreMissing),
+		errors.Is(err, ErrStoreExecutorMissing),
+		errors.Is(err, ErrCredentialStoreMissing),
+		errors.Is(err, ErrCredentialCipherMissing),
+		errors.Is(err, ErrCredentialRevealLimiterMissing):
 		httpserver.WriteError(w, r, http.StatusServiceUnavailable, "order.service_unavailable", "Order service is unavailable.")
 	default:
 		httpserver.WriteError(w, r, http.StatusInternalServerError, "order.operation_failed", "Order operation failed.")
@@ -448,6 +415,8 @@ func orderValidationField(err error) (httpserver.ValidationField, bool) {
 		return validationField("order_id", "order.order_id_missing", "Order id is required."), true
 	case errors.Is(err, ErrServiceIDMissing):
 		return validationField("service_id", "service.service_id_missing", "Service id is required."), true
+	case errors.Is(err, ErrCredentialIDMissing):
+		return validationField("credential_id", "credential.credential_id_missing", "Credential id is required."), true
 	case errors.Is(err, ErrTenantPlanIDMissing):
 		return validationField("tenant_plan_id", "order.tenant_plan_id_missing", "Tenant plan id is required."), true
 	case errors.Is(err, ErrIdempotencyKeyMissing):

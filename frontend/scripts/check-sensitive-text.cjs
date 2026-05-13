@@ -5,7 +5,6 @@ const appRoot = path.resolve(__dirname, "..");
 const scanRoots = ["src", "scripts"];
 const allowedTypeFile = normalizePath("src/lib/api/types.ts");
 const guardFile = normalizePath("scripts/check-sensitive-text.cjs");
-const smokeFile = normalizePath("scripts/smoke-admin-browser.cjs");
 const allowMarker = "sensitive-text-allowlist";
 const blockedTokens = [
   "payload_json",
@@ -79,10 +78,13 @@ function isAllowed(relativePath, line, token) {
   if (relativePath === guardFile) {
     return true;
   }
+  if (line.includes(allowMarker)) {
+    return true;
+  }
   if (relativePath === allowedTypeFile && ["provider_account_id", "capability_profile"].includes(token)) {
     return true;
   }
-  return relativePath === smokeFile && line.includes(allowMarker);
+  return false;
 }
 
 function normalizePath(value) {

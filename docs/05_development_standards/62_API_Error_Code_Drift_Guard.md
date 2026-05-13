@@ -51,7 +51,7 @@ It is not a full static analyzer for every validation field code. Track codes th
 
 - catalog: `catalog.not_found`
 - orders: `order.not_found`, `order.status_conflict`, `order.status_transition_invalid`, `order.provisioning_source_not_found`
-- services: `service.not_found`, `service.status_invalid`
+- services: `service.not_found`, `service.status_invalid`, `credential.not_found`, `credential.reveal_rate_limited`, `credential.reveal_denied`
 - invoices: `invoice.not_found`, `invoice.status_conflict`
 - wallets: `wallet.not_found`, `wallet.ledger_not_found`, `wallet.topup_not_found`, `wallet.topup_status_conflict`, `wallet.payment_method_invalid`, `wallet.insufficient_balance`
 - checkout: `checkout.order_not_checkoutable`

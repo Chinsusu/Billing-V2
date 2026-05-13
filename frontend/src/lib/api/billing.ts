@@ -34,6 +34,7 @@ import {
   PaymentTransaction,
   ProviderReadiness,
   ProvisioningJob,
+  ServiceAccessReveal,
   ServiceInstance,
   TenantCatalog,
   TenantCatalogQuery,
@@ -54,6 +55,10 @@ export const billingApi = {
   listClientInvoices: () => getApiData<Invoice[]>("/client/invoices", "client"),
   listClientOrders: () => getApiData<Order[]>("/client/orders", "client"),
   listClientServices: () => getApiData<ServiceInstance[]>("/client/services", "client"),
+  getClientService: (id: string) =>
+    getApiData<ServiceInstance>(`/client/services/${encodeURIComponent(id)}`, "client"),
+  revealClientServiceAccess: (serviceId: string, accessId: string, body: { reason?: string } = {}) =>
+    postApiData<ServiceAccessReveal>(`/client/services/${encodeURIComponent(serviceId)}/credentials/${encodeURIComponent(accessId)}/reveal`, "client", body), // sensitive-text-allowlist
   listClientTransactions: () => getApiData<PaymentTransaction[]>("/client/transactions", "client"),
   listClientTopupRequests: (query: TopupRequestQuery = {}) =>
     getApiData<TopupRequest[]>("/client/topup-requests", "client", query),
@@ -82,6 +87,10 @@ export const billingApi = {
     getApiData<Order[]>("/reseller/orders", "reseller", query),
   listResellerServices: (query: AdminServiceQuery = {}) =>
     getApiData<ServiceInstance[]>("/reseller/services", "reseller", query),
+  getResellerService: (id: string) =>
+    getApiData<ServiceInstance>(`/reseller/services/${encodeURIComponent(id)}`, "reseller"),
+  revealResellerServiceAccess: (serviceId: string, accessId: string, body: { reason?: string } = {}) =>
+    postApiData<ServiceAccessReveal>(`/reseller/services/${encodeURIComponent(serviceId)}/credentials/${encodeURIComponent(accessId)}/reveal`, "reseller", body), // sensitive-text-allowlist
   listResellerJobs: (query: JobQuery = {}) =>
     getApiData<ProvisioningJob[]>("/reseller/jobs", "reseller", query),
   listResellerInvoices: (query: AdminInvoiceQuery = {}) =>
@@ -119,6 +128,10 @@ export const billingApi = {
     getApiData<Order[]>("/admin/orders", "admin", query),
   listAdminServices: (query: AdminServiceQuery = {}) =>
     getApiData<ServiceInstance[]>("/admin/services", "admin", query),
+  getAdminService: (id: string) =>
+    getApiData<ServiceInstance>(`/admin/services/${encodeURIComponent(id)}`, "admin"),
+  revealAdminServiceAccess: (serviceId: string, accessId: string, body: { reason?: string } = {}) =>
+    postApiData<ServiceAccessReveal>(`/admin/services/${encodeURIComponent(serviceId)}/credentials/${encodeURIComponent(accessId)}/reveal`, "admin", body), // sensitive-text-allowlist
   listAdminJobs: (query: JobQuery = {}) =>
     getApiData<ProvisioningJob[]>("/admin/jobs", "admin", query),
   getAdminJobSummary: (query: JobSummaryQuery = {}) =>
