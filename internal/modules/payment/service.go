@@ -1,6 +1,9 @@
 package payment
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 type Service struct {
 	store              Store
@@ -8,6 +11,7 @@ type Service struct {
 	walletService      WalletPaymentService
 	walletPaymentStore WalletInvoicePaymentStore
 	audit              AuditAppender
+	now                func() time.Time
 }
 
 func NewService(store Store) *Service {
@@ -103,6 +107,25 @@ func (service *Service) GetPaymentReconciliation(ctx context.Context, lookup Rec
 	return reconciliationStore.GetPaymentReconciliation(ctx, lookup)
 }
 
+func (service *Service) BuildDailyReconciliationReport(ctx context.Context, input DailyReconciliationInput) (DailyReconciliationReport, error) {
+	if err := service.ready(); err != nil {
+		return DailyReconciliationReport{}, err
+	}
+	reconciliationStore, err := service.dailyReconciliationStore()
+	if err != nil {
+		return DailyReconciliationReport{}, err
+	}
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return DailyReconciliationReport{}, err
+	}
+	data, err := reconciliationStore.GetDailyReconciliationData(ctx, input)
+	if err != nil {
+		return DailyReconciliationReport{}, err
+	}
+	return newDailyReconciliationReport(input, data, service.nowUTC()), nil
+}
+
 func (service *Service) PayInvoiceFromWallet(ctx context.Context, input PayInvoiceFromWalletInput) (WalletInvoicePayment, error) {
 	if err := service.ready(); err != nil {
 		return WalletInvoicePayment{}, err
@@ -142,9 +165,24 @@ func (service *Service) reconciliationStore() (ReconciliationStore, error) {
 	return reconciliationStore, nil
 }
 
+func (service *Service) dailyReconciliationStore() (DailyReconciliationStore, error) {
+	reconciliationStore, ok := service.store.(DailyReconciliationStore)
+	if !ok {
+		return nil, ErrBillingDependencyMissing
+	}
+	return reconciliationStore, nil
+}
+
 func (service *Service) ready() error {
 	if service == nil || service.store == nil {
 		return ErrServiceStoreMissing
 	}
 	return nil
+}
+
+func (service *Service) nowUTC() time.Time {
+	if service != nil && service.now != nil {
+		return service.now().UTC()
+	}
+	return time.Now().UTC()
 }
