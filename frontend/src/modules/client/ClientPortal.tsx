@@ -7,7 +7,9 @@ import { ClientInvoices } from "./screens/ClientInvoices";
 import { ClientPlaceholder } from "./screens/ClientPlaceholder";
 import { ClientServices } from "./screens/ClientServices";
 import { ClientSettings } from "./screens/ClientSettings";
+import { ClientShop } from "./screens/ClientShop";
 import { ClientTransactions } from "./screens/ClientTransactions";
+import { ClientWallet } from "./screens/ClientWallet";
 
 interface ScreenConfig {
   title: string;
@@ -20,7 +22,11 @@ const SCREENS: Record<string, ScreenConfig> = {
   "client-overview": {
     title: "Overview", breadcrumbs: ["ProxyVN", "Overview"],
     meta: <span className="text-[11px] text-gray-400">Wallet $128.40</span>,
-    component: <ClientDashboard />,
+    component: null,
+  },
+  "client-shop": {
+    title: "Buy service", breadcrumbs: ["ProxyVN", "Services", "Buy service"],
+    component: <ClientShop />,
   },
   "client-tickets": {
     title: "Support tickets", breadcrumbs: ["ProxyVN", "Customers", "Tickets"],
@@ -42,6 +48,10 @@ const SCREENS: Record<string, ScreenConfig> = {
     title: "Invoices", breadcrumbs: ["ProxyVN", "Billing", "Invoices"],
     component: <ClientInvoices />,
   },
+  "client-wallet": {
+    title: "Wallet", breadcrumbs: ["ProxyVN", "Billing", "Wallet"],
+    component: <ClientWallet />,
+  },
   "client-transactions": {
     title: "Transactions", breadcrumbs: ["ProxyVN", "Billing", "Transactions"],
     meta: <span className="text-[11px] text-gray-400">$128.40</span>,
@@ -56,6 +66,15 @@ const SCREENS: Record<string, ScreenConfig> = {
 export function ClientPortal() {
   const [screen, setScreen] = useState("client-overview");
   const cur = SCREENS[screen] ?? SCREENS["client-overview"];
+  const content = screen === "client-overview"
+    ? (
+      <ClientDashboard
+        onOpenServices={() => setScreen("client-services-proxies")}
+        onOpenShop={() => setScreen("client-shop")}
+        onOpenWallet={() => setScreen("client-wallet")}
+      />
+    )
+    : cur.component;
 
   return (
     <AppShell
@@ -66,7 +85,7 @@ export function ClientPortal() {
       breadcrumbs={cur.breadcrumbs}
       meta={cur.meta}
     >
-      {cur.component}
+      {content}
     </AppShell>
   );
 }

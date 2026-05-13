@@ -148,6 +148,8 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   "client-services-bandwidth": <Gauge size={14} />,
 
   // Billing
+  "client-shop": <ShoppingBag size={14} />,
+  "client-wallet": <Wallet size={14} />,
   "admin-invoices": <Receipt size={14} />,
   "reseller-invoices": <Receipt size={14} />,
   "client-invoices": <Receipt size={14} />,
