@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` while T196 is in progress:
+Current board snapshot on `2026-05-13` while T196 is in review:
 
 - `TODO`: 9
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 192
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -75,7 +75,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T196 | [tasks/active/T196_reservation_ttl_concurrency.md](tasks/active/T196_reservation_ttl_concurrency.md) | IN_PROGRESS | Codex | `codex/t196-reservation-ttl-concurrency` | Verify and complete reservation TTL and concurrency behavior. |
+| T196 | [tasks/active/T196_reservation_ttl_concurrency.md](tasks/active/T196_reservation_ttl_concurrency.md) | REVIEW | Codex | `codex/t196-reservation-ttl-concurrency` | Verify and complete reservation TTL and concurrency behavior. |
 
 ## Done Task Files
 
