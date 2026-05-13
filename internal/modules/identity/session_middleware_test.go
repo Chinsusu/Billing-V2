@@ -92,6 +92,25 @@ func TestSessionMiddlewareAllowsAuthRoutesWithStaleCookie(t *testing.T) {
 	}
 }
 
+func TestSessionMiddlewareAllowsPasswordResetWithStaleCookie(t *testing.T) {
+	handler := SessionMiddleware(SessionMiddlewareOptions{
+		CookieName: "billing_session",
+		Resolver:   &fakeSessionResolver{err: ErrSessionInvalid},
+	})(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+
+	request := httptest.NewRequest(http.MethodPost, "/auth/password-reset/request", nil)
+	request.AddCookie(&http.Cookie{Name: "billing_session", Value: "bad-token"})
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusNoContent {
+		t.Fatalf("expected password reset route to bypass session resolution, got %d: %s", response.Code, response.Body.String())
+	}
+}
+
 func TestSessionMiddlewareRejectsUnsatisfiedAdminTwoFactor(t *testing.T) {
 	handler := SessionMiddleware(SessionMiddlewareOptions{
 		CookieName:            "billing_session",

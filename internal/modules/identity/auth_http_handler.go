@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"net"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
@@ -18,6 +20,8 @@ const maxAuthJSONBodyBytes = 1 << 20
 type AuthHTTPService interface {
 	Login(ctx context.Context, input LoginInput) (LoginResult, error)
 	Logout(ctx context.Context, token string) error
+	RequestPasswordReset(ctx context.Context, input PasswordResetRequestInput) (PasswordResetRequestResult, error)
+	ConfirmPasswordReset(ctx context.Context, input PasswordResetConfirmInput) (PasswordResetConfirmResult, error)
 	SetupTwoFactor(ctx context.Context, token string) (SetupTwoFactorResult, error)
 	VerifyTwoFactor(ctx context.Context, token string, code string) (VerifyTwoFactorResult, error)
 }
@@ -59,6 +63,19 @@ type verifyTwoFactorRequest struct {
 	Code string `json:"code"`
 }
 
+type passwordResetRequest struct {
+	Email string `json:"email"`
+}
+
+type passwordResetConfirmRequest struct {
+	Token       string `json:"token"`
+	NewPassword string `json:"new_password"`
+}
+
+type passwordResetResponse struct {
+	Status string `json:"status"`
+}
+
 type verifyTwoFactorResponse struct {
 	SessionID          string    `json:"session_id"`
 	UserID             UserID    `json:"user_id"`
@@ -76,6 +93,8 @@ func NewAuthHTTPHandlerWithOptions(service AuthHTTPService, options AuthHTTPHand
 func (handler *AuthHTTPHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/auth/login", middleware.RequireMethod(http.MethodPost, handler.handleLogin))
 	mux.HandleFunc("/auth/logout", middleware.RequireMethod(http.MethodPost, handler.handleLogout))
+	mux.HandleFunc("/auth/password-reset/request", middleware.RequireMethod(http.MethodPost, handler.handlePasswordResetRequest))
+	mux.HandleFunc("/auth/password-reset/confirm", middleware.RequireMethod(http.MethodPost, handler.handlePasswordResetConfirm))
 	mux.HandleFunc("/auth/2fa/setup", middleware.RequireMethod(http.MethodPost, handler.handleSetupTwoFactor))
 	mux.HandleFunc("/auth/2fa/verify", middleware.RequireMethod(http.MethodPost, handler.handleVerifyTwoFactor))
 }
@@ -99,6 +118,7 @@ func (handler *AuthHTTPHandler) handleLogin(w http.ResponseWriter, r *http.Reque
 		LocalTenantID:          tenant.ID(r.Header.Get(tenant.HeaderTenantID)),
 		AllowLocalTenantHeader: handler.options.AllowLocalTenantHeader,
 		UserAgent:              r.UserAgent(),
+		ClientIP:               requestClientIP(r),
 	})
 	if err != nil {
 		writeAuthError(w, r, err)
@@ -129,6 +149,63 @@ func (handler *AuthHTTPHandler) handleLogout(w http.ResponseWriter, r *http.Requ
 	}
 	http.SetCookie(w, handler.expiredSessionCookie())
 	httpserver.WriteSuccess(w, r, http.StatusOK, map[string]string{"status": "logged_out"})
+}
+
+func (handler *AuthHTTPHandler) handlePasswordResetRequest(w http.ResponseWriter, r *http.Request) {
+	if !handler.ready(w, r) {
+		return
+	}
+	var request passwordResetRequest
+	if !decodeAuthJSON(w, r, &request) {
+		return
+	}
+	if strings.TrimSpace(request.Email) == "" {
+		httpserver.WriteValidationError(w, r, []httpserver.ValidationField{
+			{Field: "email", Code: "required", Message: "Email is required."},
+		})
+		return
+	}
+	if _, err := handler.service.RequestPasswordReset(r.Context(), PasswordResetRequestInput{
+		Email:                  request.Email,
+		Domain:                 r.Host,
+		LocalTenantID:          tenant.ID(r.Header.Get(tenant.HeaderTenantID)),
+		AllowLocalTenantHeader: handler.options.AllowLocalTenantHeader,
+		ClientIP:               requestClientIP(r),
+	}); err != nil {
+		writeAuthError(w, r, err)
+		return
+	}
+	httpserver.WriteSuccess(w, r, http.StatusAccepted, passwordResetResponse{Status: "accepted"})
+}
+
+func (handler *AuthHTTPHandler) handlePasswordResetConfirm(w http.ResponseWriter, r *http.Request) {
+	if !handler.ready(w, r) {
+		return
+	}
+	var request passwordResetConfirmRequest
+	if !decodeAuthJSON(w, r, &request) {
+		return
+	}
+	fields := []httpserver.ValidationField{}
+	if strings.TrimSpace(request.Token) == "" {
+		fields = append(fields, httpserver.ValidationField{Field: "token", Code: "required", Message: "Reset token is required."})
+	}
+	if strings.TrimSpace(request.NewPassword) == "" {
+		fields = append(fields, httpserver.ValidationField{Field: "new_password", Code: "required", Message: "New password is required."})
+	}
+	if len(fields) > 0 {
+		httpserver.WriteValidationError(w, r, fields)
+		return
+	}
+	if _, err := handler.service.ConfirmPasswordReset(r.Context(), PasswordResetConfirmInput{
+		Token:       request.Token,
+		NewPassword: request.NewPassword,
+		ClientIP:    requestClientIP(r),
+	}); err != nil {
+		writeAuthError(w, r, err)
+		return
+	}
+	httpserver.WriteSuccess(w, r, http.StatusOK, passwordResetResponse{Status: "password_updated"})
 }
 
 func (handler *AuthHTTPHandler) handleSetupTwoFactor(w http.ResponseWriter, r *http.Request) {
@@ -224,6 +301,17 @@ func (handler *AuthHTTPHandler) sessionToken(w http.ResponseWriter, r *http.Requ
 	return cookie.Value, true
 }
 
+func requestClientIP(r *http.Request) string {
+	if r == nil {
+		return ""
+	}
+	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err == nil {
+		return host
+	}
+	return r.RemoteAddr
+}
+
 func decodeAuthJSON(w http.ResponseWriter, r *http.Request, destination any) bool {
 	defer r.Body.Close()
 	decoder := json.NewDecoder(http.MaxBytesReader(w, r.Body, maxAuthJSONBodyBytes))
@@ -252,6 +340,8 @@ func writeAuthValidationError(w http.ResponseWriter, r *http.Request, request lo
 
 func writeAuthError(w http.ResponseWriter, r *http.Request, err error) {
 	switch {
+	case errors.Is(err, ErrAuthRateLimited):
+		httpserver.WriteError(w, r, http.StatusTooManyRequests, "auth.rate_limited", "Too many authentication attempts.")
 	case errors.Is(err, ErrInvalidCredentials):
 		httpserver.WriteError(w, r, http.StatusUnauthorized, "auth.invalid_credentials", "Invalid email or password.")
 	case errors.Is(err, ErrLoginTenantInvalid), errors.Is(err, tenant.ErrDomainNotFound), errors.Is(err, tenant.ErrTenantIDMissing):
@@ -268,11 +358,15 @@ func writeAuthError(w http.ResponseWriter, r *http.Request, err error) {
 		httpserver.WriteError(w, r, http.StatusForbidden, "auth.2fa_not_allowed", "Two-factor setup is not allowed for this actor.")
 	case errors.Is(err, ErrTwoFactorCodeMissing), errors.Is(err, ErrTwoFactorCodeInvalid):
 		httpserver.WriteError(w, r, http.StatusUnauthorized, "auth.2fa_invalid", "Two-factor code is invalid.")
+	case errors.Is(err, ErrPasswordResetTokenMissing), errors.Is(err, ErrPasswordResetTokenInvalid), errors.Is(err, ErrPasswordResetTokenExpired), errors.Is(err, ErrPasswordResetTokenUsed):
+		httpserver.WriteError(w, r, http.StatusUnauthorized, "auth.password_reset_invalid", "Password reset token is invalid or expired.")
 	case errors.Is(err, ErrSessionTokenMissing), errors.Is(err, ErrSessionInvalid), errors.Is(err, ErrSessionExpired):
 		httpserver.WriteError(w, r, http.StatusUnauthorized, "auth.session_invalid", "Session is invalid or expired.")
 	case errors.Is(err, ErrAuthStoreMissing), errors.Is(err, ErrUserStoreExecutorMissing), errors.Is(err, ErrSessionStoreExecutorMissing):
 		httpserver.WriteError(w, r, http.StatusServiceUnavailable, "auth.service_unavailable", "Authentication service is unavailable.")
 	case errors.Is(err, ErrTwoFactorStoreExecutorMissing), errors.Is(err, ErrSecretCipherMissing), errors.Is(err, ErrEncryptionKeyInvalid):
+		httpserver.WriteError(w, r, http.StatusServiceUnavailable, "auth.service_unavailable", "Authentication service is unavailable.")
+	case errors.Is(err, ErrAuthRateLimitStoreExecutorMissing), errors.Is(err, ErrPasswordResetStoreExecutorMissing), errors.Is(err, ErrPasswordResetTTLMissing):
 		httpserver.WriteError(w, r, http.StatusServiceUnavailable, "auth.service_unavailable", "Authentication service is unavailable.")
 	default:
 		httpserver.WriteError(w, r, http.StatusInternalServerError, "auth.failed", "Authentication failed.")

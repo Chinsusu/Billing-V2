@@ -39,6 +39,7 @@ Notes:
 - Production authentication resolves actor and tenant context from the `billing_session` HttpOnly cookie.
 - `X-Actor-*` headers are local/dev smoke helpers only and must not be trusted outside local/dev.
 - Platform staff sessions must satisfy TOTP 2FA before accessing `/admin/*` routes.
+- Password reset endpoints store only token hashes and must not return plaintext reset tokens.
 - If `X-Actor-Id` is missing, the API returns `auth.actor_required`.
 
 ### 2.3 Response envelope
@@ -587,6 +588,8 @@ Shared errors:
 - `auth.actor_required`
 - `auth.permission_denied`
 - `auth.session_invalid`
+- `auth.rate_limited`
+- `auth.password_reset_invalid`
 - `auth.2fa_required`
 - `auth.2fa_invalid`
 - `auth.2fa_setup_required`

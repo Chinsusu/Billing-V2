@@ -139,6 +139,7 @@ ENCRYPTION_KEY=change-me-32-byte-local-only
 AUTH_SESSION_COOKIE_NAME=billing_session
 AUTH_SESSION_COOKIE_SECURE=false
 AUTH_SESSION_TTL=12h
+AUTH_PASSWORD_RESET_TTL=30m
 ```
 
 ## Local development

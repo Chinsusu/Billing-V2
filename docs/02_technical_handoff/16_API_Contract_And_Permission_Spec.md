@@ -240,7 +240,74 @@ Audit:
 auth.logout
 ```
 
-### 4.4 Setup admin 2FA
+### 4.4 Request password reset
+
+```text
+POST /auth/password-reset/request
+```
+
+Allowed:
+```text
+public on tenant storefront
+```
+
+Tenant scope:
+```text
+derived from domain, or local/dev tenant header when explicitly enabled
+```
+
+Request:
+```text
+email
+```
+
+Behavior:
+- Applies password reset rate limits before creating a token.
+- Creates a short-lived password reset token and stores only its hash.
+- Hands the plaintext token only to the internal reset delivery boundary.
+- Returns the same accepted response whether or not the email exists to avoid account enumeration.
+- Does not include the reset token in the API response, audit metadata, or logs.
+
+Response:
+```text
+status=accepted
+```
+
+Errors:
+- `429 auth.rate_limited` when the reset action exceeds configured limits.
+
+### 4.5 Confirm password reset
+
+```text
+POST /auth/password-reset/confirm
+```
+
+Allowed:
+```text
+public with valid reset token
+```
+
+Request:
+```text
+token
+new_password
+```
+
+Behavior:
+- Verifies the reset token by hash.
+- Rejects expired, invalid, or already-used tokens.
+- Marks the token used and updates the user password hash.
+- Does not create a login session.
+
+Response:
+```text
+status=password_updated
+```
+
+Errors:
+- `401 auth.password_reset_invalid` when the token is invalid, expired, or already used.
+
+### 4.6 Setup admin 2FA
 
 ```text
 POST /auth/2fa/setup
@@ -275,7 +342,7 @@ otp code
 recovery_code
 ```
 
-### 4.5 Verify admin 2FA
+### 4.7 Verify admin 2FA
 
 ```text
 POST /auth/2fa/verify

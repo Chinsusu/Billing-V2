@@ -36,6 +36,7 @@ type Config struct {
 	SessionCookieName   string
 	SessionCookieSecure bool
 	SessionTokenTTL     time.Duration
+	PasswordResetTTL    time.Duration
 }
 
 func LoadFromEnv() (Config, error) {
@@ -59,6 +60,11 @@ func LoadFromEnv() (Config, error) {
 		return Config{}, fmt.Errorf("AUTH_SESSION_TTL is invalid: %w", err)
 	}
 	cfg.SessionTokenTTL = sessionTTL
+	passwordResetTTL, err := time.ParseDuration(getenv("AUTH_PASSWORD_RESET_TTL", "30m"))
+	if err != nil {
+		return Config{}, fmt.Errorf("AUTH_PASSWORD_RESET_TTL is invalid: %w", err)
+	}
+	cfg.PasswordResetTTL = passwordResetTTL
 	return cfg, cfg.Validate()
 }
 
@@ -83,6 +89,9 @@ func (cfg Config) Validate() error {
 	}
 	if cfg.SessionTokenTTL <= 0 {
 		return fmt.Errorf("AUTH_SESSION_TTL must be positive")
+	}
+	if cfg.PasswordResetTTL <= 0 {
+		return fmt.Errorf("AUTH_PASSWORD_RESET_TTL must be positive")
 	}
 	if cfg.AppEnvironment == EnvironmentProduction && !cfg.SessionCookieSecure {
 		return fmt.Errorf("AUTH_SESSION_COOKIE_SECURE must be true in production")

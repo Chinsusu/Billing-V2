@@ -266,13 +266,17 @@ func newTestAuthServiceWithStores(passwordHash string, sessions *fakeSessionStor
 				TwoFactorStatus: TwoFactorStatusDisabled,
 			},
 		},
-		Sessions:   sessions,
-		TwoFactor:  twoFactor,
-		Roles:      fakeRoleReader{roleIDs: []RoleID{"role_admin"}},
-		Cipher:     cipher,
-		Audit:      audit,
-		SessionTTL: time.Hour,
-		Now:        func() time.Time { return now },
+		Sessions:         sessions,
+		TwoFactor:        twoFactor,
+		RateLimits:       &fakeAuthRateLimitStore{},
+		PasswordResets:   &fakePasswordResetStore{},
+		ResetDelivery:    &fakePasswordResetDelivery{},
+		Roles:            fakeRoleReader{roleIDs: []RoleID{"role_admin"}},
+		Cipher:           cipher,
+		Audit:            audit,
+		SessionTTL:       time.Hour,
+		PasswordResetTTL: 30 * time.Minute,
+		Now:              func() time.Time { return now },
 	})
 }
 
@@ -316,6 +320,14 @@ func (store *fakeAuthUserStore) FindUserByEmail(ctx context.Context, tenantID te
 	return store.user, nil
 }
 
+func (store *fakeAuthUserStore) UpdatePasswordHash(ctx context.Context, tenantID tenant.ID, userID UserID, passwordHash string) error {
+	if tenantID != store.user.TenantID || userID != store.user.ID {
+		return ErrUserNotFound
+	}
+	store.user.PasswordHash = passwordHash
+	return nil
+}
+
 func (store *fakeAuthUserStore) ListUsers(ctx context.Context, filter UserListFilter) ([]UserSummary, error) {
 	return nil, nil
 }
@@ -325,6 +337,7 @@ type fakeSessionStore struct {
 	identity      SessionIdentity
 	resolvedHash  string
 	revokedHash   string
+	revokedUserID UserID
 	satisfiedHash string
 }
 
@@ -349,6 +362,11 @@ func (store *fakeSessionStore) FindSessionIdentityByTokenHash(ctx context.Contex
 
 func (store *fakeSessionStore) RevokeSessionByTokenHash(ctx context.Context, tokenHash string, now time.Time) error {
 	store.revokedHash = tokenHash
+	return nil
+}
+
+func (store *fakeSessionStore) RevokeUserSessions(ctx context.Context, tenantID tenant.ID, userID UserID, now time.Time) error {
+	store.revokedUserID = userID
 	return nil
 }
 
@@ -405,6 +423,25 @@ type fakeAuthAuditAppender struct {
 func (appender *fakeAuthAuditAppender) AppendAuthAudit(ctx context.Context, input AuthAuditInput) error {
 	appender.inputs = append(appender.inputs, input)
 	return nil
+}
+
+type fakeAuthRateLimitStore struct {
+	counts  map[string]int
+	blocked bool
+	inputs  []AuthRateLimitIncrementInput
+}
+
+func (store *fakeAuthRateLimitStore) IncrementAuthRateLimit(ctx context.Context, input AuthRateLimitIncrementInput) (AuthRateLimitCounter, error) {
+	if store.counts == nil {
+		store.counts = map[string]int{}
+	}
+	store.inputs = append(store.inputs, input)
+	store.counts[input.Action+"|"+input.KeyHash]++
+	count := store.counts[input.Action+"|"+input.KeyHash]
+	if store.blocked {
+		count = 999
+	}
+	return AuthRateLimitCounter{Action: input.Action, KeyHash: input.KeyHash, WindowStart: input.WindowStart, AttemptCount: count}, nil
 }
 
 type fakeRoleReader struct {
