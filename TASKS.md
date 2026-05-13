@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` after T201 claimed:
+Current board snapshot on `2026-05-13` after T201 PR opened:
 
 - `TODO`: 4
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 197
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -70,7 +70,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T201 | [tasks/active/T201_support_abuse_basic_backend.md](tasks/active/T201_support_abuse_basic_backend.md) | IN_PROGRESS | Codex | `codex/t201-support-abuse-basic-backend` | Add support and abuse backend basics. |
+| T201 | [tasks/active/T201_support_abuse_basic_backend.md](tasks/active/T201_support_abuse_basic_backend.md) | REVIEW | Codex | `codex/t201-support-abuse-basic-backend` | Add support and abuse backend basics. |
 
 ## Done Task Files
 
