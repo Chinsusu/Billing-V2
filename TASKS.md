@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` after T202 claimed and T206 added:
+Current board snapshot on `2026-05-13` after T202 PR opened:
 
 - `TODO`: 4
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 198
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -70,7 +70,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T202 | [tasks/active/T202_frontend_production_integration_pass.md](tasks/active/T202_frontend_production_integration_pass.md) | IN_PROGRESS | Codex | `codex/t202-frontend-production-integration-pass` | Replace critical demo-only frontend behavior with production-safe API paths. |
+| T202 | [tasks/active/T202_frontend_production_integration_pass.md](tasks/active/T202_frontend_production_integration_pass.md) | REVIEW | Codex | `codex/t202-frontend-production-integration-pass` | Replace critical demo-only frontend behavior with production-safe API paths. |
 
 ## Done Task Files
 

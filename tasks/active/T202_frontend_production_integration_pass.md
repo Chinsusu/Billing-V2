@@ -1,9 +1,9 @@
 # T202 - Frontend production integration pass
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t202-frontend-production-integration-pass
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/435
 Risk: frontend API integration, tenant/RBAC visibility, credentials, and billing actions
 Created: 2026-05-13
 Updated: 2026-05-13
@@ -37,3 +37,4 @@ Replace remaining critical demo-only frontend behavior with production-safe API 
 - 2026-05-13: Exposed API-backed client shop and wallet screens in navigation, routed dashboard CTAs to those production paths, and replaced the unsupported direct renew CTA with a safe checkout/support path.
 - 2026-05-13: Created follow-up T206 for the missing direct client service renewal API/UI action instead of wiring a fake renewal action.
 - 2026-05-13: Local validation passed: `npm --prefix frontend run lint`, `npm --prefix frontend run check:sensitive-text`, `npm --prefix frontend run build`, `npm --prefix frontend run smoke:admin:ci`, `make task-guard`, and `git diff --check`.
+- 2026-05-13: Opened PR https://github.com/Chinsusu/Billing-V2/pull/435 for review.
