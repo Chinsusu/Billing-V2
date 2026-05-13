@@ -35,18 +35,21 @@ func (action ServiceLifecycleAction) Valid() bool {
 }
 
 type TransitionServiceLifecycleInput struct {
-	ID               ServiceID
-	TenantID         tenant.ID
-	BuyerUserID      identity.UserID
-	ActorID          audit.ActorID
-	ActorType        audit.ActorType
-	Action           ServiceLifecycleAction
-	FromStatus       ServiceStatus
-	ToStatus         ServiceStatus
-	BillingStatus    BillingStatus
-	SuspensionReason SuspensionReason
-	Reason           string
-	TermEnd          time.Time
+	ID                       ServiceID
+	TenantID                 tenant.ID
+	BuyerUserID              identity.UserID
+	ActorID                  audit.ActorID
+	ActorType                audit.ActorType
+	Action                   ServiceLifecycleAction
+	FromStatus               ServiceStatus
+	ToStatus                 ServiceStatus
+	BillingStatus            BillingStatus
+	SuspensionReason         SuspensionReason
+	Reason                   string
+	TermEnd                  time.Time
+	ExpectedTermEnd          time.Time
+	ExpectedBillingStatus    BillingStatus
+	ExpectedSuspensionReason SuspensionReason
 }
 
 func (input TransitionServiceLifecycleInput) Normalize() TransitionServiceLifecycleInput {
@@ -63,6 +66,8 @@ func (input TransitionServiceLifecycleInput) Normalize() TransitionServiceLifecy
 	output.ToStatus = ServiceStatus(trim(string(output.ToStatus)))
 	output.BillingStatus = BillingStatus(trim(string(output.BillingStatus)))
 	output.SuspensionReason = SuspensionReason(trim(string(output.SuspensionReason)))
+	output.ExpectedBillingStatus = BillingStatus(trim(string(output.ExpectedBillingStatus)))
+	output.ExpectedSuspensionReason = SuspensionReason(trim(string(output.ExpectedSuspensionReason)))
 	output.Reason = trim(output.Reason)
 	return output
 }
@@ -90,6 +95,12 @@ func (input TransitionServiceLifecycleInput) Validate() error {
 		return ErrBillingStatusInvalid
 	}
 	if input.SuspensionReason != "" && !input.SuspensionReason.Valid() {
+		return ErrSuspensionReasonInvalid
+	}
+	if input.ExpectedBillingStatus != "" && !input.ExpectedBillingStatus.Valid() {
+		return ErrBillingStatusInvalid
+	}
+	if input.ExpectedSuspensionReason != "" && !input.ExpectedSuspensionReason.Valid() {
 		return ErrSuspensionReasonInvalid
 	}
 	if !CanTransitionService(input.FromStatus, input.ToStatus) {

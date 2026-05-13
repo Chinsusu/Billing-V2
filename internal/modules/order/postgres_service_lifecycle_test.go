@@ -24,8 +24,8 @@ func TestTransitionServiceLifecycleArgsNormalizeAndValidate(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected lifecycle args: %v", err)
 	}
-	if len(args) != 8 {
-		t.Fatalf("expected 8 args, got %d", len(args))
+	if len(args) != 11 {
+		t.Fatalf("expected 11 args, got %d", len(args))
 	}
 	if args[0] != ServiceID("service-1") ||
 		args[1] != tenant.ID("tenant-1") ||
@@ -59,6 +59,9 @@ func TestTransitionServiceLifecycleSQLScopesTenantAndExpectedStatus(t *testing.T
 		"service_instance_id = $1",
 		"tenant_id = $2",
 		"status = $3",
+		"term_end = $9::timestamptz",
+		"billing_status = $10",
+		"suspension_reason = $11",
 		"RETURNING",
 	} {
 		if !strings.Contains(transitionServiceLifecycleSQL, clause) {

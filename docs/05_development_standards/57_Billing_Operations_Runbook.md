@@ -134,6 +134,15 @@ go run ./cmd/worker provision-loop -dsn "$DB_DSN" -interval 5s -batch-size 10
 
 Stop the loop with `Ctrl+C`, or use `-timeout` for a bounded sandbox run. Keep `APP_ENV` set to `local`, `dev`, or another non-production value.
 
+Queue due service lifecycle jobs, then process the queued `service.lifecycle` jobs:
+
+```bash
+go run ./cmd/worker lifecycle-schedule-once -dsn "$DB_DSN" -batch-size 50 -grace-period 72h
+go run ./cmd/worker lifecycle-once -dsn "$DB_DSN" -batch-size 10
+```
+
+Use `lifecycle-loop` for bounded local polling while testing service expiry, grace, and termination flows. Lifecycle jobs use idempotency keys and skip stale queued work when a service was renewed before the job ran.
+
 Retry a retryable or manual-review provisioning job after fixing the provider/source issue:
 
 ```bash

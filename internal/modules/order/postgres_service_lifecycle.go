@@ -21,6 +21,9 @@ SET status = $4,
 WHERE service_instance_id = $1
   AND tenant_id = $2
   AND status = $3
+  AND ($9::timestamptz IS NULL OR term_end = $9::timestamptz)
+  AND ($10::order_billing_status IS NULL OR billing_status = $10)
+  AND ($11::order_service_suspension_reason IS NULL OR suspension_reason = $11)
 RETURNING ` + serviceInstanceColumns + `
 ), event AS (
     INSERT INTO outbox_events (tenant_id, aggregate_type, aggregate_id, event_type, payload_json, dedupe_key, correlation_id)
@@ -93,6 +96,9 @@ func transitionServiceLifecycleArgs(input TransitionServiceLifecycleInput) ([]in
 		nullableString(string(input.SuspensionReason)),
 		nullableTime(input.TermEnd),
 		serviceLifecycleEventType(input.Action),
+		nullableTime(input.ExpectedTermEnd),
+		nullableString(string(input.ExpectedBillingStatus)),
+		nullableString(string(input.ExpectedSuspensionReason)),
 	}, nil
 }
 
