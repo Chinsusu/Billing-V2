@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` while T195 is in progress:
+Current board snapshot on `2026-05-13` while T195 is in review:
 
 - `TODO`: 10
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 191
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -76,7 +76,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T195 | [tasks/active/T195_daily_reconciliation_report.md](tasks/active/T195_daily_reconciliation_report.md) | IN_PROGRESS | Codex | `codex/t195-daily-reconciliation-report` | Add daily reconciliation reporting. |
+| T195 | [tasks/active/T195_daily_reconciliation_report.md](tasks/active/T195_daily_reconciliation_report.md) | REVIEW | Codex | `codex/t195-daily-reconciliation-report` | Add daily reconciliation reporting. |
 
 ## Done Task Files
 
