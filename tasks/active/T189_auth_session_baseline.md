@@ -1,7 +1,7 @@
 # T189 - Auth and session baseline
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t189-auth-session-baseline
 PR: -
 Risk: authentication, tenant isolation, RBAC, and public API behavior
@@ -33,3 +33,5 @@ Add a real authentication/session baseline so runtime identity no longer depends
 ## Agent Log
 
 - 2026-05-13: Task created by Codex backlog planning.
+- 2026-05-13: Claimed by Codex on branch `codex/t189-auth-session-baseline`.
+- 2026-05-13: Implemented Argon2id password verification, DB-backed session storage, cookie login/logout, global session context middleware, and dev-only actor headers.

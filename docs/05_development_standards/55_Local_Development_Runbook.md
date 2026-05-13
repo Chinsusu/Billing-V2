@@ -68,6 +68,9 @@ LOG_LEVEL=debug
 DB_DSN=postgres://billing:billing@localhost:5432/billing?sslmode=disable
 JWT_SECRET=change-me-local-only
 ENCRYPTION_KEY=change-me-32-byte-local-only
+AUTH_SESSION_COOKIE_NAME=billing_session
+AUTH_SESSION_COOKIE_SECURE=false
+AUTH_SESSION_TTL=12h
 PROVIDER_DEFAULT_MODE=fake
 ```
 

@@ -105,6 +105,49 @@ func TestNewRuntimeWithDSNRegistersCatalogRoutes(t *testing.T) {
 	}
 }
 
+func TestNewRuntimeWithDSNRegistersAuthRoutes(t *testing.T) {
+	runtime, err := newRuntime(context.Background(), testRuntimeConfig("postgres://billing@localhost/billing"), testRuntimeLogger(), func(ctx context.Context, cfg platformdb.Config) (*sql.DB, error) {
+		return newStubDB(), nil
+	})
+	if err != nil {
+		t.Fatalf("newRuntime returned error: %v", err)
+	}
+	defer closeRuntime(t, runtime)
+
+	response := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(`{"email":""}`))
+	runtime.api.Handler().ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("expected registered auth route to validate login input, got %d: %s", response.Code, response.Body.String())
+	}
+	if !strings.Contains(response.Body.String(), "validation.failed") {
+		t.Fatalf("expected validation response, got %s", response.Body.String())
+	}
+}
+
+func TestNewRuntimeWithDSNRejectsInvalidSessionCookie(t *testing.T) {
+	runtime, err := newRuntime(context.Background(), testRuntimeConfig("postgres://billing@localhost/billing"), testRuntimeLogger(), func(ctx context.Context, cfg platformdb.Config) (*sql.DB, error) {
+		return newStubDB(), nil
+	})
+	if err != nil {
+		t.Fatalf("newRuntime returned error: %v", err)
+	}
+	defer closeRuntime(t, runtime)
+
+	response := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodGet, "/client/wallets", nil)
+	request.AddCookie(&http.Cookie{Name: "billing_session", Value: "bad-token"})
+	runtime.api.Handler().ServeHTTP(response, request)
+
+	if response.Code != http.StatusUnauthorized {
+		t.Fatalf("expected invalid session to be rejected, got %d: %s", response.Code, response.Body.String())
+	}
+	if !strings.Contains(response.Body.String(), "auth.session_invalid") {
+		t.Fatalf("expected session validation response, got %s", response.Body.String())
+	}
+}
+
 func TestNewRuntimeWithDSNRegistersOrderRoutes(t *testing.T) {
 	runtime, err := newRuntime(context.Background(), testRuntimeConfig("postgres://billing@localhost/billing"), testRuntimeLogger(), func(ctx context.Context, cfg platformdb.Config) (*sql.DB, error) {
 		return newStubDB(), nil
@@ -329,11 +372,13 @@ func closeRuntime(t *testing.T, runtime *apiRuntime) {
 
 func testRuntimeConfig(dsn string) config.Config {
 	return config.Config{
-		AppEnvironment: config.EnvironmentLocal,
-		AppName:        "billing-v2",
-		HTTPAddr:       ":8080",
-		LogLevel:       config.LogLevelDebug,
-		DatabaseDSN:    dsn,
+		AppEnvironment:    config.EnvironmentLocal,
+		AppName:           "billing-v2",
+		HTTPAddr:          ":8080",
+		LogLevel:          config.LogLevelDebug,
+		DatabaseDSN:       dsn,
+		SessionCookieName: "billing_session",
+		SessionTokenTTL:   12,
 	}
 }
 

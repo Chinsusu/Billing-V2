@@ -5,6 +5,7 @@ import (
 	"net"
 	"os"
 	"strconv"
+	"time"
 )
 
 type Environment string
@@ -26,21 +27,36 @@ const (
 )
 
 type Config struct {
-	AppEnvironment Environment
-	AppName        string
-	HTTPAddr       string
-	LogLevel       LogLevel
-	DatabaseDSN    string
+	AppEnvironment      Environment
+	AppName             string
+	HTTPAddr            string
+	LogLevel            LogLevel
+	DatabaseDSN         string
+	SessionCookieName   string
+	SessionCookieSecure bool
+	SessionTokenTTL     time.Duration
 }
 
 func LoadFromEnv() (Config, error) {
-	cfg := Config{
-		AppEnvironment: Environment(getenv("APP_ENV", string(EnvironmentLocal))),
-		AppName:        getenv("APP_NAME", "billing-v2"),
-		HTTPAddr:       getenv("APP_HTTP_ADDR", ":8080"),
-		LogLevel:       LogLevel(getenv("LOG_LEVEL", string(LogLevelInfo))),
-		DatabaseDSN:    os.Getenv("DB_DSN"),
+	environment := Environment(getenv("APP_ENV", string(EnvironmentLocal)))
+	sessionCookieSecure, err := getenvBool("AUTH_SESSION_COOKIE_SECURE", defaultSessionCookieSecure(environment))
+	if err != nil {
+		return Config{}, fmt.Errorf("AUTH_SESSION_COOKIE_SECURE is invalid: %w", err)
 	}
+	cfg := Config{
+		AppEnvironment:      environment,
+		AppName:             getenv("APP_NAME", "billing-v2"),
+		HTTPAddr:            getenv("APP_HTTP_ADDR", ":8080"),
+		LogLevel:            LogLevel(getenv("LOG_LEVEL", string(LogLevelInfo))),
+		DatabaseDSN:         os.Getenv("DB_DSN"),
+		SessionCookieName:   getenv("AUTH_SESSION_COOKIE_NAME", "billing_session"),
+		SessionCookieSecure: sessionCookieSecure,
+	}
+	sessionTTL, err := time.ParseDuration(getenv("AUTH_SESSION_TTL", "12h"))
+	if err != nil {
+		return Config{}, fmt.Errorf("AUTH_SESSION_TTL is invalid: %w", err)
+	}
+	cfg.SessionTokenTTL = sessionTTL
 	return cfg, cfg.Validate()
 }
 
@@ -60,7 +76,20 @@ func (cfg Config) Validate() error {
 	if !validLogLevel(cfg.LogLevel) {
 		return fmt.Errorf("LOG_LEVEL must be one of debug, info, warn, error")
 	}
+	if cfg.SessionCookieName == "" {
+		return fmt.Errorf("AUTH_SESSION_COOKIE_NAME is required")
+	}
+	if cfg.SessionTokenTTL <= 0 {
+		return fmt.Errorf("AUTH_SESSION_TTL must be positive")
+	}
+	if cfg.AppEnvironment == EnvironmentProduction && !cfg.SessionCookieSecure {
+		return fmt.Errorf("AUTH_SESSION_COOKIE_SECURE must be true in production")
+	}
 	return nil
+}
+
+func (cfg Config) AllowDevActorHeaders() bool {
+	return cfg.AppEnvironment == EnvironmentLocal || cfg.AppEnvironment == EnvironmentDev
 }
 
 func validEnvironment(value Environment) bool {
@@ -105,4 +134,20 @@ func getenv(key string, fallback string) string {
 		return fallback
 	}
 	return value
+}
+
+func getenvBool(key string, fallback bool) (bool, error) {
+	value := os.Getenv(key)
+	if value == "" {
+		return fallback, nil
+	}
+	parsed, err := strconv.ParseBool(value)
+	if err != nil {
+		return false, err
+	}
+	return parsed, nil
+}
+
+func defaultSessionCookieSecure(environment Environment) bool {
+	return environment == EnvironmentStaging || environment == EnvironmentProduction
 }

@@ -64,6 +64,9 @@ DB_DSN
 LOG_LEVEL
 JWT_SECRET
 ENCRYPTION_KEY
+AUTH_SESSION_COOKIE_NAME
+AUTH_SESSION_COOKIE_SECURE
+AUTH_SESSION_TTL
 TELEGRAM_BOT_TOKEN
 SMTP_HOST
 SMTP_USERNAME
@@ -96,6 +99,9 @@ Ví dụ:
 
 ```text
 APP_HTTP_ADDR=:8080
+AUTH_SESSION_COOKIE_NAME=billing_session
+AUTH_SESSION_COOKIE_SECURE=true
+AUTH_SESSION_TTL=12h
 METRICS_ENABLED=false
 TRACING_ENABLED=false
 ```
@@ -130,6 +136,9 @@ Ví dụ secret placeholder:
 ```text
 JWT_SECRET=change-me-local-only
 ENCRYPTION_KEY=change-me-32-byte-local-only
+AUTH_SESSION_COOKIE_NAME=billing_session
+AUTH_SESSION_COOKIE_SECURE=false
+AUTH_SESSION_TTL=12h
 ```
 
 ## Local development
@@ -218,6 +227,7 @@ APP_*          internal/app hoặc platform/config
 DB_*           platform/db
 LOG_*          platform/logger
 JWT_*          identity/auth
+AUTH_SESSION_* identity/auth
 ENCRYPTION_*   platform/crypto
 SMTP_*         platform/email
 TELEGRAM_*     platform/telegram

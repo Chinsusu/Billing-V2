@@ -52,6 +52,24 @@ func TestHeaderActorMiddlewareFallsBackToTenantContext(t *testing.T) {
 	}
 }
 
+func TestHeaderActorMiddlewareIgnoresHeadersOutsideDev(t *testing.T) {
+	t.Setenv("APP_ENV", "production")
+	var ok bool
+	handler := HeaderActorMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, ok = FromContext(r.Context())
+	}))
+
+	request := httptest.NewRequest(http.MethodGet, "/auth", nil)
+	request.Header.Set(HeaderActorID, "user_1")
+	request.Header.Set(HeaderActorType, string(ActorTypeClient))
+	request.Header.Set(HeaderActorTenantID, "tenant_a")
+	handler.ServeHTTP(httptest.NewRecorder(), request)
+
+	if ok {
+		t.Fatal("expected production header actor auth to be disabled")
+	}
+}
+
 func TestRequireActorRejectsMissingContext(t *testing.T) {
 	_, err := RequireActor(context.Background())
 	if !errors.Is(err, ErrActorContextMissing) {

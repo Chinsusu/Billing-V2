@@ -71,6 +71,7 @@ func TestNewAPIWithOptionsRegistersOptionalRoutes(t *testing.T) {
 		AccountRoutes:  testAccountRouteRegistrar{},
 		CatalogRoutes:  testRouteRegistrar{},
 		CheckoutRoutes: testCheckoutRouteRegistrar{},
+		AuthRoutes:     testAuthRouteRegistrar{},
 		InvoiceRoutes:  testInvoiceRouteRegistrar{},
 		JobsRoutes:     testJobsRouteRegistrar{},
 		OrderRoutes:    testOrderRouteRegistrar{},
@@ -125,6 +126,12 @@ func TestNewAPIWithOptionsRegistersOptionalRoutes(t *testing.T) {
 	if jobsResponse.Code != http.StatusNoContent {
 		t.Fatalf("expected jobs route status 204, got %d", jobsResponse.Code)
 	}
+
+	authResponse := httptest.NewRecorder()
+	api.Handler().ServeHTTP(authResponse, httptest.NewRequest(http.MethodGet, "/auth-test", nil))
+	if authResponse.Code != http.StatusNoContent {
+		t.Fatalf("expected auth route status 204, got %d", authResponse.Code)
+	}
 }
 
 type testRouteRegistrar struct{}
@@ -175,6 +182,12 @@ func (testJobsRouteRegistrar) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/jobs-test", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusNoContent) })
 }
 
+type testAuthRouteRegistrar struct{}
+
+func (testAuthRouteRegistrar) RegisterRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("/auth-test", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusNoContent) })
+}
+
 func newTestAPI(t *testing.T) *API {
 	t.Helper()
 
@@ -187,9 +200,11 @@ func newTestAPI(t *testing.T) *API {
 
 func testAPIConfig() config.Config {
 	return config.Config{
-		AppEnvironment: config.EnvironmentLocal,
-		AppName:        "billing-v2",
-		HTTPAddr:       ":8080",
-		LogLevel:       config.LogLevelDebug,
+		AppEnvironment:    config.EnvironmentLocal,
+		AppName:           "billing-v2",
+		HTTPAddr:          ":8080",
+		LogLevel:          config.LogLevelDebug,
+		SessionCookieName: "billing_session",
+		SessionTokenTTL:   12,
 	}
 }

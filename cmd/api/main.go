@@ -76,6 +76,12 @@ func newRuntime(ctx context.Context, cfg config.Config, log *logger.Logger, open
 			return nil, fmt.Errorf("open api database: %w", err)
 		}
 		cleanup = conn.Close
+		authService := newAuthService(conn, cfg)
+		options.AuthRoutes = newAuthRoutes(authService, cfg)
+		options.SessionMiddleware = identity.SessionMiddleware(identity.SessionMiddlewareOptions{
+			CookieName: cfg.SessionCookieName,
+			Resolver:   authService,
+		})
 		options.AccountRoutes = newAccountRoutes(conn)
 		options.AuditRoutes = newAuditRoutes(conn)
 		options.CatalogRoutes = newCatalogRoutes(conn)
