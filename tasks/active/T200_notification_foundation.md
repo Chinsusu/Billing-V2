@@ -1,9 +1,9 @@
 # T200 - Notification foundation
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: codex/t200-notification-foundation
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/431
 Risk: notification delivery, account security, billing operations, and secrets
 Created: 2026-05-13
 Updated: 2026-05-13
@@ -33,3 +33,7 @@ Add basic notification infrastructure for launch-critical account, billing, prov
 ## Agent Log
 
 - 2026-05-13: Task created by Codex backlog planning.
+- 2026-05-13: Codex claimed task on `codex/t200-notification-foundation`.
+- 2026-05-13: Added notification schema, module service, redaction, launch-critical event builders, Postgres store, and local delivery runner. The foundation intentionally does not add SMTP/Telegram credentials or persist password reset token material.
+- 2026-05-13: Local checks passed: `make fmt`, `go test ./internal/modules/notification`, `make migrate-validate`, `make test`, `make build`, `make contract-guard`, `make error-code-guard`, `make task-guard`, `git diff --check`. `make smoke-dev-db` blocked because `DB_DSN`/`-dsn` is not configured.
+- 2026-05-13: Opened PR #431 for review.

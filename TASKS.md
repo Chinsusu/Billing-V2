@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` after T199 merged:
+Current board snapshot on `2026-05-13` after T200 opened for review:
 
-- `TODO`: 6
+- `TODO`: 5
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 196
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -61,7 +61,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T200 | [tasks/active/T200_notification_foundation.md](tasks/active/T200_notification_foundation.md) | `codex/t200-notification-foundation` | Notifications | Add basic launch-critical notification infrastructure. |
 | T201 | [tasks/active/T201_support_abuse_basic_backend.md](tasks/active/T201_support_abuse_basic_backend.md) | `codex/t201-support-abuse-basic-backend` | Support/Abuse | Add support and abuse backend basics. |
 | T202 | [tasks/active/T202_frontend_production_integration_pass.md](tasks/active/T202_frontend_production_integration_pass.md) | `codex/t202-frontend-production-integration-pass` | Frontend | Replace remaining critical demo-only frontend behavior with production-safe API paths. |
 | T203 | [tasks/active/T203_backup_restore_ops_drill.md](tasks/active/T203_backup_restore_ops_drill.md) | `codex/t203-backup-restore-ops-drill` | Ops | Add and verify backup/restore drill. |
@@ -72,6 +71,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T200 | [tasks/active/T200_notification_foundation.md](tasks/active/T200_notification_foundation.md) | REVIEW | Codex | `codex/t200-notification-foundation` | Add basic launch-critical notification infrastructure. |
 
 ## Done Task Files
 
