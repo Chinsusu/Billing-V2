@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` while T190 is in review:
+Current board snapshot on `2026-05-13` after T190 merged:
 
 - `TODO`: 15
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 186
+- `DONE` task files in `tasks/active/`: 187
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -81,14 +81,13 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T190 | [tasks/active/T190_admin_2fa_enforcement.md](tasks/active/T190_admin_2fa_enforcement.md) | REVIEW | Codex | `codex/t190-admin-2fa-enforcement` | Enforce admin 2FA for privileged access. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T189`
+- `T011` to `T190`
 
 ## Removed Tasks
 
