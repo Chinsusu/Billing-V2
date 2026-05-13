@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` while T189 is in review:
+Current board snapshot on `2026-05-13` after T189 was merged:
 
 - `TODO`: 16
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 185
+- `DONE` task files in `tasks/active/`: 186
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -82,14 +82,14 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T189 | [tasks/active/T189_auth_session_baseline.md](tasks/active/T189_auth_session_baseline.md) | REVIEW | Codex | `codex/t189-auth-session-baseline` | Add real authentication and session baseline. |
+| - | - | - | - | - | No task files are currently `IN_PROGRESS` or `REVIEW`. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T188`
+- `T011` to `T189`
 
 ## Removed Tasks
 
