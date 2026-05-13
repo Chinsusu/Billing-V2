@@ -1,9 +1,9 @@
 # T197 - Service lifecycle transitions
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t197-service-lifecycle-transitions
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/425
 Risk: service lifecycle, billing, provisioning, tenant isolation, and audit
 Created: 2026-05-13
 Updated: 2026-05-13
@@ -32,6 +32,6 @@ Implement or complete service lifecycle transitions for renew, expire, grace, su
 
 ## Agent Log
 
-- 2026-05-13: Implemented service lifecycle transition primitives, admin/reseller suspend-unsuspend-terminate APIs, service lifecycle events/audit, RBAC permission seed/migration, and API/error docs. Local checks so far: `make fmt`, targeted `go test ./internal/modules/order ./cmd/contractguard ./cmd/errorcodeguard ./internal/seed`, `make test`, `make build`, `make migrate-validate`, `make contract-guard`, `make error-code-guard`, `make task-guard`, `git diff --check`. `make smoke-dev-billing` was blocked because `DB_DSN`/`-dsn` is not configured.
+- 2026-05-13: Opened PR https://github.com/Chinsusu/Billing-V2/pull/425. Implemented service lifecycle transition primitives, admin/reseller suspend-unsuspend-terminate APIs, service lifecycle events/audit, RBAC permission seed/migration, and API/error docs. Local checks: `make fmt`, targeted `go test ./internal/modules/order ./cmd/contractguard ./cmd/errorcodeguard ./internal/seed`, `make test`, `make build`, `make migrate-validate`, `make contract-guard`, `make error-code-guard`, `make task-guard`, `git diff --check`. `make smoke-dev-billing` was blocked because `DB_DSN`/`-dsn` is not configured.
 - 2026-05-13: Claimed by Codex on `codex/t197-service-lifecycle-transitions`; starting lifecycle/API/doc review before implementation.
 - 2026-05-13: Task created by Codex backlog planning.
