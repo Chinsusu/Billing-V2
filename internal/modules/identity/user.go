@@ -153,5 +153,6 @@ type UserStore interface {
 	CreateUser(ctx context.Context, input CreateUserInput) (User, error)
 	GetUserByID(ctx context.Context, tenantID tenant.ID, userID UserID) (User, error)
 	FindUserByEmail(ctx context.Context, tenantID tenant.ID, email string) (User, error)
+	UpdatePasswordHash(ctx context.Context, tenantID tenant.ID, userID UserID, passwordHash string) error
 	ListUsers(ctx context.Context, filter UserListFilter) ([]UserSummary, error)
 }

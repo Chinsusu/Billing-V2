@@ -34,6 +34,7 @@ type LoginInput struct {
 	LocalTenantID          tenant.ID
 	AllowLocalTenantHeader bool
 	UserAgent              string
+	ClientIP               string
 }
 
 type LoginResult struct {
@@ -81,6 +82,7 @@ type SessionStore interface {
 	FindSessionIdentityByTokenHash(ctx context.Context, tokenHash string, now time.Time) (SessionIdentity, error)
 	MarkSessionTwoFactorSatisfied(ctx context.Context, tokenHash string, now time.Time) (Session, error)
 	RevokeSessionByTokenHash(ctx context.Context, tokenHash string, now time.Time) error
+	RevokeUserSessions(ctx context.Context, tenantID tenant.ID, userID UserID, now time.Time) error
 }
 
 type UserRoleReader interface {
@@ -96,27 +98,35 @@ type CreateSessionInput struct {
 }
 
 type AuthService struct {
-	tenants    AuthTenantStore
-	users      UserStore
-	sessions   SessionStore
-	twoFactor  TwoFactorStore
-	roles      UserRoleReader
-	cipher     SecretCipher
-	audit      AuthAuditAppender
-	sessionTTL time.Duration
-	now        func() time.Time
+	tenants          AuthTenantStore
+	users            UserStore
+	sessions         SessionStore
+	twoFactor        TwoFactorStore
+	rateLimits       AuthRateLimitStore
+	passwordResets   PasswordResetStore
+	resetDelivery    PasswordResetDelivery
+	roles            UserRoleReader
+	cipher           SecretCipher
+	audit            AuthAuditAppender
+	sessionTTL       time.Duration
+	passwordResetTTL time.Duration
+	now              func() time.Time
 }
 
 type AuthServiceOptions struct {
-	Tenants    AuthTenantStore
-	Users      UserStore
-	Sessions   SessionStore
-	TwoFactor  TwoFactorStore
-	Roles      UserRoleReader
-	Cipher     SecretCipher
-	Audit      AuthAuditAppender
-	SessionTTL time.Duration
-	Now        func() time.Time
+	Tenants          AuthTenantStore
+	Users            UserStore
+	Sessions         SessionStore
+	TwoFactor        TwoFactorStore
+	RateLimits       AuthRateLimitStore
+	PasswordResets   PasswordResetStore
+	ResetDelivery    PasswordResetDelivery
+	Roles            UserRoleReader
+	Cipher           SecretCipher
+	Audit            AuthAuditAppender
+	SessionTTL       time.Duration
+	PasswordResetTTL time.Duration
+	Now              func() time.Time
 }
 
 func NewAuthService(options AuthServiceOptions) *AuthService {
@@ -125,15 +135,19 @@ func NewAuthService(options AuthServiceOptions) *AuthService {
 		now = time.Now
 	}
 	return &AuthService{
-		tenants:    options.Tenants,
-		users:      options.Users,
-		sessions:   options.Sessions,
-		twoFactor:  options.TwoFactor,
-		roles:      options.Roles,
-		cipher:     options.Cipher,
-		audit:      options.Audit,
-		sessionTTL: options.SessionTTL,
-		now:        now,
+		tenants:          options.Tenants,
+		users:            options.Users,
+		sessions:         options.Sessions,
+		twoFactor:        options.TwoFactor,
+		rateLimits:       options.RateLimits,
+		passwordResets:   options.PasswordResets,
+		resetDelivery:    options.ResetDelivery,
+		roles:            options.Roles,
+		cipher:           options.Cipher,
+		audit:            options.Audit,
+		sessionTTL:       options.SessionTTL,
+		passwordResetTTL: options.PasswordResetTTL,
+		now:              now,
 	}
 }
 
@@ -150,6 +164,9 @@ func (service *AuthService) Login(ctx context.Context, input LoginInput) (LoginR
 	}
 	tenantID, err := service.resolveLoginTenant(ctx, input)
 	if err != nil {
+		return LoginResult{}, err
+	}
+	if err := service.enforceAuthRateLimit(ctx, AuthActionLogin, tenantID, input.Email, input.ClientIP); err != nil {
 		return LoginResult{}, err
 	}
 	user, err := service.users.FindUserByEmail(ctx, tenantID, input.Email)

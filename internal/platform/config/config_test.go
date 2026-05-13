@@ -12,6 +12,7 @@ func TestLoadFromEnvUsesSafeDefaults(t *testing.T) {
 	t.Setenv("AUTH_SESSION_COOKIE_NAME", "")
 	t.Setenv("AUTH_SESSION_COOKIE_SECURE", "")
 	t.Setenv("AUTH_SESSION_TTL", "")
+	t.Setenv("AUTH_PASSWORD_RESET_TTL", "")
 
 	cfg, err := LoadFromEnv()
 	if err != nil {
@@ -39,14 +40,19 @@ func TestLoadFromEnvUsesSafeDefaults(t *testing.T) {
 	if cfg.SessionTokenTTL.String() != "12h0m0s" {
 		t.Fatalf("expected default session TTL, got %s", cfg.SessionTokenTTL)
 	}
+	if cfg.PasswordResetTTL.String() != "30m0s" {
+		t.Fatalf("expected default password reset TTL, got %s", cfg.PasswordResetTTL)
+	}
 }
 
 func TestValidateRejectsInvalidEnvironment(t *testing.T) {
 	cfg := Config{
-		AppEnvironment: "prod",
-		AppName:        "billing-v2",
-		HTTPAddr:       ":8080",
-		LogLevel:       LogLevelInfo,
+		AppEnvironment:   "prod",
+		AppName:          "billing-v2",
+		HTTPAddr:         ":8080",
+		LogLevel:         LogLevelInfo,
+		SessionTokenTTL:  12,
+		PasswordResetTTL: 30,
 	}
 
 	if err := cfg.Validate(); err == nil {
@@ -56,10 +62,12 @@ func TestValidateRejectsInvalidEnvironment(t *testing.T) {
 
 func TestValidateRejectsInvalidHTTPAddr(t *testing.T) {
 	cfg := Config{
-		AppEnvironment: EnvironmentLocal,
-		AppName:        "billing-v2",
-		HTTPAddr:       "8080",
-		LogLevel:       LogLevelInfo,
+		AppEnvironment:   EnvironmentLocal,
+		AppName:          "billing-v2",
+		HTTPAddr:         "8080",
+		LogLevel:         LogLevelInfo,
+		SessionTokenTTL:  12,
+		PasswordResetTTL: 30,
 	}
 
 	if err := cfg.Validate(); err == nil {
@@ -69,10 +77,12 @@ func TestValidateRejectsInvalidHTTPAddr(t *testing.T) {
 
 func TestValidateRejectsInvalidLogLevel(t *testing.T) {
 	cfg := Config{
-		AppEnvironment: EnvironmentLocal,
-		AppName:        "billing-v2",
-		HTTPAddr:       ":8080",
-		LogLevel:       "verbose",
+		AppEnvironment:   EnvironmentLocal,
+		AppName:          "billing-v2",
+		HTTPAddr:         ":8080",
+		LogLevel:         "verbose",
+		SessionTokenTTL:  12,
+		PasswordResetTTL: 30,
 	}
 
 	if err := cfg.Validate(); err == nil {
@@ -87,10 +97,26 @@ func TestValidateRejectsInvalidSessionTTL(t *testing.T) {
 		HTTPAddr:          ":8080",
 		LogLevel:          LogLevelInfo,
 		SessionCookieName: "billing_session",
+		PasswordResetTTL:  30,
 	}
 
 	if err := cfg.Validate(); err == nil {
 		t.Fatal("expected invalid session TTL error")
+	}
+}
+
+func TestValidateRejectsInvalidPasswordResetTTL(t *testing.T) {
+	cfg := Config{
+		AppEnvironment:    EnvironmentLocal,
+		AppName:           "billing-v2",
+		HTTPAddr:          ":8080",
+		LogLevel:          LogLevelInfo,
+		SessionCookieName: "billing_session",
+		SessionTokenTTL:   12,
+	}
+
+	if err := cfg.Validate(); err == nil {
+		t.Fatal("expected invalid password reset TTL error")
 	}
 }
 
@@ -102,6 +128,7 @@ func TestValidateRequiresSecureSessionCookieInProduction(t *testing.T) {
 		LogLevel:          LogLevelInfo,
 		SessionCookieName: "billing_session",
 		SessionTokenTTL:   12,
+		PasswordResetTTL:  30,
 	}
 
 	if err := cfg.Validate(); err == nil {
@@ -119,6 +146,7 @@ func TestValidateRequiresEncryptionKeyInProductionWithDatabase(t *testing.T) {
 		SessionCookieName:   "billing_session",
 		SessionCookieSecure: true,
 		SessionTokenTTL:     12,
+		PasswordResetTTL:    30,
 	}
 
 	if err := cfg.Validate(); err == nil {

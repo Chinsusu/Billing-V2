@@ -88,6 +88,35 @@ func (store *PostgresUserStore) FindUserByEmail(ctx context.Context, tenantID te
 	return scanUser(row)
 }
 
+func (store *PostgresUserStore) UpdatePasswordHash(ctx context.Context, tenantID tenant.ID, userID UserID, passwordHash string) error {
+	if err := store.ready(); err != nil {
+		return err
+	}
+	if tenantID.Empty() {
+		return tenant.ErrTenantIDMissing
+	}
+	if userID == "" {
+		return ErrUserIDMissing
+	}
+	if passwordHash == "" {
+		return ErrPasswordHashMissing
+	}
+	result, err := store.executor.ExecContext(ctx, `
+UPDATE users
+SET password_hash = $3,
+    failed_login_count = 0,
+    updated_at = NOW()
+WHERE tenant_id = $1 AND user_id = $2`, tenantID, userID, passwordHash)
+	if err != nil {
+		return fmt.Errorf("update password hash: %w", err)
+	}
+	count, err := result.RowsAffected()
+	if err == nil && count == 0 {
+		return ErrUserNotFound
+	}
+	return nil
+}
+
 func (store *PostgresUserStore) ListUsers(ctx context.Context, filter UserListFilter) ([]UserSummary, error) {
 	if err := store.ready(); err != nil {
 		return nil, err

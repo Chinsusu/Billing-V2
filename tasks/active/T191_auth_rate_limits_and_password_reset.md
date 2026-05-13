@@ -1,7 +1,7 @@
 # T191 - Auth rate limits and password reset
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t191-auth-rate-limits-password-reset
 PR: -
 Risk: authentication, account security, rate limiting, and notification boundaries
@@ -33,3 +33,6 @@ Add launch-required login protection and password reset primitives.
 ## Agent Log
 
 - 2026-05-13: Task created by Codex backlog planning.
+- 2026-05-13: Claimed by Codex on branch `codex/t191-auth-rate-limits-password-reset`.
+- 2026-05-13: Implemented DB-backed login/password-reset rate limits, hashed single-use password reset tokens, reset confirm password update with session revocation, and password reset API routes.
+- 2026-05-13: Local validation passed: focused Go tests, `make test`, `make build`, migration validate, API/error guards, frontend lint/sensitive-text/audit/build/smoke, `taskguard`, `diff --check`, and secret grep. `make test` was run outside sandbox because `httptest` local sockets may be blocked inside sandbox.

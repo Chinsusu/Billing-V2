@@ -91,6 +91,25 @@ WHERE token_hash = $1`, tokenHash, now); err != nil {
 	return nil
 }
 
+func (store *PostgresSessionStore) RevokeUserSessions(ctx context.Context, tenantID tenant.ID, userID UserID, now time.Time) error {
+	if err := store.ready(); err != nil {
+		return err
+	}
+	if tenantID.Empty() {
+		return tenant.ErrTenantIDMissing
+	}
+	if userID == "" {
+		return ErrUserIDMissing
+	}
+	if _, err := store.executor.ExecContext(ctx, `
+UPDATE auth_sessions
+SET revoked_at = COALESCE(revoked_at, $3), updated_at = $3
+WHERE tenant_id = $1 AND user_id = $2`, tenantID, userID, now); err != nil {
+		return fmt.Errorf("revoke user sessions: %w", err)
+	}
+	return nil
+}
+
 func (store *PostgresSessionStore) MarkSessionTwoFactorSatisfied(ctx context.Context, tokenHash string, now time.Time) (Session, error) {
 	if err := store.ready(); err != nil {
 		return Session{}, err

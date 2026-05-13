@@ -108,19 +108,65 @@ func TestAuthHTTPHandlerVerifyTwoFactorCallsService(t *testing.T) {
 	}
 }
 
+func TestAuthHTTPHandlerPasswordResetRequestDoesNotReturnToken(t *testing.T) {
+	service := &fakeAuthHTTPService{}
+	mux := http.NewServeMux()
+	NewAuthHTTPHandlerWithOptions(service, AuthHTTPHandlerOptions{
+		AllowLocalTenantHeader: true,
+	}).RegisterRoutes(mux)
+
+	request := httptest.NewRequest(http.MethodPost, "/auth/password-reset/request", strings.NewReader(`{"email":"client@example.com"}`))
+	request.Header.Set(tenant.HeaderTenantID, "tenant_1")
+	response := httptest.NewRecorder()
+
+	mux.ServeHTTP(response, request)
+
+	if response.Code != http.StatusAccepted {
+		t.Fatalf("expected status 202, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.resetRequest.Email != "client@example.com" || service.resetRequest.LocalTenantID != "tenant_1" {
+		t.Fatalf("unexpected reset request input: %+v", service.resetRequest)
+	}
+	if strings.Contains(response.Body.String(), "token") {
+		t.Fatalf("password reset response must not expose token: %s", response.Body.String())
+	}
+}
+
+func TestAuthHTTPHandlerPasswordResetConfirmCallsService(t *testing.T) {
+	service := &fakeAuthHTTPService{}
+	mux := http.NewServeMux()
+	NewAuthHTTPHandlerWithOptions(service, AuthHTTPHandlerOptions{}).RegisterRoutes(mux)
+
+	request := httptest.NewRequest(http.MethodPost, "/auth/password-reset/confirm", strings.NewReader(`{"token":"reset-token","new_password":"new-password"}`))
+	response := httptest.NewRecorder()
+
+	mux.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.confirmRequest.Token != "reset-token" || service.confirmRequest.NewPassword != "new-password" {
+		t.Fatalf("unexpected confirm input: %+v", service.confirmRequest)
+	}
+}
+
 type fakeAuthHTTPService struct {
-	loginInput   LoginInput
-	loginResult  LoginResult
-	loginErr     error
-	logoutToken  string
-	logoutErr    error
-	setupToken   string
-	setupResult  SetupTwoFactorResult
-	setupErr     error
-	verifyToken  string
-	verifyCode   string
-	verifyResult VerifyTwoFactorResult
-	verifyErr    error
+	loginInput     LoginInput
+	loginResult    LoginResult
+	loginErr       error
+	logoutToken    string
+	logoutErr      error
+	resetRequest   PasswordResetRequestInput
+	resetErr       error
+	confirmRequest PasswordResetConfirmInput
+	confirmErr     error
+	setupToken     string
+	setupResult    SetupTwoFactorResult
+	setupErr       error
+	verifyToken    string
+	verifyCode     string
+	verifyResult   VerifyTwoFactorResult
+	verifyErr      error
 }
 
 func (service *fakeAuthHTTPService) Login(ctx context.Context, input LoginInput) (LoginResult, error) {
@@ -134,6 +180,22 @@ func (service *fakeAuthHTTPService) Login(ctx context.Context, input LoginInput)
 func (service *fakeAuthHTTPService) Logout(ctx context.Context, token string) error {
 	service.logoutToken = token
 	return service.logoutErr
+}
+
+func (service *fakeAuthHTTPService) RequestPasswordReset(ctx context.Context, input PasswordResetRequestInput) (PasswordResetRequestResult, error) {
+	service.resetRequest = input
+	if service.resetErr != nil {
+		return PasswordResetRequestResult{}, service.resetErr
+	}
+	return PasswordResetRequestResult{Accepted: true}, nil
+}
+
+func (service *fakeAuthHTTPService) ConfirmPasswordReset(ctx context.Context, input PasswordResetConfirmInput) (PasswordResetConfirmResult, error) {
+	service.confirmRequest = input
+	if service.confirmErr != nil {
+		return PasswordResetConfirmResult{}, service.confirmErr
+	}
+	return PasswordResetConfirmResult{PasswordUpdated: true}, nil
 }
 
 func (service *fakeAuthHTTPService) SetupTwoFactor(ctx context.Context, token string) (SetupTwoFactorResult, error) {

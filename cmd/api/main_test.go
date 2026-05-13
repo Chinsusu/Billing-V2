@@ -379,6 +379,7 @@ func testRuntimeConfig(dsn string) config.Config {
 		DatabaseDSN:       dsn,
 		SessionCookieName: "billing_session",
 		SessionTokenTTL:   12,
+		PasswordResetTTL:  30,
 	}
 }
 

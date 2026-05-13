@@ -206,5 +206,6 @@ func testAPIConfig() config.Config {
 		LogLevel:          config.LogLevelDebug,
 		SessionCookieName: "billing_session",
 		SessionTokenTTL:   12,
+		PasswordResetTTL:  30,
 	}
 }

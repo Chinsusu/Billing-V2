@@ -46,15 +46,19 @@ func newAuthService(executor platformdb.Executor, cfg config.Config) (*identity.
 		cipher = secretCipher
 	}
 	return identity.NewAuthService(identity.AuthServiceOptions{
-		Tenants:    tenant.NewPostgresStore(executor),
-		Users:      identity.NewPostgresUserStore(executor),
-		Sessions:   identity.NewPostgresSessionStore(executor),
-		TwoFactor:  identity.NewPostgresTwoFactorStore(executor),
-		Roles:      rbac.NewPostgresStore(executor),
-		Cipher:     cipher,
-		Audit:      authAuditAdapter{service: audit.NewService(audit.NewPostgresStore(executor))},
-		SessionTTL: cfg.SessionTokenTTL,
-		Now:        time.Now,
+		Tenants:          tenant.NewPostgresStore(executor),
+		Users:            identity.NewPostgresUserStore(executor),
+		Sessions:         identity.NewPostgresSessionStore(executor),
+		TwoFactor:        identity.NewPostgresTwoFactorStore(executor),
+		RateLimits:       identity.NewPostgresAuthRateLimitStore(executor),
+		PasswordResets:   identity.NewPostgresPasswordResetStore(executor),
+		ResetDelivery:    identity.NoopPasswordResetDelivery{},
+		Roles:            rbac.NewPostgresStore(executor),
+		Cipher:           cipher,
+		Audit:            authAuditAdapter{service: audit.NewService(audit.NewPostgresStore(executor))},
+		SessionTTL:       cfg.SessionTokenTTL,
+		PasswordResetTTL: cfg.PasswordResetTTL,
+		Now:              time.Now,
 	}), nil
 }
 

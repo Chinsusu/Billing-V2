@@ -64,7 +64,10 @@ func SessionMiddleware(options SessionMiddlewareOptions) func(http.Handler) http
 }
 
 func isAuthRoute(path string) bool {
-	return path == "/auth/login" || path == "/auth/logout"
+	return path == "/auth/login" ||
+		path == "/auth/logout" ||
+		path == "/auth/password-reset/request" ||
+		path == "/auth/password-reset/confirm"
 }
 
 func isAdminRoute(path string) bool {
