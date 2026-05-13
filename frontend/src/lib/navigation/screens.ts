@@ -53,6 +53,7 @@ export const RESELLER_NAV: NavItem[] = [
 
 export const CLIENT_NAV: NavItem[] = [
   { id: "client-overview", label: "Overview", portal: "client" },
+  { id: "client-shop", label: "Buy service", portal: "client" },
 
   { id: "client-tickets", label: "Support tickets", portal: "client", section: "Customers" },
 
@@ -60,6 +61,7 @@ export const CLIENT_NAV: NavItem[] = [
   { id: "client-services-vps", label: "VPS", portal: "client", section: "Services" },
   { id: "client-services-bandwidth", label: "Bandwidth", portal: "client", section: "Services" },
 
+  { id: "client-wallet", label: "Wallet", portal: "client", section: "Billing" },
   { id: "client-invoices", label: "Invoices", portal: "client", section: "Billing" },
   { id: "client-transactions", label: "Transactions", portal: "client", section: "Billing" },
 

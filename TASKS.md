@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` after T201 merged:
+Current board snapshot on `2026-05-13` after T202 claimed and T206 added:
 
 - `TODO`: 4
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 198
@@ -61,15 +61,16 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T202 | [tasks/active/T202_frontend_production_integration_pass.md](tasks/active/T202_frontend_production_integration_pass.md) | `codex/t202-frontend-production-integration-pass` | Frontend | Replace remaining critical demo-only frontend behavior with production-safe API paths. |
 | T203 | [tasks/active/T203_backup_restore_ops_drill.md](tasks/active/T203_backup_restore_ops_drill.md) | `codex/t203-backup-restore-ops-drill` | Ops | Add and verify backup/restore drill. |
 | T204 | [tasks/active/T204_full_e2e_quality_gate.md](tasks/active/T204_full_e2e_quality_gate.md) | `codex/t204-full-e2e-quality-gate` | QA/CI | Create repeatable full E2E launch quality gate. |
 | T205 | [tasks/active/T205_launch_go_no_go_execution.md](tasks/active/T205_launch_go_no_go_execution.md) | `codex/t205-launch-go-no-go-execution` | Launch | Execute final launch go/no-go readiness record. |
+| T206 | [tasks/active/T206_client_service_renewal_api_ui.md](tasks/active/T206_client_service_renewal_api_ui.md) | `codex/t206-client-service-renewal-api-ui` | Billing/Frontend | Add production-safe client service renewal API and UI action. |
 
 ## In-Flight Task Files
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T202 | [tasks/active/T202_frontend_production_integration_pass.md](tasks/active/T202_frontend_production_integration_pass.md) | IN_PROGRESS | Codex | `codex/t202-frontend-production-integration-pass` | Replace critical demo-only frontend behavior with production-safe API paths. |
 
 ## Done Task Files
 

@@ -7,7 +7,13 @@ import { compactDateTime, moneyMinor, recordLabel } from "@/lib/api/format";
 import { useApiResource } from "@/lib/api/useApiResource";
 import { CLIENT_SERVICES } from "@/mocks/billingData";
 
-export function ClientDashboard() {
+interface ClientDashboardProps {
+  onOpenServices: () => void;
+  onOpenShop: () => void;
+  onOpenWallet: () => void;
+}
+
+export function ClientDashboard({ onOpenServices, onOpenShop, onOpenWallet }: ClientDashboardProps) {
   const wallets = useApiResource(billingApi.listClientWallets);
   const services = useApiResource(billingApi.listClientServices);
   const orders = useApiResource(billingApi.listClientOrders);
@@ -31,9 +37,13 @@ export function ClientDashboard() {
       {suspended.map((service) => (
         <div key={service.id} className="bg-amber-50 border border-amber-200 text-amber-700 text-[12px] p-4 p-4.5 rounded flex items-center gap-4">
           <span>!</span>
-          <span><strong>{service.label}</strong> is suspended. {service.note} Renew to restore access.</span>
-          <button className="ml-auto inline-flex items-center justify-center gap-2 px-4 h-9 text-[13px] font-medium bg-amber-600 hover:bg-amber-700 text-white rounded-md border-0 cursor-pointer transition-colors shadow-sm">
-            Renew now
+          <span><strong>{service.label}</strong> is suspended. {service.note} Direct renewal is not available here; use checkout or support.</span>
+          <button
+            type="button"
+            onClick={onOpenShop}
+            className="ml-auto inline-flex items-center justify-center gap-2 px-4 h-9 text-[13px] font-medium bg-amber-600 hover:bg-amber-700 text-white rounded-md border-0 cursor-pointer transition-colors shadow-sm"
+          >
+            Open shop
           </button>
         </div>
       ))}
@@ -46,7 +56,11 @@ export function ClientDashboard() {
           </div>
           <div className="text-[11px] text-gray-400 mt-0.5">{orders.data?.length ?? 0} order records</div>
         </div>
-        <button className="inline-flex items-center justify-center gap-2 px-4 h-9 text-[13px] font-medium bg-[#D50C2D] hover:bg-[#B3082A] text-white rounded-md border-0 cursor-pointer transition-colors shadow-sm">
+        <button
+          type="button"
+          onClick={onOpenWallet}
+          className="inline-flex items-center justify-center gap-2 px-4 h-9 text-[13px] font-medium bg-[#D50C2D] hover:bg-[#B3082A] text-white rounded-md border-0 cursor-pointer transition-colors shadow-sm"
+        >
           + Top up
         </button>
       </div>
@@ -54,7 +68,13 @@ export function ClientDashboard() {
       <div className="bg-white border border-gray-200 rounded">
         <div className="p-4 p-4 border-b border-gray-100 flex items-center justify-between">
           <h3 className="text-[13px] font-medium text-gray-900 m-0">My services</h3>
-          <a href="#" className="text-[12px] text-[#D50C2D]">View all -&gt;</a>
+          <button
+            type="button"
+            onClick={onOpenServices}
+            className="text-[12px] text-[#D50C2D] border-0 bg-transparent cursor-pointer"
+          >
+            View all -&gt;
+          </button>
         </div>
         <table className="w-full text-[13px] border-collapse">
           <thead>
