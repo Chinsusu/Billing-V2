@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` while T191 is in progress:
+Current board snapshot on `2026-05-13` while T191 is in review:
 
 - `TODO`: 14
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 187
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -80,7 +80,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T191 | [tasks/active/T191_auth_rate_limits_and_password_reset.md](tasks/active/T191_auth_rate_limits_and_password_reset.md) | IN_PROGRESS | Codex | `codex/t191-auth-rate-limits-password-reset` | Add login protection and password reset primitives. |
+| T191 | [tasks/active/T191_auth_rate_limits_and_password_reset.md](tasks/active/T191_auth_rate_limits_and_password_reset.md) | REVIEW | Codex | `codex/t191-auth-rate-limits-password-reset` | Add login protection and password reset primitives. |
 
 ## Done Task Files
 
