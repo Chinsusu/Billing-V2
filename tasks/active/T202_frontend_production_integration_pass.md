@@ -1,6 +1,6 @@
 # T202 - Frontend production integration pass
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t202-frontend-production-integration-pass
 PR: https://github.com/Chinsusu/Billing-V2/pull/435
@@ -38,3 +38,4 @@ Replace remaining critical demo-only frontend behavior with production-safe API 
 - 2026-05-13: Created follow-up T206 for the missing direct client service renewal API/UI action instead of wiring a fake renewal action.
 - 2026-05-13: Local validation passed: `npm --prefix frontend run lint`, `npm --prefix frontend run check:sensitive-text`, `npm --prefix frontend run build`, `npm --prefix frontend run smoke:admin:ci`, `make task-guard`, and `git diff --check`.
 - 2026-05-13: Opened PR https://github.com/Chinsusu/Billing-V2/pull/435 for review.
+- 2026-05-13: PR https://github.com/Chinsusu/Billing-V2/pull/435 merged into `main`; marking task DONE.
