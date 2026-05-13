@@ -61,6 +61,46 @@ func TestProviderProvisioningHandlerRecordsSuccess(t *testing.T) {
 	}
 }
 
+func TestProviderProvisioningHandlerStoresEncryptedCredential(t *testing.T) {
+	now := fixedProvisioningWorkerTime()
+	adapter := provider.NewFakeAdapter(provider.TypeManual)
+	adapter.SetResult(provider.OperationProvision, provider.OperationResult{
+		Status:             provider.OperationStatusSuccess,
+		ExternalResourceID: "external-1",
+		Credential: provider.CredentialEnvelope{
+			Type:                 provider.CredentialTypeVPSRoot,
+			EncryptedPayload:     "encrypted-fixture",
+			EncryptionKeyVersion: "v1",
+			MaskedHint:           "root / ****",
+		},
+		RetrySafety: provider.RetrySafetyDoNotRetry,
+		ObservedAt:  now,
+	})
+	registry, err := provider.NewRegistry(adapter)
+	if err != nil {
+		t.Fatalf("expected registry: %v", err)
+	}
+	recorder := &fakeProvisioningResultRecorder{}
+	handler := &ProviderProvisioningHandler{Registry: registry, Recorder: recorder, Now: func() time.Time { return now }}
+
+	completion, err := handler.Handle(context.Background(), provisioningWorkerJob())
+	if err != nil {
+		t.Fatalf("expected handler success: %v", err)
+	}
+	if completion.Status != jobs.StatusSucceeded {
+		t.Fatalf("expected succeeded completion, got %+v", completion)
+	}
+	if !recorder.credentialCalled {
+		t.Fatal("expected encrypted credential to be stored")
+	}
+	if recorder.credentialInput.ServiceID != ServiceID("77777777-7777-7777-7777-777777777777") ||
+		recorder.credentialInput.Type != CredentialTypeVPSRoot ||
+		recorder.credentialInput.EncryptedPayload != "encrypted-fixture" ||
+		recorder.credentialInput.MaskedHint != "root / ****" {
+		t.Fatalf("unexpected credential input: %+v", recorder.credentialInput)
+	}
+}
+
 func TestProviderProvisioningHandlerRecordsRetryableProviderError(t *testing.T) {
 	now := fixedProvisioningWorkerTime()
 	adapter := provider.NewFakeAdapter(provider.TypeManual)
@@ -191,9 +231,11 @@ func provisioningWorkerJob() jobs.Job {
 }
 
 type fakeProvisioningResultRecorder struct {
-	input        RecordProvisioningResultInput
-	serviceInput CreateServiceInstanceInput
-	err          error
+	input            RecordProvisioningResultInput
+	serviceInput     CreateServiceInstanceInput
+	credentialInput  CreateServiceCredentialInput
+	credentialCalled bool
+	err              error
 }
 
 func (recorder *fakeProvisioningResultRecorder) RecordProvisioningResult(_ context.Context, input RecordProvisioningResultInput) (ProvisioningJob, error) {
@@ -209,7 +251,22 @@ func (recorder *fakeProvisioningResultRecorder) CreateServiceInstance(_ context.
 	if recorder.err != nil {
 		return ServiceInstance{}, recorder.err
 	}
-	return ServiceInstance{OrderID: input.OrderID, Status: input.Status, BillingStatus: input.BillingStatus}, nil
+	return ServiceInstance{
+		ID:            "77777777-7777-7777-7777-777777777777",
+		TenantID:      input.TenantID,
+		OrderID:       input.OrderID,
+		Status:        input.Status,
+		BillingStatus: input.BillingStatus,
+	}, nil
+}
+
+func (recorder *fakeProvisioningResultRecorder) CreateServiceCredential(_ context.Context, input CreateServiceCredentialInput) (ServiceCredential, error) {
+	recorder.credentialInput = input
+	recorder.credentialCalled = true
+	if recorder.err != nil {
+		return ServiceCredential{}, recorder.err
+	}
+	return ServiceCredential{ServiceID: input.ServiceID, Type: input.Type, Status: input.Status}, nil
 }
 
 type fakeWorkerJobStore struct{}

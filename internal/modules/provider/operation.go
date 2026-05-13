@@ -84,8 +84,12 @@ const (
 )
 
 type CredentialEnvelope struct {
-	EncryptedPayloadRef string
-	SecretVersion       string
+	Type                 CredentialType
+	EncryptedPayload     string
+	EncryptedPayloadRef  string
+	EncryptionKeyVersion string
+	SecretVersion        string
+	MaskedHint           string
 }
 
 type OperationResult struct {

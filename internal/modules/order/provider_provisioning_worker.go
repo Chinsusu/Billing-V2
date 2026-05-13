@@ -20,6 +20,7 @@ var (
 type ProvisioningResultRecorder interface {
 	RecordProvisioningResult(ctx context.Context, input RecordProvisioningResultInput) (ProvisioningJob, error)
 	CreateServiceInstance(ctx context.Context, input CreateServiceInstanceInput) (ServiceInstance, error)
+	CreateServiceCredential(ctx context.Context, input CreateServiceCredentialInput) (ServiceCredential, error)
 }
 
 type ProviderProvisioningHandler struct {
@@ -108,8 +109,14 @@ func (handler *ProviderProvisioningHandler) record(ctx context.Context, job jobs
 		return jobs.Completion{}, err
 	}
 	if status == ProvisioningStatusProvisioned {
-		if _, err := handler.Recorder.CreateServiceInstance(ctx, serviceInstanceFromProvisioningResult(payload, result, handler.now())); err != nil {
+		service, err := handler.Recorder.CreateServiceInstance(ctx, serviceInstanceFromProvisioningResult(payload, result, handler.now()))
+		if err != nil {
 			return jobs.Completion{}, err
+		}
+		if credentialInput, ok := serviceCredentialFromProvisioningResult(service, result); ok {
+			if _, err := handler.Recorder.CreateServiceCredential(ctx, credentialInput); err != nil {
+				return jobs.Completion{}, err
+			}
 		}
 	}
 	return completionFromProviderResult(result, handler.now()), nil
@@ -215,6 +222,22 @@ func provisioningExternalResourceID(payload ProvisioningQueuePayload, result pro
 		return provider.ExternalResourceID(result.ServiceIdentifier)
 	}
 	return provider.ExternalResourceID("local-" + string(payload.OrderID))
+}
+
+func serviceCredentialFromProvisioningResult(service ServiceInstance, result provider.OperationResult) (CreateServiceCredentialInput, bool) {
+	if !result.Credential.HasEncryptedPayload() {
+		return CreateServiceCredentialInput{}, false
+	}
+	return CreateServiceCredentialInput{
+		TenantID:             service.TenantID,
+		ServiceID:            service.ID,
+		Type:                 CredentialType(result.Credential.Type),
+		EncryptedPayload:     result.Credential.EncryptedPayloadValue(),
+		EncryptionKeyVersion: result.Credential.EncryptionKeyVersion,
+		SecretVersion:        result.Credential.SecretVersion,
+		MaskedHint:           result.Credential.MaskedHint,
+		Status:               CredentialStatusActive,
+	}, true
 }
 
 func (handler *ProviderProvisioningHandler) now() time.Time {

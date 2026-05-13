@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` after T191 merged:
+Current board snapshot on `2026-05-13` while T192 is in review:
 
-- `TODO`: 14
+- `TODO`: 13
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 188
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -61,7 +61,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T192 | [tasks/active/T192_credential_encrypted_storage.md](tasks/active/T192_credential_encrypted_storage.md) | `codex/t192-credential-encrypted-storage` | Credentials | Add encrypted-at-rest credential storage. |
 | T193 | [tasks/active/T193_credential_reveal_audit.md](tasks/active/T193_credential_reveal_audit.md) | `codex/t193-credential-reveal-audit` | Credentials | Add controlled credential reveal with audit. |
 | T194 | [tasks/active/T194_refund_adjustment_ledger.md](tasks/active/T194_refund_adjustment_ledger.md) | `codex/t194-refund-adjustment-ledger` | Billing | Add refund and adjustment ledger behavior. |
 | T195 | [tasks/active/T195_daily_reconciliation_report.md](tasks/active/T195_daily_reconciliation_report.md) | `codex/t195-daily-reconciliation-report` | Finance | Add daily reconciliation reporting. |
@@ -80,6 +79,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T192 | [tasks/active/T192_credential_encrypted_storage.md](tasks/active/T192_credential_encrypted_storage.md) | REVIEW | Codex | `codex/t192-credential-encrypted-storage` | Add encrypted-at-rest credential storage. |
 
 ## Done Task Files
 
