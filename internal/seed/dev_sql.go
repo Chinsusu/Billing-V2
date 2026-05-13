@@ -110,6 +110,7 @@ JOIN permissions permission ON permission.permission_key IN (
     'provisioning.job.retry',
     'provisioning.manual_review.resolve',
     'service.view',
+    'service.credential.reveal',
     'audit.view'
 )
 WHERE role.role_key = 'reseller_admin'

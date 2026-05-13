@@ -2,6 +2,7 @@ package order
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
@@ -31,6 +32,9 @@ func scanServiceCredential(row orderScanner) (ServiceCredential, error) {
 		&record.CreatedAt,
 		&record.UpdatedAt,
 	); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ServiceCredential{}, ErrCredentialNotFound
+		}
 		return ServiceCredential{}, fmt.Errorf("scan service credential: %w", err)
 	}
 	record.ID = CredentialID(id)

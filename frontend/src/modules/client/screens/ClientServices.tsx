@@ -1,6 +1,7 @@
 "use client";
 
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { ServiceAccessReveal } from "@/components/ui/ServiceAccessReveal";
 import { billingApi } from "@/lib/api/billing";
 import { clientServiceCategory, clientServiceOrderLabel, clientServicePlanLabel, clientServiceSourceLabel } from "@/lib/api/clientViewModels";
 import { compactDateTime, recordLabel } from "@/lib/api/format";
@@ -35,6 +36,7 @@ export function ClientServices({ category }: ClientServicesProps) {
   const liveRows = services.status === "success"
     ? services.data?.map((service) => ({
         id: service.id,
+        apiId: service.id,
         category: clientServiceCategory(service),
         label: recordLabel(service.display_id, "SVC-"),
         plan: clientServicePlanLabel(service),
@@ -66,7 +68,7 @@ export function ClientServices({ category }: ClientServicesProps) {
           <table className="w-full text-[13px] border-collapse min-w-[760px]">
             <thead>
               <tr className="bg-gray-50">
-                {["Service ID", "Plan", "Region / Source", "Order", "Expires", "Status"].map((heading) => (
+                {["Service ID", "Plan", "Region / Source", "Order", "Expires", "Status", "Access"].map((heading) => (
                   <th key={heading} className="text-left text-[11px] font-medium uppercase text-gray-400 p-4 border-b border-gray-200">
                     {heading}
                   </th>
@@ -82,11 +84,12 @@ export function ClientServices({ category }: ClientServicesProps) {
                   <td className="p-4 text-gray-500">{service.detail}</td>
                   <td className="p-4 text-gray-500">{service.expiry}</td>
                   <td className="p-4"><StatusBadge status={service.status} dot /></td>
+                  <td className="p-4"><ServiceAccessReveal scope="client" serviceId={service.apiId} reason="Client portal reveal" /></td>
                 </tr>
               ))}
-              {services.status === "loading" && <TableMessage colSpan={6} text="Loading services" />}
-              {services.status === "error" && <TableMessage colSpan={6} text={services.error ?? "Services unavailable"} tone="error" />}
-              {services.status === "success" && rows.length === 0 && <TableMessage colSpan={6} text={config.empty} />}
+              {services.status === "loading" && <TableMessage colSpan={7} text="Loading services" />}
+              {services.status === "error" && <TableMessage colSpan={7} text={services.error ?? "Services unavailable"} tone="error" />}
+              {services.status === "success" && rows.length === 0 && <TableMessage colSpan={7} text={config.empty} />}
             </tbody>
           </table>
         </div>

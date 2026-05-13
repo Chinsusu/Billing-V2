@@ -63,3 +63,34 @@ func TestCreateServiceCredentialSQLUpsertsActiveCredential(t *testing.T) {
 		}
 	}
 }
+
+func TestListServiceCredentialsSQLScopesByTenantServiceAndStatus(t *testing.T) {
+	for _, clause := range []string{
+		"FROM service_credentials",
+		"tenant_id = $1",
+		"service_instance_id = $2",
+		"status = $3",
+		"ORDER BY created_at DESC",
+	} {
+		if !strings.Contains(listServiceCredentialsByStatusSQL, clause) {
+			t.Fatalf("expected %q in list credential SQL: %s", clause, listServiceCredentialsByStatusSQL)
+		}
+	}
+}
+
+func TestMarkServiceCredentialRevealedSQLScopesUpdate(t *testing.T) {
+	for _, clause := range []string{
+		"UPDATE service_credentials",
+		"last_revealed_at = $4",
+		"last_revealed_by = $5",
+		"credential_id = $1",
+		"tenant_id = $2",
+		"service_instance_id = $3",
+		"status = 'active'",
+		"RETURNING",
+	} {
+		if !strings.Contains(markServiceCredentialRevealedSQL, clause) {
+			t.Fatalf("expected %q in reveal mark SQL: %s", clause, markServiceCredentialRevealedSQL)
+		}
+	}
+}

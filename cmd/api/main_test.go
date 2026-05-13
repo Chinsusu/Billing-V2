@@ -297,6 +297,13 @@ func TestNewOrderRoutesReturnsRegistrar(t *testing.T) {
 	}
 }
 
+func TestNewServiceCredentialCipherRejectsInvalidKey(t *testing.T) {
+	_, err := newServiceCredentialCipher(config.Config{EncryptionKey: "short"})
+	if err == nil || !strings.Contains(err.Error(), "configure service credential cipher") {
+		t.Fatalf("expected credential cipher configuration error, got %v", err)
+	}
+}
+
 func TestNewCheckoutRoutesReturnsRegistrar(t *testing.T) {
 	registrar := newCheckoutRoutes(newStubDB())
 	if registrar == nil {

@@ -156,8 +156,27 @@ export interface ServiceInstance {
   price_snapshot?: ApiJson;
   term_start?: string;
   term_end: string;
+  credentials?: ServiceAccessItem[]; // sensitive-text-allowlist
   created_at?: string;
   updated_at?: string;
+}
+
+export interface ServiceAccessItem {
+  id: string;
+  credential_type: string; // sensitive-text-allowlist
+  masked_hint: string;
+  status: string;
+  last_revealed_at?: string;
+}
+
+export interface ServiceAccessReveal {
+  id: string;
+  credential_type: string; // sensitive-text-allowlist
+  masked_hint: string;
+  status: string;
+  payload: ApiJson;
+  revealed_at: string;
+  reveal_expires_message: string;
 }
 
 export interface ProvisioningJob {

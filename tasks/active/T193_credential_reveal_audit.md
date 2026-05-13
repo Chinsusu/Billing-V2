@@ -1,7 +1,7 @@
 # T193 - Credential reveal audit
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t193-credential-reveal-audit
 PR: -
 Risk: credential security, tenant isolation, RBAC, rate limiting, and audit
@@ -33,3 +33,6 @@ Add controlled credential reveal behavior with masking, authorization, rate limi
 ## Agent Log
 
 - 2026-05-13: Task created by Codex backlog planning.
+- 2026-05-13: Claimed by Codex on branch `codex/t193-credential-reveal-audit`.
+- 2026-05-13: Implemented masked service credential metadata, controlled reveal API, tenant/owner scoping, RBAC wiring, reveal rate limiting, no-store responses, audit without plaintext, frontend reveal controls, docs, and tests. Local validation passed through backend/frontend build and guards.
+- 2026-05-13: Validation run: `make migrate-validate`, `make test`, `make build`, `make contract-guard`, `make error-code-guard`, `make task-guard`, `npm --prefix frontend audit --omit=dev`, `check:sensitive-text`, `lint`, `build`, `smoke:admin:ci`, `git diff --check`, and hardcoded secret grep.

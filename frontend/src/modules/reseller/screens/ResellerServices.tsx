@@ -1,6 +1,7 @@
 "use client";
 
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { ServiceAccessReveal } from "@/components/ui/ServiceAccessReveal";
 import { billingApi } from "@/lib/api/billing";
 import { fulfillmentForOrder, fulfillmentForService } from "@/lib/api/fulfillment";
 import { compactDateTime, moneyMinor, recordLabel, fmtMoney } from "@/lib/api/format";
@@ -78,7 +79,7 @@ export function ResellerServices({ category }: ResellerServicesProps) {
           <table className="w-full text-[13px] border-collapse min-w-[1040px]">
             <thead>
               <tr className="bg-gray-50">
-                {["Service ID", "Order", "Service", "Client", "Region", "Usage", "Renewal", "Price", "Service", "Fulfillment", "Job"].map((heading) => (
+                {["Service ID", "Order", "Service", "Client", "Region", "Usage", "Renewal", "Price", "Service", "Fulfillment", "Job", "Access"].map((heading) => (
                   <th key={heading} className="text-left text-[11px] font-medium uppercase text-gray-400 p-4 border-b border-gray-200">
                     {heading}
                   </th>
@@ -99,10 +100,11 @@ export function ResellerServices({ category }: ResellerServicesProps) {
                   <td className="p-4"><StatusBadge status={row.status} dot /></td>
                   <td className="p-4"><StatusBadge status={row.fulfillmentStatus} dot /></td>
                   <td className="p-4 text-[12px] text-gray-500">{row.job}</td>
+                  <td className="p-4"><ServiceAccessReveal scope="reseller" serviceId={row.apiId} reason="Reseller service support reveal" /></td>
                 </tr>
               ))}
               {rows.length === 0 && (
-                <tr><td colSpan={11} className="p-4 text-center text-[12px] text-gray-400">{config.empty}</td></tr>
+                <tr><td colSpan={12} className="p-4 text-center text-[12px] text-gray-400">{config.empty}</td></tr>
               )}
             </tbody>
           </table>
@@ -114,6 +116,7 @@ export function ResellerServices({ category }: ResellerServicesProps) {
 
 interface ServiceRow {
   id: string;
+  apiId?: string;
   order: string;
   label: string;
   customer: string;
@@ -195,6 +198,7 @@ function liveServiceRows(
       const customer = buyerDisplayID ? customerByDisplayID.get(buyerDisplayID) : undefined;
       return {
         id: recordLabel(service.display_id, "SVC-"),
+        apiId: service.id,
         order: fulfillment.orderLabel,
         label: snapshotText(order?.plan_snapshot) || recordLabel(service.display_id, "SVC-"),
         customer: resellerAccountLabel(buyerDisplayID, customer),

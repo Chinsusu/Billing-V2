@@ -55,6 +55,18 @@ func TestNewRuntimeWithDSNProtectsAdminServiceRoutes(t *testing.T) {
 	assertRuntimeRejectsMissingActor(t, http.MethodGet, "/admin/services", "")
 }
 
+func TestNewRuntimeWithDSNProtectsClientCredentialRevealRoutes(t *testing.T) {
+	assertRuntimeRejectsMissingActor(t, http.MethodPost, "/client/services/service_1/credentials/credential_1/reveal", `{}`)
+}
+
+func TestNewRuntimeWithDSNProtectsResellerCredentialRevealRoutes(t *testing.T) {
+	assertRuntimeRejectsMissingActor(t, http.MethodPost, "/reseller/services/service_1/credentials/credential_1/reveal", `{}`)
+}
+
+func TestNewRuntimeWithDSNProtectsAdminCredentialRevealRoutes(t *testing.T) {
+	assertRuntimeRejectsMissingActor(t, http.MethodPost, "/admin/services/service_1/credentials/credential_1/reveal", `{}`)
+}
+
 func TestNewRuntimeWithDSNProtectsClientPaymentRoutes(t *testing.T) {
 	assertRuntimeRejectsMissingActor(t, http.MethodGet, "/client/transactions", "")
 }

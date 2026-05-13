@@ -1,18 +1,57 @@
 package order
 
-import "context"
+import (
+	"context"
+	"time"
+
+	"github.com/Chinsusu/Billing-V2/internal/platform/secrets"
+)
 
 type Service struct {
-	store Store
-	audit AuditAppender
+	store                  Store
+	credentials            ServiceCredentialStore
+	audit                  AuditAppender
+	credentialCipher       secrets.Cipher
+	credentialRevealLimits CredentialRevealRateLimiter
+	now                    func() time.Time
+}
+
+type ServiceOptions struct {
+	Store                  Store
+	Credentials            ServiceCredentialStore
+	Audit                  AuditAppender
+	CredentialCipher       secrets.Cipher
+	CredentialRevealLimits CredentialRevealRateLimiter
+	Now                    func() time.Time
 }
 
 func NewService(store Store) *Service {
-	return &Service{store: store}
+	return NewServiceWithOptions(ServiceOptions{Store: store})
 }
 
 func NewServiceWithAudit(store Store, audit AuditAppender) *Service {
-	return &Service{store: store, audit: audit}
+	return NewServiceWithOptions(ServiceOptions{Store: store, Audit: audit})
+}
+
+func NewServiceWithOptions(options ServiceOptions) *Service {
+	now := options.Now
+	if now == nil {
+		now = time.Now
+	}
+	credentials := options.Credentials
+	if credentials == nil {
+		if store, ok := options.Store.(ServiceCredentialStore); ok {
+			credentials = store
+		}
+	}
+	return &Service{
+		store:                  options.Store,
+		credentials:            credentials,
+		audit:                  options.Audit,
+		credentialCipher:       options.CredentialCipher,
+		credentialRevealLimits: options.CredentialRevealLimits,
+		now:                    now,
+	}
 }
 
 func (service *Service) CreateOrder(ctx context.Context, input CreateOrderInput) (Order, error) {

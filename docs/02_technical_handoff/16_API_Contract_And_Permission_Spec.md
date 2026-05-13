@@ -959,8 +959,8 @@ POST /client/services/{service_id}/credentials/{credential_id}/reveal
 Allowed:
 ```text
 client owns service
-reseller owner/staff with credential.reveal
-platform admin with credential.reveal
+reseller owner/staff with service.credential.reveal
+platform admin with service.credential.reveal
 ```
 
 Validation:

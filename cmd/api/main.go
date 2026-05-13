@@ -24,6 +24,7 @@ import (
 	"github.com/Chinsusu/Billing-V2/internal/platform/config"
 	platformdb "github.com/Chinsusu/Billing-V2/internal/platform/db"
 	"github.com/Chinsusu/Billing-V2/internal/platform/logger"
+	"github.com/Chinsusu/Billing-V2/internal/platform/secrets"
 )
 
 type databaseOpener func(ctx context.Context, cfg platformdb.Config) (*sql.DB, error)
@@ -93,7 +94,12 @@ func newRuntime(ctx context.Context, cfg config.Config, log *logger.Logger, open
 		options.CheckoutRoutes = newCheckoutRoutes(conn)
 		options.InvoiceRoutes = newInvoiceRoutes(conn)
 		options.JobsRoutes = newJobsRoutes(conn)
-		options.OrderRoutes = newOrderRoutes(conn)
+		credentialCipher, err := newServiceCredentialCipher(cfg)
+		if err != nil {
+			_ = cleanup()
+			return nil, err
+		}
+		options.OrderRoutes = newOrderRoutesWithCredentialCipher(conn, credentialCipher)
 		options.PaymentRoutes = newPaymentRoutes(conn)
 		options.WalletRoutes = newWalletRoutes(conn)
 	}
@@ -151,18 +157,42 @@ func newCheckoutRoutes(executor platformdb.Executor) app.RouteRegistrar {
 }
 
 func newOrderRoutes(executor platformdb.Executor) app.RouteRegistrar {
+	return newOrderRoutesWithCredentialCipher(executor, nil)
+}
+
+func newOrderRoutesWithCredentialCipher(executor platformdb.Executor, credentialCipher secrets.Cipher) app.RouteRegistrar {
 	store := order.NewPostgresStore(executor)
-	service := order.NewServiceWithAudit(store, audit.NewService(audit.NewPostgresStore(executor)))
+	service := order.NewServiceWithOptions(order.ServiceOptions{
+		Store:                  store,
+		Credentials:            store,
+		Audit:                  audit.NewService(audit.NewPostgresStore(executor)),
+		CredentialCipher:       credentialCipher,
+		CredentialRevealLimits: order.NewPostgresCredentialRevealRateLimiter(executor),
+	})
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return order.NewHTTPHandlerWithOptions(service, order.HTTPHandlerOptions{
-		AdminMiddleware:           orderAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
-		AdminManageMiddleware:     orderAuthMiddleware(authorizer, rbac.PermissionOrderManage, rbac.RiskHigh),
-		AdminServiceMiddleware:    orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
-		ResellerMiddleware:        orderAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
-		ResellerServiceMiddleware: orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
-		ClientMiddleware:          orderAuthMiddleware(authorizer, rbac.PermissionOrderCreate, rbac.RiskMedium),
-		ClientServiceMiddleware:   orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
+		AdminMiddleware:              orderAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
+		AdminManageMiddleware:        orderAuthMiddleware(authorizer, rbac.PermissionOrderManage, rbac.RiskHigh),
+		AdminServiceMiddleware:       orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
+		AdminCredentialMiddleware:    orderAuthMiddleware(authorizer, rbac.PermissionServiceReveal, rbac.RiskHigh),
+		ResellerMiddleware:           orderAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
+		ResellerServiceMiddleware:    orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
+		ResellerCredentialMiddleware: orderAuthMiddleware(authorizer, rbac.PermissionServiceReveal, rbac.RiskHigh),
+		ClientMiddleware:             orderAuthMiddleware(authorizer, rbac.PermissionOrderCreate, rbac.RiskMedium),
+		ClientServiceMiddleware:      orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
+		ClientCredentialMiddleware:   orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskHigh),
 	})
+}
+
+func newServiceCredentialCipher(cfg config.Config) (secrets.Cipher, error) {
+	if cfg.EncryptionKey == "" {
+		return nil, nil
+	}
+	cipher, err := secrets.NewAESGCMCipher(cfg.EncryptionKey)
+	if err != nil {
+		return nil, fmt.Errorf("configure service credential cipher: %w", err)
+	}
+	return cipher, nil
 }
 
 func newInvoiceRoutes(executor platformdb.Executor) app.RouteRegistrar {

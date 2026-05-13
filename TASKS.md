@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` after T192 merged:
+Current board snapshot on `2026-05-13` while T193 is in progress:
 
-- `TODO`: 13
-- `IN_PROGRESS`: 0
+- `TODO`: 12
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 189
@@ -61,7 +61,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T193 | [tasks/active/T193_credential_reveal_audit.md](tasks/active/T193_credential_reveal_audit.md) | `codex/t193-credential-reveal-audit` | Credentials | Add controlled credential reveal with audit. |
 | T194 | [tasks/active/T194_refund_adjustment_ledger.md](tasks/active/T194_refund_adjustment_ledger.md) | `codex/t194-refund-adjustment-ledger` | Billing | Add refund and adjustment ledger behavior. |
 | T195 | [tasks/active/T195_daily_reconciliation_report.md](tasks/active/T195_daily_reconciliation_report.md) | `codex/t195-daily-reconciliation-report` | Finance | Add daily reconciliation reporting. |
 | T196 | [tasks/active/T196_reservation_ttl_concurrency.md](tasks/active/T196_reservation_ttl_concurrency.md) | `codex/t196-reservation-ttl-concurrency` | Checkout | Verify and complete reservation TTL and concurrency behavior. |
@@ -79,6 +78,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T193 | [tasks/active/T193_credential_reveal_audit.md](tasks/active/T193_credential_reveal_audit.md) | IN_PROGRESS | Codex | `codex/t193-credential-reveal-audit` | Add controlled credential reveal with audit. |
 
 ## Done Task Files
 
