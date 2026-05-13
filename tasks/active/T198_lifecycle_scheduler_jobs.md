@@ -1,6 +1,6 @@
 # T198 - Lifecycle scheduler jobs
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t198-lifecycle-scheduler-jobs
 PR: https://github.com/Chinsusu/Billing-V2/pull/427
@@ -37,3 +37,4 @@ Add bounded scheduler jobs for service expiry, grace, suspension, and terminatio
 - 2026-05-13: Added bounded `service.lifecycle` scheduler/worker flow with stale job guards for term, billing, and suspension state.
 - 2026-05-13: Local checks passed: `make fmt`, `go test ./internal/modules/order`, `go test ./cmd/worker ./internal/modules/jobs`, `make test`, `make build`, `make migrate-validate`, `make contract-guard`, `make error-code-guard`, `make task-guard`, `git diff --check`. `make smoke-dev-billing` blocked because `DB_DSN`/`-dsn` is not configured.
 - 2026-05-13: Opened PR https://github.com/Chinsusu/Billing-V2/pull/427 and moved task to `REVIEW`.
+- 2026-05-13: PR https://github.com/Chinsusu/Billing-V2/pull/427 merged as `12bc93c`; marking task `DONE`.
