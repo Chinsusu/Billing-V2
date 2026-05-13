@@ -1,9 +1,9 @@
 # T192 - Credential encrypted storage
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t192-credential-encrypted-storage
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/415
 Risk: credential security, database migration, provider provisioning, and audit
 Created: 2026-05-13
 Updated: 2026-05-13
@@ -37,3 +37,4 @@ Add encrypted-at-rest credential storage for provisioned service credentials.
 - 2026-05-13: Task created by Codex backlog planning.
 - 2026-05-13: Claimed by Codex on branch `codex/t192-credential-encrypted-storage`.
 - 2026-05-13: Added service credential migration/store, shared AES-GCM cipher package, encrypted provider credential envelope helper, and provisioning worker storage path without reveal API/UI.
+- 2026-05-13: Opened PR #415 and moved task to REVIEW after local backend, frontend, migration, taskguard, diff, and secret-scan checks passed.
