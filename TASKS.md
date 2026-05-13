@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` after T199 opened for review:
+Current board snapshot on `2026-05-13` after T199 merged:
 
 - `TODO`: 6
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 195
+- `DONE` task files in `tasks/active/`: 196
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -72,14 +72,13 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T199 | [tasks/active/T199_provider_sandbox_readiness.md](tasks/active/T199_provider_sandbox_readiness.md) | REVIEW | Codex | `codex/t199-provider-sandbox-readiness` | Prove provider sandbox readiness. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T198`
+- `T011` to `T199`
 
 ## Removed Tasks
 
