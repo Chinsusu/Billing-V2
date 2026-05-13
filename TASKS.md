@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` while T196 is in review:
+Current board snapshot on `2026-05-13` after T196 merged:
 
 - `TODO`: 9
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 192
+- `DONE` task files in `tasks/active/`: 193
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -75,14 +75,13 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T196 | [tasks/active/T196_reservation_ttl_concurrency.md](tasks/active/T196_reservation_ttl_concurrency.md) | REVIEW | Codex | `codex/t196-reservation-ttl-concurrency` | Verify and complete reservation TTL and concurrency behavior. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T195`
+- `T011` to `T196`
 
 ## Removed Tasks
 

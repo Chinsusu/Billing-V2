@@ -1,6 +1,6 @@
 # T196 - Reservation TTL and concurrency proof
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t196-reservation-ttl-concurrency
 PR: https://github.com/Chinsusu/Billing-V2/pull/423
@@ -36,3 +36,4 @@ Verify and complete reservation TTL and concurrency behavior for checkout and in
 - 2026-05-13: Claimed by Codex on branch `codex/t196-reservation-ttl-concurrency`.
 - 2026-05-13: Implemented provider inventory counters, reservation quantity, atomic reserve SQL, idempotent expiry release SQL, and reservation concurrency tests. Local validation passed: `make fmt`, `make test`, `make build`, `make migrate-validate`, `make contract-guard`, `make error-code-guard`, `make task-guard`, `git diff --check`.
 - 2026-05-13: Opened PR https://github.com/Chinsusu/Billing-V2/pull/423 and moved task to REVIEW.
+- 2026-05-13: PR https://github.com/Chinsusu/Billing-V2/pull/423 passed CI and merged; marked task `DONE`.
