@@ -1,0 +1,20 @@
+DROP TABLE IF EXISTS abuse_cases;
+DROP TABLE IF EXISTS risk_flags;
+DROP TABLE IF EXISTS support_ticket_notes;
+DROP TABLE IF EXISTS support_tickets;
+ALTER TABLE orders
+    DROP CONSTRAINT IF EXISTS orders_id_tenant_unique;
+DROP SEQUENCE IF EXISTS abuse_cases_display_id_seq;
+DROP SEQUENCE IF EXISTS risk_flags_display_id_seq;
+DROP SEQUENCE IF EXISTS support_ticket_notes_display_id_seq;
+DROP SEQUENCE IF EXISTS support_tickets_display_id_seq;
+DROP TYPE IF EXISTS abuse_report_source;
+DROP TYPE IF EXISTS abuse_case_status;
+DROP TYPE IF EXISTS abuse_case_severity;
+DROP TYPE IF EXISTS abuse_case_type;
+DROP TYPE IF EXISTS risk_flag_status;
+DROP TYPE IF EXISTS risk_flag_type;
+DROP TYPE IF EXISTS support_note_visibility;
+DROP TYPE IF EXISTS support_ticket_status;
+DROP TYPE IF EXISTS support_ticket_priority;
+DROP TYPE IF EXISTS support_ticket_category;

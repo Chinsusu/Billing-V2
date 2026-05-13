@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` after T200 merged:
+Current board snapshot on `2026-05-13` after T201 PR opened:
 
-- `TODO`: 5
+- `TODO`: 4
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 197
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -61,7 +61,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T201 | [tasks/active/T201_support_abuse_basic_backend.md](tasks/active/T201_support_abuse_basic_backend.md) | `codex/t201-support-abuse-basic-backend` | Support/Abuse | Add support and abuse backend basics. |
 | T202 | [tasks/active/T202_frontend_production_integration_pass.md](tasks/active/T202_frontend_production_integration_pass.md) | `codex/t202-frontend-production-integration-pass` | Frontend | Replace remaining critical demo-only frontend behavior with production-safe API paths. |
 | T203 | [tasks/active/T203_backup_restore_ops_drill.md](tasks/active/T203_backup_restore_ops_drill.md) | `codex/t203-backup-restore-ops-drill` | Ops | Add and verify backup/restore drill. |
 | T204 | [tasks/active/T204_full_e2e_quality_gate.md](tasks/active/T204_full_e2e_quality_gate.md) | `codex/t204-full-e2e-quality-gate` | QA/CI | Create repeatable full E2E launch quality gate. |
@@ -71,6 +70,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T201 | [tasks/active/T201_support_abuse_basic_backend.md](tasks/active/T201_support_abuse_basic_backend.md) | REVIEW | Codex | `codex/t201-support-abuse-basic-backend` | Add support and abuse backend basics. |
 
 ## Done Task Files
 
