@@ -15,4 +15,10 @@ func TestOrderLifecycleEventNamesAreStable(t *testing.T) {
 	if OrderProvisioningTrigger != OrderEventStatusChanged {
 		t.Fatalf("expected provisioning to trigger from status change, got %q", OrderProvisioningTrigger)
 	}
+	if ServiceAggregateType != "service" ||
+		ServiceEventRenewed != "service.renewed" ||
+		ServiceEventSuspended != "service.suspended" ||
+		ServiceEventTerminated != "service.terminated" {
+		t.Fatalf("unexpected service lifecycle event names")
+	}
 }

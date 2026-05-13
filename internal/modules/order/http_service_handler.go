@@ -22,6 +22,24 @@ func (handler *HTTPHandler) adminServiceRoute(w http.ResponseWriter, r *http.Req
 		})
 		return
 	}
+	if isServiceLifecyclePath(r.URL.Path, adminServicePrefix, serviceSuspendSuffix) {
+		dispatchOrderMethods(w, r, map[string]http.HandlerFunc{
+			http.MethodPost: handler.tenantRoute(handler.handleSuspendAdminService, handler.options.AdminServiceSuspendMiddleware),
+		})
+		return
+	}
+	if isServiceLifecyclePath(r.URL.Path, adminServicePrefix, serviceUnsuspendSuffix) {
+		dispatchOrderMethods(w, r, map[string]http.HandlerFunc{
+			http.MethodPost: handler.tenantRoute(handler.handleUnsuspendAdminService, handler.options.AdminServiceUnsuspendMiddleware),
+		})
+		return
+	}
+	if isServiceLifecyclePath(r.URL.Path, adminServicePrefix, serviceTerminateSuffix) {
+		dispatchOrderMethods(w, r, map[string]http.HandlerFunc{
+			http.MethodPost: handler.tenantRoute(handler.handleTerminateAdminService, handler.options.AdminServiceTerminateMiddleware),
+		})
+		return
+	}
 	dispatchOrderMethods(w, r, map[string]http.HandlerFunc{
 		http.MethodGet: handler.tenantRoute(handler.handleGetAdminService, handler.options.AdminServiceMiddleware),
 	})
@@ -37,6 +55,24 @@ func (handler *HTTPHandler) resellerServiceRoute(w http.ResponseWriter, r *http.
 	if isServiceCredentialRevealPath(r.URL.Path, resellerServicePrefix) {
 		dispatchOrderMethods(w, r, map[string]http.HandlerFunc{
 			http.MethodPost: handler.tenantRoute(handler.handleRevealResellerServiceCredential, handler.options.ResellerCredentialMiddleware),
+		})
+		return
+	}
+	if isServiceLifecyclePath(r.URL.Path, resellerServicePrefix, serviceSuspendSuffix) {
+		dispatchOrderMethods(w, r, map[string]http.HandlerFunc{
+			http.MethodPost: handler.tenantRoute(handler.handleSuspendResellerService, handler.options.ResellerServiceSuspendMiddleware),
+		})
+		return
+	}
+	if isServiceLifecyclePath(r.URL.Path, resellerServicePrefix, serviceUnsuspendSuffix) {
+		dispatchOrderMethods(w, r, map[string]http.HandlerFunc{
+			http.MethodPost: handler.tenantRoute(handler.handleUnsuspendResellerService, handler.options.ResellerServiceUnsuspendMiddleware),
+		})
+		return
+	}
+	if isServiceLifecyclePath(r.URL.Path, resellerServicePrefix, serviceTerminateSuffix) {
+		dispatchOrderMethods(w, r, map[string]http.HandlerFunc{
+			http.MethodPost: handler.tenantRoute(handler.handleTerminateResellerService, handler.options.ResellerServiceTerminateMiddleware),
 		})
 		return
 	}

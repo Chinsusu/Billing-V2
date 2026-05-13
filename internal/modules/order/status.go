@@ -157,7 +157,7 @@ func CanTransitionService(from ServiceStatus, to ServiceStatus) bool {
 	case ServiceStatusSuspended:
 		return to == ServiceStatusActive || to == ServiceStatusTerminated
 	case ServiceStatusExpired:
-		return to == ServiceStatusSuspended || to == ServiceStatusTerminated
+		return to == ServiceStatusActive || to == ServiceStatusSuspended || to == ServiceStatusTerminated
 	case ServiceStatusCancelled:
 		return to == ServiceStatusTerminated
 	default:

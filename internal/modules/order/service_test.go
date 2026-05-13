@@ -14,15 +14,17 @@ import (
 )
 
 type fakeOrderStore struct {
-	createOrderInput           CreateOrderInput
-	createReservationInput     CreateReservationInput
-	createProvisioningJobInput CreateProvisioningJobInput
-	createServiceInstanceInput CreateServiceInstanceInput
-	listOrdersFilter           OrderFilter
-	getOrderLookup             OrderLookup
-	transitionOrderStatusInput TransitionOrderStatusInput
-	listServicesFilter         ServiceInstanceFilter
-	getServiceLookup           ServiceInstanceLookup
+	createOrderInput                CreateOrderInput
+	createReservationInput          CreateReservationInput
+	createProvisioningJobInput      CreateProvisioningJobInput
+	createServiceInstanceInput      CreateServiceInstanceInput
+	listOrdersFilter                OrderFilter
+	getOrderLookup                  OrderLookup
+	transitionOrderStatusInput      TransitionOrderStatusInput
+	transitionServiceLifecycleInput TransitionServiceLifecycleInput
+	listServicesFilter              ServiceInstanceFilter
+	getServiceLookup                ServiceInstanceLookup
+	service                         ServiceInstance
 }
 
 func (store *fakeOrderStore) CreateOrder(_ context.Context, input CreateOrderInput) (Order, error) {
@@ -60,6 +62,11 @@ func (store *fakeOrderStore) TransitionOrderStatus(_ context.Context, input Tran
 	return Order{ID: input.ID, DisplayID: 30001, TenantID: input.TenantID, OrderStatus: input.ToStatus, BillingStatus: input.BillingStatus}, nil
 }
 
+func (store *fakeOrderStore) TransitionServiceLifecycle(_ context.Context, input TransitionServiceLifecycleInput) (ServiceInstance, error) {
+	store.transitionServiceLifecycleInput = input
+	return ServiceInstance{ID: input.ID, DisplayID: 50001, TenantID: input.TenantID, Status: input.ToStatus, BillingStatus: input.BillingStatus, SuspensionReason: input.SuspensionReason, TermEnd: input.TermEnd}, nil
+}
+
 func (store *fakeOrderStore) ListServiceInstances(_ context.Context, filter ServiceInstanceFilter) ([]ServiceInstance, error) {
 	store.listServicesFilter = filter
 	return []ServiceInstance{{ID: ServiceID("service-1"), TenantID: filter.TenantID}}, nil
@@ -67,6 +74,9 @@ func (store *fakeOrderStore) ListServiceInstances(_ context.Context, filter Serv
 
 func (store *fakeOrderStore) GetServiceInstance(_ context.Context, lookup ServiceInstanceLookup) (ServiceInstance, error) {
 	store.getServiceLookup = lookup
+	if store.service.ID != "" {
+		return store.service, nil
+	}
 	return ServiceInstance{ID: lookup.ID, TenantID: lookup.TenantID}, nil
 }
 
@@ -240,6 +250,114 @@ func TestServiceTransitionOrderStatusRejectsBadChangeBeforeStore(t *testing.T) {
 	}
 	if store.transitionOrderStatusInput.ID != "" {
 		t.Fatalf("store should not be called, got %+v", store.transitionOrderStatusInput)
+	}
+}
+
+func TestServiceTransitionServiceLifecycleDelegatesAllowedChange(t *testing.T) {
+	store := &fakeOrderStore{}
+	service := NewService(store)
+
+	record, err := service.TransitionServiceLifecycle(context.Background(), TransitionServiceLifecycleInput{
+		ID:               " service-1 ",
+		TenantID:         tenant.ID(" tenant-1 "),
+		ActorID:          " admin-1 ",
+		Action:           ServiceLifecycleActionSuspend,
+		FromStatus:       ServiceStatusActive,
+		ToStatus:         ServiceStatusSuspended,
+		SuspensionReason: SuspensionReasonManualAdmin,
+		Reason:           "abuse ticket AB-1",
+	})
+	if err != nil {
+		t.Fatalf("expected service lifecycle transition: %v", err)
+	}
+	if record.Status != ServiceStatusSuspended {
+		t.Fatalf("unexpected service result: %+v", record)
+	}
+	if store.transitionServiceLifecycleInput.ID != ServiceID("service-1") ||
+		store.transitionServiceLifecycleInput.TenantID != tenant.ID("tenant-1") ||
+		store.transitionServiceLifecycleInput.ActorID != audit.ActorID("admin-1") {
+		t.Fatalf("expected normalized lifecycle input, got %+v", store.transitionServiceLifecycleInput)
+	}
+}
+
+func TestServiceTransitionServiceLifecycleWritesAudit(t *testing.T) {
+	store := &fakeOrderStore{}
+	auditLog := &fakeOrderAuditAppender{}
+	service := NewServiceWithAudit(store, auditLog)
+
+	_, err := service.TransitionServiceLifecycle(context.Background(), TransitionServiceLifecycleInput{
+		ID:               "service-1",
+		TenantID:         tenant.ID("tenant-1"),
+		ActorID:          "admin-1",
+		Action:           ServiceLifecycleActionSuspend,
+		FromStatus:       ServiceStatusActive,
+		ToStatus:         ServiceStatusSuspended,
+		SuspensionReason: SuspensionReasonManualAdmin,
+		Reason:           "abuse ticket AB-1",
+	})
+	if err != nil {
+		t.Fatalf("expected service lifecycle transition: %v", err)
+	}
+	if auditLog.calls != 1 ||
+		auditLog.input.Action != ServiceEventSuspended ||
+		auditLog.input.TargetID != audit.TargetID("service-1") ||
+		auditLog.input.ActorID != audit.ActorID("admin-1") {
+		t.Fatalf("unexpected audit input: %+v", auditLog.input)
+	}
+}
+
+func TestServiceTransitionServiceLifecycleRejectsBadChangeBeforeStore(t *testing.T) {
+	store := &fakeOrderStore{}
+	service := NewService(store)
+
+	_, err := service.TransitionServiceLifecycle(context.Background(), TransitionServiceLifecycleInput{
+		ID:         "service-1",
+		TenantID:   tenant.ID("tenant-1"),
+		ActorID:    "admin-1",
+		Action:     ServiceLifecycleActionSuspend,
+		FromStatus: ServiceStatusTerminated,
+		ToStatus:   ServiceStatusSuspended,
+		Reason:     "bad transition",
+	})
+	if !errors.Is(err, ErrServiceStatusTransitionInvalid) {
+		t.Fatalf("expected service transition error, got %v", err)
+	}
+	if store.transitionServiceLifecycleInput.ID != "" {
+		t.Fatalf("store should not be called, got %+v", store.transitionServiceLifecycleInput)
+	}
+}
+
+func TestServiceRenewTermExtendsFromOldTermEndAndActivates(t *testing.T) {
+	termStart := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+	termEnd := time.Date(2026, 1, 31, 0, 0, 0, 0, time.UTC)
+	store := &fakeOrderStore{
+		service: ServiceInstance{
+			ID:               "service-1",
+			TenantID:         "tenant-1",
+			Status:           ServiceStatusSuspended,
+			BillingStatus:    BillingStatusOverdue,
+			SuspensionReason: SuspensionReasonExpiry,
+			TermStart:        termStart,
+			TermEnd:          termEnd,
+		},
+	}
+	service := NewService(store)
+
+	record, err := service.RenewServiceTerm(context.Background(), RenewServiceTermInput{
+		ID:         "service-1",
+		TenantID:   "tenant-1",
+		ActorID:    "admin-1",
+		FromStatus: ServiceStatusSuspended,
+		Cycle:      ServiceRenewalCycle{Type: catalog.BillingCycleMonth30Days, Value: 1},
+		Reason:     "invoice paid",
+	})
+	if err != nil {
+		t.Fatalf("expected renew service term: %v", err)
+	}
+	if record.Status != ServiceStatusActive ||
+		record.BillingStatus != BillingStatusPaid ||
+		!record.TermEnd.Equal(termEnd.Add(30*24*time.Hour)) {
+		t.Fatalf("unexpected renewed service: %+v", record)
 	}
 }
 

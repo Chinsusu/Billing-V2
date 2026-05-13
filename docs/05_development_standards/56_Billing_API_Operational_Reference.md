@@ -121,6 +121,9 @@ Operation error:
 | Admin job manual review or cancel | `provisioning.manual_review.resolve` |
 | Client and admin service read | `service.view` |
 | Admin and reseller service credential reveal | `service.credential.reveal` |
+| Admin and reseller service suspend | `service.suspend` |
+| Admin and reseller service unsuspend | `service.unsuspend` |
+| Admin and reseller service terminate | `service.terminate` |
 | Client and admin invoices | `wallet.view` |
 | Client and admin wallets | `wallet.view` |
 | Client and admin transactions | `wallet.view` |
@@ -311,6 +314,42 @@ The job read API does not expose `payload_json` or `idempotency_key`.
 - `GET /reseller/services/{service_id}`
   - auth: reseller actor, `service.view`
   - response: one `service`; active credential metadata may be included as masked hints only
+
+- `POST /admin/services/{service_id}/suspend`
+  - auth: admin actor, `service.suspend`
+  - body: `from_status`, `reason`, optional `suspension_reason`, optional `notify_client`
+  - response: one `service`
+  - notes: default `suspension_reason` is `manual_admin`; writes `service.suspended` lifecycle/audit evidence
+
+- `POST /reseller/services/{service_id}/suspend`
+  - auth: reseller actor, `service.suspend`
+  - body: `from_status`, `reason`, optional `suspension_reason`, optional `notify_client`
+  - response: one `service`
+  - notes: default `suspension_reason` is `manual_reseller`; writes `service.suspended` lifecycle/audit evidence
+
+- `POST /admin/services/{service_id}/unsuspend`
+  - auth: admin actor, `service.unsuspend`
+  - body: `from_status`, `reason`
+  - response: one `service`
+  - notes: transitions `suspended -> active`, sets `billing_status=paid`, clears suspension reason, and writes `service.unsuspended`
+
+- `POST /reseller/services/{service_id}/unsuspend`
+  - auth: reseller actor, `service.unsuspend`
+  - body: `from_status`, `reason`
+  - response: one `service`
+  - notes: transitions `suspended -> active`, sets `billing_status=paid`, clears suspension reason, and writes `service.unsuspended`
+
+- `POST /admin/services/{service_id}/terminate`
+  - auth: admin actor, `service.terminate`
+  - body: `from_status`, `reason`, optional `billing_status`
+  - response: one `service`
+  - notes: critical action; requires access reason through RBAC middleware and writes `service.terminated`
+
+- `POST /reseller/services/{service_id}/terminate`
+  - auth: reseller actor, `service.terminate`
+  - body: `from_status`, `reason`, optional `billing_status`
+  - response: one `service`
+  - notes: critical action; requires access reason through RBAC middleware and writes `service.terminated`
 
 - `POST /admin/services/{service_id}/credentials/{credential_id}/reveal`
   - auth: admin actor, `service.credential.reveal`
@@ -659,7 +698,7 @@ Shared errors:
 Route-specific errors that frontend and agents should expect:
 
 - orders: `order.not_found`, `order.status_conflict`, `order.status_transition_invalid`
-- services: `service.not_found`, `service.status_invalid`, `credential.not_found`, `credential.reveal_rate_limited`, `credential.reveal_denied`
+- services: `service.not_found`, `service.status_invalid`, `service.status_conflict`, `service.status_transition_invalid`, `service.lifecycle_action_invalid`, `service.reason_missing`, `service.suspension_reason_invalid`, `service.billing_cycle_invalid`, `service.billing_cycle_value_invalid`, `credential.not_found`, `credential.reveal_rate_limited`, `credential.reveal_denied`
 - invoices: `invoice.not_found`, `invoice.status_conflict`
 - wallets: `wallet.not_found`, `wallet.ledger_not_found`, `wallet.status_conflict`, `wallet.currency_mismatch`, `wallet.idempotency_conflict`, `wallet.insufficient_balance`
 - top-up: `wallet.topup_not_found`, `wallet.topup_status_conflict`, `wallet.payment_method_invalid`

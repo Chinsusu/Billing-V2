@@ -138,6 +138,10 @@ func (store *fakeInventoryReservationStore) TransitionOrderStatus(_ context.Cont
 	return Order{ID: input.ID, TenantID: input.TenantID}, nil
 }
 
+func (store *fakeInventoryReservationStore) TransitionServiceLifecycle(_ context.Context, input TransitionServiceLifecycleInput) (ServiceInstance, error) {
+	return ServiceInstance{ID: input.ID, TenantID: input.TenantID, Status: input.ToStatus}, nil
+}
+
 func (store *fakeInventoryReservationStore) ListServiceInstances(_ context.Context, filter ServiceInstanceFilter) ([]ServiceInstance, error) {
 	return []ServiceInstance{{TenantID: filter.TenantID}}, nil
 }

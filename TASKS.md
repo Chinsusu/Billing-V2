@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` after T196 merged:
+Current board snapshot on `2026-05-13` with T197 in review:
 
-- `TODO`: 9
+- `TODO`: 8
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 193
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -61,7 +61,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T197 | [tasks/active/T197_service_lifecycle_transitions.md](tasks/active/T197_service_lifecycle_transitions.md) | `codex/t197-service-lifecycle-transitions` | Lifecycle | Add service lifecycle transitions. |
 | T198 | [tasks/active/T198_lifecycle_scheduler_jobs.md](tasks/active/T198_lifecycle_scheduler_jobs.md) | `codex/t198-lifecycle-scheduler-jobs` | Scheduler | Add lifecycle scheduler jobs. |
 | T199 | [tasks/active/T199_provider_sandbox_readiness.md](tasks/active/T199_provider_sandbox_readiness.md) | `codex/t199-provider-sandbox-readiness` | Provider | Prove provider sandbox readiness. |
 | T200 | [tasks/active/T200_notification_foundation.md](tasks/active/T200_notification_foundation.md) | `codex/t200-notification-foundation` | Notifications | Add basic launch-critical notification infrastructure. |
@@ -75,6 +74,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T197 | [tasks/active/T197_service_lifecycle_transitions.md](tasks/active/T197_service_lifecycle_transitions.md) | REVIEW | Codex | `codex/t197-service-lifecycle-transitions` | Add service lifecycle transitions. |
 
 ## Done Task Files
 

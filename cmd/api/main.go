@@ -171,16 +171,22 @@ func newOrderRoutesWithCredentialCipher(executor platformdb.Executor, credential
 	})
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return order.NewHTTPHandlerWithOptions(service, order.HTTPHandlerOptions{
-		AdminMiddleware:              orderAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
-		AdminManageMiddleware:        orderAuthMiddleware(authorizer, rbac.PermissionOrderManage, rbac.RiskHigh),
-		AdminServiceMiddleware:       orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
-		AdminCredentialMiddleware:    orderAuthMiddleware(authorizer, rbac.PermissionServiceReveal, rbac.RiskHigh),
-		ResellerMiddleware:           orderAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
-		ResellerServiceMiddleware:    orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
-		ResellerCredentialMiddleware: orderAuthMiddleware(authorizer, rbac.PermissionServiceReveal, rbac.RiskHigh),
-		ClientMiddleware:             orderAuthMiddleware(authorizer, rbac.PermissionOrderCreate, rbac.RiskMedium),
-		ClientServiceMiddleware:      orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
-		ClientCredentialMiddleware:   orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskHigh),
+		AdminMiddleware:                    orderAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
+		AdminManageMiddleware:              orderAuthMiddleware(authorizer, rbac.PermissionOrderManage, rbac.RiskHigh),
+		AdminServiceMiddleware:             orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
+		AdminServiceSuspendMiddleware:      orderAuthMiddleware(authorizer, rbac.PermissionServiceSuspend, rbac.RiskHigh),
+		AdminServiceUnsuspendMiddleware:    orderAuthMiddleware(authorizer, rbac.PermissionServiceUnsuspend, rbac.RiskHigh),
+		AdminServiceTerminateMiddleware:    orderAuthMiddleware(authorizer, rbac.PermissionServiceTerminate, rbac.RiskCritical),
+		AdminCredentialMiddleware:          orderAuthMiddleware(authorizer, rbac.PermissionServiceReveal, rbac.RiskHigh),
+		ResellerMiddleware:                 orderAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
+		ResellerServiceMiddleware:          orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
+		ResellerServiceSuspendMiddleware:   orderAuthMiddleware(authorizer, rbac.PermissionServiceSuspend, rbac.RiskHigh),
+		ResellerServiceUnsuspendMiddleware: orderAuthMiddleware(authorizer, rbac.PermissionServiceUnsuspend, rbac.RiskHigh),
+		ResellerServiceTerminateMiddleware: orderAuthMiddleware(authorizer, rbac.PermissionServiceTerminate, rbac.RiskCritical),
+		ResellerCredentialMiddleware:       orderAuthMiddleware(authorizer, rbac.PermissionServiceReveal, rbac.RiskHigh),
+		ClientMiddleware:                   orderAuthMiddleware(authorizer, rbac.PermissionOrderCreate, rbac.RiskMedium),
+		ClientServiceMiddleware:            orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
+		ClientCredentialMiddleware:         orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskHigh),
 	})
 }
 

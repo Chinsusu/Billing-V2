@@ -186,6 +186,101 @@ func TestHTTPHandlerListServicesRejectsBadStatus(t *testing.T) {
 	}
 }
 
+func TestHTTPHandlerSuspendAdminServiceUsesTenantActorAndReason(t *testing.T) {
+	service := &fakeOrderHTTPService{
+		service: ServiceInstance{
+			ID:               "service_1",
+			DisplayID:        50004,
+			TenantID:         "tenant_1",
+			OrderID:          "order_1",
+			TenantPlanID:     catalog.TenantPlanID("tenant_plan_1"),
+			ProviderSourceID: catalog.ProviderSourceID("source_1"),
+			Status:           ServiceStatusSuspended,
+			BillingStatus:    BillingStatusPaid,
+		},
+	}
+	handler := registerOrderTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodPost, "/admin/services/service_1/suspend", strings.NewReader(`{
+		"from_status": "active",
+		"reason": "abuse ticket AB-1",
+		"notify_client": true
+	}`))
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.transitionServiceLifecycleCalls != 1 {
+		t.Fatalf("expected lifecycle transition once, got %d", service.transitionServiceLifecycleCalls)
+	}
+	input := service.transitionServiceLifecycleInput
+	if input.ID != ServiceID("service_1") ||
+		input.TenantID != tenant.ID("tenant_1") ||
+		input.ActorID != "admin_1" ||
+		input.Action != ServiceLifecycleActionSuspend ||
+		input.FromStatus != ServiceStatusActive ||
+		input.ToStatus != ServiceStatusSuspended ||
+		input.SuspensionReason != SuspensionReasonManualAdmin ||
+		input.Reason != "abuse ticket AB-1" {
+		t.Fatalf("unexpected lifecycle input: %+v", input)
+	}
+}
+
+func TestHTTPHandlerUnsuspendResellerServiceSetsPaidBilling(t *testing.T) {
+	service := &fakeOrderHTTPService{}
+	handler := registerOrderTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodPost, "/reseller/services/service_2/unsuspend", strings.NewReader(`{
+		"from_status": "suspended",
+		"reason": "abuse cleared"
+	}`))
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("reseller_tenant")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("reseller_1", "reseller_tenant", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	input := service.transitionServiceLifecycleInput
+	if input.Action != ServiceLifecycleActionUnsuspend ||
+		input.ToStatus != ServiceStatusActive ||
+		input.BillingStatus != BillingStatusPaid ||
+		input.SuspensionReason != "" {
+		t.Fatalf("unexpected unsuspend input: %+v", input)
+	}
+}
+
+func TestHTTPHandlerTerminateAdminServiceRejectsMissingReason(t *testing.T) {
+	service := &fakeOrderHTTPService{}
+	handler := registerOrderTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodPost, "/admin/services/service_1/terminate", strings.NewReader(`{
+		"from_status": "suspended"
+	}`))
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("admin_1", "tenant_1", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("expected status 400, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.transitionServiceLifecycleCalls != 0 {
+		t.Fatalf("expected no lifecycle transition, got %d", service.transitionServiceLifecycleCalls)
+	}
+	if !strings.Contains(response.Body.String(), "service.reason_missing") {
+		t.Fatalf("expected reason validation error, got %s", response.Body.String())
+	}
+}
+
 func TestHTTPHandlerResellerServiceMiddlewareRunsBeforeService(t *testing.T) {
 	service := &fakeOrderHTTPService{}
 	mux := http.NewServeMux()
