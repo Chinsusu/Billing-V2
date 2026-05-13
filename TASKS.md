@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` after T199 claimed:
+Current board snapshot on `2026-05-13` after T199 opened for review:
 
 - `TODO`: 6
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 195
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -72,7 +72,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T199 | [tasks/active/T199_provider_sandbox_readiness.md](tasks/active/T199_provider_sandbox_readiness.md) | IN_PROGRESS | Codex | `codex/t199-provider-sandbox-readiness` | Prove provider sandbox readiness. |
+| T199 | [tasks/active/T199_provider_sandbox_readiness.md](tasks/active/T199_provider_sandbox_readiness.md) | REVIEW | Codex | `codex/t199-provider-sandbox-readiness` | Prove provider sandbox readiness. |
 
 ## Done Task Files
 
