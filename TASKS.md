@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` after T200 claimed:
+Current board snapshot on `2026-05-13` after T200 opened for review:
 
 - `TODO`: 5
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 196
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -71,7 +71,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T200 | [tasks/active/T200_notification_foundation.md](tasks/active/T200_notification_foundation.md) | IN_PROGRESS | Codex | `codex/t200-notification-foundation` | Add basic launch-critical notification infrastructure. |
+| T200 | [tasks/active/T200_notification_foundation.md](tasks/active/T200_notification_foundation.md) | REVIEW | Codex | `codex/t200-notification-foundation` | Add basic launch-critical notification infrastructure. |
 
 ## Done Task Files
 
