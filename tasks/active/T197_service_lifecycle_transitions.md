@@ -1,6 +1,6 @@
 # T197 - Service lifecycle transitions
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t197-service-lifecycle-transitions
 PR: https://github.com/Chinsusu/Billing-V2/pull/425
@@ -32,6 +32,7 @@ Implement or complete service lifecycle transitions for renew, expire, grace, su
 
 ## Agent Log
 
+- 2026-05-13: PR https://github.com/Chinsusu/Billing-V2/pull/425 merged into `main` at `4313b71`; marking task DONE.
 - 2026-05-13: Opened PR https://github.com/Chinsusu/Billing-V2/pull/425. Implemented service lifecycle transition primitives, admin/reseller suspend-unsuspend-terminate APIs, service lifecycle events/audit, RBAC permission seed/migration, and API/error docs. Local checks: `make fmt`, targeted `go test ./internal/modules/order ./cmd/contractguard ./cmd/errorcodeguard ./internal/seed`, `make test`, `make build`, `make migrate-validate`, `make contract-guard`, `make error-code-guard`, `make task-guard`, `git diff --check`. `make smoke-dev-billing` was blocked because `DB_DSN`/`-dsn` is not configured.
 - 2026-05-13: Claimed by Codex on `codex/t197-service-lifecycle-transitions`; starting lifecycle/API/doc review before implementation.
 - 2026-05-13: Task created by Codex backlog planning.

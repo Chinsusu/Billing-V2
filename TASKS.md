@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` with T197 in review:
+Current board snapshot on `2026-05-13` after T197 merged:
 
 - `TODO`: 8
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 193
+- `DONE` task files in `tasks/active/`: 194
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -74,14 +74,13 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T197 | [tasks/active/T197_service_lifecycle_transitions.md](tasks/active/T197_service_lifecycle_transitions.md) | REVIEW | Codex | `codex/t197-service-lifecycle-transitions` | Add service lifecycle transitions. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T196`
+- `T011` to `T197`
 
 ## Removed Tasks
 
