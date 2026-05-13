@@ -76,6 +76,42 @@ func (service *Service) CreateReservation(ctx context.Context, input CreateReser
 	return service.store.CreateReservation(ctx, input)
 }
 
+func (service *Service) ReserveInventory(ctx context.Context, input ReserveInventoryInput) (Reservation, error) {
+	if err := service.ready(); err != nil {
+		return Reservation{}, err
+	}
+	reservationStore, err := service.inventoryReservationStore()
+	if err != nil {
+		return Reservation{}, err
+	}
+	input = input.Normalize()
+	if input.ExpiresAt.IsZero() {
+		input.ExpiresAt = service.now().UTC().Add(DefaultReservationTTL)
+	}
+	if err := input.Validate(); err != nil {
+		return Reservation{}, err
+	}
+	return reservationStore.ReserveInventory(ctx, input)
+}
+
+func (service *Service) ExpireReservations(ctx context.Context, input ExpireReservationsInput) (int, error) {
+	if err := service.ready(); err != nil {
+		return 0, err
+	}
+	reservationStore, err := service.inventoryReservationStore()
+	if err != nil {
+		return 0, err
+	}
+	input = input.Normalize()
+	if input.Now.IsZero() {
+		input.Now = service.now().UTC()
+	}
+	if err := input.Validate(); err != nil {
+		return 0, err
+	}
+	return reservationStore.ExpireReservations(ctx, input)
+}
+
 func (service *Service) CreateProvisioningJob(ctx context.Context, input CreateProvisioningJobInput) (ProvisioningJob, error) {
 	if err := service.ready(); err != nil {
 		return ProvisioningJob{}, err
@@ -156,6 +192,14 @@ func (service *Service) GetServiceInstance(ctx context.Context, lookup ServiceIn
 		return ServiceInstance{}, err
 	}
 	return service.store.GetServiceInstance(ctx, lookup)
+}
+
+func (service *Service) inventoryReservationStore() (InventoryReservationStore, error) {
+	reservationStore, ok := service.store.(InventoryReservationStore)
+	if !ok {
+		return nil, ErrServiceStoreMissing
+	}
+	return reservationStore, nil
 }
 
 func (service *Service) ready() error {

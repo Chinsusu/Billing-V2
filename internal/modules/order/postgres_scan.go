@@ -63,8 +63,8 @@ func scanReservation(row orderScanner) (Reservation, error) {
 	var record Reservation
 	var id, orderID, tenantID, providerSourceID, status string
 	if err := row.Scan(
-		&id, &record.DisplayID, &orderID, &tenantID, &providerSourceID, &status,
-		&record.ExpiresAt, &record.CreatedAt, &record.UpdatedAt,
+		&id, &record.DisplayID, &orderID, &tenantID, &providerSourceID,
+		&record.Quantity, &status, &record.ExpiresAt, &record.CreatedAt, &record.UpdatedAt,
 	); err != nil {
 		return Reservation{}, fmt.Errorf("scan order reservation: %w", err)
 	}

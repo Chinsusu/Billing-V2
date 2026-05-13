@@ -1,7 +1,7 @@
 # T196 - Reservation TTL and concurrency proof
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t196-reservation-ttl-concurrency
 PR: -
 Risk: order, inventory locking, checkout, provider provisioning, and money safety
@@ -33,3 +33,5 @@ Verify and complete reservation TTL and concurrency behavior for checkout and in
 ## Agent Log
 
 - 2026-05-13: Task created by Codex backlog planning.
+- 2026-05-13: Claimed by Codex on branch `codex/t196-reservation-ttl-concurrency`.
+- 2026-05-13: Implemented provider inventory counters, reservation quantity, atomic reserve SQL, idempotent expiry release SQL, and reservation concurrency tests. Local validation passed: `make fmt`, `make test`, `make build`, `make migrate-validate`, `make contract-guard`, `make error-code-guard`, `make task-guard`, `git diff --check`.
