@@ -2,6 +2,7 @@ package identity
 
 import (
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
@@ -31,6 +32,10 @@ func HeaderActorMiddlewareWithOptions(options HeaderActorOptions, next http.Hand
 	}
 	headers := normalizeActorHeaders(options)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !headerActorAuthEnabled() {
+			next.ServeHTTP(w, r)
+			return
+		}
 		actorID := UserID(strings.TrimSpace(r.Header.Get(headers.ActorIDHeader)))
 		if actorID == "" {
 			next.ServeHTTP(w, r)
@@ -46,6 +51,15 @@ func HeaderActorMiddlewareWithOptions(options HeaderActorOptions, next http.Hand
 		actor := NewActor(actorID, actorTenantID, actorType, parseRoleIDs(r.Header.Get(headers.ActorRoleIDsHeader))...)
 		next.ServeHTTP(w, r.WithContext(WithActor(r.Context(), actor)))
 	})
+}
+
+func headerActorAuthEnabled() bool {
+	switch strings.ToLower(strings.TrimSpace(os.Getenv("APP_ENV"))) {
+	case "", "local", "dev":
+		return true
+	default:
+		return false
+	}
 }
 
 func normalizeActorHeaders(options HeaderActorOptions) HeaderActorOptions {

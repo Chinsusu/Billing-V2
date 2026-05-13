@@ -17,15 +17,17 @@ type RouteRegistrar interface {
 }
 
 type APIOptions struct {
-	AccountRoutes  RouteRegistrar
-	AuditRoutes    RouteRegistrar
-	CatalogRoutes  RouteRegistrar
-	CheckoutRoutes RouteRegistrar
-	InvoiceRoutes  RouteRegistrar
-	JobsRoutes     RouteRegistrar
-	OrderRoutes    RouteRegistrar
-	PaymentRoutes  RouteRegistrar
-	WalletRoutes   RouteRegistrar
+	AuthRoutes        RouteRegistrar
+	AccountRoutes     RouteRegistrar
+	AuditRoutes       RouteRegistrar
+	CatalogRoutes     RouteRegistrar
+	CheckoutRoutes    RouteRegistrar
+	InvoiceRoutes     RouteRegistrar
+	JobsRoutes        RouteRegistrar
+	OrderRoutes       RouteRegistrar
+	PaymentRoutes     RouteRegistrar
+	WalletRoutes      RouteRegistrar
+	SessionMiddleware func(http.Handler) http.Handler
 }
 
 type API struct {
@@ -59,6 +61,9 @@ func NewAPIWithOptions(cfg config.Config, log *logger.Logger, options APIOptions
 	}
 	mux.HandleFunc("/healthz", middleware.RequireMethod(http.MethodGet, api.handleHealth))
 	mux.HandleFunc("/readyz", middleware.RequireMethod(http.MethodGet, api.handleReady))
+	if options.AuthRoutes != nil {
+		options.AuthRoutes.RegisterRoutes(mux)
+	}
 	if options.AccountRoutes != nil {
 		options.AccountRoutes.RegisterRoutes(mux)
 	}
@@ -86,9 +91,13 @@ func NewAPIWithOptions(cfg config.Config, log *logger.Logger, options APIOptions
 	if options.WalletRoutes != nil {
 		options.WalletRoutes.RegisterRoutes(mux)
 	}
+	handler := http.Handler(mux)
+	if options.SessionMiddleware != nil {
+		handler = options.SessionMiddleware(handler)
+	}
 	api.handler = httpserver.WithRequestID(
 		middleware.Chain(
-			mux,
+			handler,
 			middleware.Recover(api.log),
 			middleware.RequestLogger(api.log),
 		),
