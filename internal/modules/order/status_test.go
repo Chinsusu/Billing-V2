@@ -33,4 +33,7 @@ func TestServiceTransitionGuards(t *testing.T) {
 	if CanTransitionService(ServiceStatusTerminated, ServiceStatusActive) {
 		t.Fatal("terminated service should not transition back to active")
 	}
+	if !CanTransitionService(ServiceStatusExpired, ServiceStatusActive) {
+		t.Fatal("expected expired service to renew back to active")
+	}
 }

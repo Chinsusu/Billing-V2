@@ -7,6 +7,8 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/Chinsusu/Billing-V2/internal/modules/audit"
+	"github.com/Chinsusu/Billing-V2/internal/modules/catalog"
 	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
 	"github.com/Chinsusu/Billing-V2/internal/platform/httpserver"
@@ -25,6 +27,7 @@ type HTTPService interface {
 	ListOrders(ctx context.Context, filter OrderFilter) ([]Order, error)
 	GetOrder(ctx context.Context, lookup OrderLookup) (Order, error)
 	TransitionOrderStatus(ctx context.Context, input TransitionOrderStatusInput) (Order, error)
+	TransitionServiceLifecycle(ctx context.Context, input TransitionServiceLifecycleInput) (ServiceInstance, error)
 	ListServiceInstances(ctx context.Context, filter ServiceInstanceFilter) ([]ServiceInstance, error)
 	GetServiceInstance(ctx context.Context, lookup ServiceInstanceLookup) (ServiceInstance, error)
 }
@@ -40,16 +43,22 @@ type HTTPCredentialRevealer interface {
 type RouteMiddleware func(http.HandlerFunc) http.HandlerFunc
 
 type HTTPHandlerOptions struct {
-	AdminMiddleware              RouteMiddleware
-	AdminManageMiddleware        RouteMiddleware
-	AdminServiceMiddleware       RouteMiddleware
-	AdminCredentialMiddleware    RouteMiddleware
-	ResellerMiddleware           RouteMiddleware
-	ResellerServiceMiddleware    RouteMiddleware
-	ResellerCredentialMiddleware RouteMiddleware
-	ClientMiddleware             RouteMiddleware
-	ClientServiceMiddleware      RouteMiddleware
-	ClientCredentialMiddleware   RouteMiddleware
+	AdminMiddleware                    RouteMiddleware
+	AdminManageMiddleware              RouteMiddleware
+	AdminServiceMiddleware             RouteMiddleware
+	AdminServiceSuspendMiddleware      RouteMiddleware
+	AdminServiceUnsuspendMiddleware    RouteMiddleware
+	AdminServiceTerminateMiddleware    RouteMiddleware
+	AdminCredentialMiddleware          RouteMiddleware
+	ResellerMiddleware                 RouteMiddleware
+	ResellerServiceMiddleware          RouteMiddleware
+	ResellerServiceSuspendMiddleware   RouteMiddleware
+	ResellerServiceUnsuspendMiddleware RouteMiddleware
+	ResellerServiceTerminateMiddleware RouteMiddleware
+	ResellerCredentialMiddleware       RouteMiddleware
+	ClientMiddleware                   RouteMiddleware
+	ClientServiceMiddleware            RouteMiddleware
+	ClientCredentialMiddleware         RouteMiddleware
 }
 
 type HTTPHandler struct {
@@ -387,10 +396,13 @@ func writeOrderError(w http.ResponseWriter, r *http.Request, err error) {
 		httpserver.WriteError(w, r, http.StatusForbidden, "credential.reveal_denied", "Credential cannot be revealed.")
 	case errors.Is(err, ErrOrderStatusConflict):
 		httpserver.WriteError(w, r, http.StatusConflict, "order.status_conflict", "Order status no longer matches the expected value.")
+	case errors.Is(err, ErrServiceStatusConflict):
+		httpserver.WriteError(w, r, http.StatusConflict, "service.status_conflict", "Service status no longer matches the expected value.")
 	case errors.Is(err, identity.ErrActorContextMissing),
 		errors.Is(err, identity.ErrActorIDMissing),
 		errors.Is(err, identity.ErrActorTypeMissing),
-		errors.Is(err, identity.ErrActorTenantMissing):
+		errors.Is(err, identity.ErrActorTenantMissing),
+		errors.Is(err, audit.ErrActorIDMissing):
 		httpserver.WriteError(w, r, http.StatusUnauthorized, "auth.actor_required", "Actor context is required.")
 	case errors.Is(err, ErrServiceStoreMissing),
 		errors.Is(err, ErrStoreExecutorMissing),
@@ -435,8 +447,20 @@ func orderValidationField(err error) (httpserver.ValidationField, bool) {
 		return validationField("billing_status", "order.billing_status_invalid", "Billing status is invalid."), true
 	case errors.Is(err, ErrServiceStatusInvalid):
 		return validationField("status", "service.status_invalid", "Service status is invalid."), true
+	case errors.Is(err, ErrServiceStatusTransitionInvalid):
+		return validationField("to_status", "service.status_transition_invalid", "Service status change is not allowed."), true
+	case errors.Is(err, ErrServiceLifecycleActionInvalid):
+		return validationField("action", "service.lifecycle_action_invalid", "Service lifecycle action is invalid."), true
+	case errors.Is(err, ErrServiceLifecycleReasonMissing):
+		return validationField("reason", "service.reason_missing", "A reason is required for this service action."), true
 	case errors.Is(err, ErrStatusTransitionInvalid):
 		return validationField("to_status", "order.status_transition_invalid", "Order status change is not allowed."), true
+	case errors.Is(err, ErrSuspensionReasonInvalid):
+		return validationField("suspension_reason", "service.suspension_reason_invalid", "Suspension reason is invalid."), true
+	case errors.Is(err, catalog.ErrBillingCycleInvalid):
+		return validationField("billing_cycle_type", "service.billing_cycle_invalid", "Billing cycle is invalid."), true
+	case errors.Is(err, catalog.ErrBillingCycleValue):
+		return validationField("billing_cycle_value", "service.billing_cycle_value_invalid", "Billing cycle value is invalid."), true
 	default:
 		return httpserver.ValidationField{}, false
 	}

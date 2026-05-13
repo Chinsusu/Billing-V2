@@ -1068,6 +1068,55 @@ service.suspended
 provisioning.job.created optional
 ```
 
+### 9.7 Admin/reseller unsuspend service
+
+```text
+POST /admin/services/{service_id}/unsuspend
+POST /reseller/services/{service_id}/unsuspend
+```
+
+Request:
+```text
+from_status
+reason
+```
+
+Validation:
+- reason required.
+- permission required.
+- only suspended services can be unsuspended.
+- billing status returns to paid when the service becomes active.
+
+Audit:
+```text
+service.unsuspended
+```
+
+### 9.8 Admin/reseller terminate service
+
+```text
+POST /admin/services/{service_id}/terminate
+POST /reseller/services/{service_id}/terminate
+```
+
+Request:
+```text
+from_status
+reason
+billing_status optional
+```
+
+Validation:
+- reason required.
+- permission and critical action access reason required.
+- terminated services cannot be restored by lifecycle action.
+- if provider cleanup is required, create job instead of deleting provider state in request.
+
+Audit:
+```text
+service.terminated
+```
+
 ---
 
 ## 10. Provider and provisioning APIs
