@@ -1,9 +1,9 @@
 # T199 - Provider sandbox readiness
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: codex/t199-provider-sandbox-readiness
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/429
 Risk: provider provisioning, credentials, idempotency, manual review, and operations
 Created: 2026-05-13
 Updated: 2026-05-13
@@ -33,3 +33,8 @@ Prove provider sandbox readiness for one VPS source and one proxy/manual source 
 ## Agent Log
 
 - 2026-05-13: Task created by Codex backlog planning.
+- 2026-05-13: Codex claimed task on `codex/t199-provider-sandbox-readiness`.
+- 2026-05-13: Added provider sandbox readiness/no-go evidence. Real sandbox provider remains blocked because approved account, credentials, quota, SKU mapping, timeout policy, redacted examples, and cleanup owner are not present.
+- 2026-05-13: Added local fake provider contract coverage for proxy and request-known timeout mapping; added provisioning worker test proving timeout-after-create moves to manual review instead of blind retry.
+- 2026-05-13: Local checks passed: `make fmt`, `go test ./internal/modules/provider -run SandboxContract`, `go test ./internal/modules/order -run ProviderProvisioningHandler`, `go test ./internal/modules/provider ./internal/modules/order ./cmd/smoke`, `make test`, `make build`, `make migrate-validate`, `make contract-guard`, `make error-code-guard`, `make task-guard`, `git diff --check`. `make smoke-dev-billing` blocked because `DB_DSN`/`-dsn` is not configured.
+- 2026-05-13: Opened PR #429 for review.

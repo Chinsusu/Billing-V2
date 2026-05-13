@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` after T198 merged:
+Current board snapshot on `2026-05-13` after T199 opened for review:
 
-- `TODO`: 7
+- `TODO`: 6
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 195
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -61,7 +61,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T199 | [tasks/active/T199_provider_sandbox_readiness.md](tasks/active/T199_provider_sandbox_readiness.md) | `codex/t199-provider-sandbox-readiness` | Provider | Prove provider sandbox readiness. |
 | T200 | [tasks/active/T200_notification_foundation.md](tasks/active/T200_notification_foundation.md) | `codex/t200-notification-foundation` | Notifications | Add basic launch-critical notification infrastructure. |
 | T201 | [tasks/active/T201_support_abuse_basic_backend.md](tasks/active/T201_support_abuse_basic_backend.md) | `codex/t201-support-abuse-basic-backend` | Support/Abuse | Add support and abuse backend basics. |
 | T202 | [tasks/active/T202_frontend_production_integration_pass.md](tasks/active/T202_frontend_production_integration_pass.md) | `codex/t202-frontend-production-integration-pass` | Frontend | Replace remaining critical demo-only frontend behavior with production-safe API paths. |
@@ -73,6 +72,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T199 | [tasks/active/T199_provider_sandbox_readiness.md](tasks/active/T199_provider_sandbox_readiness.md) | REVIEW | Codex | `codex/t199-provider-sandbox-readiness` | Prove provider sandbox readiness. |
 
 ## Done Task Files
 
