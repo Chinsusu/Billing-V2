@@ -18,7 +18,7 @@ func NewPostgresStore(executor platformdb.Executor) *PostgresStore {
 }
 
 const orderColumns = `order_id, display_id, tenant_id, buyer_user_id, tenant_plan_id, quantity, currency, unit_price_minor, discount_minor, total_minor, order_status, billing_status, idempotency_key, product_snapshot, plan_snapshot, price_snapshot, created_at, updated_at`
-const reservationColumns = `reservation_id, display_id, order_id, tenant_id, provider_source_id, status, expires_at, created_at, updated_at`
+const reservationColumns = `reservation_id, display_id, order_id, tenant_id, provider_source_id, quantity, status, expires_at, created_at, updated_at`
 const provisioningJobColumns = `provisioning_job_id, display_id, order_id, tenant_id, provider_source_id, provider_operation_id, status, idempotency_key, attempt_number, last_error_code, last_error_message, created_at, updated_at`
 const serviceInstanceColumns = `service_instance_id, display_id, tenant_id, order_id, tenant_plan_id, provider_source_id, external_resource_id, status, billing_status, suspension_reason, term_start, term_end, created_at, updated_at`
 

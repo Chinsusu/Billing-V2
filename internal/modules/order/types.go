@@ -27,6 +27,8 @@ var (
 	ErrProvisioningStatusInvalid  = errors.New("provisioning status invalid")
 	ErrServiceStatusInvalid       = errors.New("service status invalid")
 	ErrSuspensionReasonInvalid    = errors.New("suspension reason invalid")
+	ErrReservationOutOfStock      = errors.New("reservation out of stock")
+	ErrReservationQuantityInvalid = errors.New("reservation quantity invalid")
 	ErrReservationExpiryMissing   = errors.New("reservation expiry missing")
 	ErrTermWindowInvalid          = errors.New("service term window invalid")
 	ErrStatusTransitionInvalid    = errors.New("status transition invalid")

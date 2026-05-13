@@ -42,7 +42,7 @@
 | Admin approves top-up | `partial` | Approval/rejection model and audit support exist in `internal/modules/wallet/topup_review.go`. | Notification and production auth gaps remain: T189, T200. |
 | Client buys a VPS/proxy | `partial` | Order, checkout, invoice, and wallet payment paths exist in `internal/modules/order`, `internal/modules/checkout`, `internal/modules/invoice`, and `internal/modules/payment`. | Reservation/concurrency and frontend production integration remain: T196, T202. |
 | Client debit and reseller settlement debit are correct | `partial` | Purchase and reseller-cost ledger entry types exist in `migrations/0011_create_wallet_ledger_entries.sql`; wallet payment creates purchase ledger entries. | End-to-end settlement and reconciliation proof remain: T194, T195, T204. |
-| Stock is reserved safely | `partial` | Reservation schema and model exist in `migrations/0007_create_order_tables.sql` and `internal/modules/order/reservation.go`. | TTL expiry and concurrency proof remain: T196. |
+| Stock is reserved safely | `partial` | Reservation schema/model exist in `migrations/0007_create_order_tables.sql` and `internal/modules/order/reservation.go`; T196 adds provider inventory counters, atomic reserve SQL, expiry release SQL, and concurrency tests. | Full launch E2E proof remains: T204. |
 | Service is provisioned | `partial` | Paid order provisioning queue and local fake worker exist in `internal/modules/order/provisioning_queue.go`, `internal/modules/order/provider_provisioning_worker.go`, and `cmd/worker/main.go`. | Provider sandbox readiness and full E2E proof remain: T199, T204. |
 | Credentials are masked by default | `missing` | Frontend and smoke redaction guards exist for sensitive text. | Backend credential storage/reveal model is missing: T192, T193. |
 | Credential reveal is audited | `missing` | Permission constant `service.credential.reveal` exists in `internal/modules/rbac/model.go`. | Reveal API, rate limit, and audit are missing: T193. |
@@ -61,7 +61,7 @@
 | Credential storage and reveal | `missing` | Redaction helpers exist; storage/reveal does not. | T192, T193 |
 | Refunds and adjustments | `partial` | Ledger enum types and reason validation exist. | T194 |
 | Daily reconciliation | `partial` | Payment reconciliation read model exists. | T195 |
-| Reservation TTL and concurrency | `partial` | Reservation schema exists. | T196 |
+| Reservation TTL and concurrency | `partial` | Provider inventory counters, reservation quantity, atomic reserve SQL, expiry release SQL, and concurrency tests exist. | Full E2E proof remains: T204 |
 | Service lifecycle | `partial` | Status constants and simple transition helpers exist. | T197, T198 |
 | Provider sandbox | `blocked` | Fake provider and local sandbox contract exist. | T199 |
 | Notifications | `missing` | Job type examples mention notifications, but no notification module exists. | T200 |

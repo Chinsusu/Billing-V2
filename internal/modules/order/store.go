@@ -54,3 +54,8 @@ type Store interface {
 	ListServiceInstances(ctx context.Context, filter ServiceInstanceFilter) ([]ServiceInstance, error)
 	GetServiceInstance(ctx context.Context, lookup ServiceInstanceLookup) (ServiceInstance, error)
 }
+
+type InventoryReservationStore interface {
+	ReserveInventory(ctx context.Context, input ReserveInventoryInput) (Reservation, error)
+	ExpireReservations(ctx context.Context, input ExpireReservationsInput) (int, error)
+}
