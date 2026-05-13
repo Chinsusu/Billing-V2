@@ -205,6 +205,18 @@ Validation:
 - password đúng.
 - 2FA nếu required/enabled.
 
+Response:
+```text
+session_id
+user_id
+tenant_id
+actor_type
+expires_at
+two_factor_required
+two_factor_satisfied
+two_factor_setup_required
+```
+
 Audit:
 ```text
 auth.login.success
@@ -226,6 +238,64 @@ POST /auth/logout
 Audit:
 ```text
 auth.logout
+```
+
+### 4.4 Setup admin 2FA
+
+```text
+POST /auth/2fa/setup
+```
+
+Allowed:
+```text
+authenticated platform staff session
+```
+
+Behavior:
+- Creates a TOTP secret when no enabled TOTP method exists.
+- Rejects replacing an already enabled TOTP method; use a future reset/recovery flow instead.
+- Stores only encrypted secret material.
+- Returns the TOTP secret/provision URI only for the setup response.
+- Marks the user 2FA status `required` until verification succeeds.
+
+Errors:
+- `401 auth.session_invalid` when the cookie is missing, invalid, expired, or revoked.
+- `403 auth.2fa_not_allowed` when the session actor is not allowed to set up 2FA.
+- `409 auth.2fa_already_enabled` when an enabled TOTP method already exists and must be verified instead of replaced.
+
+Audit:
+```text
+auth.2fa.setup
+```
+
+Do not audit or log:
+```text
+totp secret
+otp code
+recovery_code
+```
+
+### 4.5 Verify admin 2FA
+
+```text
+POST /auth/2fa/verify
+```
+
+Request:
+```text
+code
+```
+
+Behavior:
+- Validates a TOTP code for the current authenticated session.
+- Marks the session 2FA-satisfied after success.
+- Marks the user 2FA status `enabled` after success.
+- Privileged admin routes must reject platform staff sessions without satisfied 2FA.
+
+Audit:
+```text
+auth.2fa.success
+auth.2fa.failure
 ```
 
 ---

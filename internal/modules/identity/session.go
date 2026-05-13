@@ -24,6 +24,7 @@ var (
 	ErrSessionExpired      = errors.New("session expired")
 	ErrLoginTenantInvalid  = errors.New("login tenant invalid")
 	ErrSessionTTLMissing   = errors.New("session ttl missing")
+	ErrSessionMissing      = errors.New("session missing")
 )
 
 type LoginInput struct {
@@ -36,24 +37,28 @@ type LoginInput struct {
 }
 
 type LoginResult struct {
-	Token     string
-	Session   Session
-	User      User
-	RoleIDs   []RoleID
-	ExpiresAt time.Time
+	Token                  string
+	Session                Session
+	User                   User
+	RoleIDs                []RoleID
+	ExpiresAt              time.Time
+	TwoFactorRequired      bool
+	TwoFactorSatisfied     bool
+	TwoFactorSetupRequired bool
 }
 
 type Session struct {
-	ID            string
-	TenantID      tenant.ID
-	UserID        UserID
-	TokenHash     string
-	UserAgentHash string
-	ExpiresAt     time.Time
-	RevokedAt     time.Time
-	LastSeenAt    time.Time
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
+	ID                   string
+	TenantID             tenant.ID
+	UserID               UserID
+	TokenHash            string
+	UserAgentHash        string
+	ExpiresAt            time.Time
+	RevokedAt            time.Time
+	LastSeenAt           time.Time
+	TwoFactorSatisfiedAt time.Time
+	CreatedAt            time.Time
+	UpdatedAt            time.Time
 }
 
 type SessionIdentity struct {
@@ -74,6 +79,7 @@ type AuthTenantStore interface {
 type SessionStore interface {
 	CreateSession(ctx context.Context, input CreateSessionInput) (Session, error)
 	FindSessionIdentityByTokenHash(ctx context.Context, tokenHash string, now time.Time) (SessionIdentity, error)
+	MarkSessionTwoFactorSatisfied(ctx context.Context, tokenHash string, now time.Time) (Session, error)
 	RevokeSessionByTokenHash(ctx context.Context, tokenHash string, now time.Time) error
 }
 
@@ -93,7 +99,10 @@ type AuthService struct {
 	tenants    AuthTenantStore
 	users      UserStore
 	sessions   SessionStore
+	twoFactor  TwoFactorStore
 	roles      UserRoleReader
+	cipher     SecretCipher
+	audit      AuthAuditAppender
 	sessionTTL time.Duration
 	now        func() time.Time
 }
@@ -102,7 +111,10 @@ type AuthServiceOptions struct {
 	Tenants    AuthTenantStore
 	Users      UserStore
 	Sessions   SessionStore
+	TwoFactor  TwoFactorStore
 	Roles      UserRoleReader
+	Cipher     SecretCipher
+	Audit      AuthAuditAppender
 	SessionTTL time.Duration
 	Now        func() time.Time
 }
@@ -116,7 +128,10 @@ func NewAuthService(options AuthServiceOptions) *AuthService {
 		tenants:    options.Tenants,
 		users:      options.Users,
 		sessions:   options.Sessions,
+		twoFactor:  options.TwoFactor,
 		roles:      options.Roles,
+		cipher:     options.Cipher,
+		audit:      options.Audit,
 		sessionTTL: options.SessionTTL,
 		now:        now,
 	}
@@ -147,9 +162,6 @@ func (service *AuthService) Login(ctx context.Context, input LoginInput) (LoginR
 	if user.Status != UserStatusActive {
 		return LoginResult{}, ErrUserInactive
 	}
-	if user.TwoFactorStatus == TwoFactorStatusRequired || user.TwoFactorStatus == TwoFactorStatusEnabled {
-		return LoginResult{}, ErrTwoFactorRequired
-	}
 	ok, err := VerifyPasswordArgon2id(input.Password, user.PasswordHash)
 	if err != nil || !ok {
 		return LoginResult{}, ErrInvalidCredentials
@@ -157,6 +169,15 @@ func (service *AuthService) Login(ctx context.Context, input LoginInput) (LoginR
 	roleIDs, err := service.roles.ListRoleIDsForUser(ctx, tenantID, user.ID)
 	if err != nil {
 		return LoginResult{}, err
+	}
+	twoFactorRequired := userRequiresTwoFactor(user)
+	twoFactorSetupRequired := false
+	if twoFactorRequired && service.twoFactor != nil {
+		if _, err := service.twoFactor.GetTOTPMethod(ctx, tenantID, user.ID); errors.Is(err, ErrTwoFactorMethodNotFound) {
+			twoFactorSetupRequired = true
+		} else if err != nil {
+			return LoginResult{}, err
+		}
 	}
 	token, tokenHash, err := newSessionToken()
 	if err != nil {
@@ -174,11 +195,14 @@ func (service *AuthService) Login(ctx context.Context, input LoginInput) (LoginR
 		return LoginResult{}, err
 	}
 	return LoginResult{
-		Token:     token,
-		Session:   session,
-		User:      user,
-		RoleIDs:   roleIDs,
-		ExpiresAt: session.ExpiresAt,
+		Token:                  token,
+		Session:                session,
+		User:                   user,
+		RoleIDs:                roleIDs,
+		ExpiresAt:              session.ExpiresAt,
+		TwoFactorRequired:      twoFactorRequired,
+		TwoFactorSatisfied:     session.TwoFactorSatisfied(),
+		TwoFactorSetupRequired: twoFactorSetupRequired,
 	}, nil
 }
 
@@ -197,6 +221,101 @@ func (service *AuthService) ResolveSession(ctx context.Context, token string) (S
 	return identity, nil
 }
 
+func (session Session) TwoFactorSatisfied() bool {
+	return !session.TwoFactorSatisfiedAt.IsZero()
+}
+
+func (service *AuthService) SetupTwoFactor(ctx context.Context, token string) (SetupTwoFactorResult, error) {
+	if service == nil || service.sessions == nil || service.twoFactor == nil || service.cipher == nil {
+		return SetupTwoFactorResult{}, ErrAuthStoreMissing
+	}
+	identity, err := service.ResolveSession(ctx, token)
+	if err != nil {
+		return SetupTwoFactorResult{}, err
+	}
+	if !userRequiresTwoFactor(identity.User) {
+		return SetupTwoFactorResult{}, ErrTwoFactorNotAllowed
+	}
+	method, err := service.twoFactor.GetTOTPMethod(ctx, identity.User.TenantID, identity.User.ID)
+	if err == nil && !method.EnabledAt.IsZero() {
+		return SetupTwoFactorResult{}, ErrTwoFactorAlreadyEnabled
+	}
+	if err != nil && !errors.Is(err, ErrTwoFactorMethodNotFound) {
+		return SetupTwoFactorResult{}, err
+	}
+	secret, err := GenerateTOTPSecret()
+	if err != nil {
+		return SetupTwoFactorResult{}, err
+	}
+	ciphertext, err := service.cipher.Encrypt(secret)
+	if err != nil {
+		return SetupTwoFactorResult{}, err
+	}
+	if _, err := service.twoFactor.UpsertTOTPSecret(ctx, UpsertTOTPSecretInput{
+		TenantID:         identity.User.TenantID,
+		UserID:           identity.User.ID,
+		SecretCiphertext: ciphertext,
+	}); err != nil {
+		return SetupTwoFactorResult{}, err
+	}
+	if err := service.twoFactor.SetUserTwoFactorStatus(ctx, identity.User.TenantID, identity.User.ID, TwoFactorStatusRequired); err != nil {
+		return SetupTwoFactorResult{}, err
+	}
+	if err := service.appendTwoFactorAudit(ctx, identity, AuditActionTwoFactorSetup); err != nil {
+		return SetupTwoFactorResult{}, err
+	}
+	return SetupTwoFactorResult{
+		Method:       TwoFactorMethodTOTP,
+		Secret:       secret,
+		ProvisionURI: totpProvisionURI(identity.User.Email, secret),
+	}, nil
+}
+
+func (service *AuthService) VerifyTwoFactor(ctx context.Context, token string, code string) (VerifyTwoFactorResult, error) {
+	if service == nil || service.sessions == nil || service.twoFactor == nil || service.cipher == nil {
+		return VerifyTwoFactorResult{}, ErrAuthStoreMissing
+	}
+	identity, err := service.ResolveSession(ctx, token)
+	if err != nil {
+		return VerifyTwoFactorResult{}, err
+	}
+	method, err := service.twoFactor.GetTOTPMethod(ctx, identity.User.TenantID, identity.User.ID)
+	if err != nil {
+		if errors.Is(err, ErrTwoFactorMethodNotFound) {
+			return VerifyTwoFactorResult{}, ErrTwoFactorSetupRequired
+		}
+		return VerifyTwoFactorResult{}, err
+	}
+	secret, err := service.cipher.Decrypt(method.SecretCiphertext)
+	if err != nil {
+		return VerifyTwoFactorResult{}, err
+	}
+	ok, err := VerifyTOTPCode(secret, code, service.now().UTC())
+	if err != nil {
+		_ = service.appendTwoFactorAudit(ctx, identity, AuditActionTwoFactorFailure)
+		return VerifyTwoFactorResult{}, err
+	}
+	if !ok {
+		_ = service.appendTwoFactorAudit(ctx, identity, AuditActionTwoFactorFailure)
+		return VerifyTwoFactorResult{}, ErrTwoFactorCodeInvalid
+	}
+	now := service.now().UTC()
+	if err := service.twoFactor.MarkTOTPEnabled(ctx, identity.User.TenantID, identity.User.ID, now); err != nil {
+		return VerifyTwoFactorResult{}, err
+	}
+	if err := service.twoFactor.SetUserTwoFactorStatus(ctx, identity.User.TenantID, identity.User.ID, TwoFactorStatusEnabled); err != nil {
+		return VerifyTwoFactorResult{}, err
+	}
+	session, err := service.sessions.MarkSessionTwoFactorSatisfied(ctx, HashSessionToken(token), now)
+	if err != nil {
+		return VerifyTwoFactorResult{}, err
+	}
+	if err := service.appendTwoFactorAudit(ctx, identity, AuditActionTwoFactorSuccess); err != nil {
+		return VerifyTwoFactorResult{}, err
+	}
+	return VerifyTwoFactorResult{Session: session, User: identity.User}, nil
+}
+
 func (service *AuthService) Logout(ctx context.Context, token string) error {
 	if service == nil || service.sessions == nil {
 		return ErrAuthStoreMissing
@@ -206,6 +325,12 @@ func (service *AuthService) Logout(ctx context.Context, token string) error {
 		return nil
 	}
 	return service.sessions.RevokeSessionByTokenHash(ctx, HashSessionToken(token), service.now().UTC())
+}
+
+func userRequiresTwoFactor(user User) bool {
+	return user.Type == UserTypePlatformStaff ||
+		user.TwoFactorStatus == TwoFactorStatusRequired ||
+		user.TwoFactorStatus == TwoFactorStatusEnabled
 }
 
 func (service *AuthService) resolveLoginTenant(ctx context.Context, input LoginInput) (tenant.ID, error) {

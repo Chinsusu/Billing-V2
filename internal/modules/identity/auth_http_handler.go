@@ -18,6 +18,8 @@ const maxAuthJSONBodyBytes = 1 << 20
 type AuthHTTPService interface {
 	Login(ctx context.Context, input LoginInput) (LoginResult, error)
 	Logout(ctx context.Context, token string) error
+	SetupTwoFactor(ctx context.Context, token string) (SetupTwoFactorResult, error)
+	VerifyTwoFactor(ctx context.Context, token string, code string) (VerifyTwoFactorResult, error)
 }
 
 type AuthHTTPHandlerOptions struct {
@@ -37,11 +39,31 @@ type loginRequest struct {
 }
 
 type loginResponse struct {
-	SessionID string    `json:"session_id"`
-	UserID    UserID    `json:"user_id"`
-	TenantID  tenant.ID `json:"tenant_id"`
-	ActorType ActorType `json:"actor_type"`
-	ExpiresAt time.Time `json:"expires_at"`
+	SessionID              string    `json:"session_id"`
+	UserID                 UserID    `json:"user_id"`
+	TenantID               tenant.ID `json:"tenant_id"`
+	ActorType              ActorType `json:"actor_type"`
+	ExpiresAt              time.Time `json:"expires_at"`
+	TwoFactorRequired      bool      `json:"two_factor_required"`
+	TwoFactorSatisfied     bool      `json:"two_factor_satisfied"`
+	TwoFactorSetupRequired bool      `json:"two_factor_setup_required"`
+}
+
+type setupTwoFactorResponse struct {
+	Method       string `json:"method"`
+	Secret       string `json:"secret"`
+	ProvisionURI string `json:"provision_uri"`
+}
+
+type verifyTwoFactorRequest struct {
+	Code string `json:"code"`
+}
+
+type verifyTwoFactorResponse struct {
+	SessionID          string    `json:"session_id"`
+	UserID             UserID    `json:"user_id"`
+	TenantID           tenant.ID `json:"tenant_id"`
+	TwoFactorSatisfied bool      `json:"two_factor_satisfied"`
 }
 
 func NewAuthHTTPHandlerWithOptions(service AuthHTTPService, options AuthHTTPHandlerOptions) *AuthHTTPHandler {
@@ -54,6 +76,8 @@ func NewAuthHTTPHandlerWithOptions(service AuthHTTPService, options AuthHTTPHand
 func (handler *AuthHTTPHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/auth/login", middleware.RequireMethod(http.MethodPost, handler.handleLogin))
 	mux.HandleFunc("/auth/logout", middleware.RequireMethod(http.MethodPost, handler.handleLogout))
+	mux.HandleFunc("/auth/2fa/setup", middleware.RequireMethod(http.MethodPost, handler.handleSetupTwoFactor))
+	mux.HandleFunc("/auth/2fa/verify", middleware.RequireMethod(http.MethodPost, handler.handleVerifyTwoFactor))
 }
 
 func (handler *AuthHTTPHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
@@ -82,11 +106,14 @@ func (handler *AuthHTTPHandler) handleLogin(w http.ResponseWriter, r *http.Reque
 	}
 	http.SetCookie(w, handler.sessionCookie(result.Token, result.ExpiresAt))
 	httpserver.WriteSuccess(w, r, http.StatusOK, loginResponse{
-		SessionID: result.Session.ID,
-		UserID:    result.User.ID,
-		TenantID:  result.User.TenantID,
-		ActorType: actorTypeForUser(result.User),
-		ExpiresAt: result.ExpiresAt,
+		SessionID:              result.Session.ID,
+		UserID:                 result.User.ID,
+		TenantID:               result.User.TenantID,
+		ActorType:              actorTypeForUser(result.User),
+		ExpiresAt:              result.ExpiresAt,
+		TwoFactorRequired:      result.TwoFactorRequired,
+		TwoFactorSatisfied:     result.TwoFactorSatisfied,
+		TwoFactorSetupRequired: result.TwoFactorSetupRequired,
 	})
 }
 
@@ -102,6 +129,57 @@ func (handler *AuthHTTPHandler) handleLogout(w http.ResponseWriter, r *http.Requ
 	}
 	http.SetCookie(w, handler.expiredSessionCookie())
 	httpserver.WriteSuccess(w, r, http.StatusOK, map[string]string{"status": "logged_out"})
+}
+
+func (handler *AuthHTTPHandler) handleSetupTwoFactor(w http.ResponseWriter, r *http.Request) {
+	if !handler.ready(w, r) {
+		return
+	}
+	token, ok := handler.sessionToken(w, r)
+	if !ok {
+		return
+	}
+	result, err := handler.service.SetupTwoFactor(r.Context(), token)
+	if err != nil {
+		writeAuthError(w, r, err)
+		return
+	}
+	httpserver.WriteSuccess(w, r, http.StatusCreated, setupTwoFactorResponse{
+		Method:       result.Method,
+		Secret:       result.Secret,
+		ProvisionURI: result.ProvisionURI,
+	})
+}
+
+func (handler *AuthHTTPHandler) handleVerifyTwoFactor(w http.ResponseWriter, r *http.Request) {
+	if !handler.ready(w, r) {
+		return
+	}
+	token, ok := handler.sessionToken(w, r)
+	if !ok {
+		return
+	}
+	var request verifyTwoFactorRequest
+	if !decodeAuthJSON(w, r, &request) {
+		return
+	}
+	if request.Code == "" {
+		httpserver.WriteValidationError(w, r, []httpserver.ValidationField{
+			{Field: "code", Code: "required", Message: "Two-factor code is required."},
+		})
+		return
+	}
+	result, err := handler.service.VerifyTwoFactor(r.Context(), token, request.Code)
+	if err != nil {
+		writeAuthError(w, r, err)
+		return
+	}
+	httpserver.WriteSuccess(w, r, http.StatusOK, verifyTwoFactorResponse{
+		SessionID:          result.Session.ID,
+		UserID:             result.User.ID,
+		TenantID:           result.User.TenantID,
+		TwoFactorSatisfied: result.Session.TwoFactorSatisfied(),
+	})
 }
 
 func (handler *AuthHTTPHandler) ready(w http.ResponseWriter, r *http.Request) bool {
@@ -135,6 +213,15 @@ func (handler *AuthHTTPHandler) expiredSessionCookie() *http.Cookie {
 		Secure:   handler.options.CookieSecure,
 		SameSite: http.SameSiteLaxMode,
 	}
+}
+
+func (handler *AuthHTTPHandler) sessionToken(w http.ResponseWriter, r *http.Request) (string, bool) {
+	cookie, err := r.Cookie(handler.options.CookieName)
+	if err != nil || cookie.Value == "" {
+		writeAuthError(w, r, ErrSessionTokenMissing)
+		return "", false
+	}
+	return cookie.Value, true
 }
 
 func decodeAuthJSON(w http.ResponseWriter, r *http.Request, destination any) bool {
@@ -173,7 +260,19 @@ func writeAuthError(w http.ResponseWriter, r *http.Request, err error) {
 		httpserver.WriteError(w, r, http.StatusForbidden, "auth.user_inactive", "User is not active.")
 	case errors.Is(err, ErrTwoFactorRequired):
 		httpserver.WriteError(w, r, http.StatusForbidden, "auth.2fa_required", "Two-factor authentication is required.")
+	case errors.Is(err, ErrTwoFactorSetupRequired):
+		httpserver.WriteError(w, r, http.StatusForbidden, "auth.2fa_setup_required", "Two-factor setup is required.")
+	case errors.Is(err, ErrTwoFactorAlreadyEnabled):
+		httpserver.WriteError(w, r, http.StatusConflict, "auth.2fa_already_enabled", "Two-factor authentication is already enabled.")
+	case errors.Is(err, ErrTwoFactorNotAllowed):
+		httpserver.WriteError(w, r, http.StatusForbidden, "auth.2fa_not_allowed", "Two-factor setup is not allowed for this actor.")
+	case errors.Is(err, ErrTwoFactorCodeMissing), errors.Is(err, ErrTwoFactorCodeInvalid):
+		httpserver.WriteError(w, r, http.StatusUnauthorized, "auth.2fa_invalid", "Two-factor code is invalid.")
+	case errors.Is(err, ErrSessionTokenMissing), errors.Is(err, ErrSessionInvalid), errors.Is(err, ErrSessionExpired):
+		httpserver.WriteError(w, r, http.StatusUnauthorized, "auth.session_invalid", "Session is invalid or expired.")
 	case errors.Is(err, ErrAuthStoreMissing), errors.Is(err, ErrUserStoreExecutorMissing), errors.Is(err, ErrSessionStoreExecutorMissing):
+		httpserver.WriteError(w, r, http.StatusServiceUnavailable, "auth.service_unavailable", "Authentication service is unavailable.")
+	case errors.Is(err, ErrTwoFactorStoreExecutorMissing), errors.Is(err, ErrSecretCipherMissing), errors.Is(err, ErrEncryptionKeyInvalid):
 		httpserver.WriteError(w, r, http.StatusServiceUnavailable, "auth.service_unavailable", "Authentication service is unavailable.")
 	default:
 		httpserver.WriteError(w, r, http.StatusInternalServerError, "auth.failed", "Authentication failed.")

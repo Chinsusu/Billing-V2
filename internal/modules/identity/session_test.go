@@ -3,6 +3,7 @@ package identity
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 	"time"
 
@@ -42,6 +43,9 @@ func TestAuthServiceLoginCreatesSessionWithArgon2idPassword(t *testing.T) {
 	}
 	if len(result.RoleIDs) != 1 || result.RoleIDs[0] != "role_admin" {
 		t.Fatalf("expected role ids, got %+v", result.RoleIDs)
+	}
+	if !result.TwoFactorRequired || !result.TwoFactorSetupRequired || result.TwoFactorSatisfied {
+		t.Fatalf("expected platform staff login to require 2FA setup, got %+v", result)
 	}
 }
 
@@ -99,7 +103,152 @@ func TestAuthServiceResolveSessionReturnsIdentity(t *testing.T) {
 	}
 }
 
+func TestAuthServiceSetupTwoFactorEncryptsSecretAndAudits(t *testing.T) {
+	now := time.Date(2026, 5, 13, 9, 0, 0, 0, time.UTC)
+	sessions := &fakeSessionStore{
+		identity: SessionIdentity{
+			Session: Session{ID: "11111111-1111-1111-1111-111111111111", TenantID: "tenant_1", UserID: "user_1"},
+			User:    User{ID: "user_1", TenantID: "tenant_1", Email: "admin@example.com", Type: UserTypePlatformStaff, Status: UserStatusActive},
+		},
+	}
+	twoFactor := &fakeTwoFactorStore{}
+	audit := &fakeAuthAuditAppender{}
+	service := newTestAuthServiceWithStores("hash", sessions, twoFactor, audit, now)
+
+	result, err := service.SetupTwoFactor(context.Background(), "token")
+	if err != nil {
+		t.Fatalf("SetupTwoFactor returned error: %v", err)
+	}
+	if result.Method != TwoFactorMethodTOTP || result.Secret == "" || result.ProvisionURI == "" {
+		t.Fatalf("unexpected setup result: %+v", result)
+	}
+	if twoFactor.upsert.SecretCiphertext == "" || strings.Contains(twoFactor.upsert.SecretCiphertext, result.Secret) {
+		t.Fatalf("expected encrypted secret, got %q", twoFactor.upsert.SecretCiphertext)
+	}
+	if twoFactor.status != TwoFactorStatusRequired {
+		t.Fatalf("expected required status, got %q", twoFactor.status)
+	}
+	if len(audit.inputs) != 1 || audit.inputs[0].Action != AuditActionTwoFactorSetup {
+		t.Fatalf("expected setup audit, got %+v", audit.inputs)
+	}
+}
+
+func TestAuthServiceSetupTwoFactorRejectsEnabledMethod(t *testing.T) {
+	now := time.Date(2026, 5, 13, 9, 0, 0, 0, time.UTC)
+	sessions := &fakeSessionStore{
+		identity: SessionIdentity{
+			Session: Session{ID: "11111111-1111-1111-1111-111111111111", TenantID: "tenant_1", UserID: "user_1"},
+			User:    User{ID: "user_1", TenantID: "tenant_1", Email: "admin@example.com", Type: UserTypePlatformStaff, Status: UserStatusActive},
+		},
+	}
+	twoFactor := &fakeTwoFactorStore{
+		method: TwoFactorMethod{
+			TenantID:         "tenant_1",
+			UserID:           "user_1",
+			Method:           TwoFactorMethodTOTP,
+			SecretCiphertext: "encrypted-secret",
+			EnabledAt:        now.Add(-time.Hour),
+		},
+	}
+	audit := &fakeAuthAuditAppender{}
+	service := newTestAuthServiceWithStores("hash", sessions, twoFactor, audit, now)
+
+	_, err := service.SetupTwoFactor(context.Background(), "token")
+	if !errors.Is(err, ErrTwoFactorAlreadyEnabled) {
+		t.Fatalf("expected already-enabled 2FA error, got %v", err)
+	}
+	if twoFactor.upsert.SecretCiphertext != "" {
+		t.Fatalf("setup should not rotate enabled TOTP secret, got %+v", twoFactor.upsert)
+	}
+	if len(audit.inputs) != 0 {
+		t.Fatalf("setup should not audit a rejected secret rotation, got %+v", audit.inputs)
+	}
+}
+
+func TestAuthServiceVerifyTwoFactorMarksSessionSatisfied(t *testing.T) {
+	now := time.Date(2026, 5, 13, 9, 0, 0, 0, time.UTC)
+	cipher, err := NewAESGCMSecretCipher(testCipherKey())
+	if err != nil {
+		t.Fatalf("NewAESGCMSecretCipher returned error: %v", err)
+	}
+	encrypted, err := cipher.Encrypt("JBSWY3DPEHPK3PXP")
+	if err != nil {
+		t.Fatalf("Encrypt returned error: %v", err)
+	}
+	code, err := TOTPCodeAt("JBSWY3DPEHPK3PXP", now)
+	if err != nil {
+		t.Fatalf("TOTPCodeAt returned error: %v", err)
+	}
+	sessions := &fakeSessionStore{
+		identity: SessionIdentity{
+			Session: Session{ID: "11111111-1111-1111-1111-111111111111", TenantID: "tenant_1", UserID: "user_1"},
+			User:    User{ID: "user_1", TenantID: "tenant_1", Email: "admin@example.com", Type: UserTypePlatformStaff, Status: UserStatusActive},
+		},
+	}
+	twoFactor := &fakeTwoFactorStore{
+		method: TwoFactorMethod{TenantID: "tenant_1", UserID: "user_1", Method: TwoFactorMethodTOTP, SecretCiphertext: encrypted},
+	}
+	audit := &fakeAuthAuditAppender{}
+	service := newTestAuthServiceWithStores("hash", sessions, twoFactor, audit, now)
+
+	result, err := service.VerifyTwoFactor(context.Background(), "token", code)
+	if err != nil {
+		t.Fatalf("VerifyTwoFactor returned error: %v", err)
+	}
+	if !result.Session.TwoFactorSatisfied() {
+		t.Fatal("expected session to be marked 2FA satisfied")
+	}
+	if sessions.satisfiedHash != HashSessionToken("token") {
+		t.Fatalf("expected session token hash, got %q", sessions.satisfiedHash)
+	}
+	if twoFactor.status != TwoFactorStatusEnabled || twoFactor.enabledAt.IsZero() {
+		t.Fatalf("expected enabled two factor status, got status=%q enabled=%s", twoFactor.status, twoFactor.enabledAt)
+	}
+	if len(audit.inputs) != 1 || audit.inputs[0].Action != AuditActionTwoFactorSuccess {
+		t.Fatalf("expected success audit, got %+v", audit.inputs)
+	}
+}
+
+func TestAuthServiceVerifyTwoFactorAuditsFailure(t *testing.T) {
+	now := time.Date(2026, 5, 13, 9, 0, 0, 0, time.UTC)
+	cipher, err := NewAESGCMSecretCipher(testCipherKey())
+	if err != nil {
+		t.Fatalf("NewAESGCMSecretCipher returned error: %v", err)
+	}
+	encrypted, err := cipher.Encrypt("JBSWY3DPEHPK3PXP")
+	if err != nil {
+		t.Fatalf("Encrypt returned error: %v", err)
+	}
+	sessions := &fakeSessionStore{
+		identity: SessionIdentity{
+			Session: Session{ID: "11111111-1111-1111-1111-111111111111", TenantID: "tenant_1", UserID: "user_1"},
+			User:    User{ID: "user_1", TenantID: "tenant_1", Email: "admin@example.com", Type: UserTypePlatformStaff, Status: UserStatusActive},
+		},
+	}
+	twoFactor := &fakeTwoFactorStore{
+		method: TwoFactorMethod{TenantID: "tenant_1", UserID: "user_1", Method: TwoFactorMethodTOTP, SecretCiphertext: encrypted},
+	}
+	audit := &fakeAuthAuditAppender{}
+	service := newTestAuthServiceWithStores("hash", sessions, twoFactor, audit, now)
+
+	_, err = service.VerifyTwoFactor(context.Background(), "token", "000000")
+	if !errors.Is(err, ErrTwoFactorCodeInvalid) {
+		t.Fatalf("expected invalid code error, got %v", err)
+	}
+	if len(audit.inputs) != 1 || audit.inputs[0].Action != AuditActionTwoFactorFailure {
+		t.Fatalf("expected failure audit, got %+v", audit.inputs)
+	}
+}
+
 func newTestAuthService(passwordHash string, sessions *fakeSessionStore, now time.Time) *AuthService {
+	return newTestAuthServiceWithStores(passwordHash, sessions, &fakeTwoFactorStore{}, &fakeAuthAuditAppender{}, now)
+}
+
+func newTestAuthServiceWithStores(passwordHash string, sessions *fakeSessionStore, twoFactor *fakeTwoFactorStore, audit *fakeAuthAuditAppender, now time.Time) *AuthService {
+	cipher, err := NewAESGCMSecretCipher(testCipherKey())
+	if err != nil {
+		panic(err)
+	}
 	return NewAuthService(AuthServiceOptions{
 		Tenants: &fakeAuthTenantStore{
 			tenants: map[tenant.ID]tenant.Tenant{
@@ -118,7 +267,10 @@ func newTestAuthService(passwordHash string, sessions *fakeSessionStore, now tim
 			},
 		},
 		Sessions:   sessions,
+		TwoFactor:  twoFactor,
 		Roles:      fakeRoleReader{roleIDs: []RoleID{"role_admin"}},
+		Cipher:     cipher,
+		Audit:      audit,
 		SessionTTL: time.Hour,
 		Now:        func() time.Time { return now },
 	})
@@ -169,10 +321,11 @@ func (store *fakeAuthUserStore) ListUsers(ctx context.Context, filter UserListFi
 }
 
 type fakeSessionStore struct {
-	created      CreateSessionInput
-	identity     SessionIdentity
-	resolvedHash string
-	revokedHash  string
+	created       CreateSessionInput
+	identity      SessionIdentity
+	resolvedHash  string
+	revokedHash   string
+	satisfiedHash string
 }
 
 func (store *fakeSessionStore) CreateSession(ctx context.Context, input CreateSessionInput) (Session, error) {
@@ -196,6 +349,61 @@ func (store *fakeSessionStore) FindSessionIdentityByTokenHash(ctx context.Contex
 
 func (store *fakeSessionStore) RevokeSessionByTokenHash(ctx context.Context, tokenHash string, now time.Time) error {
 	store.revokedHash = tokenHash
+	return nil
+}
+
+func (store *fakeSessionStore) MarkSessionTwoFactorSatisfied(ctx context.Context, tokenHash string, now time.Time) (Session, error) {
+	store.satisfiedHash = tokenHash
+	return Session{
+		ID:                   "session_1",
+		TenantID:             "tenant_1",
+		UserID:               "user_1",
+		TokenHash:            tokenHash,
+		TwoFactorSatisfiedAt: now,
+	}, nil
+}
+
+type fakeTwoFactorStore struct {
+	upsert    UpsertTOTPSecretInput
+	method    TwoFactorMethod
+	status    TwoFactorStatus
+	enabledAt time.Time
+}
+
+func (store *fakeTwoFactorStore) UpsertTOTPSecret(ctx context.Context, input UpsertTOTPSecretInput) (TwoFactorMethod, error) {
+	store.upsert = input
+	store.method = TwoFactorMethod{
+		TenantID:         input.TenantID,
+		UserID:           input.UserID,
+		Method:           TwoFactorMethodTOTP,
+		SecretCiphertext: input.SecretCiphertext,
+	}
+	return store.method, nil
+}
+
+func (store *fakeTwoFactorStore) GetTOTPMethod(ctx context.Context, tenantID tenant.ID, userID UserID) (TwoFactorMethod, error) {
+	if store.method.SecretCiphertext == "" {
+		return TwoFactorMethod{}, ErrTwoFactorMethodNotFound
+	}
+	return store.method, nil
+}
+
+func (store *fakeTwoFactorStore) MarkTOTPEnabled(ctx context.Context, tenantID tenant.ID, userID UserID, now time.Time) error {
+	store.enabledAt = now
+	return nil
+}
+
+func (store *fakeTwoFactorStore) SetUserTwoFactorStatus(ctx context.Context, tenantID tenant.ID, userID UserID, status TwoFactorStatus) error {
+	store.status = status
+	return nil
+}
+
+type fakeAuthAuditAppender struct {
+	inputs []AuthAuditInput
+}
+
+func (appender *fakeAuthAuditAppender) AppendAuthAudit(ctx context.Context, input AuthAuditInput) error {
+	appender.inputs = append(appender.inputs, input)
 	return nil
 }
 

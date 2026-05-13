@@ -32,6 +32,7 @@ type Config struct {
 	HTTPAddr            string
 	LogLevel            LogLevel
 	DatabaseDSN         string
+	EncryptionKey       string
 	SessionCookieName   string
 	SessionCookieSecure bool
 	SessionTokenTTL     time.Duration
@@ -49,6 +50,7 @@ func LoadFromEnv() (Config, error) {
 		HTTPAddr:            getenv("APP_HTTP_ADDR", ":8080"),
 		LogLevel:            LogLevel(getenv("LOG_LEVEL", string(LogLevelInfo))),
 		DatabaseDSN:         os.Getenv("DB_DSN"),
+		EncryptionKey:       os.Getenv("ENCRYPTION_KEY"),
 		SessionCookieName:   getenv("AUTH_SESSION_COOKIE_NAME", "billing_session"),
 		SessionCookieSecure: sessionCookieSecure,
 	}
@@ -84,6 +86,9 @@ func (cfg Config) Validate() error {
 	}
 	if cfg.AppEnvironment == EnvironmentProduction && !cfg.SessionCookieSecure {
 		return fmt.Errorf("AUTH_SESSION_COOKIE_SECURE must be true in production")
+	}
+	if cfg.DatabaseDSN != "" && requiresProductionSecrets(cfg.AppEnvironment) && cfg.EncryptionKey == "" {
+		return fmt.Errorf("ENCRYPTION_KEY is required in staging and production")
 	}
 	return nil
 }
@@ -149,5 +154,9 @@ func getenvBool(key string, fallback bool) (bool, error) {
 }
 
 func defaultSessionCookieSecure(environment Environment) bool {
+	return environment == EnvironmentStaging || environment == EnvironmentProduction
+}
+
+func requiresProductionSecrets(environment Environment) bool {
 	return environment == EnvironmentStaging || environment == EnvironmentProduction
 }

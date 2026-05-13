@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
 )
@@ -88,6 +89,62 @@ func TestSessionMiddlewareAllowsAuthRoutesWithStaleCookie(t *testing.T) {
 
 	if response.Code != http.StatusNoContent {
 		t.Fatalf("expected auth route to bypass session resolution, got %d: %s", response.Code, response.Body.String())
+	}
+}
+
+func TestSessionMiddlewareRejectsUnsatisfiedAdminTwoFactor(t *testing.T) {
+	handler := SessionMiddleware(SessionMiddlewareOptions{
+		CookieName:            "billing_session",
+		Resolver:              &fakeSessionResolver{identity: adminSessionIdentity(Session{})},
+		RequireAdminTwoFactor: true,
+	})(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		t.Fatal("next handler should not run")
+	}))
+
+	request := httptest.NewRequest(http.MethodGet, "/admin/wallets", nil)
+	request.AddCookie(&http.Cookie{Name: "billing_session", Value: "session-token"})
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusForbidden {
+		t.Fatalf("expected status 403, got %d: %s", response.Code, response.Body.String())
+	}
+	if !strings.Contains(response.Body.String(), "auth.2fa_required") {
+		t.Fatalf("expected 2FA error, got %s", response.Body.String())
+	}
+}
+
+func TestSessionMiddlewareAllowsSatisfiedAdminTwoFactor(t *testing.T) {
+	handler := SessionMiddleware(SessionMiddlewareOptions{
+		CookieName: "billing_session",
+		Resolver: &fakeSessionResolver{identity: adminSessionIdentity(Session{
+			TwoFactorSatisfiedAt: time.Date(2026, 5, 13, 9, 0, 0, 0, time.UTC),
+		})},
+		RequireAdminTwoFactor: true,
+	})(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+
+	request := httptest.NewRequest(http.MethodGet, "/admin/wallets", nil)
+	request.AddCookie(&http.Cookie{Name: "billing_session", Value: "session-token"})
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusNoContent {
+		t.Fatalf("expected status 204, got %d: %s", response.Code, response.Body.String())
+	}
+}
+
+func adminSessionIdentity(session Session) SessionIdentity {
+	session.ID = "session_1"
+	session.TenantID = "tenant_1"
+	session.UserID = "user_1"
+	return SessionIdentity{
+		Session: session,
+		User:    User{ID: "user_1", TenantID: "tenant_1", Type: UserTypePlatformStaff, Status: UserStatusActive},
+		RoleIDs: []RoleID{"role_admin"},
 	}
 }
 
