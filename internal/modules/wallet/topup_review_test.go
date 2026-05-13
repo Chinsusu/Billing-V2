@@ -146,6 +146,11 @@ func (store *fakeTopupReviewStore) PostLedgerEntry(ctx context.Context, input Po
 	return store.entry, nil
 }
 
+func (store *fakeTopupReviewStore) PostLedgerEntryResult(ctx context.Context, input PostLedgerEntryInput) (PostLedgerEntryResult, error) {
+	entry, err := store.PostLedgerEntry(ctx, input)
+	return PostLedgerEntryResult{Entry: entry, Created: true}, err
+}
+
 func (store *fakeTopupReviewStore) ListLedgerEntries(ctx context.Context, filter LedgerEntryFilter) ([]LedgerEntry, error) {
 	return nil, nil
 }

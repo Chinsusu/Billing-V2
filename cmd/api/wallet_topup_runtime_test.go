@@ -29,3 +29,22 @@ func TestNewRuntimeWithDSNProtectsAdminTopupReviewRoute(t *testing.T) {
 		t.Fatalf("expected missing actor to be rejected, got %d: %s", response.Code, response.Body.String())
 	}
 }
+
+func TestNewRuntimeWithDSNProtectsAdminWalletAdjustmentRoute(t *testing.T) {
+	runtime, err := newRuntime(context.Background(), testRuntimeConfig("postgres://billing@localhost/billing"), testRuntimeLogger(), func(ctx context.Context, cfg platformdb.Config) (*sql.DB, error) {
+		return newStubDB(), nil
+	})
+	if err != nil {
+		t.Fatalf("newRuntime returned error: %v", err)
+	}
+	defer closeRuntime(t, runtime)
+
+	response := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodPost, "/admin/wallet-adjustments", strings.NewReader(`{}`))
+	request.Header.Set("X-Tenant-Id", "tenant_1")
+	runtime.api.Handler().ServeHTTP(response, request)
+
+	if response.Code != http.StatusUnauthorized {
+		t.Fatalf("expected missing actor to be rejected, got %d: %s", response.Code, response.Body.String())
+	}
+}

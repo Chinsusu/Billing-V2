@@ -37,6 +37,9 @@ CASE
   WHEN audit_logs.target_type = 'topup_request' THEN (
     SELECT topup.display_id FROM topup_requests topup WHERE topup.topup_request_id = audit_logs.target_id AND topup.tenant_id = audit_logs.tenant_id
   )
+  WHEN audit_logs.target_type = 'wallet_ledger_entry' THEN (
+    SELECT ledger.display_id FROM wallet_ledger_entries ledger WHERE ledger.ledger_entry_id = audit_logs.target_id AND ledger.tenant_id = audit_logs.tenant_id
+  )
   WHEN audit_logs.target_type IN ('service', 'service_instance') THEN (
     SELECT svc.display_id FROM service_instances svc WHERE svc.service_instance_id = audit_logs.target_id AND svc.tenant_id = audit_logs.tenant_id
   )

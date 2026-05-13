@@ -86,24 +86,45 @@ ON CONFLICT (wallet_id, idempotency_key)
 DO NOTHING
 RETURNING ` + ledgerEntryColumns + `
 )
-SELECT ` + ledgerEntryColumns + ` FROM inserted
+SELECT true AS created, ` + ledgerEntryColumns + ` FROM inserted
 UNION ALL
-SELECT ` + ledgerEntryColumns + ` FROM existing
+SELECT false AS created, ` + ledgerEntryColumns + ` FROM existing
+LIMIT 1`
+
+const postLedgerEntryExistingSQL = `
+SELECT false AS created, ` + ledgerEntryColumns + `
+FROM wallet_ledger_entries
+WHERE wallet_id = $1 AND idempotency_key = $2
 LIMIT 1`
 
 func (store *PostgresStore) PostLedgerEntry(ctx context.Context, input PostLedgerEntryInput) (LedgerEntry, error) {
-	if err := store.ready(); err != nil {
-		return LedgerEntry{}, err
-	}
-	args, err := postLedgerEntryArgs(input)
+	result, err := store.PostLedgerEntryResult(ctx, input)
 	if err != nil {
 		return LedgerEntry{}, err
 	}
-	entry, err := scanLedgerEntry(store.executor.QueryRowContext(ctx, postLedgerEntrySQL, args...))
-	if errors.Is(err, ErrLedgerEntryNotFound) && input.Normalize().Direction == DirectionDebit {
-		return LedgerEntry{}, ErrInsufficientBalance
+	return result.Entry, nil
+}
+
+func (store *PostgresStore) PostLedgerEntryResult(ctx context.Context, input PostLedgerEntryInput) (PostLedgerEntryResult, error) {
+	if err := store.ready(); err != nil {
+		return PostLedgerEntryResult{}, err
 	}
-	return entry, err
+	normalized := input.Normalize()
+	args, err := postLedgerEntryArgs(input)
+	if err != nil {
+		return PostLedgerEntryResult{}, err
+	}
+	result, err := scanPostLedgerEntryResult(store.executor.QueryRowContext(ctx, postLedgerEntrySQL, args...))
+	if errors.Is(err, ErrLedgerEntryNotFound) {
+		result, err = scanPostLedgerEntryResult(store.executor.QueryRowContext(ctx, postLedgerEntryExistingSQL, normalized.WalletID, normalized.IdempotencyKey))
+		if err == nil {
+			return result, nil
+		}
+	}
+	if errors.Is(err, ErrLedgerEntryNotFound) && normalized.Direction == DirectionDebit {
+		return PostLedgerEntryResult{}, ErrInsufficientBalance
+	}
+	return result, err
 }
 
 func postLedgerEntryArgs(input PostLedgerEntryInput) ([]interface{}, error) {

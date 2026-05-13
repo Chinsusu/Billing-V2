@@ -14,10 +14,11 @@ import (
 type RouteMiddleware func(http.HandlerFunc) http.HandlerFunc
 
 type HTTPHandlerOptions struct {
-	AdminMiddleware       RouteMiddleware
-	AdminReviewMiddleware RouteMiddleware
-	ResellerMiddleware    RouteMiddleware
-	ClientMiddleware      RouteMiddleware
+	AdminMiddleware           RouteMiddleware
+	AdminReviewMiddleware     RouteMiddleware
+	AdminAdjustmentMiddleware RouteMiddleware
+	ResellerMiddleware        RouteMiddleware
+	ClientMiddleware          RouteMiddleware
 }
 
 type HTTPHandler struct {
@@ -26,11 +27,13 @@ type HTTPHandler struct {
 }
 
 const (
-	adminWalletPrefix        = "/admin/wallets/"
-	adminTopupRequestPrefix  = "/admin/topup-requests/"
-	resellerWalletPrefix     = "/reseller/wallets/"
-	clientWalletPrefix       = "/client/wallets/"
-	clientTopupRequestPrefix = "/client/topup-requests/"
+	adminWalletPrefix          = "/admin/wallets/"
+	adminWalletRefundsPath     = "/admin/wallet-refunds"
+	adminWalletAdjustmentsPath = "/admin/wallet-adjustments"
+	adminTopupRequestPrefix    = "/admin/topup-requests/"
+	resellerWalletPrefix       = "/reseller/wallets/"
+	clientWalletPrefix         = "/client/wallets/"
+	clientTopupRequestPrefix   = "/client/topup-requests/"
 )
 
 func NewHTTPHandler(service HTTPService) *HTTPHandler {
@@ -44,6 +47,8 @@ func NewHTTPHandlerWithOptions(service HTTPService, options HTTPHandlerOptions) 
 func (handler *HTTPHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/wallets", handler.adminWalletsRoute)
 	mux.HandleFunc("/admin/wallets/", handler.adminWalletRoute)
+	mux.HandleFunc(adminWalletRefundsPath, handler.adminWalletRefundsRoute)
+	mux.HandleFunc(adminWalletAdjustmentsPath, handler.adminWalletAdjustmentsRoute)
 	mux.HandleFunc("/admin/topup-requests", handler.adminTopupRequestsRoute)
 	mux.HandleFunc("/admin/topup-requests/", handler.adminTopupRequestRoute)
 	mux.HandleFunc("/reseller/wallets", handler.resellerWalletsRoute)
@@ -411,6 +416,14 @@ func writeWalletError(w http.ResponseWriter, r *http.Request, err error) {
 		httpserver.WriteError(w, r, http.StatusNotFound, "wallet.topup_not_found", "Wallet top-up request was not found.")
 	case errors.Is(err, ErrTopupStatusConflict):
 		httpserver.WriteError(w, r, http.StatusConflict, "wallet.topup_status_conflict", "Top-up request status does not allow this action.")
+	case errors.Is(err, ErrInsufficientBalance):
+		httpserver.WriteError(w, r, http.StatusConflict, "wallet.insufficient_balance", "Wallet balance is insufficient.")
+	case errors.Is(err, ErrWalletCurrencyMismatch):
+		httpserver.WriteError(w, r, http.StatusConflict, "wallet.currency_mismatch", "Wallet currency does not match the requested currency.")
+	case errors.Is(err, ErrWalletStatusConflict):
+		httpserver.WriteError(w, r, http.StatusConflict, "wallet.status_conflict", "Wallet status does not allow this action.")
+	case errors.Is(err, ErrIdempotencyConflict):
+		httpserver.WriteError(w, r, http.StatusConflict, "wallet.idempotency_conflict", "Idempotency key conflicts with another wallet ledger entry.")
 	case errors.Is(err, identity.ErrActorContextMissing),
 		errors.Is(err, identity.ErrActorIDMissing),
 		errors.Is(err, identity.ErrActorTypeMissing),
@@ -449,12 +462,20 @@ func walletValidationField(err error) (httpserver.ValidationField, bool) {
 		return validationField("payment_method", "wallet.payment_method_invalid", "Payment method is invalid."), true
 	case errors.Is(err, ErrReviewNoteMissing):
 		return validationField("review_note", "wallet.review_note_missing", "Review note is required."), true
+	case errors.Is(err, ErrReasonMissing):
+		return validationField("reason", "wallet.reason_missing", "Reason is required."), true
 	case errors.Is(err, ErrAmountInvalid):
 		return validationField("amount_minor", "wallet.amount_invalid", "Amount must be greater than zero."), true
 	case errors.Is(err, ErrCurrencyMissing), errors.Is(err, ErrCurrencyInvalid):
 		return validationField("currency", "wallet.currency_invalid", "Currency must be a three-letter code."), true
+	case errors.Is(err, ErrReferenceTypeMissing):
+		return validationField("reference_type", "wallet.reference_type_missing", "Reference type is required."), true
+	case errors.Is(err, ErrReferenceIDMissing):
+		return validationField("reference_id", "wallet.reference_id_missing", "Reference id is required."), true
 	case errors.Is(err, ErrIdempotencyKeyMissing):
 		return validationField("idempotency_key", "wallet.idempotency_key_missing", "Idempotency key is required."), true
+	case errors.Is(err, ErrCorrelationIDMissing):
+		return validationField("correlation_id", "wallet.correlation_id_missing", "Correlation id is required."), true
 	default:
 		return httpserver.ValidationField{}, false
 	}

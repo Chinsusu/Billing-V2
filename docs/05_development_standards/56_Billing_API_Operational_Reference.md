@@ -127,6 +127,7 @@ Operation error:
 | Client top-up create and read | `wallet.view` |
 | Admin top-up read | `wallet.view` |
 | Admin top-up approve or reject | `wallet.topup.approve` |
+| Admin wallet refunds and adjustments | `wallet.adjustment.create` |
 | Admin payment reconciliation | `wallet.view` |
 | Admin audit logs | `audit.view` |
 
@@ -380,6 +381,27 @@ The job read API does not expose `payload_json` or `idempotency_key`.
   - query: `display_id`, `direction`, `entry_type`, `status`, `amount_min`, `amount_max`, `limit`, `cursor`
   - response: list of `ledger`; related public fields include `reference_display_id` when available
 
+- `POST /admin/wallet-refunds`
+  - auth: admin actor, `wallet.adjustment.create`
+  - headers: `Idempotency-Key` and `X-Access-Reason` required
+  - body: `wallet_id`, `amount_minor`, `currency`, `reference_type`, `reference_id`, `reason`, `correlation_id`
+  - response: one `ledger`
+  - notes:
+    - appends a `refund` credit ledger entry only; historical ledger rows are not mutated
+    - duplicate matching `Idempotency-Key` requests return the existing ledger entry without another `wallet.refund.created` audit event
+    - conflicting replay requests return `wallet.idempotency_conflict`
+
+- `POST /admin/wallet-adjustments`
+  - auth: admin actor, `wallet.adjustment.create`
+  - headers: `Idempotency-Key` and `X-Access-Reason` required
+  - body: `wallet_id`, `direction`, `amount_minor`, `currency`, `reference_type`, `reference_id`, `reason`, `correlation_id`
+  - response: one `ledger`
+  - notes:
+    - appends an `adjustment` ledger entry only; historical ledger rows are not mutated
+    - `reason` and actor context are required for finance/audit evidence
+    - duplicate matching `Idempotency-Key` requests return the existing ledger entry without another `wallet.adjustment.created` audit event
+    - debit adjustments require sufficient available balance
+
 - `GET /reseller/wallets`
   - auth: reseller actor, `wallet.view`
   - query: `display_id`, `owner_type`, `owner_id`, `status`, `limit`, `cursor`
@@ -612,6 +634,7 @@ Shared errors:
 - `tenant.context_invalid`
 - `auth.actor_required`
 - `auth.permission_denied`
+- `auth.reason_required`
 - `auth.session_invalid`
 - `auth.rate_limited`
 - `auth.password_reset_invalid`
@@ -625,7 +648,7 @@ Route-specific errors that frontend and agents should expect:
 - orders: `order.not_found`, `order.status_conflict`, `order.status_transition_invalid`
 - services: `service.not_found`, `service.status_invalid`, `credential.not_found`, `credential.reveal_rate_limited`, `credential.reveal_denied`
 - invoices: `invoice.not_found`, `invoice.status_conflict`
-- wallets: `wallet.not_found`, `wallet.ledger_not_found`
+- wallets: `wallet.not_found`, `wallet.ledger_not_found`, `wallet.status_conflict`, `wallet.currency_mismatch`, `wallet.idempotency_conflict`, `wallet.insufficient_balance`
 - top-up: `wallet.topup_not_found`, `wallet.topup_status_conflict`, `wallet.payment_method_invalid`
 - checkout: `checkout.order_not_checkoutable`
 - payment: `payment.transaction_not_found`, `payment.invoice_not_payable`, `payment.idempotency_conflict`, `payment.wallet_currency_mismatch`, `wallet.insufficient_balance`, `order.status_conflict`, `order.provisioning_source_not_found`

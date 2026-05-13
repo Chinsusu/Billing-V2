@@ -144,6 +144,7 @@ func trackedErrorCodeContracts() []errorCodeContract {
 		code("tenant.context_mismatch", source("internal/modules/rbac/http_middleware.go")),
 		code("auth.actor_required", source("internal/modules/rbac/http_middleware.go")),
 		code("auth.permission_denied", source("internal/modules/rbac/http_middleware.go")),
+		code("auth.reason_required", source("internal/modules/rbac/http_middleware.go")),
 
 		code("catalog.not_found", source("internal/modules/catalog/http_handler.go")),
 		code("order.not_found", source("internal/modules/order/http_handler.go")),
@@ -163,7 +164,10 @@ func trackedErrorCodeContracts() []errorCodeContract {
 		code("wallet.topup_not_found", source("internal/modules/wallet/http_handler.go")),
 		code("wallet.topup_status_conflict", source("internal/modules/wallet/http_handler.go")),
 		code("wallet.payment_method_invalid", source("internal/modules/wallet/http_handler.go")),
-		code("wallet.insufficient_balance", source("internal/modules/payment/http_handler.go")),
+		code("wallet.status_conflict", source("internal/modules/wallet/http_handler.go")),
+		code("wallet.currency_mismatch", source("internal/modules/wallet/http_handler.go")),
+		code("wallet.idempotency_conflict", source("internal/modules/wallet/http_handler.go")),
+		code("wallet.insufficient_balance", source("internal/modules/payment/http_handler.go"), source("internal/modules/wallet/http_handler.go")),
 
 		code("checkout.order_not_checkoutable", source("internal/modules/checkout/http_handler.go")),
 		code("payment.transaction_not_found", source("internal/modules/payment/http_handler.go")),

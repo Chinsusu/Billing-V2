@@ -39,6 +39,25 @@ func TestPostLedgerEntryInputNormalizeValidate(t *testing.T) {
 	}
 }
 
+func TestPostLedgerEntryInputRequiresAdjustmentActor(t *testing.T) {
+	err := PostLedgerEntryInput{
+		WalletID:       WalletID("wallet-1"),
+		TenantID:       tenant.ID("tenant-1"),
+		Direction:      DirectionCredit,
+		AmountMinor:    100,
+		Currency:       "USD",
+		EntryType:      EntryTypeAdjustment,
+		ReferenceType:  ReferenceType("manual_adjustment"),
+		ReferenceID:    ReferenceID("adjustment-1"),
+		IdempotencyKey: IdempotencyKey("ledger-key-1"),
+		Reason:         "finance correction",
+		CorrelationID:  CorrelationID("00000000-0000-0000-0000-000000000001"),
+	}.Normalize().Validate()
+	if !errors.Is(err, identity.ErrActorIDMissing) {
+		t.Fatalf("expected actor error, got %v", err)
+	}
+}
+
 func TestServicePostLedgerEntryCallsStore(t *testing.T) {
 	store := &fakePostingStore{entry: LedgerEntry{ID: "entry-1"}}
 	service := NewService(store)
@@ -101,6 +120,11 @@ func (store *fakePostingStore) PostLedgerEntry(ctx context.Context, input PostLe
 	store.postCalls++
 	store.input = input
 	return store.entry, nil
+}
+
+func (store *fakePostingStore) PostLedgerEntryResult(ctx context.Context, input PostLedgerEntryInput) (PostLedgerEntryResult, error) {
+	entry, err := store.PostLedgerEntry(ctx, input)
+	return PostLedgerEntryResult{Entry: entry, Created: true}, err
 }
 
 func (store *fakePostingStore) ListLedgerEntries(ctx context.Context, filter LedgerEntryFilter) ([]LedgerEntry, error) {

@@ -20,6 +20,11 @@ type PostLedgerEntryInput struct {
 	CorrelationID  CorrelationID
 }
 
+type PostLedgerEntryResult struct {
+	Entry   LedgerEntry
+	Created bool
+}
+
 func (input PostLedgerEntryInput) Normalize() PostLedgerEntryInput {
 	output := input
 	output.Currency = upperTrim(output.Currency)
@@ -61,6 +66,9 @@ func (input PostLedgerEntryInput) Validate() error {
 	}
 	if input.EntryType == EntryTypeAdjustment && input.Reason == "" {
 		return ErrReasonMissing
+	}
+	if input.EntryType == EntryTypeAdjustment && input.CreatedBy == "" {
+		return identity.ErrActorIDMissing
 	}
 	if input.CorrelationID == "" {
 		return ErrCorrelationIDMissing

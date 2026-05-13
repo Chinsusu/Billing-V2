@@ -5,6 +5,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
 )
 
@@ -124,6 +125,26 @@ func TestCreateLedgerEntryInputRequiresAdjustmentReason(t *testing.T) {
 	}.Normalize().Validate()
 	if !errors.Is(err, ErrReasonMissing) {
 		t.Fatalf("expected reason error, got %v", err)
+	}
+}
+
+func TestCreateLedgerEntryInputRequiresAdjustmentActor(t *testing.T) {
+	err := CreateLedgerEntryInput{
+		WalletID:          WalletID("wallet-1"),
+		TenantID:          tenant.ID("tenant-1"),
+		Direction:         DirectionCredit,
+		AmountMinor:       100,
+		Currency:          "USD",
+		EntryType:         EntryTypeAdjustment,
+		BalanceAfterMinor: 100,
+		ReferenceType:     ReferenceType("manual_adjustment"),
+		ReferenceID:       ReferenceID("adjustment-1"),
+		IdempotencyKey:    IdempotencyKey("ledger-key-1"),
+		Reason:            "finance correction",
+		CorrelationID:     CorrelationID("00000000-0000-0000-0000-000000000001"),
+	}.Normalize().Validate()
+	if !errors.Is(err, identity.ErrActorIDMissing) {
+		t.Fatalf("expected actor error, got %v", err)
 	}
 }
 
