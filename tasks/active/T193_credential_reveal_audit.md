@@ -1,6 +1,6 @@
 # T193 - Credential reveal audit
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t193-credential-reveal-audit
 PR: https://github.com/Chinsusu/Billing-V2/pull/417
@@ -37,3 +37,4 @@ Add controlled credential reveal behavior with masking, authorization, rate limi
 - 2026-05-13: Implemented masked service credential metadata, controlled reveal API, tenant/owner scoping, RBAC wiring, reveal rate limiting, no-store responses, audit without plaintext, frontend reveal controls, docs, and tests. Local validation passed through backend/frontend build and guards.
 - 2026-05-13: Validation run: `make migrate-validate`, `make test`, `make build`, `make contract-guard`, `make error-code-guard`, `make task-guard`, `npm --prefix frontend audit --omit=dev`, `check:sensitive-text`, `lint`, `build`, `smoke:admin:ci`, `git diff --check`, and hardcoded secret grep.
 - 2026-05-13: Opened PR https://github.com/Chinsusu/Billing-V2/pull/417 and moved task to REVIEW.
+- 2026-05-13: PR #417 merged into `main`; moved task to DONE.
