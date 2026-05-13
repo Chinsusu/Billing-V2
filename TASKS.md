@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` while T192 is in review:
+Current board snapshot on `2026-05-13` after T192 merged:
 
 - `TODO`: 13
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 188
+- `DONE` task files in `tasks/active/`: 189
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -79,14 +79,13 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T192 | [tasks/active/T192_credential_encrypted_storage.md](tasks/active/T192_credential_encrypted_storage.md) | REVIEW | Codex | `codex/t192-credential-encrypted-storage` | Add encrypted-at-rest credential storage. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T191`
+- `T011` to `T192`
 
 ## Removed Tasks
 
