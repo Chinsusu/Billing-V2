@@ -39,6 +39,9 @@ const (
 	PermissionCatalogView           Permission = "catalog.view"
 	PermissionCatalogManage         Permission = "catalog.manage"
 	PermissionAuditView             Permission = "audit.view"
+	PermissionTicketManage          Permission = "ticket.manage"
+	PermissionRiskFlagCreate        Permission = "risk.flag.create"
+	PermissionAbuseCaseManage       Permission = "abuse.case.manage"
 	PermissionTenantEmergencyAccess Permission = "tenant.emergency_access"
 )
 
