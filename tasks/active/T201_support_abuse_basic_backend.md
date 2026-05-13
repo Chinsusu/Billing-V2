@@ -37,3 +37,4 @@ Add basic backend support and abuse control records needed for MVP operations.
 - 2026-05-13: Added support ticket/note, risk flag, and abuse case backend records with tenant/RBAC service checks, redacted audit metadata, and abuse-driven service suspension hook.
 - 2026-05-13: Local validation passed: `make fmt`, `go test ./internal/modules/support`, `make migrate-validate`, `make test`, `make build`, `make contract-guard`, `make error-code-guard`, `make task-guard`, and `git diff --check`; `make smoke-dev-db` was blocked because `DB_DSN` was not configured.
 - 2026-05-13: Opened PR https://github.com/Chinsusu/Billing-V2/pull/433 for review.
+- 2026-05-13: Self-review tightened `support_ticket_notes` to reference `(support_ticket_id, tenant_id)` so notes cannot attach across tenants.

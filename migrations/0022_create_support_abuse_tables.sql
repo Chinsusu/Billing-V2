@@ -127,6 +127,7 @@ CREATE TABLE support_tickets (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT support_tickets_display_id_unique UNIQUE (display_id),
+    CONSTRAINT support_tickets_id_tenant_unique UNIQUE (support_ticket_id, tenant_id),
     CONSTRAINT support_tickets_subject_not_blank CHECK (btrim(subject) <> '')
 );
 
@@ -140,13 +141,15 @@ CREATE INDEX idx_support_tickets_correlation_id ON support_tickets(correlation_i
 CREATE TABLE support_ticket_notes (
     support_ticket_note_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     display_id BIGINT NOT NULL DEFAULT nextval('support_ticket_notes_display_id_seq'),
-    support_ticket_id UUID NOT NULL REFERENCES support_tickets(support_ticket_id) ON DELETE CASCADE,
+    support_ticket_id UUID NOT NULL,
     tenant_id UUID NOT NULL REFERENCES tenants(tenant_id),
     author_user_id UUID NOT NULL REFERENCES users(user_id),
     visibility support_note_visibility NOT NULL,
     body_redacted TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT support_ticket_notes_display_id_unique UNIQUE (display_id),
+    CONSTRAINT support_ticket_notes_ticket_tenant_fk FOREIGN KEY (support_ticket_id, tenant_id)
+        REFERENCES support_tickets(support_ticket_id, tenant_id) ON DELETE CASCADE,
     CONSTRAINT support_ticket_notes_body_not_blank CHECK (btrim(body_redacted) <> '')
 );
 
