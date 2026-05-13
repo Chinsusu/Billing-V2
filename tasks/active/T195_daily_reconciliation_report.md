@@ -1,9 +1,9 @@
 # T195 - Daily reconciliation report
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t195-daily-reconciliation-report
-PR: #421
+PR: https://github.com/Chinsusu/Billing-V2/pull/421
 Risk: finance reconciliation, wallet, ledger, invoice, and payment reporting
 Created: 2026-05-13
 Updated: 2026-05-13
@@ -36,3 +36,4 @@ Add the daily reconciliation report needed for pilot operations.
 - 2026-05-13: Claimed by Codex on branch `codex/t195-daily-reconciliation-report`.
 - 2026-05-13: Implemented read-only admin daily reconciliation report with wallet balance, invoice/payment mismatch, and duplicate payment reference checks. Local validation passed: `make fmt`, `make test`, `make build`, `make migrate-validate`, `make contract-guard`, `make error-code-guard`, `make task-guard`, `git diff --check`.
 - 2026-05-13: Opened PR #421 and moved task to REVIEW.
+- 2026-05-13: PR https://github.com/Chinsusu/Billing-V2/pull/421 passed CI and merged; marked task `DONE`.
