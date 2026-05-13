@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/Chinsusu/Billing-V2/internal/modules/jobs"
+	"github.com/Chinsusu/Billing-V2/internal/modules/order"
 )
 
 func TestRunProvisionOnceUsesConfigAndPrintsSummary(t *testing.T) {
@@ -132,11 +133,96 @@ func TestRunProvisionLoopRejectsInvalidInterval(t *testing.T) {
 	}
 }
 
+func TestRunLifecycleScheduleOnceUsesGracePeriodAndPrintsSummary(t *testing.T) {
+	t.Setenv("APP_ENV", "local")
+	var output bytes.Buffer
+	schedulerFactory := &fakeLifecycleSchedulerFactory{
+		scheduler: fakeLifecycleScheduler{
+			summary: order.ServiceLifecycleScheduleSummary{Due: 3, Scheduled: 2},
+		},
+	}
+
+	err := runWithDependencies([]string{
+		"lifecycle-schedule-once",
+		"-dsn", "postgres://billing:billing@localhost:5432/billing?sslmode=disable",
+		"-batch-size", "7",
+		"-grace-period", "48h",
+	}, workerDependencies{stdout: &output, newLifecycleScheduler: schedulerFactory.newScheduler})
+	if err != nil {
+		t.Fatalf("expected lifecycle schedule success: %v", err)
+	}
+	if schedulerFactory.cfg.BatchSize != 7 || schedulerFactory.cfg.GracePeriod != 48*time.Hour {
+		t.Fatalf("unexpected lifecycle schedule config: %+v", schedulerFactory.cfg)
+	}
+	if schedulerFactory.scheduler.input.Limit != 7 || schedulerFactory.scheduler.input.GracePeriod != 48*time.Hour {
+		t.Fatalf("unexpected lifecycle schedule input: %+v", schedulerFactory.scheduler.input)
+	}
+	if !strings.Contains(output.String(), "lifecycle-schedule-once due=3 scheduled=2") {
+		t.Fatalf("unexpected output: %s", output.String())
+	}
+}
+
+func TestRunLifecycleOnceUsesLifecycleRunner(t *testing.T) {
+	t.Setenv("APP_ENV", "local")
+	var output bytes.Buffer
+	factory := &fakeRunnerFactory{
+		runner: fakeProvisionRunner{summary: jobs.RunSummary{
+			Claimed:      1,
+			ManualReview: 1,
+		}},
+	}
+
+	err := runWithDependencies([]string{
+		"lifecycle-once",
+		"-dsn", "postgres://billing:billing@localhost:5432/billing?sslmode=disable",
+		"-worker-id", "lifecycle-test",
+	}, workerDependencies{stdout: &output, newLifecycleRunner: factory.newRunner})
+	if err != nil {
+		t.Fatalf("expected lifecycle once success: %v", err)
+	}
+	if !factory.called || factory.cfg.WorkerID != "lifecycle-test" {
+		t.Fatalf("expected lifecycle runner factory call, got called=%v cfg=%+v", factory.called, factory.cfg)
+	}
+	if !strings.Contains(output.String(), "lifecycle-once claimed=1 succeeded=0 retried=0 manual_review=1") {
+		t.Fatalf("unexpected output: %s", output.String())
+	}
+}
+
 func TestRunRejectsUnknownCommand(t *testing.T) {
 	err := runWithDependencies([]string{"unknown"}, workerDependencies{newRunner: (&fakeRunnerFactory{}).newRunner})
 	if err == nil || !strings.Contains(err.Error(), "unknown command") {
 		t.Fatalf("expected unknown command error, got %v", err)
 	}
+}
+
+type fakeLifecycleSchedulerFactory struct {
+	called    bool
+	cfg       workerConfig
+	scheduler fakeLifecycleScheduler
+	err       error
+}
+
+func (factory *fakeLifecycleSchedulerFactory) newScheduler(ctx context.Context, cfg workerConfig) (lifecycleScheduler, func() error, error) {
+	factory.called = true
+	factory.cfg = cfg
+	if factory.err != nil {
+		return nil, nil, factory.err
+	}
+	return &factory.scheduler, func() error { return nil }, nil
+}
+
+type fakeLifecycleScheduler struct {
+	input   order.ListDueServiceLifecycleActionsInput
+	summary order.ServiceLifecycleScheduleSummary
+	err     error
+}
+
+func (scheduler *fakeLifecycleScheduler) ScheduleDue(ctx context.Context, input order.ListDueServiceLifecycleActionsInput) (order.ServiceLifecycleScheduleSummary, error) {
+	scheduler.input = input
+	if scheduler.err != nil {
+		return order.ServiceLifecycleScheduleSummary{}, scheduler.err
+	}
+	return scheduler.summary, nil
 }
 
 type fakeRunnerFactory struct {

@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` after T197 merged:
+Current board snapshot on `2026-05-13` after T198 claimed:
 
-- `TODO`: 8
-- `IN_PROGRESS`: 0
+- `TODO`: 7
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 194
@@ -61,7 +61,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T198 | [tasks/active/T198_lifecycle_scheduler_jobs.md](tasks/active/T198_lifecycle_scheduler_jobs.md) | `codex/t198-lifecycle-scheduler-jobs` | Scheduler | Add lifecycle scheduler jobs. |
 | T199 | [tasks/active/T199_provider_sandbox_readiness.md](tasks/active/T199_provider_sandbox_readiness.md) | `codex/t199-provider-sandbox-readiness` | Provider | Prove provider sandbox readiness. |
 | T200 | [tasks/active/T200_notification_foundation.md](tasks/active/T200_notification_foundation.md) | `codex/t200-notification-foundation` | Notifications | Add basic launch-critical notification infrastructure. |
 | T201 | [tasks/active/T201_support_abuse_basic_backend.md](tasks/active/T201_support_abuse_basic_backend.md) | `codex/t201-support-abuse-basic-backend` | Support/Abuse | Add support and abuse backend basics. |
@@ -74,6 +73,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T198 | [tasks/active/T198_lifecycle_scheduler_jobs.md](tasks/active/T198_lifecycle_scheduler_jobs.md) | IN_PROGRESS | Codex | `codex/t198-lifecycle-scheduler-jobs` | Add lifecycle scheduler jobs. |
 
 ## Done Task Files
 

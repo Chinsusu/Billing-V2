@@ -339,6 +339,21 @@ go run ./cmd/worker provision-loop -dsn "$DB_DSN" -interval 5s -batch-size 10
 
 Loop se in summary tung pass theo cac count `claimed`, `succeeded`, `retried`, `manual_review`, `terminal_failed`, va `cancelled`. Khi khong claim duoc job nao, worker cho het `-interval` truoc khi thu lai de tranh busy-spin. Dung `Ctrl+C` de dung loop, hoac them `-timeout 5m` cho run gioi han.
 
+Queue service lifecycle jobs cho service da het han:
+
+```bash
+go run ./cmd/worker lifecycle-schedule-once -dsn "$DB_DSN" -batch-size 50 -grace-period 72h
+```
+
+Xu ly job `service.lifecycle` da queue:
+
+```bash
+go run ./cmd/worker lifecycle-once -dsn "$DB_DSN" -batch-size 10
+go run ./cmd/worker lifecycle-loop -dsn "$DB_DSN" -interval 5s -batch-size 10
+```
+
+Lifecycle scheduler chi queue job idempotent. Worker thuc hien transition qua service lifecycle rules va coi stale job sau renew la no-op an toan.
+
 Khong chay worker local voi `APP_ENV=prod` hoac `APP_ENV=production`. Provider local dung fake registry, khong can provider credential that.
 
 ## Quality gate trước PR
