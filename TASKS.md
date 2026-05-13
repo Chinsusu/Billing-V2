@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` while T189 is in progress:
+Current board snapshot on `2026-05-13` while T189 is in review:
 
 - `TODO`: 16
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 185
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -82,7 +82,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T189 | [tasks/active/T189_auth_session_baseline.md](tasks/active/T189_auth_session_baseline.md) | IN_PROGRESS | Codex | `codex/t189-auth-session-baseline` | Add real authentication and session baseline. |
+| T189 | [tasks/active/T189_auth_session_baseline.md](tasks/active/T189_auth_session_baseline.md) | REVIEW | Codex | `codex/t189-auth-session-baseline` | Add real authentication and session baseline. |
 
 ## Done Task Files
 

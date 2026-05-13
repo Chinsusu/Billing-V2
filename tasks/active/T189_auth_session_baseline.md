@@ -1,9 +1,9 @@
 # T189 - Auth and session baseline
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t189-auth-session-baseline
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/409
 Risk: authentication, tenant isolation, RBAC, and public API behavior
 Created: 2026-05-13
 Updated: 2026-05-13
@@ -35,3 +35,4 @@ Add a real authentication/session baseline so runtime identity no longer depends
 - 2026-05-13: Task created by Codex backlog planning.
 - 2026-05-13: Claimed by Codex on branch `codex/t189-auth-session-baseline`.
 - 2026-05-13: Implemented Argon2id password verification, DB-backed session storage, cookie login/logout, global session context middleware, and dev-only actor headers.
+- 2026-05-13: Opened PR https://github.com/Chinsusu/Billing-V2/pull/409 and moved task to REVIEW.
