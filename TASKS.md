@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` while T190 is in progress:
+Current board snapshot on `2026-05-13` while T190 is in review:
 
 - `TODO`: 15
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 186
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -81,7 +81,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T190 | [tasks/active/T190_admin_2fa_enforcement.md](tasks/active/T190_admin_2fa_enforcement.md) | IN_PROGRESS | Codex | `codex/t190-admin-2fa-enforcement` | Enforce admin 2FA for privileged access. |
+| T190 | [tasks/active/T190_admin_2fa_enforcement.md](tasks/active/T190_admin_2fa_enforcement.md) | REVIEW | Codex | `codex/t190-admin-2fa-enforcement` | Enforce admin 2FA for privileged access. |
 
 ## Done Task Files
 
