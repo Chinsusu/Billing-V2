@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` while T194 is in review:
+Current board snapshot on `2026-05-13` after T194 merged:
 
 - `TODO`: 11
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 190
+- `DONE` task files in `tasks/active/`: 191
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -77,14 +77,13 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T194 | [tasks/active/T194_refund_adjustment_ledger.md](tasks/active/T194_refund_adjustment_ledger.md) | REVIEW | Codex | `codex/t194-refund-adjustment-ledger` | Add refund and adjustment ledger behavior. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T193`
+- `T011` to `T194`
 
 ## Removed Tasks
 
