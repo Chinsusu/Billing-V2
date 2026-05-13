@@ -28,6 +28,18 @@ func TestRunSandboxContractPassesFakeAdapter(t *testing.T) {
 	})
 }
 
+func TestRunSandboxContractPassesProxyFakeAdapter(t *testing.T) {
+	adapter := NewFakeAdapter(TypeProxyUpstream)
+	adapter.SetResult(OperationProvision, sandboxSuccess("proxy-external-1", "running"))
+	adapter.SetResult(OperationGetStatus, sandboxSuccess("proxy-external-1", "running"))
+	adapter.SetResult(OperationTerminate, sandboxSuccess("proxy-external-1", "terminated"))
+
+	results := RunSandboxContract(context.Background(), DefaultSandboxContractOptions(adapter))
+	if !SandboxContractPassed(results) {
+		t.Fatalf("expected proxy sandbox contract to pass, got %#v", results)
+	}
+}
+
 func TestRunSandboxContractRequiresIdempotency(t *testing.T) {
 	options := DefaultSandboxContractOptions(NewFakeAdapter(TypeHetzner))
 	options.Operation.IdempotencyKey = ""
@@ -49,6 +61,20 @@ func TestRunSandboxContractReportsProviderError(t *testing.T) {
 	}
 	if result.Status != OperationStatusUnknown || result.Retry != RetrySafetyUnsafeRetry {
 		t.Fatalf("expected timeout mapping, got %#v", result)
+	}
+}
+
+func TestRunSandboxContractMapsRequestKnownTimeoutToManualReview(t *testing.T) {
+	adapter := NewFakeAdapter(TypeHetzner)
+	adapter.SetError(OperationProvision, NewError(ErrorTimeoutRequestKnown, "provider request status unknown"))
+
+	results := RunSandboxContract(context.Background(), DefaultSandboxContractOptions(adapter))
+	result := resultByName(results, SandboxCaseOrder)
+	if result.Err == nil {
+		t.Fatalf("expected order case error, got %#v", results)
+	}
+	if result.Status != OperationStatusUnknown || result.Retry != RetrySafetyManualReviewRequired {
+		t.Fatalf("expected manual review timeout mapping, got %#v", result)
 	}
 }
 

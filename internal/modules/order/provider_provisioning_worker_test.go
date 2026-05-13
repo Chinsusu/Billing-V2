@@ -147,6 +147,29 @@ func TestProviderProvisioningHandlerRecordsPermanentProviderErrorForReview(t *te
 	}
 }
 
+func TestProviderProvisioningHandlerMovesUnknownTimeoutToManualReview(t *testing.T) {
+	now := fixedProvisioningWorkerTime()
+	adapter := provider.NewFakeAdapter(provider.TypeManual)
+	adapter.SetError(provider.OperationProvision, provider.NewError(provider.ErrorTimeoutRequestKnown, "provider request status unknown"))
+	registry, err := provider.NewRegistry(adapter)
+	if err != nil {
+		t.Fatalf("expected registry: %v", err)
+	}
+	recorder := &fakeProvisioningResultRecorder{}
+	handler := &ProviderProvisioningHandler{Registry: registry, Recorder: recorder, Now: func() time.Time { return now }}
+
+	completion, err := handler.Handle(context.Background(), provisioningWorkerJob())
+	if err != nil {
+		t.Fatalf("expected handled timeout error: %v", err)
+	}
+	if completion.Status != jobs.StatusManualReview || completion.RetrySafety != jobs.RetrySafetyManualReviewRequired {
+		t.Fatalf("expected manual review completion, got %+v", completion)
+	}
+	if recorder.input.Status != ProvisioningStatusManualReview || recorder.input.LastErrorCode != string(provider.ErrorTimeoutRequestKnown) {
+		t.Fatalf("unexpected recorded timeout result: %+v", recorder.input)
+	}
+}
+
 func TestProviderProvisioningHandlerRejectsInvalidPayload(t *testing.T) {
 	registry, err := provider.NewFakeRegistry(provider.TypeManual)
 	if err != nil {
