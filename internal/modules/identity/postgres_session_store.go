@@ -22,7 +22,7 @@ func NewPostgresSessionStore(executor platformdb.Executor) *PostgresSessionStore
 	return &PostgresSessionStore{executor: executor}
 }
 
-const sessionColumns = `session_id, tenant_id, user_id, token_hash, user_agent_hash, expires_at, revoked_at, last_seen_at, created_at, updated_at`
+const sessionColumns = `session_id, tenant_id, user_id, token_hash, user_agent_hash, expires_at, revoked_at, last_seen_at, two_factor_satisfied_at, created_at, updated_at`
 
 func (store *PostgresSessionStore) CreateSession(ctx context.Context, input CreateSessionInput) (Session, error) {
 	if err := store.ready(); err != nil {
@@ -91,6 +91,23 @@ WHERE token_hash = $1`, tokenHash, now); err != nil {
 	return nil
 }
 
+func (store *PostgresSessionStore) MarkSessionTwoFactorSatisfied(ctx context.Context, tokenHash string, now time.Time) (Session, error) {
+	if err := store.ready(); err != nil {
+		return Session{}, err
+	}
+	if tokenHash == "" {
+		return Session{}, ErrSessionTokenMissing
+	}
+	row := store.executor.QueryRowContext(ctx, `
+UPDATE auth_sessions
+SET two_factor_satisfied_at = $2, updated_at = $2
+WHERE token_hash = $1
+  AND revoked_at IS NULL
+  AND expires_at > $2
+RETURNING `+sessionColumns, tokenHash, now)
+	return scanSession(row)
+}
+
 func (store *PostgresSessionStore) ready() error {
 	if store == nil || store.executor == nil {
 		return ErrSessionStoreExecutorMissing
@@ -112,6 +129,7 @@ func sessionSelectColumns(alias string) string {
 		"expires_at",
 		"revoked_at",
 		"last_seen_at",
+		"two_factor_satisfied_at",
 		"created_at",
 		"updated_at",
 	}
@@ -136,10 +154,10 @@ func scanSession(row sessionScanner) (Session, error) {
 	var record Session
 	var tenantID, userID string
 	var userAgentHash sql.NullString
-	var revokedAt, lastSeenAt sql.NullTime
+	var revokedAt, lastSeenAt, twoFactorSatisfiedAt sql.NullTime
 	if err := row.Scan(
 		&record.ID, &tenantID, &userID, &record.TokenHash, &userAgentHash, &record.ExpiresAt,
-		&revokedAt, &lastSeenAt, &record.CreatedAt, &record.UpdatedAt,
+		&revokedAt, &lastSeenAt, &twoFactorSatisfiedAt, &record.CreatedAt, &record.UpdatedAt,
 	); err != nil {
 		return Session{}, mapSessionError(err)
 	}
@@ -148,6 +166,7 @@ func scanSession(row sessionScanner) (Session, error) {
 	record.UserAgentHash = userAgentHash.String
 	record.RevokedAt = revokedAt.Time
 	record.LastSeenAt = lastSeenAt.Time
+	record.TwoFactorSatisfiedAt = twoFactorSatisfiedAt.Time
 	return record, nil
 }
 
@@ -156,11 +175,11 @@ func scanSessionIdentity(row sessionScanner) (SessionIdentity, error) {
 	var user User
 	var sessionTenantID, sessionUserID, userID, userTenantID, userType, status, twoFactorStatus string
 	var userAgentHash, fullName sql.NullString
-	var revokedAt, lastSeenAt, emailVerifiedAt, userLastLoginAt sql.NullTime
+	var revokedAt, lastSeenAt, twoFactorSatisfiedAt, emailVerifiedAt, userLastLoginAt sql.NullTime
 	var roleIDs []string
 	if err := row.Scan(
 		&session.ID, &sessionTenantID, &sessionUserID, &session.TokenHash, &userAgentHash, &session.ExpiresAt,
-		&revokedAt, &lastSeenAt, &session.CreatedAt, &session.UpdatedAt,
+		&revokedAt, &lastSeenAt, &twoFactorSatisfiedAt, &session.CreatedAt, &session.UpdatedAt,
 		&userID, &user.DisplayID, &userTenantID, &user.Email, &emailVerifiedAt, &user.PasswordHash, &fullName, &userType,
 		&status, &twoFactorStatus, &userLastLoginAt, &user.FailedLoginCount, &user.CreatedAt, &user.UpdatedAt,
 		pq.Array(&roleIDs),
@@ -172,6 +191,7 @@ func scanSessionIdentity(row sessionScanner) (SessionIdentity, error) {
 	session.UserAgentHash = userAgentHash.String
 	session.RevokedAt = revokedAt.Time
 	session.LastSeenAt = lastSeenAt.Time
+	session.TwoFactorSatisfiedAt = twoFactorSatisfiedAt.Time
 	user.ID = UserID(userID)
 	user.TenantID = tenant.ID(userTenantID)
 	user.EmailVerifiedAt = emailVerifiedAt.Time

@@ -8,6 +8,7 @@ func TestLoadFromEnvUsesSafeDefaults(t *testing.T) {
 	t.Setenv("APP_HTTP_ADDR", "")
 	t.Setenv("LOG_LEVEL", "")
 	t.Setenv("DB_DSN", "")
+	t.Setenv("ENCRYPTION_KEY", "")
 	t.Setenv("AUTH_SESSION_COOKIE_NAME", "")
 	t.Setenv("AUTH_SESSION_COOKIE_SECURE", "")
 	t.Setenv("AUTH_SESSION_TTL", "")
@@ -105,6 +106,23 @@ func TestValidateRequiresSecureSessionCookieInProduction(t *testing.T) {
 
 	if err := cfg.Validate(); err == nil {
 		t.Fatal("expected production cookie security error")
+	}
+}
+
+func TestValidateRequiresEncryptionKeyInProductionWithDatabase(t *testing.T) {
+	cfg := Config{
+		AppEnvironment:      EnvironmentProduction,
+		AppName:             "billing-v2",
+		HTTPAddr:            ":8080",
+		LogLevel:            LogLevelInfo,
+		DatabaseDSN:         "postgres://billing@localhost/billing",
+		SessionCookieName:   "billing_session",
+		SessionCookieSecure: true,
+		SessionTokenTTL:     12,
+	}
+
+	if err := cfg.Validate(); err == nil {
+		t.Fatal("expected production encryption key error")
 	}
 }
 

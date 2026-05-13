@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
 	"github.com/Chinsusu/Billing-V2/internal/platform/httpserver"
@@ -14,8 +15,9 @@ type SessionResolver interface {
 }
 
 type SessionMiddlewareOptions struct {
-	CookieName string
-	Resolver   SessionResolver
+	CookieName            string
+	Resolver              SessionResolver
+	RequireAdminTwoFactor bool
 }
 
 func SessionMiddleware(options SessionMiddlewareOptions) func(http.Handler) http.Handler {
@@ -48,8 +50,13 @@ func SessionMiddleware(options SessionMiddlewareOptions) func(http.Handler) http
 			}
 			actor := identity.Actor()
 			ctx := WithActor(r.Context(), actor)
+			ctx = WithSessionIdentity(ctx, identity)
 			if _, ok := tenant.FromContext(ctx); !ok {
 				ctx = tenant.WithContext(ctx, tenant.NewContext(identity.User.TenantID))
+			}
+			if options.RequireAdminTwoFactor && isAdminRoute(r.URL.Path) && actor.IsPlatformAdmin && !identity.Session.TwoFactorSatisfied() {
+				httpserver.WriteError(w, r, http.StatusForbidden, "auth.2fa_required", "Two-factor authentication is required.")
+				return
 			}
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
@@ -58,6 +65,10 @@ func SessionMiddleware(options SessionMiddlewareOptions) func(http.Handler) http
 
 func isAuthRoute(path string) bool {
 	return path == "/auth/login" || path == "/auth/logout"
+}
+
+func isAdminRoute(path string) bool {
+	return path == "/admin" || strings.HasPrefix(path, "/admin/")
 }
 
 func writeSessionMiddlewareError(w http.ResponseWriter, r *http.Request, err error) {

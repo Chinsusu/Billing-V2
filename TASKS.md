@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` after T189 was merged:
+Current board snapshot on `2026-05-13` while T190 is in progress:
 
-- `TODO`: 16
-- `IN_PROGRESS`: 0
+- `TODO`: 15
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 186
@@ -61,7 +61,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T190 | [tasks/active/T190_admin_2fa_enforcement.md](tasks/active/T190_admin_2fa_enforcement.md) | `codex/t190-admin-2fa-enforcement` | Auth/Security | Enforce admin 2FA for privileged access. |
 | T191 | [tasks/active/T191_auth_rate_limits_and_password_reset.md](tasks/active/T191_auth_rate_limits_and_password_reset.md) | `codex/t191-auth-rate-limits-password-reset` | Auth/Security | Add login protection and password reset primitives. |
 | T192 | [tasks/active/T192_credential_encrypted_storage.md](tasks/active/T192_credential_encrypted_storage.md) | `codex/t192-credential-encrypted-storage` | Credentials | Add encrypted-at-rest credential storage. |
 | T193 | [tasks/active/T193_credential_reveal_audit.md](tasks/active/T193_credential_reveal_audit.md) | `codex/t193-credential-reveal-audit` | Credentials | Add controlled credential reveal with audit. |
@@ -82,7 +81,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| - | - | - | - | - | No task files are currently `IN_PROGRESS` or `REVIEW`. |
+| T190 | [tasks/active/T190_admin_2fa_enforcement.md](tasks/active/T190_admin_2fa_enforcement.md) | IN_PROGRESS | Codex | `codex/t190-admin-2fa-enforcement` | Enforce admin 2FA for privileged access. |
 
 ## Done Task Files
 
