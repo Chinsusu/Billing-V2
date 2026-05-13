@@ -1,6 +1,6 @@
 # T190 - Admin 2FA enforcement
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t190-admin-2fa-enforcement
 PR: https://github.com/Chinsusu/Billing-V2/pull/411
@@ -37,3 +37,4 @@ Add admin 2FA enforcement for privileged admin access before pilot launch.
 - 2026-05-13: Implemented TOTP setup/verify, encrypted TOTP secret storage, 2FA-satisfied session state, admin route enforcement, and redacted 2FA audit events.
 - 2026-05-13: Local validation passed: targeted Go tests, `make test`, `make build`, frontend lint/sensitive-text/build/smoke, `taskguard`, `diff --check`, and secret grep. `make test` needed an escalated rerun because sandbox networking blocked `httptest` local sockets.
 - 2026-05-13: Opened PR https://github.com/Chinsusu/Billing-V2/pull/411 and moved task to `REVIEW`.
+- 2026-05-13: PR https://github.com/Chinsusu/Billing-V2/pull/411 passed CI and merged; marked task `DONE`.
