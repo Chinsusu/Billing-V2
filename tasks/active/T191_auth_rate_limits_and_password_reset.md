@@ -1,6 +1,6 @@
 # T191 - Auth rate limits and password reset
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t191-auth-rate-limits-password-reset
 PR: https://github.com/Chinsusu/Billing-V2/pull/413
@@ -37,3 +37,4 @@ Add launch-required login protection and password reset primitives.
 - 2026-05-13: Implemented DB-backed login/password-reset rate limits, hashed single-use password reset tokens, reset confirm password update with session revocation, and password reset API routes.
 - 2026-05-13: Local validation passed: focused Go tests, `make test`, `make build`, migration validate, API/error guards, frontend lint/sensitive-text/audit/build/smoke, `taskguard`, `diff --check`, and secret grep. `make test` was run outside sandbox because `httptest` local sockets may be blocked inside sandbox.
 - 2026-05-13: Opened PR https://github.com/Chinsusu/Billing-V2/pull/413 and moved task to `REVIEW`.
+- 2026-05-13: PR https://github.com/Chinsusu/Billing-V2/pull/413 passed CI and merged; marked task `DONE`.
