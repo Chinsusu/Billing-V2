@@ -128,6 +128,7 @@ Operation error:
 | Admin top-up read | `wallet.view` |
 | Admin top-up approve or reject | `wallet.topup.approve` |
 | Admin wallet refunds and adjustments | `wallet.adjustment.create` |
+| Admin daily reconciliation | `wallet.view` |
 | Admin payment reconciliation | `wallet.view` |
 | Admin audit logs | `audit.view` |
 
@@ -509,6 +510,18 @@ The job read API does not expose `payload_json` or `idempotency_key`.
     - insufficient funds returns `wallet.insufficient_balance`
 
 ### 4.7 Payment reconciliation
+
+- `GET /admin/daily-reconciliation`
+  - auth: admin actor, `wallet.view`
+  - query: `date`
+  - response: one daily reconciliation report with wallet, invoice/payment, and duplicate payment reference summaries
+  - notes:
+    - `date` uses `YYYY-MM-DD` and is interpreted as a UTC calendar day
+    - wallet checks compare current wallet balance to posted ledger totals
+    - invoice checks flag paid invoices missing matching posted charges, paid amount mismatches, and unpaid invoices with posted charges
+    - duplicate checks flag multiple posted charge transactions for the same invoice reference
+    - mismatch records expose public display IDs rather than backend UUID references
+    - the route is read-only and does not mutate financial records
 
 - `GET /admin/payment-reconciliation`
   - auth: admin actor, `wallet.view`

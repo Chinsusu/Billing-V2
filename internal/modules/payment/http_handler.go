@@ -54,6 +54,7 @@ func NewHTTPHandlerWithOptions(service HTTPService, options HTTPHandlerOptions) 
 }
 
 func (handler *HTTPHandler) RegisterRoutes(mux *http.ServeMux) {
+	mux.HandleFunc(adminDailyReconciliationPath, handler.adminDailyReconciliationRoute)
 	mux.HandleFunc("/admin/payment-reconciliation", handler.adminReconciliationsRoute)
 	mux.HandleFunc("/admin/payment-reconciliation/", handler.adminReconciliationRoute)
 	mux.HandleFunc("/admin/transactions", handler.adminTransactionsRoute)

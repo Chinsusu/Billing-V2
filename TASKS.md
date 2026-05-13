@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` after T194 merged:
+Current board snapshot on `2026-05-13` while T195 is in progress:
 
-- `TODO`: 11
-- `IN_PROGRESS`: 0
+- `TODO`: 10
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 191
@@ -61,7 +61,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T195 | [tasks/active/T195_daily_reconciliation_report.md](tasks/active/T195_daily_reconciliation_report.md) | `codex/t195-daily-reconciliation-report` | Finance | Add daily reconciliation reporting. |
 | T196 | [tasks/active/T196_reservation_ttl_concurrency.md](tasks/active/T196_reservation_ttl_concurrency.md) | `codex/t196-reservation-ttl-concurrency` | Checkout | Verify and complete reservation TTL and concurrency behavior. |
 | T197 | [tasks/active/T197_service_lifecycle_transitions.md](tasks/active/T197_service_lifecycle_transitions.md) | `codex/t197-service-lifecycle-transitions` | Lifecycle | Add service lifecycle transitions. |
 | T198 | [tasks/active/T198_lifecycle_scheduler_jobs.md](tasks/active/T198_lifecycle_scheduler_jobs.md) | `codex/t198-lifecycle-scheduler-jobs` | Scheduler | Add lifecycle scheduler jobs. |
@@ -77,6 +76,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T195 | [tasks/active/T195_daily_reconciliation_report.md](tasks/active/T195_daily_reconciliation_report.md) | IN_PROGRESS | Codex | `codex/t195-daily-reconciliation-report` | Add daily reconciliation reporting. |
 
 ## Done Task Files
 
