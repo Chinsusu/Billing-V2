@@ -1,9 +1,9 @@
 # T206 - Client service renewal API and UI action
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t206-client-service-renewal-api-ui
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/443
 Risk: wallet debit, invoice/payment, service lifecycle, tenant isolation, RBAC, and audit
 Created: 2026-05-13
 Updated: 2026-05-14
@@ -34,3 +34,4 @@ Add a production-safe client service renewal path once the required backend cont
 
 - 2026-05-13: Task created by Codex during T202 frontend production integration audit.
 - 2026-05-14: Codex claimed task on `codex/t206-client-service-renewal-api-ui`.
+- 2026-05-14: Opened PR #443 after local validation passed: targeted Go tests, `make test`, `make build`, `make migrate-validate`, contract/error/task guards, frontend lint, sensitive-text, build, admin smoke, and `git diff --check`.
