@@ -57,6 +57,7 @@ VALUES
     ('order.manage', 'order', 'high'),
     ('service.view', 'service', 'low'),
     ('service.credential.reveal', 'service', 'critical'),
+    ('service.renew', 'service', 'medium'),
     ('service.suspend', 'service', 'high'),
     ('service.unsuspend', 'service', 'high'),
     ('service.terminate', 'service', 'critical'),

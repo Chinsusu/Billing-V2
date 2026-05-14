@@ -22,6 +22,8 @@ type fakeOrderStore struct {
 	getOrderLookup                  OrderLookup
 	transitionOrderStatusInput      TransitionOrderStatusInput
 	transitionServiceLifecycleInput TransitionServiceLifecycleInput
+	renewClientServiceInput         ClientServiceRenewalInput
+	renewClientServiceResult        ClientServiceRenewal
 	listServicesFilter              ServiceInstanceFilter
 	getServiceLookup                ServiceInstanceLookup
 	service                         ServiceInstance
@@ -65,6 +67,22 @@ func (store *fakeOrderStore) TransitionOrderStatus(_ context.Context, input Tran
 func (store *fakeOrderStore) TransitionServiceLifecycle(_ context.Context, input TransitionServiceLifecycleInput) (ServiceInstance, error) {
 	store.transitionServiceLifecycleInput = input
 	return ServiceInstance{ID: input.ID, DisplayID: 50001, TenantID: input.TenantID, Status: input.ToStatus, BillingStatus: input.BillingStatus, SuspensionReason: input.SuspensionReason, TermEnd: input.TermEnd}, nil
+}
+
+func (store *fakeOrderStore) RenewClientService(_ context.Context, input ClientServiceRenewalInput) (ClientServiceRenewal, error) {
+	store.renewClientServiceInput = input
+	if store.renewClientServiceResult.Service.ID != "" {
+		return store.renewClientServiceResult, nil
+	}
+	return ClientServiceRenewal{
+		Service:        ServiceInstance{ID: input.ServiceID, TenantID: input.TenantID, Status: ServiceStatusActive, BillingStatus: BillingStatusPaid},
+		InvoiceID:      "invoice-1",
+		WalletID:       input.WalletID,
+		AmountMinor:    1000,
+		Currency:       "USD",
+		Renewed:        true,
+		PreviousStatus: input.FromStatus,
+	}, nil
 }
 
 func (store *fakeOrderStore) ListServiceInstances(_ context.Context, filter ServiceInstanceFilter) ([]ServiceInstance, error) {

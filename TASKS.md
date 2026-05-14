@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-14` after T205 done:
+Current board snapshot on `2026-05-14` after T206 claimed:
 
-- `TODO`: 1
-- `IN_PROGRESS`: 0
+- `TODO`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 202
@@ -61,12 +61,12 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T206 | [tasks/active/T206_client_service_renewal_api_ui.md](tasks/active/T206_client_service_renewal_api_ui.md) | `codex/t206-client-service-renewal-api-ui` | Billing/Frontend | Add production-safe client service renewal API and UI action. |
 
 ## In-Flight Task Files
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T206 | [tasks/active/T206_client_service_renewal_api_ui.md](tasks/active/T206_client_service_renewal_api_ui.md) | IN_PROGRESS | Codex | `codex/t206-client-service-renewal-api-ui` | Add production-safe client service renewal API and UI action. |
 
 ## Done Task Files
 

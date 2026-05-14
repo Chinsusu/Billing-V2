@@ -186,6 +186,7 @@ func newOrderRoutesWithCredentialCipher(executor platformdb.Executor, credential
 		ResellerCredentialMiddleware:       orderAuthMiddleware(authorizer, rbac.PermissionServiceReveal, rbac.RiskHigh),
 		ClientMiddleware:                   orderAuthMiddleware(authorizer, rbac.PermissionOrderCreate, rbac.RiskMedium),
 		ClientServiceMiddleware:            orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
+		ClientServiceRenewMiddleware:       orderAuthMiddleware(authorizer, rbac.PermissionServiceRenew, rbac.RiskMedium),
 		ClientCredentialMiddleware:         orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskHigh),
 	})
 }

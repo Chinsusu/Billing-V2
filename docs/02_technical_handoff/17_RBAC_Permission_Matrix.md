@@ -212,7 +212,7 @@ abuse.case.manage
 | Risk level | Examples | Control |
 |---|---|---|
 | Low | view catalog, view own order | auth + tenant scope |
-| Medium | create order, submit top-up | auth + validation + audit optional |
+| Medium | create order, submit top-up, renew service | auth + validation + audit optional |
 | High | approve top-up, reveal credential, suspend service | permission + audit + rate limit |
 | Critical | ledger adjustment, provider manage, terminate, emergency access | 2FA + reason + audit + restricted role |
 
@@ -240,6 +240,7 @@ abuse.case.manage
 | Cancel pending order | Yes | Permission | No | Permission | No | Own tenant | Permission | Own order if policy | No |
 | View service | Yes | Permission | No/limited | Permission | Permission | Own tenant | Permission | Own service | Read-only |
 | Reveal credential | Yes + audit | Permission + audit | No | Usually No | Optional + audit | Own tenant + audit | Permission + audit | Own service + audit | No |
+| Renew service | Yes + audit | Permission + audit | No | No | No | Own tenant + audit | Permission + audit | Own service + wallet | No |
 | Suspend service | Yes | Permission | No | Request/Permission | Permission if technical | Own tenant | Permission | No | No |
 | Terminate service | Yes | Critical permission | No | No | Critical permission | Own tenant if policy | Permission critical | No | No |
 | Retry provisioning job | Yes | Permission | No | No | Yes | No | No | No | Read-only |

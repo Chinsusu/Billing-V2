@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Chinsusu/Billing-V2/internal/modules/catalog"
+	"github.com/Chinsusu/Billing-V2/internal/modules/wallet"
 )
 
 func registerOrderTestHandler(service HTTPService) http.Handler {
@@ -26,6 +27,10 @@ type fakeOrderHTTPService struct {
 	transitionServiceLifecycleCalls int
 	transitionServiceLifecycleInput TransitionServiceLifecycleInput
 	transitionServiceLifecycleError error
+	renewClientServiceCalls         int
+	renewClientServiceInput         ClientServiceRenewalInput
+	renewClientServiceResult        ClientServiceRenewal
+	renewClientServiceError         error
 	listServiceCalls                int
 	serviceFilter                   ServiceInstanceFilter
 	getServiceCalls                 int
@@ -113,6 +118,40 @@ func (service *fakeOrderHTTPService) TransitionServiceLifecycle(ctx context.Cont
 		Status:           input.ToStatus,
 		BillingStatus:    input.BillingStatus,
 		SuspensionReason: input.SuspensionReason,
+	}, nil
+}
+
+func (service *fakeOrderHTTPService) RenewClientService(ctx context.Context, input ClientServiceRenewalInput) (ClientServiceRenewal, error) {
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		return ClientServiceRenewal{}, err
+	}
+	service.renewClientServiceCalls++
+	service.renewClientServiceInput = input
+	if service.renewClientServiceError != nil {
+		return ClientServiceRenewal{}, service.renewClientServiceError
+	}
+	if service.renewClientServiceResult.Service.ID != "" {
+		return service.renewClientServiceResult, nil
+	}
+	return ClientServiceRenewal{
+		Service: ServiceInstance{
+			ID:            input.ServiceID,
+			TenantID:      input.TenantID,
+			Status:        ServiceStatusActive,
+			BillingStatus: BillingStatusPaid,
+		},
+		InvoiceID:                 "invoice_1",
+		InvoiceDisplayID:          10001,
+		PaymentTransactionID:      "payment_1",
+		PaymentTransactionDisplay: 10002,
+		WalletID:                  input.WalletID,
+		LedgerEntryID:             wallet.LedgerEntryID("ledger_1"),
+		LedgerEntryDisplayID:      10003,
+		AmountMinor:               2500,
+		Currency:                  "USD",
+		Renewed:                   true,
+		PreviousStatus:            input.FromStatus,
 	}, nil
 }
 
