@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-14` after T203 claimed:
+Current board snapshot on `2026-05-14` after T203 entered review:
 
 - `TODO`: 3
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 199
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -69,7 +69,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T203 | [tasks/active/T203_backup_restore_ops_drill.md](tasks/active/T203_backup_restore_ops_drill.md) | IN_PROGRESS | Codex | `codex/t203-backup-restore-ops-drill` | Add and verify backup/restore drill. |
+| T203 | [tasks/active/T203_backup_restore_ops_drill.md](tasks/active/T203_backup_restore_ops_drill.md) | REVIEW | Codex | `codex/t203-backup-restore-ops-drill` | Add and verify backup/restore drill. |
 
 ## Done Task Files
 
