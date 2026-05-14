@@ -31,7 +31,7 @@
 | Credential encryption/redaction | `partial` | T192 encrypted credential storage and T193 controlled reveal/audit merged. | Prove target-environment secret/key handling and reveal audit access before GO. |
 | Admin 2FA | `partial` | T190 TOTP setup/verify, encrypted TOTP secret storage, 2FA-satisfied sessions, admin route enforcement, and redacted audit events merged. | Verify production admin enrollment and policy enforcement in the target environment. |
 | Backup restore test | `partial` | T203 local restore drill passed and repeatable runbook/script exist. | Repeat restore drill against approved shared staging/non-production target with redacted operator evidence. |
-| Provider pilot test | `blocked` | Local fake provider and readiness APIs exist; T199 and doc 66 explicitly block real provider sandbox. | Approved sandbox account, credentials path, quota/cost limit, SKU mapping, timeout policy, redacted examples, and cleanup owner are missing. |
+| Provider pilot test | `blocked` | Local fake provider and readiness APIs exist; T199 and doc 66 explicitly block real provider sandbox. T208 adds the redacted evidence packet that must be filled before reconsidering GO. | Approved sandbox account, credentials path, quota/cost limit, SKU mapping, timeout policy, redacted examples, cleanup owner, and real pilot run evidence are missing. |
 | Support SOP readiness | `partial` | SOP docs exist; T201 support/abuse backend basics merged; T200 notification foundation exists. | Assign support owner/coverage and prove production notification delivery or approved manual fallback. |
 | Incident owner assignment | `blocked` | Incident roles are documented in `docs/03_execution_operations_launch/31_Incident_Response_And_Disaster_Recovery_Playbook.md`; T205 records unassigned launch owners. | Named launch-day owners and final sign-off are not recorded. |
 
@@ -64,7 +64,7 @@
 | Daily reconciliation | `done` | T195 merged read-only daily reconciliation report with wallet balance and mismatch checks. | Assign finance launch owner. |
 | Reservation TTL and concurrency | `done` | T196 merged provider inventory counters, atomic reservation SQL, expiry release SQL, and concurrency tests. | Re-run launch gate on approved staging inputs. |
 | Service lifecycle | `done` | T197/T198 merged lifecycle transitions, admin/reseller APIs, scheduler, and worker jobs; T206 added the client renewal API/UI path. | Re-run lifecycle and renewal paths on approved staging inputs. |
-| Provider sandbox | `blocked` | Fake provider, local sandbox contract, and T199/doc 66 no-go evidence exist. | External provider sandbox intake and real pilot evidence required. |
+| Provider sandbox | `blocked` | Fake provider, local sandbox contract, T199/doc 66 no-go evidence, and T208 evidence packet requirements exist. | External provider sandbox intake and real pilot evidence are still required. |
 | Notifications | `partial` | T200 adds `notifications` schema, notification module, redacted launch-critical event builders, and local delivery runner. | Production SMTP/Telegram or approved manual delivery fallback remains unproven. |
 | Support and abuse backend | `partial` | T201 support/abuse backend basics merged; SOP docs exist. | Named support owner and launch coverage are missing. |
 | Frontend production integration | `partial` | T202 integrated production API paths and frontend smokes; T206 wired the client service renewal UI to the production API. | Repeat frontend smoke/full E2E against approved staging or sandbox-equivalent inputs. |
@@ -74,7 +74,7 @@
 
 ## Recommended Execution Order
 
-1. Clear provider sandbox readiness with approved account, credential path, SKU mapping, quota, timeout, redacted examples, and cleanup owner.
+1. Complete the doc 66 provider sandbox evidence packet with approved account, credential path, SKU mapping, quota, timeout/idempotency behavior, redacted examples, cleanup owner, and real sandbox pilot run evidence.
 2. Repeat backup/restore and full E2E evidence against approved shared staging or signed staging-equivalent inputs.
 3. Assign Product, Engineering, QA, Ops, Finance, Security, Support, and Provider owners.
 4. Prove production notification delivery or approve a manual fallback with owner and SLA.
@@ -83,4 +83,4 @@
 
 ## Verification Scope For This Audit
 
-This audit combines repository inspection with linked task evidence through T206. Local/dev smokes and CI evidence are recorded in the task files and runbooks, but this audit does not claim that approved shared staging, production, or real provider sandbox tests were executed.
+This audit combines repository inspection with linked task evidence through T208. Local/dev smokes and CI evidence are recorded in the task files and runbooks, but this audit does not claim that approved shared staging, production, or real provider sandbox tests were executed.

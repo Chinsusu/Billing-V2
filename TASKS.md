@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-14` after T207 done:
+Current board snapshot on `2026-05-14` with T208 in progress:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 204
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T208 | [tasks/active/T208_provider_sandbox_evidence_packet.md](tasks/active/T208_provider_sandbox_evidence_packet.md) | IN_PROGRESS | Codex | codex/t208-provider-sandbox-evidence | Turn the real-provider sandbox blocker into a concrete redacted evidence packet. |
 
 ## Done Task Files
 

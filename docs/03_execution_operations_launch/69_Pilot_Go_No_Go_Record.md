@@ -17,7 +17,7 @@ Do not reinterpret the local fake-provider gate as approval for real provider pr
 | --- | --- | --- |
 | `docs/03_execution_operations_launch/33_Launch_Checklist_And_Go_No_Go_Criteria.md` | checklist source | Defines P0 no-go items and decision types. |
 | `tasks/active/T189_auth_session_baseline.md` through `tasks/active/T198_lifecycle_scheduler_jobs.md` | merged | Closed core auth, 2FA, password reset/rate limit, credential, ledger, reconciliation, reservation, and lifecycle implementation tasks. |
-| `docs/03_execution_operations_launch/66_Provider_Sandbox_Readiness_Evidence.md` | blocked | Real provider sandbox is explicitly not ready. |
+| `docs/03_execution_operations_launch/66_Provider_Sandbox_Readiness_Evidence.md` | blocked | Real provider sandbox is explicitly not ready; T208 adds the redacted evidence packet required before reconsidering this blocker. |
 | `tasks/active/T200_notification_foundation.md` | merged foundation | Notification queue/builders exist, but production delivery channels are not proven. |
 | `tasks/active/T201_support_abuse_basic_backend.md` | merged foundation | Support and abuse backend basics exist. Named launch support owner is still absent. |
 | `tasks/active/T202_frontend_production_integration_pass.md` | merged | Frontend integration pass completed and identified the direct client renewal gap. |
@@ -36,7 +36,7 @@ Do not reinterpret the local fake-provider gate as approval for real provider pr
 | Credential encryption/redaction | pass for repo/local | T192 encrypted credential storage; T193 controlled reveal, rate limit, no-store responses, and audit without plaintext. | Prove staging/prod secret key handling and operational reveal audit access before GO. |
 | Admin 2FA | pass for repo/local | T190 TOTP setup/verify, encrypted TOTP secret storage, 2FA-satisfied sessions, admin route enforcement, and redacted audit events. | Verify production admin users are enrolled and 2FA policy is enforced in the target environment. |
 | Backup restore test | blocked for launch | T203 local restore drill passed and runbook exists. | Repeat restore drill against approved shared staging/non-production target with operator evidence. |
-| Provider pilot test | blocked | T199 and doc 66 state real provider sandbox is not ready. | Provide approved sandbox account, base URL, credential storage path, quota/cost limit, SKU mapping, timeout policy, redacted provider examples, and cleanup owner. |
+| Provider pilot test | blocked | T199 and doc 66 state real provider sandbox is not ready. T208 defines the evidence packet but does not provide external provider proof. | Provide approved sandbox account, base URL, credential storage path, quota/cost limit, SKU mapping, timeout/idempotency policy, redacted provider examples, cleanup owner, and real sandbox pilot run evidence. |
 | Support SOP readiness | partial | SOP docs exist; T201 support/abuse backend basics merged. | Assign support owner/coverage and prove launch-critical notification delivery channel. |
 | Incident owner assignment | blocked | Incident roles are documented in the DR playbook. | Record named Product, Engineering, QA, Ops, Finance, Security, Support, and Provider owners for launch day. |
 
@@ -74,7 +74,7 @@ No named launch-day owners were found in repository evidence. Do not mark GO unt
 
 ## Required Actions Before Reconsidering GO
 
-1. Close provider sandbox readiness with approved provider account evidence and a real sandbox pilot test.
+1. Complete the doc 66 provider sandbox evidence packet with approved provider account evidence and a real sandbox pilot test.
 2. Run the backup/restore drill against an approved shared staging/non-production target and record redacted operator evidence.
 3. Run the full E2E quality gate against approved staging/sandbox-equivalent inputs, or record a signed exception explaining why local/dev evidence is sufficient.
 4. Assign and record named launch-day owners for Product, Engineering, QA, Ops, Finance, Security, Support, and Provider.
