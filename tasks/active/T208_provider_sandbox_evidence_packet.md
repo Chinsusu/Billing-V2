@@ -1,6 +1,6 @@
 # T208 - Provider sandbox evidence packet
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t208-provider-sandbox-evidence
 PR: https://github.com/Chinsusu/Billing-V2/pull/447
@@ -34,3 +34,4 @@ Turn the real-provider sandbox blocker into a concrete evidence packet that an o
 - 2026-05-14: Codex created and claimed task on `codex/t208-provider-sandbox-evidence`.
 - 2026-05-14: Local validation passed: `go run ./cmd/taskguard`, `git diff --check`, `env GOMODCACHE=/tmp/go-mod-cache GOCACHE=/tmp/go-build-cache go test ./internal/modules/provider -run SandboxContract`.
 - 2026-05-14: Opened PR #447 for review.
+- 2026-05-14: PR #447 merged into `main` with squash commit `68a78dc0f303a5790e4f30c93a6e6fadd6f5e9a1`; marking task DONE.
