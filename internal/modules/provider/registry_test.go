@@ -57,7 +57,7 @@ func TestFakeRegistryDefaultsProviderSet(t *testing.T) {
 	}
 
 	types := registry.Types()
-	if len(types) != 7 {
+	if len(types) != 8 {
 		t.Fatalf("expected default providers, got %#v", types)
 	}
 }

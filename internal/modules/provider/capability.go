@@ -8,6 +8,7 @@ const (
 	TypeOVH                Type = "ovh"
 	TypeHetzner            Type = "hetzner"
 	TypeProxyUpstream      Type = "proxy_upstream"
+	TypeCloudminiV3        Type = "cloudmini_v3"
 	TypePreloadedProxyPool Type = "preloaded_proxy_pool"
 	TypeCustomAPI          Type = "custom_api"
 )
@@ -68,7 +69,7 @@ func DefaultCapabilityProfile(providerType Type) CapabilityProfile {
 			SupportsManualProvision: true,
 			SupportsStatusSync:      true,
 		}
-	case TypeProxyUpstream, TypePreloadedProxyPool:
+	case TypeProxyUpstream, TypeCloudminiV3, TypePreloadedProxyPool:
 		return proxyCapabilityProfile()
 	default:
 		return vpsCapabilityProfile()
