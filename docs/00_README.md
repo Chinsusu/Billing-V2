@@ -84,6 +84,7 @@ Bản v1.10 bổ sung local development runbook để dev mới có thể setup 
 - `03_execution_operations_launch/67_Backup_Restore_Drill_Runbook.md`
 - `03_execution_operations_launch/68_Full_E2E_Quality_Gate_Runbook.md`
 - `03_execution_operations_launch/69_Pilot_Go_No_Go_Record.md`
+- `03_execution_operations_launch/70_Launch_Evidence_Completion_Packet.md`
 
 ### Tài liệu architecture deep dive thêm ở bản v1.4
 - `04_architecture_deep_dive/37_Go_Backend_Architecture_And_Module_Boundaries.md`

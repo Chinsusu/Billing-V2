@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-14` after T209 done:
+Current board snapshot on `2026-05-14` with T210 in progress:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 206
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T210 | [tasks/active/T210_launch_evidence_completion_packet.md](tasks/active/T210_launch_evidence_completion_packet.md) | IN_PROGRESS | Codex | codex/t210-launch-evidence-packet | Create one completion packet for every remaining launch blocker. |
 
 ## Done Task Files
 

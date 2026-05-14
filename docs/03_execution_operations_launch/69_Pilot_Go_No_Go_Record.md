@@ -24,6 +24,7 @@ Do not reinterpret the local fake-provider gate as approval for real provider pr
 | `tasks/active/T203_backup_restore_ops_drill.md` and `docs/03_execution_operations_launch/67_Backup_Restore_Drill_Runbook.md` | pass in local/dev | Restore drill passed on temporary local databases. T209 defines the shared staging evidence packet; shared staging proof is still required before GO. |
 | `tasks/active/T204_full_e2e_quality_gate.md` and `docs/03_execution_operations_launch/68_Full_E2E_Quality_Gate_Runbook.md` | pass in local/dev | Full gate passed with local DB, local API, and fake provider. It does not prove real provider or staging readiness. |
 | `tasks/active/T206_client_service_renewal_api_ui.md` | merged | Direct client renewal API/UI action is implemented with wallet debit, standalone renewal invoice/payment records, lifecycle renewal, audit evidence, and client UI action. |
+| `docs/03_execution_operations_launch/70_Launch_Evidence_Completion_Packet.md` | required before GO | T210 defines one completion packet for provider sandbox, shared staging restore, staging/full E2E, notification/fallback, launch owners, and target-environment verification. It does not provide the external proof itself. |
 
 ## P0 Launch Gate Matrix
 
@@ -59,7 +60,7 @@ These items do not replace P0 blockers. If a later review moves from NO-GO to CO
 
 ## Launch-Day Owner Record
 
-No named launch-day owners were found in repository evidence. Do not mark GO until these are assigned.
+No named launch-day owners were found in repository evidence. Do not mark GO until these are assigned and recorded in `docs/03_execution_operations_launch/70_Launch_Evidence_Completion_Packet.md`.
 
 | Role | Required responsibility | Current assignment |
 | --- | --- | --- |
@@ -74,13 +75,8 @@ No named launch-day owners were found in repository evidence. Do not mark GO unt
 
 ## Required Actions Before Reconsidering GO
 
-1. Complete the doc 66 provider sandbox evidence packet with approved provider account evidence and a real sandbox pilot test.
-2. Complete the doc 67 backup/restore evidence packet by running the drill against an approved shared staging/non-production target and recording redacted operator evidence.
-3. Run the full E2E quality gate against approved staging/sandbox-equivalent inputs, or record a signed exception explaining why local/dev evidence is sufficient.
-4. Assign and record named launch-day owners for Product, Engineering, QA, Ops, Finance, Security, Support, and Provider.
-5. Prove production notification delivery for launch-critical events or document an approved manual fallback with owner and response SLA.
-6. Include the T206 renewal path in the staging/full E2E evidence packet.
-7. Re-run this record and change the decision only if every P0 row has passing evidence or a documented owner-approved mitigation that does not touch money, tenant isolation, provisioning safety, credentials, or incident ownership.
+1. Complete `docs/03_execution_operations_launch/70_Launch_Evidence_Completion_Packet.md` with redacted proof and owner sign-off for every remaining P0 gate.
+2. Re-run this record and change the decision only if every P0 row has passing evidence or a documented owner-approved mitigation that does not touch money, tenant isolation, provisioning safety, credentials, or incident ownership.
 
 ## Sign-Off
 
