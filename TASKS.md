@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-14` after T205 review:
+Current board snapshot on `2026-05-14` after T205 done:
 
 - `TODO`: 1
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 201
+- `DONE` task files in `tasks/active/`: 202
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -67,14 +67,13 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T205 | [tasks/active/T205_launch_go_no_go_execution.md](tasks/active/T205_launch_go_no_go_execution.md) | REVIEW | Codex | `codex/t205-launch-go-no-go-execution` | Execute final launch go/no-go readiness record. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T204`
+- `T011` to `T205`
 
 ## Removed Tasks
 
