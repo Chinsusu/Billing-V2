@@ -1,6 +1,6 @@
 # T203 - Backup and restore ops drill
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t203-backup-restore-ops-drill
 PR: https://github.com/Chinsusu/Billing-V2/pull/437
@@ -37,3 +37,4 @@ Add and verify a backup/restore drill for launch readiness.
 - 2026-05-14: Added guarded backup/restore drill script, Makefile targets, and DR evidence runbook.
 - 2026-05-14: Ran local non-production drill: source seed `dev-db` smoke passed 19 checks, restore target `dev-db` smoke passed 19 checks, temp DBs and dump files cleaned up.
 - 2026-05-14: Opened PR #437 and moved task to REVIEW.
+- 2026-05-14: PR #437 merged and task marked DONE.
