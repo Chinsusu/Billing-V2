@@ -1,6 +1,6 @@
 # T209 - Staging backup restore evidence packet
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t209-staging-restore-evidence
 PR: https://github.com/Chinsusu/Billing-V2/pull/449
@@ -34,3 +34,4 @@ Turn the staging backup/restore blocker into a concrete redacted evidence packet
 - 2026-05-14: Codex created and claimed task on `codex/t209-staging-restore-evidence`.
 - 2026-05-14: Local validation passed: `go run ./cmd/taskguard`, `git diff --check`, `bash scripts/backup_restore_drill.sh --plan`. Destructive restore was not run because no approved shared staging/non-production DSNs or target overwrite approval are present in repo.
 - 2026-05-14: Opened PR #449 for review.
+- 2026-05-14: PR #449 merged into `main` with squash commit `c228f828ebffaf2f6b8bc0a634258519f8aef4b2`; marking task DONE.
