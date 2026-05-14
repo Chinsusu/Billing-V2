@@ -1,7 +1,7 @@
 # T203 - Backup and restore ops drill
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t203-backup-restore-ops-drill
 PR: -
 Risk: operations, database safety, launch readiness, and disaster recovery
@@ -33,3 +33,6 @@ Add and verify a backup/restore drill for launch readiness.
 ## Agent Log
 
 - 2026-05-13: Task created by Codex backlog planning.
+- 2026-05-14: Codex claimed task on `codex/t203-backup-restore-ops-drill`.
+- 2026-05-14: Added guarded backup/restore drill script, Makefile targets, and DR evidence runbook.
+- 2026-05-14: Ran local non-production drill: source seed `dev-db` smoke passed 19 checks, restore target `dev-db` smoke passed 19 checks, temp DBs and dump files cleaned up.

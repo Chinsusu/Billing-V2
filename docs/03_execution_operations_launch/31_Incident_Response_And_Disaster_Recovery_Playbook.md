@@ -213,6 +213,8 @@ Restore drill must verify:
 app boots, login works, tenant isolation works, wallet balances reconcile, service mappings exist, credentials decrypt with correct key
 ```
 
+Use `docs/03_execution_operations_launch/67_Backup_Restore_Drill_Runbook.md` and `make backup-restore-drill` for the repeatable local/sandbox DB restore drill. Do not use that drill against production DSNs or unmasked production data.
+
 ## 14. Postmortem template
 
 ```text
