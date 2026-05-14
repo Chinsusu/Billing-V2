@@ -452,6 +452,7 @@ func wrapWalletMiddleware(middleware func(http.Handler) http.Handler) wallet.Rou
 
 func catalogAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) catalog.RouteMiddleware {
 	return chainCatalogMiddleware(
+		wrapCatalogMiddleware(tenant.HeaderContextMiddleware),
 		wrapCatalogMiddleware(identity.HeaderActorMiddleware),
 		catalog.RouteMiddleware(rbac.RequirePermission(authorizer, permission, risk)),
 	)

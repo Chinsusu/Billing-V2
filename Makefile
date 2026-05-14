@@ -1,6 +1,6 @@
 GO ?= go
 
-.PHONY: go-packages fmt test build build-api build-migrate build-seed build-smoke build-worker run-api run-worker migrate-validate seed-plan seed-dev smoke-dev-db smoke-dev-api smoke-dev-billing backup-restore-drill-plan backup-restore-drill contract-guard error-code-guard task-guard
+.PHONY: go-packages fmt test build build-api build-migrate build-seed build-smoke build-worker run-api run-worker migrate-validate seed-plan seed-dev smoke-dev-db smoke-dev-api smoke-dev-billing backup-restore-drill-plan backup-restore-drill full-e2e-quality-gate contract-guard error-code-guard task-guard
 
 go-packages:
 	$(GO) run ./cmd/gopackages
@@ -66,3 +66,6 @@ backup-restore-drill-plan:
 
 backup-restore-drill:
 	bash scripts/backup_restore_drill.sh --run
+
+full-e2e-quality-gate:
+	bash scripts/full_e2e_quality_gate.sh

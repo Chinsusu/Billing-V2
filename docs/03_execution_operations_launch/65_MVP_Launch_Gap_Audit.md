@@ -68,7 +68,7 @@
 | Support and abuse backend | `missing` | SOP docs and frontend demo screens exist only. | T201 |
 | Frontend production integration | `partial` | Many screens attempt live API and fall back to mocks; smoke covers admin live/fallback paths. | T202 |
 | Backup/restore | `partial` | Repeatable local/sandbox drill script and runbook exist. | Execute approved non-production evidence before T205 |
-| Full E2E quality gate | `partial` | DB/API/billing/frontend smoke commands exist, but no single launch gate record exists. | T204 |
+| Full E2E quality gate | `partial` | DB/API/billing/frontend smoke commands exist, and `scripts/full_e2e_quality_gate.sh` plus `docs/03_execution_operations_launch/68_Full_E2E_Quality_Gate_Runbook.md` define one local/dev gate. | T204 must capture executed gate evidence before T205. |
 | Final Go/No-Go | `blocked` | Checklist template exists. | T205 |
 
 ## Recommended Execution Order
