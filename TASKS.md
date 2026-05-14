@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-14` with T208 in review:
+Current board snapshot on `2026-05-14` after T208 done:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 204
+- `DONE` task files in `tasks/active/`: 205
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,14 +66,13 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T208 | [tasks/active/T208_provider_sandbox_evidence_packet.md](tasks/active/T208_provider_sandbox_evidence_packet.md) | REVIEW | Codex | codex/t208-provider-sandbox-evidence | Turn the real-provider sandbox blocker into a concrete redacted evidence packet. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T207`
+- `T011` to `T208`
 
 ## Removed Tasks
 
