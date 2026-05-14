@@ -1,4 +1,5 @@
 import { getApiData, newIdempotencyKey, postApiData } from "./client";
+import type { ClientServiceRenewal, ClientServiceRenewalBody } from "./clientServiceTypes";
 import type { JobAttemptQuery, JobSummary, JobSummaryQuery, ProvisioningJobAttempt } from "./jobTypes";
 import {
   AdminAccount,
@@ -59,6 +60,11 @@ export const billingApi = {
     getApiData<ServiceInstance>(`/client/services/${encodeURIComponent(id)}`, "client"),
   revealClientServiceAccess: (serviceId: string, accessId: string, body: { reason?: string } = {}) =>
     postApiData<ServiceAccessReveal>(`/client/services/${encodeURIComponent(serviceId)}/credentials/${encodeURIComponent(accessId)}/reveal`, "client", body), // sensitive-text-allowlist
+  renewClientService: (
+    serviceId: string,
+    body: ClientServiceRenewalBody,
+    idempotencyKey = newIdempotencyKey("client-service-renewal"),
+  ) => postApiData<ClientServiceRenewal>(`/client/services/${encodeURIComponent(serviceId)}/renew`, "client", body, { idempotencyKey }),
   listClientTransactions: () => getApiData<PaymentTransaction[]>("/client/transactions", "client"),
   listClientTopupRequests: (query: TopupRequestQuery = {}) =>
     getApiData<TopupRequest[]>("/client/topup-requests", "client", query),

@@ -28,6 +28,7 @@ const (
 	PermissionOrderManage           Permission = "order.manage"
 	PermissionServiceView           Permission = "service.view"
 	PermissionServiceReveal         Permission = "service.credential.reveal"
+	PermissionServiceRenew          Permission = "service.renew"
 	PermissionServiceSuspend        Permission = "service.suspend"
 	PermissionServiceUnsuspend      Permission = "service.unsuspend"
 	PermissionServiceTerminate      Permission = "service.terminate"

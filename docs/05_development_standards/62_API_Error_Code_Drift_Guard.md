@@ -51,8 +51,8 @@ It is not a full static analyzer for every validation field code. Track codes th
 ### Route-specific codes
 
 - catalog: `catalog.not_found`
-- orders: `order.not_found`, `order.status_conflict`, `order.status_transition_invalid`, `order.provisioning_source_not_found`
-- services: `service.not_found`, `service.status_invalid`, `service.status_conflict`, `service.status_transition_invalid`, `service.lifecycle_action_invalid`, `service.reason_missing`, `service.suspension_reason_invalid`, `service.billing_cycle_invalid`, `service.billing_cycle_value_invalid`, `credential.not_found`, `credential.reveal_rate_limited`, `credential.reveal_denied`
+- orders: `order.not_found`, `order.status_conflict`, `order.status_transition_invalid`, `order.idempotency_conflict`, `order.provisioning_source_not_found`
+- services: `service.not_found`, `service.status_invalid`, `service.status_conflict`, `service.status_transition_invalid`, `service.lifecycle_action_invalid`, `service.reason_missing`, `service.suspension_reason_invalid`, `service.billing_cycle_invalid`, `service.billing_cycle_value_invalid`, `service.renewal_unavailable`, `credential.not_found`, `credential.reveal_rate_limited`, `credential.reveal_denied`
 - invoices: `invoice.not_found`, `invoice.status_conflict`
 - wallets: `wallet.not_found`, `wallet.ledger_not_found`, `wallet.topup_not_found`, `wallet.topup_status_conflict`, `wallet.payment_method_invalid`, `wallet.status_conflict`, `wallet.currency_mismatch`, `wallet.idempotency_conflict`, `wallet.insufficient_balance`
 - checkout: `checkout.order_not_checkoutable`

@@ -998,27 +998,36 @@ Idempotency:
 required
 ```
 
+Request:
+```json
+{
+  "wallet_id": "uuid",
+  "from_status": "active",
+  "reason": "Client portal renewal"
+}
+```
+
 Validation:
-- service active/expired/grace depending policy.
+- service active, expired, or suspended only when `suspension_reason=expiry`.
 - plan still renewable.
 - wallet sufficient.
-- reseller wallet sufficient if reseller tenant.
+- wallet belongs to the current buyer and tenant.
 - renew cycle valid.
 - not terminated.
 
 Result:
 ```text
-debit wallet(s)
+create standalone renewal invoice and invoice item linked to service
+debit client wallet once with idempotent ledger key
+record posted payment transaction without order finalization
 extend term_end_at based on policy
 create lifecycle event service.renewed
-if provider requires renew call -> create provisioning_job type renew
 ```
 
 Audit:
 ```text
 service.renewed
-wallet.client.debited
-wallet.reseller_cost.debited
+invoice.wallet_paid
 ```
 
 ### 9.5 Cancel service / request termination

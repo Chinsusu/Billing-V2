@@ -88,6 +88,12 @@ func (handler *HTTPHandler) clientServicesRoute(w http.ResponseWriter, r *http.R
 }
 
 func (handler *HTTPHandler) clientServiceRoute(w http.ResponseWriter, r *http.Request) {
+	if isServiceRenewPath(r.URL.Path, clientServicePrefix) {
+		dispatchOrderMethods(w, r, map[string]http.HandlerFunc{
+			http.MethodPost: handler.tenantRoute(handler.handleRenewClientService, handler.options.ClientServiceRenewMiddleware),
+		})
+		return
+	}
 	if isServiceCredentialRevealPath(r.URL.Path, clientServicePrefix) {
 		dispatchOrderMethods(w, r, map[string]http.HandlerFunc{
 			http.MethodPost: handler.tenantRoute(handler.handleRevealClientServiceCredential, handler.options.ClientCredentialMiddleware),

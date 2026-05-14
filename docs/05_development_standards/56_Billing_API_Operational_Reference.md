@@ -120,6 +120,7 @@ Operation error:
 | Admin job retry | `provisioning.job.retry` |
 | Admin job manual review or cancel | `provisioning.manual_review.resolve` |
 | Client and admin service read | `service.view` |
+| Client service renewal | `service.renew` |
 | Admin and reseller service credential reveal | `service.credential.reveal` |
 | Admin and reseller service suspend | `service.suspend` |
 | Admin and reseller service unsuspend | `service.unsuspend` |
@@ -295,6 +296,13 @@ The job read API does not expose `payload_json` or `idempotency_key`.
   - body: optional `reason`
   - response: credential payload once, `masked_hint`, `revealed_at`, and `reveal_expires_message`
   - note: backend forces buyer scope to the current actor, rate-limits by actor and service, sets `Cache-Control: no-store`, and writes `credential.revealed` audit without plaintext
+
+- `POST /client/services/{service_id}/renew`
+  - auth: client actor, `service.renew`
+  - headers: required `Idempotency-Key`
+  - body: `wallet_id`, `from_status`, optional `reason`
+  - response: renewed `service`, paid renewal `invoice`, posted `payment_transaction`, wallet `ledger`, amount/currency, and `renewed`
+  - notes: buyer scope is forced to the current actor; only active, expired, or expiry-suspended services can renew; the API creates a standalone renewal invoice, debits the client's wallet, records payment, extends `term_end`, writes `service.renewed` lifecycle/audit evidence, and does not route through order finalization/provisioning for new services
 
 - `GET /admin/services`
   - auth: admin actor, `service.view`
@@ -697,8 +705,8 @@ Shared errors:
 
 Route-specific errors that frontend and agents should expect:
 
-- orders: `order.not_found`, `order.status_conflict`, `order.status_transition_invalid`
-- services: `service.not_found`, `service.status_invalid`, `service.status_conflict`, `service.status_transition_invalid`, `service.lifecycle_action_invalid`, `service.reason_missing`, `service.suspension_reason_invalid`, `service.billing_cycle_invalid`, `service.billing_cycle_value_invalid`, `credential.not_found`, `credential.reveal_rate_limited`, `credential.reveal_denied`
+- orders: `order.not_found`, `order.status_conflict`, `order.status_transition_invalid`, `order.idempotency_conflict`
+- services: `service.not_found`, `service.status_invalid`, `service.status_conflict`, `service.status_transition_invalid`, `service.lifecycle_action_invalid`, `service.reason_missing`, `service.suspension_reason_invalid`, `service.billing_cycle_invalid`, `service.billing_cycle_value_invalid`, `service.renewal_unavailable`, `credential.not_found`, `credential.reveal_rate_limited`, `credential.reveal_denied`
 - invoices: `invoice.not_found`, `invoice.status_conflict`
 - wallets: `wallet.not_found`, `wallet.ledger_not_found`, `wallet.status_conflict`, `wallet.currency_mismatch`, `wallet.idempotency_conflict`, `wallet.insufficient_balance`
 - top-up: `wallet.topup_not_found`, `wallet.topup_status_conflict`, `wallet.payment_method_invalid`

@@ -71,6 +71,10 @@ func TestNewRuntimeWithDSNProtectsClientServiceRoutes(t *testing.T) {
 	assertRuntimeRejectsMissingActor(t, http.MethodGet, "/client/services", "")
 }
 
+func TestNewRuntimeWithDSNProtectsClientServiceRenewRoute(t *testing.T) {
+	assertRuntimeRejectsMissingActor(t, http.MethodPost, "/client/services/service_1/renew", `{"wallet_id":"wallet_1","from_status":"active"}`)
+}
+
 func TestNewRuntimeWithDSNProtectsResellerServiceRoutes(t *testing.T) {
 	assertRuntimeRejectsMissingActor(t, http.MethodGet, "/reseller/services", "")
 }

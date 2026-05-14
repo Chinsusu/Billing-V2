@@ -111,6 +111,7 @@ JOIN permissions permission ON permission.permission_key IN (
     'provisioning.manual_review.resolve',
     'service.view',
     'service.credential.reveal',
+    'service.renew',
     'service.suspend',
     'service.unsuspend',
     'service.terminate',
@@ -123,7 +124,7 @@ ON CONFLICT (role_id, permission_id) DO NOTHING;
 INSERT INTO role_permissions (role_id, permission_id)
 SELECT role.role_id, permission.permission_id
 FROM roles role
-JOIN permissions permission ON permission.permission_key IN ('catalog.view', 'order.create', 'service.view', 'wallet.view')
+JOIN permissions permission ON permission.permission_key IN ('catalog.view', 'order.create', 'service.view', 'service.renew', 'wallet.view')
 WHERE role.role_key = 'customer_catalog_viewer'
   AND role.is_system = TRUE
 ON CONFLICT (role_id, permission_id) DO NOTHING;
