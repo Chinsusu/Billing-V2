@@ -21,7 +21,7 @@ Do not reinterpret the local fake-provider gate as approval for real provider pr
 | `tasks/active/T200_notification_foundation.md` | merged foundation | Notification queue/builders exist, but production delivery channels are not proven. |
 | `tasks/active/T201_support_abuse_basic_backend.md` | merged foundation | Support and abuse backend basics exist. Named launch support owner is still absent. |
 | `tasks/active/T202_frontend_production_integration_pass.md` | merged | Frontend integration pass completed and identified the direct client renewal gap. |
-| `tasks/active/T203_backup_restore_ops_drill.md` and `docs/03_execution_operations_launch/67_Backup_Restore_Drill_Runbook.md` | pass in local/dev | Restore drill passed on temporary local databases; shared staging proof is still required before GO. |
+| `tasks/active/T203_backup_restore_ops_drill.md` and `docs/03_execution_operations_launch/67_Backup_Restore_Drill_Runbook.md` | pass in local/dev | Restore drill passed on temporary local databases. T209 defines the shared staging evidence packet; shared staging proof is still required before GO. |
 | `tasks/active/T204_full_e2e_quality_gate.md` and `docs/03_execution_operations_launch/68_Full_E2E_Quality_Gate_Runbook.md` | pass in local/dev | Full gate passed with local DB, local API, and fake provider. It does not prove real provider or staging readiness. |
 | `tasks/active/T206_client_service_renewal_api_ui.md` | merged | Direct client renewal API/UI action is implemented with wallet debit, standalone renewal invoice/payment records, lifecycle renewal, audit evidence, and client UI action. |
 
@@ -35,7 +35,7 @@ Do not reinterpret the local fake-provider gate as approval for real provider pr
 | Provisioning idempotency test | pass for fake provider only | T199 local fake-provider evidence; T204 fake-provider worker path passed. | Real provider idempotency, timeout, quota, and cleanup evidence are missing. |
 | Credential encryption/redaction | pass for repo/local | T192 encrypted credential storage; T193 controlled reveal, rate limit, no-store responses, and audit without plaintext. | Prove staging/prod secret key handling and operational reveal audit access before GO. |
 | Admin 2FA | pass for repo/local | T190 TOTP setup/verify, encrypted TOTP secret storage, 2FA-satisfied sessions, admin route enforcement, and redacted audit events. | Verify production admin users are enrolled and 2FA policy is enforced in the target environment. |
-| Backup restore test | blocked for launch | T203 local restore drill passed and runbook exists. | Repeat restore drill against approved shared staging/non-production target with operator evidence. |
+| Backup restore test | blocked for launch | T203 local restore drill passed and runbook exists. T209 defines the staging evidence packet but does not provide shared staging proof. | Repeat restore drill against approved shared staging/non-production target with redacted operator evidence and Ops/QA sign-off. |
 | Provider pilot test | blocked | T199 and doc 66 state real provider sandbox is not ready. T208 defines the evidence packet but does not provide external provider proof. | Provide approved sandbox account, base URL, credential storage path, quota/cost limit, SKU mapping, timeout/idempotency policy, redacted provider examples, cleanup owner, and real sandbox pilot run evidence. |
 | Support SOP readiness | partial | SOP docs exist; T201 support/abuse backend basics merged. | Assign support owner/coverage and prove launch-critical notification delivery channel. |
 | Incident owner assignment | blocked | Incident roles are documented in the DR playbook. | Record named Product, Engineering, QA, Ops, Finance, Security, Support, and Provider owners for launch day. |
@@ -75,7 +75,7 @@ No named launch-day owners were found in repository evidence. Do not mark GO unt
 ## Required Actions Before Reconsidering GO
 
 1. Complete the doc 66 provider sandbox evidence packet with approved provider account evidence and a real sandbox pilot test.
-2. Run the backup/restore drill against an approved shared staging/non-production target and record redacted operator evidence.
+2. Complete the doc 67 backup/restore evidence packet by running the drill against an approved shared staging/non-production target and recording redacted operator evidence.
 3. Run the full E2E quality gate against approved staging/sandbox-equivalent inputs, or record a signed exception explaining why local/dev evidence is sufficient.
 4. Assign and record named launch-day owners for Product, Engineering, QA, Ops, Finance, Security, Support, and Provider.
 5. Prove production notification delivery for launch-critical events or document an approved manual fallback with owner and response SLA.
