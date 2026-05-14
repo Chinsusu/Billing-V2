@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-14` after T206 done:
+Current board snapshot on `2026-05-14` after T207 claimed:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 203
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T207 | [tasks/active/T207_refresh_launch_audit_after_renewal.md](tasks/active/T207_refresh_launch_audit_after_renewal.md) | IN_PROGRESS | Codex | `codex/t207-refresh-launch-audit` | Refresh launch audit/go-no-go docs after T206 merged. |
 
 ## Done Task Files
 

@@ -20,10 +20,10 @@ Do not reinterpret the local fake-provider gate as approval for real provider pr
 | `docs/03_execution_operations_launch/66_Provider_Sandbox_Readiness_Evidence.md` | blocked | Real provider sandbox is explicitly not ready. |
 | `tasks/active/T200_notification_foundation.md` | merged foundation | Notification queue/builders exist, but production delivery channels are not proven. |
 | `tasks/active/T201_support_abuse_basic_backend.md` | merged foundation | Support and abuse backend basics exist. Named launch support owner is still absent. |
-| `tasks/active/T202_frontend_production_integration_pass.md` | merged | Frontend integration pass completed and created T206 for direct client renewal. |
+| `tasks/active/T202_frontend_production_integration_pass.md` | merged | Frontend integration pass completed and identified the direct client renewal gap. |
 | `tasks/active/T203_backup_restore_ops_drill.md` and `docs/03_execution_operations_launch/67_Backup_Restore_Drill_Runbook.md` | pass in local/dev | Restore drill passed on temporary local databases; shared staging proof is still required before GO. |
 | `tasks/active/T204_full_e2e_quality_gate.md` and `docs/03_execution_operations_launch/68_Full_E2E_Quality_Gate_Runbook.md` | pass in local/dev | Full gate passed with local DB, local API, and fake provider. It does not prove real provider or staging readiness. |
-| `tasks/active/T206_client_service_renewal_api_ui.md` | open | Direct client renewal API/UI action remains TODO. |
+| `tasks/active/T206_client_service_renewal_api_ui.md` | merged | Direct client renewal API/UI action is implemented with wallet debit, standalone renewal invoice/payment records, lifecycle renewal, audit evidence, and client UI action. |
 
 ## P0 Launch Gate Matrix
 
@@ -51,7 +51,7 @@ These items do not replace P0 blockers. If a later review moves from NO-GO to CO
 - Do not provision real provider resources until provider sandbox readiness changes from blocked to ready.
 - Keep fake/manual provider paths only for local/dev validation.
 - Keep production payment rails disabled unless finance owner signs off on reconciliation evidence.
-- Keep direct client service renewal disabled or routed to safe checkout/support paths until T206 is merged and verified.
+- Keep direct client service renewal limited to validated staging or approved pilot accounts until the staging/full E2E evidence packet covers wallet debit, invoice/payment records, lifecycle renewal, and audit.
 - Keep daily finance reconciliation mandatory.
 - Keep manual review enabled for high-risk provisioning outcomes and provider timeouts.
 - Keep no postpaid billing.
@@ -79,7 +79,7 @@ No named launch-day owners were found in repository evidence. Do not mark GO unt
 3. Run the full E2E quality gate against approved staging/sandbox-equivalent inputs, or record a signed exception explaining why local/dev evidence is sufficient.
 4. Assign and record named launch-day owners for Product, Engineering, QA, Ops, Finance, Security, Support, and Provider.
 5. Prove production notification delivery for launch-critical events or document an approved manual fallback with owner and response SLA.
-6. Finish T206 or explicitly hide/disable direct client renewal in the pilot scope.
+6. Include the T206 renewal path in the staging/full E2E evidence packet.
 7. Re-run this record and change the decision only if every P0 row has passing evidence or a documented owner-approved mitigation that does not touch money, tenant isolation, provisioning safety, credentials, or incident ownership.
 
 ## Sign-Off

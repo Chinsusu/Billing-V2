@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-14
 **Scope:** Current-code audit against MVP scope and launch Go/No-Go gates.
-**Decision:** NO-GO for pilot launch. T189-T204 closed many repo/local implementation gaps, but T205 records remaining P0 launch blockers for real provider, staging evidence, notification delivery, and named owners.
+**Decision:** NO-GO for pilot launch. T189-T206 closed many repo/local implementation gaps, but T205 records remaining P0 launch blockers for real provider, staging evidence, notification delivery, and named owners.
 
 ## Source Documents
 
@@ -47,7 +47,7 @@
 | Service is provisioned | `partial` | Local fake worker path passed in T204. | Real provider sandbox/pilot evidence is missing. |
 | Credentials are masked by default | `done` | T192/T193 merged encrypted storage, metadata, reveal controls, and audit; frontend redaction guards remain. | Prove target secret/key handling before GO. |
 | Credential reveal is audited | `done` | T193 reveal API, rate limit, no-store response, tenant/owner scoping, RBAC, and audit merged. | Verify audit access in the target environment. |
-| Service renewal works | `partial` | T197/T198 lifecycle primitives, APIs, scheduler, and jobs merged. | T206 direct client renewal API/UI action remains open. |
+| Service renewal works | `done` | T197/T198 lifecycle primitives, APIs, scheduler, and jobs merged; T206 direct client renewal API/UI action merged with wallet debit, invoice/payment records, lifecycle renewal, audit, and client UI action. | Re-run renewal path against approved staging/full E2E inputs before GO. |
 | Expire/suspend/terminate policy works | `done` | T197/T198 lifecycle transition and scheduler jobs merged. | Re-run smoke on approved staging inputs. |
 | Finance reconciliation passes | `done` | T195 daily reconciliation report and T204 local/dev full gate passed. | Assign finance launch owner. |
 | Cross-tenant access attempts fail | `partial` | T189 auth/session baseline and T204 RBAC negative checks passed in local/dev. | Repeat against target session/auth configuration. |
@@ -63,11 +63,11 @@
 | Refunds and adjustments | `done` | T194 merged append-only refund/adjustment ledger routes, idempotency conflict checks, reasons, actor metadata, and audit. | Normal finance owner sign-off. |
 | Daily reconciliation | `done` | T195 merged read-only daily reconciliation report with wallet balance and mismatch checks. | Assign finance launch owner. |
 | Reservation TTL and concurrency | `done` | T196 merged provider inventory counters, atomic reservation SQL, expiry release SQL, and concurrency tests. | Re-run launch gate on approved staging inputs. |
-| Service lifecycle | `partial` | T197/T198 merged lifecycle transitions, admin/reseller APIs, scheduler, and worker jobs. | T206 direct client renewal remains open. |
+| Service lifecycle | `done` | T197/T198 merged lifecycle transitions, admin/reseller APIs, scheduler, and worker jobs; T206 added the client renewal API/UI path. | Re-run lifecycle and renewal paths on approved staging inputs. |
 | Provider sandbox | `blocked` | Fake provider, local sandbox contract, and T199/doc 66 no-go evidence exist. | External provider sandbox intake and real pilot evidence required. |
 | Notifications | `partial` | T200 adds `notifications` schema, notification module, redacted launch-critical event builders, and local delivery runner. | Production SMTP/Telegram or approved manual delivery fallback remains unproven. |
 | Support and abuse backend | `partial` | T201 support/abuse backend basics merged; SOP docs exist. | Named support owner and launch coverage are missing. |
-| Frontend production integration | `partial` | T202 integrated production API paths and frontend smokes. | T206 direct client renewal API/UI action remains open. |
+| Frontend production integration | `partial` | T202 integrated production API paths and frontend smokes; T206 wired the client service renewal UI to the production API. | Repeat frontend smoke/full E2E against approved staging or sandbox-equivalent inputs. |
 | Backup/restore | `partial` | T203 local restore drill passed with repeatable script/runbook. | Execute approved shared staging/non-production evidence before GO. |
 | Full E2E quality gate | `partial` | T204 local/dev full gate passed across backend, DB/API/billing smokes, and frontend checks. | Repeat against approved staging/sandbox-equivalent inputs or record signed exception. |
 | Final Go/No-Go | `done` | T205 record exists in `docs/03_execution_operations_launch/69_Pilot_Go_No_Go_Record.md`. | Decision is NO-GO until blockers are cleared. |
@@ -78,9 +78,9 @@
 2. Repeat backup/restore and full E2E evidence against approved shared staging or signed staging-equivalent inputs.
 3. Assign Product, Engineering, QA, Ops, Finance, Security, Support, and Provider owners.
 4. Prove production notification delivery or approve a manual fallback with owner and SLA.
-5. Complete T206 or explicitly exclude direct client renewal from pilot scope.
+5. Include the T206 client renewal path in the approved staging/full E2E evidence packet.
 6. Re-run T205 and change decision only when every P0 row has passing evidence or acceptable non-P0 mitigation.
 
 ## Verification Scope For This Audit
 
-This audit combines repository inspection with linked task evidence through T205. Local/dev smokes and CI evidence are recorded in the task files and runbooks, but this audit does not claim that approved shared staging, production, or real provider sandbox tests were executed.
+This audit combines repository inspection with linked task evidence through T206. Local/dev smokes and CI evidence are recorded in the task files and runbooks, but this audit does not claim that approved shared staging, production, or real provider sandbox tests were executed.

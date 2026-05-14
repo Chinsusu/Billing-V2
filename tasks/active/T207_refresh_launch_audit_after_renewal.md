@@ -1,0 +1,34 @@
+# T207 - Refresh launch audit after service renewal
+
+Status: IN_PROGRESS
+Owner: Codex
+Branch: codex/t207-refresh-launch-audit
+PR: -
+Risk: launch readiness documentation, project planning accuracy
+Created: 2026-05-14
+Updated: 2026-05-14
+
+## Summary
+
+Refresh launch readiness records after T206 merged so the roadmap no longer treats direct client service renewal as open.
+
+## Scope
+
+- Update MVP launch gap audit evidence for service renewal and frontend production integration.
+- Update pilot go/no-go record evidence and required actions after T206.
+- Keep the launch decision NO-GO unless all remaining P0 external/staging/provider/owner blockers have evidence.
+- Do not change backend or frontend runtime behavior.
+
+## Acceptance Criteria
+
+- Docs no longer say T206 is open or TODO.
+- Remaining blockers are still explicit: real provider sandbox, staging backup/restore, staging/full E2E evidence, notification delivery/fallback, and named launch owners.
+- Task board and taskguard pass.
+
+## Notes
+
+- Created after PR #443 and marker PR #444 merged T206.
+
+## Agent Log
+
+- 2026-05-14: Codex created and claimed task on `codex/t207-refresh-launch-audit`.
