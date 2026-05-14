@@ -1,9 +1,9 @@
 # T211 - Proxy Cloudmini API V3 provider adapter
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t211-cloudmini-v3-provider
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/453
 Risk: provider/provisioning/credential
 Created: 2026-05-14
 Updated: 2026-05-14
@@ -41,3 +41,4 @@ Add a Billing provider adapter for the Proxy Cloudmini API V3 contract found in 
 - 2026-05-14: Task created and claimed on `codex/t211-cloudmini-v3-provider`.
 - 2026-05-14: Added Cloudmini V3 adapter, provider type registration, local contract tests, and code-read evidence notes.
 - 2026-05-14: Validation passed: `make fmt`; `go test ./internal/modules/provider`; `go test ./internal/modules/provider -run SandboxContract`; `go test ./internal/modules/catalog`; `go test ./internal/modules/order -run ProviderProvisioningHandler`; `make test`; `make build`; `go run ./cmd/taskguard`; `git diff --check`.
+- 2026-05-14: Opened PR https://github.com/Chinsusu/Billing-V2/pull/453 and moved task to `REVIEW`.
