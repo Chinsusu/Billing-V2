@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-13` after T202 merged:
+Current board snapshot on `2026-05-14` after T203 entered review:
 
-- `TODO`: 4
+- `TODO`: 3
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 199
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -61,7 +61,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T203 | [tasks/active/T203_backup_restore_ops_drill.md](tasks/active/T203_backup_restore_ops_drill.md) | `codex/t203-backup-restore-ops-drill` | Ops | Add and verify backup/restore drill. |
 | T204 | [tasks/active/T204_full_e2e_quality_gate.md](tasks/active/T204_full_e2e_quality_gate.md) | `codex/t204-full-e2e-quality-gate` | QA/CI | Create repeatable full E2E launch quality gate. |
 | T205 | [tasks/active/T205_launch_go_no_go_execution.md](tasks/active/T205_launch_go_no_go_execution.md) | `codex/t205-launch-go-no-go-execution` | Launch | Execute final launch go/no-go readiness record. |
 | T206 | [tasks/active/T206_client_service_renewal_api_ui.md](tasks/active/T206_client_service_renewal_api_ui.md) | `codex/t206-client-service-renewal-api-ui` | Billing/Frontend | Add production-safe client service renewal API and UI action. |
@@ -70,6 +69,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T203 | [tasks/active/T203_backup_restore_ops_drill.md](tasks/active/T203_backup_restore_ops_drill.md) | REVIEW | Codex | `codex/t203-backup-restore-ops-drill` | Add and verify backup/restore drill. |
 
 ## Done Task Files
 
