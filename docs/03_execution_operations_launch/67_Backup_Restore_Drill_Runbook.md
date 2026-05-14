@@ -1,7 +1,7 @@
 # 67 - Backup Restore Drill Runbook
 
 **Date:** 2026-05-14  
-**Scope:** Repeatable local/sandbox PostgreSQL backup and restore drill for launch readiness evidence.
+**Scope:** Repeatable local/sandbox/staging-equivalent PostgreSQL backup and restore drill for launch readiness evidence.
 
 ## Purpose
 
@@ -97,6 +97,80 @@ The drill is valid only when all items are true:
 - Restored target passes `dev-db` smoke.
 - Smoke verifies migrations, seed idempotency, tenant/user/catalog/wallet/order/service/invoice/ledger/payment records.
 - Operator records evidence without secrets, raw DSNs, provider credentials, or customer data.
+
+## Shared Staging Evidence Status
+
+No approved shared staging or staging-equivalent restore evidence is stored in this repository as of 2026-05-14. T203 proves the local drill path only. A launch gate can use this runbook only after a separate operator packet records approved non-production source and target details without DSNs or secrets.
+
+| Evidence area | Required proof | Current repo status |
+|---|---|---|
+| Environment approval | Ops owner confirms source and target are non-production and target may be overwritten. | Missing. |
+| Data classification | Source data classification, masking status if any copied data exists, and confirmation that no production customer data is used without approval. | Missing. |
+| Tooling prerequisites | `pg_dump`, `pg_restore`, `psql`, `sha256sum`, and `go` versions or runner image. | Missing. |
+| Plan run | `make backup-restore-drill-plan` or equivalent dry-run reviewed before destructive restore. | Missing. |
+| Backup artifact | Redacted backup path outside the repository and checksum path or checksum value. | Missing. |
+| Restore confirmation | Target database name and `BILLING_BACKUP_RESTORE_CONFIRM` value captured without DSN, password, or host secret. | Missing. |
+| Restore result | Restore completed without `pg_restore` errors against the approved target. | Missing. |
+| Smoke result | `dev-db` smoke passed against the restored target with migration/check counts recorded. | Missing. |
+| Cleanup/retention | Backup artifact retention or deletion decision, target cleanup owner, and follow-up issues. | Missing. |
+| Sign-off | Operator, Ops owner, QA owner, and date/time UTC. | Missing. |
+
+## Shared Staging Evidence Packet Template
+
+Use this packet only after the source and target are approved non-production databases. Store redacted values in git and keep DSNs/passwords in the approved secret channel only.
+
+```text
+Drill ID:
+Date/time UTC:
+Operator:
+Ops owner approval:
+QA reviewer:
+Environment: staging/sandbox/staging-equivalent
+Source classification:
+Target classification:
+Target overwrite approval:
+Production data present: no/approved masked exception
+Masking approval reference:
+Tooling runner:
+pg_dump version:
+pg_restore version:
+psql version:
+Go version:
+Plan command:
+Plan result:
+Restore command:
+Target database name:
+Confirm value used:
+Backup artifact path: redacted non-repo path
+Backup checksum:
+Restore result:
+Smoke command:
+Smoke result:
+Migration count:
+Smoke check count:
+Backup artifact retention/deletion:
+Target cleanup owner:
+Issues:
+Follow-up:
+Sign-off decision: pass/fail
+```
+
+## Shared Staging Pass Criteria
+
+Do not use this gate as launch evidence unless all items are true:
+
+- Source and target approvals are recorded before the destructive restore.
+- Source and target are different databases and both are non-production or approved staging-equivalent.
+- No raw DSN, password, token, credential, provider secret, dump file, or customer data is committed.
+- The backup artifact is stored outside the repository with restricted access.
+- Checksum is captured and tied to the drill ID.
+- Restore completes without `pg_restore` errors.
+- Restored target passes `go run ./cmd/smoke -dsn "$BILLING_RESTORE_TARGET_DSN" dev-db`.
+- Operator records migration and smoke check counts.
+- Cleanup/retention owner is recorded.
+- Ops and QA sign off on the evidence packet.
+
+If any item is missing, keep the backup/restore launch gate blocked or partial.
 
 ## Evidence Template
 
