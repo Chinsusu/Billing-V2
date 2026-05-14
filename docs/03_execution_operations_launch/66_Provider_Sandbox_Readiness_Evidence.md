@@ -1,6 +1,6 @@
 # Provider Sandbox Readiness Evidence
 
-**Tasks:** T199, T208
+**Tasks:** T199, T208, T211
 **Date:** 2026-05-14
 **Decision:** real provider sandbox is not launch-ready yet.
 
@@ -15,6 +15,31 @@ This record separates local fake-provider evidence from real sandbox-provider re
 | VPS local fake path | `ready` for local validation only | Fresh seed maps `vps-cx23-40gb-monthly` to `Local Fake Hetzner Ready`; provider contract tests cover fake Hetzner create, status, terminate, idempotency, and timeout mappings. | OK for local/CI smoke only. |
 | Proxy/manual local path | documented non-ready state | Fresh seed maps `proxy-static-10gb-monthly` first to an unsupported VPS-style source and has a manual fallback path. This proves the readiness API surfaces the gap instead of silently treating proxy as ready. | Not ready for real proxy sandbox provisioning. |
 | Real provider sandbox | `blocked` | Missing approved sandbox provider account, API base URL, credential storage path, quota/cost limit, provider SKU mapping, timeout policy, and cleanup owner. | Do not run pilot provisioning against real providers. |
+
+## Proxy Cloudmini API V3 Candidate
+
+T211 inspected the local `/opt/proxy-cloudmini` source code and added a Billing adapter for its API V3 contract using local `httptest` coverage only. This is not real sandbox evidence.
+
+Code-read contract summary:
+
+- Auth supports `Authorization: Bearer <token>` and API-key fallback headers in the provider service. Billing adapter uses bearer auth.
+- Readiness/inventory endpoints: `GET /api/v3/capabilities`, `GET /api/v3/inventory/groups?kind=<kind>`.
+- Supported proxy kinds from code: `ipv4_dc` and `residential`.
+- Mutating V3 endpoints require `Idempotency-Key`.
+- Create path: `POST /api/v3/proxies` returns `202 Accepted` with an async operation id and resource id.
+- Status path: `GET /api/v3/operations/:id` polls `accepted/running/succeeded/failed/timed_out/cancelled`.
+- Resource paths: `GET /api/v3/proxies/:id`, `DELETE /api/v3/proxies/:id`.
+- Action path: `POST /api/v3/proxies/:id/actions/:action` supports `stop`, `start`, and residential-only `change-ip`.
+- Credential-bearing proxy response fields are encrypted by Billing adapter tests before returning a provider `CredentialEnvelope`.
+
+Still missing for real sandbox readiness:
+
+- approved non-production API base URL;
+- scoped credential storage path outside git;
+- sandbox account owner and cleanup owner;
+- source-to-group/SKU mapping for each Billing provider source;
+- quota, rate, concurrency, timeout, and spend guardrails;
+- redacted real error examples and one approved pilot create/delete run.
 
 ## Evidence Packet Status
 

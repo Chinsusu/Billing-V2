@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-14` after T210 done:
+Current board snapshot on `2026-05-14` after T211 review:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 207
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T211 | [tasks/active/T211_cloudmini_v3_provider_adapter.md](tasks/active/T211_cloudmini_v3_provider_adapter.md) | REVIEW | Codex | codex/t211-cloudmini-v3-provider | Add a Proxy Cloudmini API V3 provider adapter with local contract tests. |
 
 ## Done Task Files
 

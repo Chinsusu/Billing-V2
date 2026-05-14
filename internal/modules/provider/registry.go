@@ -81,7 +81,7 @@ func (registry *Registry) Types() []Type {
 
 func NewFakeRegistry(providerTypes ...Type) (*Registry, error) {
 	if len(providerTypes) == 0 {
-		providerTypes = []Type{TypeManual, TypeProxmox, TypeOVH, TypeHetzner, TypeProxyUpstream, TypePreloadedProxyPool, TypeCustomAPI}
+		providerTypes = []Type{TypeManual, TypeProxmox, TypeOVH, TypeHetzner, TypeProxyUpstream, TypeCloudminiV3, TypePreloadedProxyPool, TypeCustomAPI}
 	}
 	registry, err := NewRegistry()
 	if err != nil {

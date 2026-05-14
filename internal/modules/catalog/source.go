@@ -89,7 +89,7 @@ type CreateProviderSourceInput struct {
 func providerTypeValid(providerType provider.Type) bool {
 	switch providerType {
 	case provider.TypeManual, provider.TypeProxmox, provider.TypeOVH, provider.TypeHetzner,
-		provider.TypeProxyUpstream, provider.TypePreloadedProxyPool, provider.TypeCustomAPI:
+		provider.TypeProxyUpstream, provider.TypeCloudminiV3, provider.TypePreloadedProxyPool, provider.TypeCustomAPI:
 		return true
 	default:
 		return false
