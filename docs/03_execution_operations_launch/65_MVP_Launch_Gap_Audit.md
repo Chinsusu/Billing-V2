@@ -1,13 +1,14 @@
 # 65 - MVP Launch Gap Audit
 
-**Date:** 2026-05-13
+**Date:** 2026-05-14
 **Scope:** Current-code audit against MVP scope and launch Go/No-Go gates.
-**Decision:** NO-GO for pilot launch until the P0 partial, missing, and blocked items below are closed and re-verified.
+**Decision:** NO-GO for pilot launch. T189-T204 closed many repo/local implementation gaps, but T205 records remaining P0 launch blockers for real provider, staging evidence, notification delivery, and named owners.
 
 ## Source Documents
 
 - `docs/03_execution_operations_launch/26_MVP_Scope_Lock_And_Non_Goals.md`
 - `docs/03_execution_operations_launch/33_Launch_Checklist_And_Go_No_Go_Criteria.md`
+- `docs/03_execution_operations_launch/69_Pilot_Go_No_Go_Record.md`
 - Current backend, frontend, migration, smoke, CI, and runbook files in this repository.
 
 ## Status Legend
@@ -23,64 +24,63 @@
 
 | P0 launch item | Status | Current evidence | Gap / follow-up |
 | --- | --- | --- | --- |
-| Tenant isolation P0 tests | `partial` | Tenant context and RBAC checks exist in `internal/modules/tenant/context.go`, `internal/modules/rbac/authorizer.go`, `cmd/api/runtime_protection_test.go`, and `cmd/smoke/api_rbac.go`. | Production auth/session is still header-based through `internal/modules/identity/http_middleware.go`; close with T189 and prove full E2E in T204. |
-| Ledger reconciliation | `partial` | Append-only wallet ledger schema exists in `migrations/0011_create_wallet_ledger_entries.sql`; payment reconciliation read path exists in `internal/modules/payment/reconciliation.go`; smoke covers `/admin/payment-reconciliation`. | Refund/adjustment behavior and daily reconciliation report are not complete; close with T194 and T195. |
-| Checkout debit/reservation/provisioning flow | `partial` | Wallet invoice payment runs in a DB transaction in `internal/modules/payment/postgres_store.go`; paid orders queue provisioning in `internal/modules/order/payment_provisioning.go` and `internal/modules/order/provisioning_queue.go`; local billing smoke exists in `cmd/smoke/billing_mutation.go`. | Reservation TTL/concurrency proof and full launch E2E proof remain open; close with T196 and T204. |
-| Provisioning idempotency test | `partial` | Job idempotency constraints exist in `migrations/0004_create_outbox_jobs.sql`; provider retry taxonomy and fake sandbox contract exist in `internal/modules/provider/*`; provisioning worker maps unsafe outcomes to manual review in `internal/modules/order/provider_provisioning_worker.go`; T199 evidence exists in `docs/03_execution_operations_launch/66_Provider_Sandbox_Readiness_Evidence.md`. | Local fake paths are proven, but real sandbox provider intake is still missing; do not pilot real provider provisioning. |
-| Credential encryption/redaction | `missing` | Logger redaction keys exist in `internal/platform/logger/logger.go`; provider result has a credential envelope type in `internal/modules/provider/operation.go`. | No service credential storage, encrypted-at-rest migration, reveal API, or reveal audit flow exists; close with T192 and T193. |
-| Admin 2FA | `missing` | `users.two_factor_status` exists in `migrations/0002_create_identity_rbac.sql` and identity read models expose the field. | No 2FA setup/challenge/enforcement path exists for privileged admin access; close with T190. |
-| Backup restore test | `partial` | DR guidance exists in `docs/03_execution_operations_launch/31_Incident_Response_And_Disaster_Recovery_Playbook.md`; local DB smoke exists in `docs/05_development_standards/55_Local_Development_Runbook.md`; repeatable local/sandbox drill exists in `docs/03_execution_operations_launch/67_Backup_Restore_Drill_Runbook.md` and `scripts/backup_restore_drill.sh`. | Launch evidence still requires an approved non-production run with redacted operator evidence; close final proof with T204/T205. |
-| Provider pilot test | `blocked` | Local fake provider and readiness APIs exist in `internal/modules/provider/*`, `internal/modules/catalog/readiness.go`, `docs/05_development_standards/58_Provisioning_Ops_Readiness_Checklist.md`, and T199 no-go evidence in `docs/03_execution_operations_launch/66_Provider_Sandbox_Readiness_Evidence.md`. | Approved sandbox provider credentials, redacted provider evidence, and real provider pilot run are still not present; keep real provider pilot blocked. |
-| Support SOP readiness | `partial` | Support and abuse SOP docs exist in `docs/03_execution_operations_launch/29_Customer_Support_SOP_And_Macro_Templates.md` and `docs/03_execution_operations_launch/32_Abuse_Compliance_Takedown_SOP.md`; frontend has demo ticket screens; T200 adds notification foundation records and redacted event builders. | Backend support/abuse records, tenant/RBAC controls, support-specific notification wiring, and audit behavior are missing; close with T201. |
-| Incident owner assignment | `blocked` | Incident roles are documented in `docs/03_execution_operations_launch/31_Incident_Response_And_Disaster_Recovery_Playbook.md`. | Named launch-day owners and final Go/No-Go sign-off are not recorded; close with T205 after T189-T204 evidence exists. |
+| Tenant isolation P0 tests | `partial` | T189 session baseline merged; T204 `dev-api` smoke passed RBAC negative checks; `cmd/api/runtime_protection_test.go` covers runtime protection. | Repeat the gate against approved staging/session inputs before changing launch decision to GO. |
+| Ledger reconciliation | `partial` | T194 refunds/adjustments, T195 daily reconciliation, and T204 billing mutation smoke passed in local/dev. | Assign finance launch owner and capture day-one reconciliation ownership. |
+| Checkout debit/reservation/provisioning flow | `partial` | T196 reservation concurrency and T204 fake-provider billing/provisioning flow passed. | Real provider pilot remains blocked by T199 and doc 66. |
+| Provisioning idempotency test | `partial` | Local fake provider and worker paths are covered by T199 and T204. | Real provider idempotency, timeout, quota, SKU mapping, and cleanup evidence are missing. |
+| Credential encryption/redaction | `partial` | T192 encrypted credential storage and T193 controlled reveal/audit merged. | Prove target-environment secret/key handling and reveal audit access before GO. |
+| Admin 2FA | `partial` | T190 TOTP setup/verify, encrypted TOTP secret storage, 2FA-satisfied sessions, admin route enforcement, and redacted audit events merged. | Verify production admin enrollment and policy enforcement in the target environment. |
+| Backup restore test | `partial` | T203 local restore drill passed and repeatable runbook/script exist. | Repeat restore drill against approved shared staging/non-production target with redacted operator evidence. |
+| Provider pilot test | `blocked` | Local fake provider and readiness APIs exist; T199 and doc 66 explicitly block real provider sandbox. | Approved sandbox account, credentials path, quota/cost limit, SKU mapping, timeout policy, redacted examples, and cleanup owner are missing. |
+| Support SOP readiness | `partial` | SOP docs exist; T201 support/abuse backend basics merged; T200 notification foundation exists. | Assign support owner/coverage and prove production notification delivery or approved manual fallback. |
+| Incident owner assignment | `blocked` | Incident roles are documented in `docs/03_execution_operations_launch/31_Incident_Response_And_Disaster_Recovery_Playbook.md`; T205 records unassigned launch owners. | Named launch-day owners and final sign-off are not recorded. |
 
 ## MVP Done Flow Matrix
 
 | MVP done item | Status | Evidence | Follow-up |
 | --- | --- | --- | --- |
-| Client tops up wallet manually | `partial` | Top-up API and approval flow exist in `internal/modules/wallet/*` and are used by `cmd/smoke/billing_mutation.go`. | Full launch E2E evidence in T204. |
-| Admin approves top-up | `partial` | Approval/rejection model and audit support exist in `internal/modules/wallet/topup_review.go`. | Notification and production auth gaps remain: T189, T200. |
-| Client buys a VPS/proxy | `partial` | Order, checkout, invoice, and wallet payment paths exist in `internal/modules/order`, `internal/modules/checkout`, `internal/modules/invoice`, and `internal/modules/payment`. | Reservation/concurrency and frontend production integration remain: T196, T202. |
-| Client debit and reseller settlement debit are correct | `partial` | Purchase and reseller-cost ledger entry types exist in `migrations/0011_create_wallet_ledger_entries.sql`; wallet payment creates purchase ledger entries. | End-to-end settlement and reconciliation proof remain: T194, T195, T204. |
-| Stock is reserved safely | `partial` | Reservation schema/model exist in `migrations/0007_create_order_tables.sql` and `internal/modules/order/reservation.go`; T196 adds provider inventory counters, atomic reserve SQL, expiry release SQL, and concurrency tests. | Full launch E2E proof remains: T204. |
-| Service is provisioned | `partial` | Paid order provisioning queue and local fake worker exist in `internal/modules/order/provisioning_queue.go`, `internal/modules/order/provider_provisioning_worker.go`, and `cmd/worker/main.go`. | Provider sandbox readiness and full E2E proof remain: T199, T204. |
-| Credentials are masked by default | `missing` | Frontend and smoke redaction guards exist for sensitive text. | Backend credential storage/reveal model is missing: T192, T193. |
-| Credential reveal is audited | `missing` | Permission constant `service.credential.reveal` exists in `internal/modules/rbac/model.go`. | Reveal API, rate limit, and audit are missing: T193. |
-| Service renewal works | `partial` | Provider capability includes renew and service statuses exist in `internal/modules/provider/capability.go` and `internal/modules/order/status.go`. | Lifecycle service behavior and scheduler jobs remain: T197, T198. |
-| Expire/suspend/terminate policy works | `partial` | Service status transitions exist in `internal/modules/order/status.go`. | API, scheduler, audit, and provider action execution remain: T197, T198. |
-| Finance reconciliation passes | `partial` | Payment reconciliation read path exists. | Daily report, mismatch detection, refunds/adjustments, and full E2E proof remain: T194, T195, T204. |
-| Cross-tenant access attempts fail | `partial` | Tenant/RBAC checks and smoke exist. | Production session source and final E2E launch gate remain: T189, T204. |
+| Client tops up wallet manually | `done` | T204 billing mutation smoke created and approved top-up in local/dev. | Re-run against approved staging before launch. |
+| Admin approves top-up | `done` | T204 billing mutation smoke and T189 auth/session baseline cover local/dev admin path. | Prove notification delivery or manual fallback before launch. |
+| Client buys a VPS/proxy | `partial` | T204 order, checkout, invoice, wallet payment, and fake-provider provisioning passed. | Real provider path remains blocked by T199 and doc 66. |
+| Client debit and reseller settlement debit are correct | `done` | T194/T195 and T204 local/dev billing mutation evidence cover append-only ledger and reconciliation. | Assign finance owner for day-one checks. |
+| Stock is reserved safely | `done` | T196 provider inventory counters, atomic reserve SQL, expiry release SQL, and concurrency tests merged. | Re-run full gate on approved staging inputs. |
+| Service is provisioned | `partial` | Local fake worker path passed in T204. | Real provider sandbox/pilot evidence is missing. |
+| Credentials are masked by default | `done` | T192/T193 merged encrypted storage, metadata, reveal controls, and audit; frontend redaction guards remain. | Prove target secret/key handling before GO. |
+| Credential reveal is audited | `done` | T193 reveal API, rate limit, no-store response, tenant/owner scoping, RBAC, and audit merged. | Verify audit access in the target environment. |
+| Service renewal works | `partial` | T197/T198 lifecycle primitives, APIs, scheduler, and jobs merged. | T206 direct client renewal API/UI action remains open. |
+| Expire/suspend/terminate policy works | `done` | T197/T198 lifecycle transition and scheduler jobs merged. | Re-run smoke on approved staging inputs. |
+| Finance reconciliation passes | `done` | T195 daily reconciliation report and T204 local/dev full gate passed. | Assign finance launch owner. |
+| Cross-tenant access attempts fail | `partial` | T189 auth/session baseline and T204 RBAC negative checks passed in local/dev. | Repeat against target session/auth configuration. |
 
 ## Category Gate Summary
 
 | Gate | Status | Current evidence | Required next task |
 | --- | --- | --- | --- |
-| Auth and sessions | `missing` | Identity users, RBAC permissions, and header actor middleware exist. | T189 |
-| Admin 2FA | `missing` | Database status field exists only. | T190 |
-| Login protection and password reset | `missing` | No login/reset endpoints or rate limit primitives found. | T191 |
-| Credential storage and reveal | `missing` | Redaction helpers exist; storage/reveal does not. | T192, T193 |
-| Refunds and adjustments | `partial` | Ledger enum types and reason validation exist. | T194 |
-| Daily reconciliation | `partial` | Payment reconciliation read model exists. | T195 |
-| Reservation TTL and concurrency | `partial` | Provider inventory counters, reservation quantity, atomic reserve SQL, expiry release SQL, and concurrency tests exist. | Full E2E proof remains: T204 |
-| Service lifecycle | `partial` | Status constants and simple transition helpers exist. | T197, T198 |
-| Provider sandbox | `blocked` | Fake provider, local sandbox contract, and T199 no-go evidence exist. | External provider sandbox intake before T205 |
-| Notifications | `partial` | T200 adds `notifications` schema, `internal/modules/notification`, redacted launch-critical event builders, and a local delivery runner that marks queued notifications sent without external SMTP/Telegram. | Production delivery channels and direct wiring into every launch flow remain outside this foundation; prove end-to-end notification behavior in T204/T205 before launch. |
-| Support and abuse backend | `missing` | SOP docs and frontend demo screens exist only. | T201 |
-| Frontend production integration | `partial` | Many screens attempt live API and fall back to mocks; smoke covers admin live/fallback paths. | T202 |
-| Backup/restore | `partial` | Repeatable local/sandbox drill script and runbook exist. | Execute approved non-production evidence before T205 |
-| Full E2E quality gate | `partial` | DB/API/billing/frontend smoke commands exist, and `scripts/full_e2e_quality_gate.sh` plus `docs/03_execution_operations_launch/68_Full_E2E_Quality_Gate_Runbook.md` define one local/dev gate. | T204 must capture executed gate evidence before T205. |
-| Final Go/No-Go | `blocked` | Checklist template exists. | T205 |
+| Auth and sessions | `partial` | T189 merged Argon2id password verification, DB-backed sessions, cookie login/logout, global session middleware, and dev-only actor headers. | Repeat launch gate on approved target auth/session inputs. |
+| Admin 2FA | `partial` | T190 merged TOTP setup/verify, encrypted secret storage, 2FA-satisfied session state, route enforcement, and redacted audit. | Verify target admin enrollment and policy enforcement. |
+| Login protection and password reset | `done` | T191 merged DB-backed login/password-reset rate limits, hashed reset tokens, reset confirmation, session revocation, and routes. | Normal target-environment verification. |
+| Credential storage and reveal | `partial` | T192/T193 merged encrypted credential storage, controlled reveal, rate limit, no-store response, RBAC, and audit. | Verify target secret/key handling and reveal audit access. |
+| Refunds and adjustments | `done` | T194 merged append-only refund/adjustment ledger routes, idempotency conflict checks, reasons, actor metadata, and audit. | Normal finance owner sign-off. |
+| Daily reconciliation | `done` | T195 merged read-only daily reconciliation report with wallet balance and mismatch checks. | Assign finance launch owner. |
+| Reservation TTL and concurrency | `done` | T196 merged provider inventory counters, atomic reservation SQL, expiry release SQL, and concurrency tests. | Re-run launch gate on approved staging inputs. |
+| Service lifecycle | `partial` | T197/T198 merged lifecycle transitions, admin/reseller APIs, scheduler, and worker jobs. | T206 direct client renewal remains open. |
+| Provider sandbox | `blocked` | Fake provider, local sandbox contract, and T199/doc 66 no-go evidence exist. | External provider sandbox intake and real pilot evidence required. |
+| Notifications | `partial` | T200 adds `notifications` schema, notification module, redacted launch-critical event builders, and local delivery runner. | Production SMTP/Telegram or approved manual delivery fallback remains unproven. |
+| Support and abuse backend | `partial` | T201 support/abuse backend basics merged; SOP docs exist. | Named support owner and launch coverage are missing. |
+| Frontend production integration | `partial` | T202 integrated production API paths and frontend smokes. | T206 direct client renewal API/UI action remains open. |
+| Backup/restore | `partial` | T203 local restore drill passed with repeatable script/runbook. | Execute approved shared staging/non-production evidence before GO. |
+| Full E2E quality gate | `partial` | T204 local/dev full gate passed across backend, DB/API/billing smokes, and frontend checks. | Repeat against approved staging/sandbox-equivalent inputs or record signed exception. |
+| Final Go/No-Go | `done` | T205 record exists in `docs/03_execution_operations_launch/69_Pilot_Go_No_Go_Record.md`. | Decision is NO-GO until blockers are cleared. |
 
 ## Recommended Execution Order
 
-1. T189-T191: establish production auth/session, admin 2FA, rate limits, and password reset.
-2. T192-T193: add encrypted credential storage and controlled reveal with audit.
-3. T194-T196: close money, reconciliation, and reservation safety gaps.
-4. T197-T198: complete lifecycle transitions and scheduler jobs.
-5. T199-T201: record provider sandbox readiness/no-go evidence, notifications, and support/abuse backend.
-6. T202-T204: finish frontend production integration and repeatable full E2E gate.
-7. T205: execute final launch Go/No-Go only after all P0 rows are `done`.
+1. Clear provider sandbox readiness with approved account, credential path, SKU mapping, quota, timeout, redacted examples, and cleanup owner.
+2. Repeat backup/restore and full E2E evidence against approved shared staging or signed staging-equivalent inputs.
+3. Assign Product, Engineering, QA, Ops, Finance, Security, Support, and Provider owners.
+4. Prove production notification delivery or approve a manual fallback with owner and SLA.
+5. Complete T206 or explicitly exclude direct client renewal from pilot scope.
+6. Re-run T205 and change decision only when every P0 row has passing evidence or acceptable non-P0 mitigation.
 
 ## Verification Scope For This Audit
 
-This audit is based on repository inspection only. It does not claim that database smoke, API smoke, browser smoke, or provider sandbox tests were executed during T188. Those validations belong to the linked implementation tasks and T204.
+This audit combines repository inspection with linked task evidence through T205. Local/dev smokes and CI evidence are recorded in the task files and runbooks, but this audit does not claim that approved shared staging, production, or real provider sandbox tests were executed.
