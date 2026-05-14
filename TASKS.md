@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-14` after T211 done:
+Current board snapshot on `2026-05-14` after T212 claimed:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 208
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T212 | [tasks/active/T212_cloudmini_worker_wiring.md](tasks/active/T212_cloudmini_worker_wiring.md) | IN_PROGRESS | Codex | codex/t212-cloudmini-worker-wiring | Wire Cloudmini V3 into the worker provider registry behind explicit sandbox env config. |
 
 ## Done Task Files
 

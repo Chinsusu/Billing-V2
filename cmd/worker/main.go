@@ -14,7 +14,6 @@ import (
 	"github.com/Chinsusu/Billing-V2/internal/modules/audit"
 	"github.com/Chinsusu/Billing-V2/internal/modules/jobs"
 	"github.com/Chinsusu/Billing-V2/internal/modules/order"
-	"github.com/Chinsusu/Billing-V2/internal/modules/provider"
 	platformdb "github.com/Chinsusu/Billing-V2/internal/platform/db"
 )
 
@@ -335,7 +334,7 @@ func newProvisioningRunner(ctx context.Context, cfg workerConfig) (provisionRunn
 		return nil, nil, fmt.Errorf("open worker database: %w", err)
 	}
 
-	registry, err := provider.NewFakeRegistry()
+	registry, err := newWorkerProviderRegistry()
 	if err != nil {
 		_ = conn.Close()
 		return nil, nil, err

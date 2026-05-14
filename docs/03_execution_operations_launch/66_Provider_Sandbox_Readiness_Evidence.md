@@ -18,7 +18,7 @@ This record separates local fake-provider evidence from real sandbox-provider re
 
 ## Proxy Cloudmini API V3 Candidate
 
-T211 inspected the local `/opt/proxy-cloudmini` source code and added a Billing adapter for its API V3 contract using local `httptest` coverage only. This is not real sandbox evidence.
+T211 inspected the local `/opt/proxy-cloudmini` source code and added a Billing adapter for its API V3 contract using local `httptest` coverage only. T212 added disabled-by-default worker registry wiring behind explicit environment config. This is not real sandbox evidence.
 
 Code-read contract summary:
 
@@ -31,6 +31,7 @@ Code-read contract summary:
 - Resource paths: `GET /api/v3/proxies/:id`, `DELETE /api/v3/proxies/:id`.
 - Action path: `POST /api/v3/proxies/:id/actions/:action` supports `stop`, `start`, and residential-only `change-ip`.
 - Credential-bearing proxy response fields are encrypted by Billing adapter tests before returning a provider `CredentialEnvelope`.
+- Worker runtime stays on `PROVIDER_DEFAULT_MODE=fake` by default. `PROVIDER_DEFAULT_MODE=cloudmini_v3` requires Cloudmini base URL, API token, Billing source id, kind, group id, protocol, and `ENCRYPTION_KEY` before startup.
 
 Still missing for real sandbox readiness:
 
