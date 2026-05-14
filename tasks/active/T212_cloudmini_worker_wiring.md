@@ -1,6 +1,6 @@
 # T212 - Cloudmini V3 worker wiring
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t212-cloudmini-worker-wiring
 PR: https://github.com/Chinsusu/Billing-V2/pull/455
@@ -39,3 +39,4 @@ Wire the Cloudmini V3 provider adapter into the provisioning worker registry beh
 - 2026-05-14: Added disabled-by-default Cloudmini V3 worker registry wiring, env placeholders, tests, and evidence note.
 - 2026-05-14: Validation passed: `make fmt`; `go test ./cmd/worker`; `go test ./internal/modules/provider`; `go test ./internal/modules/provider -run SandboxContract`; `make test`; `make build`; `go run ./cmd/taskguard`; `git diff --check`; local CI secret-scan grep.
 - 2026-05-14: Opened PR https://github.com/Chinsusu/Billing-V2/pull/455 and moved task to `REVIEW`.
+- 2026-05-14: PR https://github.com/Chinsusu/Billing-V2/pull/455 merged; marking task `DONE`.
