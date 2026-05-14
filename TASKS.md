@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-14` with T209 in progress:
+Current board snapshot on `2026-05-14` with T209 in review:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 205
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -66,7 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T209 | [tasks/active/T209_staging_backup_restore_evidence_packet.md](tasks/active/T209_staging_backup_restore_evidence_packet.md) | IN_PROGRESS | Codex | codex/t209-staging-restore-evidence | Turn the staging backup/restore blocker into a concrete redacted evidence packet. |
+| T209 | [tasks/active/T209_staging_backup_restore_evidence_packet.md](tasks/active/T209_staging_backup_restore_evidence_packet.md) | REVIEW | Codex | codex/t209-staging-restore-evidence | Turn the staging backup/restore blocker into a concrete redacted evidence packet. |
 
 ## Done Task Files
 
