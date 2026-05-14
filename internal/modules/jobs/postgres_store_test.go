@@ -87,6 +87,16 @@ func TestClaimJobsQueryOmitsTypeFilterWhenEmpty(t *testing.T) {
 	}
 }
 
+func TestClaimJobsQueryQualifiesReturningColumns(t *testing.T) {
+	request := ClaimRequest{WorkerID: "worker_1", Limit: 10, LockFor: time.Minute}
+
+	query, _ := claimJobsQuery(request, fixedRunnerTime())
+
+	if !strings.Contains(query, "RETURNING job.job_id, job.display_id") {
+		t.Fatalf("expected qualified job returning columns: %s", query)
+	}
+}
+
 func TestCompletionValidateRejectsClaimState(t *testing.T) {
 	completion := Completion{Status: StatusClaimed}
 

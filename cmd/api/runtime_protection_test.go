@@ -8,11 +8,35 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Chinsusu/Billing-V2/internal/modules/rbac"
 	platformdb "github.com/Chinsusu/Billing-V2/internal/platform/db"
 )
 
 func TestNewRuntimeWithDSNProtectsAdminCatalogRoutes(t *testing.T) {
 	assertRuntimeRejectsMissingActor(t, http.MethodPost, "/admin/catalog/products", `{"product_type":"vps","name":"VPS"}`)
+}
+
+func TestCatalogAuthMiddlewareUsesTenantHeaderContext(t *testing.T) {
+	handler := catalogAuthMiddleware(
+		rbac.StaticAuthorizer{Permissions: rbac.NewPermissionSet(rbac.PermissionCatalogView)},
+		rbac.PermissionCatalogView,
+		rbac.RiskLow,
+	)(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	request := httptest.NewRequest(http.MethodGet, "/admin/catalog/provider-readiness", nil)
+	request.Header.Set("X-Tenant-Id", "tenant_1")
+	request.Header.Set("X-Actor-Id", "user_1")
+	request.Header.Set("X-Actor-Type", "reseller_owner")
+	request.Header.Set("X-Actor-Tenant-Id", "tenant_1")
+	response := httptest.NewRecorder()
+
+	handler(response, request)
+
+	if response.Code != http.StatusNoContent {
+		t.Fatalf("expected catalog auth to use tenant header context, got %d: %s", response.Code, response.Body.String())
+	}
 }
 
 func TestNewRuntimeWithDSNProtectsAdminAccountRoutes(t *testing.T) {

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
@@ -147,7 +148,7 @@ UPDATE outbox_events event
 SET status = 'processing', locked_by = $3, locked_until = $4
 FROM candidates
 WHERE event.outbox_event_id = candidates.outbox_event_id
-RETURNING `+outboxColumns, now, request.Limit, request.WorkerID, now.Add(request.LockFor))
+RETURNING `+qualifyColumns("event", outboxColumns), now, request.Limit, request.WorkerID, now.Add(request.LockFor))
 	if err != nil {
 		return nil, fmt.Errorf("claim outbox events: %w", err)
 	}
@@ -214,8 +215,16 @@ UPDATE jobs job
 SET status = 'claimed', locked_by = $3, locked_until = $4, updated_at = $1
 FROM candidates
 WHERE job.job_id = candidates.job_id
-RETURNING ` + jobColumns
+RETURNING ` + qualifyColumns("job", jobColumns)
 	return query, args
+}
+
+func qualifyColumns(alias string, columns string) string {
+	parts := strings.Split(columns, ",")
+	for index, column := range parts {
+		parts[index] = alias + "." + strings.TrimSpace(column)
+	}
+	return strings.Join(parts, ", ")
 }
 
 func scanJobs(rows *sql.Rows) ([]Job, error) {

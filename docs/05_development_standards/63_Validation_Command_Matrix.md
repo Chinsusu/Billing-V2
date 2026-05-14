@@ -36,6 +36,7 @@ Use this before opening a PR. Add the commands you actually ran to the task log 
 | DB smoke | `make smoke-dev-db` | `go run ./cmd/smoke dev-db` | Migration, seed, DB lifecycle, or billing seed data changed. |
 | API smoke | `make smoke-dev-api` | `go run ./cmd/smoke dev-api` | API read paths or seeded billing API behavior changed and local API is running. |
 | Billing mutation smoke | `make smoke-dev-billing` | `go run ./cmd/smoke dev-billing` | Checkout, wallet, payment, order finalization, job creation, provisioning, or service activation changed. |
+| Full E2E launch gate | `make full-e2e-quality-gate` | `bash scripts/full_e2e_quality_gate.sh` | T204/T205 launch-readiness validation on an approved local/dev database. |
 | Provider sandbox contract | n/a | `go test ./internal/modules/provider -run SandboxContract` | Provider adapter behavior or provider sandbox readiness changed. |
 | Whitespace check | n/a | `git diff --check` | Every PR before commit or review. |
 

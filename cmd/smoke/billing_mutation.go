@@ -313,9 +313,9 @@ FROM jobs
 WHERE tenant_id = $1
   AND job_type = 'provider.provision'
   AND reference_type = 'order'
-  AND reference_id = $2
+  AND reference_id = $2::uuid
   AND source_id IS NOT NULL
-  AND payload_json->>'order_id' = $2
+  AND payload_json->>'order_id' = $2::text
   AND (payload_json->>'order_display_id')::bigint = $3`,
 		demoTenantID,
 		orderID,
