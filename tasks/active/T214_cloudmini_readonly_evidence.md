@@ -1,9 +1,9 @@
 # T214 - Cloudmini V3 read-only evidence
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t214-cloudmini-readonly-evidence
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/459
 Risk: provider/provisioning/credential/config
 Created: 2026-05-15
 Updated: 2026-05-15
@@ -40,3 +40,4 @@ Capture redacted authenticated read-only Cloudmini V3 sandbox evidence without s
 - 2026-05-15: Header variants `X-API-Key` and `X-ACCESS-CODE` were tested read-only. `X-API-Key` returned HTTP `403` for all three read endpoints. `X-ACCESS-CODE` returned HTTP `403` for both inventory endpoints and timed out once for capabilities after `20795ms`.
 - 2026-05-15: A schema-only inspection of one HTTP `403` response showed Cloudflare/gateway-style keys, not the expected V3 app envelope. Provider edge/gateway access approval remains required before inventory/capability mapping can proceed.
 - 2026-05-15: Validation passed: `go run ./cmd/taskguard`; `git diff --check`; generic token-pattern scan returned no matches in `/opt/Billing`.
+- 2026-05-15: Opened PR https://github.com/Chinsusu/Billing-V2/pull/459 and moved task to `REVIEW`.
