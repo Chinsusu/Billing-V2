@@ -1,6 +1,6 @@
 # T213 - Cloudmini V3 sandbox intake
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t213-cloudmini-sandbox-intake
 PR: https://github.com/Chinsusu/Billing-V2/pull/457
@@ -37,3 +37,4 @@ Record the provided Cloudmini V3 non-production provider intake in redacted laun
 - 2026-05-15: Verified unauthenticated `GET /api/v3/capabilities` against the Cloudmini base URL returned HTTP `401` in `2.475843s`; no auth header and no response body were captured.
 - 2026-05-15: Validation passed: `go run ./cmd/taskguard`; `git diff --check`.
 - 2026-05-15: Opened PR https://github.com/Chinsusu/Billing-V2/pull/457 and moved task to `REVIEW`.
+- 2026-05-15: PR https://github.com/Chinsusu/Billing-V2/pull/457 merged; marking task `DONE`.
