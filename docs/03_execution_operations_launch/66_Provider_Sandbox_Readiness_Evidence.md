@@ -1,8 +1,8 @@
 # Provider Sandbox Readiness Evidence
 
-**Tasks:** T199, T208, T211
-**Date:** 2026-05-14
-**Decision:** real provider sandbox is not launch-ready yet.
+**Tasks:** T199, T208, T211, T212, T213
+**Date:** 2026-05-15
+**Decision:** real provider sandbox is not launch-ready yet. Cloudmini V3 intake is partially known, but approved credential storage, owners, quota, source mapping, cleanup, and a real pilot run are still missing.
 
 ## Scope
 
@@ -14,11 +14,20 @@ This record separates local fake-provider evidence from real sandbox-provider re
 |---|---|---|---|
 | VPS local fake path | `ready` for local validation only | Fresh seed maps `vps-cx23-40gb-monthly` to `Local Fake Hetzner Ready`; provider contract tests cover fake Hetzner create, status, terminate, idempotency, and timeout mappings. | OK for local/CI smoke only. |
 | Proxy/manual local path | documented non-ready state | Fresh seed maps `proxy-static-10gb-monthly` first to an unsupported VPS-style source and has a manual fallback path. This proves the readiness API surfaces the gap instead of silently treating proxy as ready. | Not ready for real proxy sandbox provisioning. |
-| Real provider sandbox | `blocked` | Missing approved sandbox provider account, API base URL, credential storage path, quota/cost limit, provider SKU mapping, timeout policy, and cleanup owner. | Do not run pilot provisioning against real providers. |
+| Real provider sandbox | `blocked` | Cloudmini V3 non-production base URL and API version are known. Unauthenticated `GET /api/v3/capabilities` returned HTTP `401`, confirming the endpoint is reachable and auth-gated. Approved credential storage path, account owner, quota/cost limit, source/group mapping, timeout policy, cleanup owner, and real pilot run are still missing. | Do not run pilot provisioning against real providers. |
 
 ## Proxy Cloudmini API V3 Candidate
 
-T211 inspected the local `/opt/proxy-cloudmini` source code and added a Billing adapter for its API V3 contract using local `httptest` coverage only. T212 added disabled-by-default worker registry wiring behind explicit environment config. This is not real sandbox evidence.
+T211 inspected the local `/opt/proxy-cloudmini` source code and added a Billing adapter for its API V3 contract using local `httptest` coverage only. T212 added disabled-by-default worker registry wiring behind explicit environment config. T213 recorded partial non-production intake for the Cloudmini V3 API. This is still not real sandbox pilot evidence.
+
+Known Cloudmini V3 intake as of 2026-05-15:
+
+- Provider/API candidate: Cloudmini V3.
+- Non-production API base URL: `https://cz.resvn.net/`.
+- API version: V3.
+- Auth boundary check: unauthenticated `GET /api/v3/capabilities` returned HTTP `401` in `2.475843s`; no response body was captured.
+- Credential status: credential material must stay outside git, task notes, PR text, logs, and raw command output. An approved secret path or secret-manager reference is still required before authenticated testing.
+- Pilot status: no authenticated provider call, create, delete, cleanup, or Billing end-to-end pilot has been run from this repository.
 
 Code-read contract summary:
 
@@ -35,7 +44,6 @@ Code-read contract summary:
 
 Still missing for real sandbox readiness:
 
-- approved non-production API base URL;
 - scoped credential storage path outside git;
 - sandbox account owner and cleanup owner;
 - source-to-group/SKU mapping for each Billing provider source;
@@ -44,12 +52,12 @@ Still missing for real sandbox readiness:
 
 ## Evidence Packet Status
 
-No approved real provider sandbox evidence is stored in this repository as of 2026-05-14. The packet below is the minimum evidence to collect before changing the real provider sandbox decision from `blocked`.
+No approved real provider sandbox pilot evidence is stored in this repository as of 2026-05-15. The packet below is the minimum evidence to collect before changing the real provider sandbox decision from `blocked`.
 
 | Evidence area | Required proof | Current repo status |
 |---|---|---|
-| Provider intake | Provider name, sandbox account owner, support contact, docs/API version, and sandbox base URL. | Missing. |
-| Credential safety | Approved secret store or local-only `.env` path, least-privilege scopes, rotation/revocation owner, and confirmation that no secret is committed. | Missing. |
+| Provider intake | Provider name, sandbox account owner, support contact, docs/API version, and sandbox base URL. | Partial: Cloudmini V3, API V3, and `https://cz.resvn.net/` are recorded. Sandbox account owner and support contact are missing. |
+| Credential safety | Approved secret store or local-only `.env` path, least-privilege scopes, rotation/revocation owner, and confirmation that no secret is committed. | Partial: no credential is committed in repo evidence. Approved secret path, scope, and rotation/revocation owner are missing. |
 | Quota and cost guardrail | Sandbox quota, rate/concurrency limits, maximum spend or credit exposure, and stop condition. | Missing. |
 | Capability mapping | Product type, Billing plan code, provider SKU, location, inventory mode, auto/manual provisioning support, cancellation support, and credential retrieval behavior. | Missing. |
 | Retry/idempotency | Duplicate create behavior, timeout-after-send behavior, request/status lookup support, and mapping to retry safety or manual review. | Missing. |
