@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-15` after T213 moved to review:
+Current board snapshot on `2026-05-15` after T213 done:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 209
+- `DONE` task files in `tasks/active/`: 210
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,14 +66,13 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T213 | [tasks/active/T213_cloudmini_sandbox_intake.md](tasks/active/T213_cloudmini_sandbox_intake.md) | REVIEW | Codex | codex/t213-cloudmini-sandbox-intake | Record Cloudmini V3 sandbox intake without storing credentials. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T212`
+- `T011` to `T213`
 
 ## Removed Tasks
 
