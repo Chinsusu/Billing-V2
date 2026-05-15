@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-15` after T213 done:
+Current board snapshot on `2026-05-15` after T214 claimed:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 210
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T214 | [tasks/active/T214_cloudmini_readonly_evidence.md](tasks/active/T214_cloudmini_readonly_evidence.md) | IN_PROGRESS | Codex | codex/t214-cloudmini-readonly-evidence | Capture redacted authenticated read-only Cloudmini V3 evidence. |
 
 ## Done Task Files
 
