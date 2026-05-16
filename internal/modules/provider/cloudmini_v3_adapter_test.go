@@ -377,8 +377,8 @@ func newTestCloudminiV3Adapter(t *testing.T, baseURL string, cipher CredentialCi
 		SourceConfigs: map[SourceID]CloudminiV3SourceConfig{
 			validOperation().SourceID: source,
 		},
-		PollInterval:     time.Millisecond,
-		PollTimeout:      50 * time.Millisecond,
+		PollInterval: time.Millisecond,
+		PollTimeout:  50 * time.Millisecond,
 		Now: func() time.Time {
 			return time.Date(2026, 5, 14, 1, 2, 3, 0, time.UTC)
 		},
