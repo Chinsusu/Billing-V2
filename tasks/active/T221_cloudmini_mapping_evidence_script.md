@@ -1,9 +1,9 @@
 # T221 - Cloudmini mapping evidence script
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t221-cloudmini-mapping-evidence-script
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/473
 Risk: provider/provisioning/config/database
 Created: 2026-05-16
 Updated: 2026-05-16
@@ -40,3 +40,4 @@ Add a read-only operator evidence script for the Cloudmini V3 pilot mapping so a
 - 2026-05-16: Local validation found the existing T219 mapping script prechecks failed because `psql -c` did not expand `:'plan_code'`; fixed the prechecks to use stdin SQL.
 - 2026-05-16: Verified on a temporary local PostgreSQL DB: `go run ./cmd/smoke dev-db`; `scripts/cloudmini_pilot_mapping.sh`; `scripts/cloudmini_mapping_evidence.sh` PASS; expected source-display mismatch returns FAIL. Dropped the temporary DB after validation. No provider API or mutating Cloudmini route was called.
 - 2026-05-16: Validation passed: `bash -n scripts/cloudmini_mapping_evidence.sh scripts/cloudmini_pilot_mapping.sh`; production/approval/display-id guard negative checks; `go run ./cmd/taskguard`; `go run ./cmd/migrate validate`; `go test ./...`; `git diff --check`; changed-file secret pattern scan returned no matches.
+- 2026-05-16: Opened PR #473 for review.
