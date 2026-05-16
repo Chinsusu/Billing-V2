@@ -1,8 +1,8 @@
 # Provider Sandbox Readiness Evidence
 
-**Tasks:** T199, T208, T211, T212, T213, T214, T215, T216, T217, T218, T219, T220, T221, T226
+**Tasks:** T199, T208, T211, T212, T213, T214, T215, T216, T217, T218, T219, T220, T221, T226, T227
 **Date:** 2026-05-16
-**Decision:** real provider sandbox is not launch-ready yet. Cloudmini V3 intake and authenticated read-only reachability are proven through the public hostname, T218 defines a controlled pilot approval packet, T219/T221 provide guarded mapping/evidence tooling, T220 applied the pilot mapping on an approved non-production Billing dev DB, and T226 adds a non-mutating pilot preflight guard. Approved shared credential storage, named owners, cleanup sign-off, idempotency evidence, and a real create/delete pilot run are still missing.
+**Decision:** real provider sandbox is not launch-ready yet. Cloudmini V3 intake and authenticated read-only reachability are proven through the public hostname, T218 defines a controlled pilot approval packet, T219/T221 provide guarded mapping/evidence tooling, T220 applied the pilot mapping on an approved non-production Billing dev DB, T226 adds a non-mutating pilot preflight guard, and T227 closes source/account runtime fallback mismatch. Approved shared credential storage, named owners, cleanup sign-off, idempotency evidence, and a real create/delete pilot run are still missing.
 
 ## Scope
 
@@ -37,6 +37,7 @@ Known Cloudmini V3 intake as of 2026-05-16:
 - Catalog mapping status: T219 adds `migrations/0025_add_cloudmini_provider_type.sql` and `scripts/cloudmini_pilot_mapping.sh` so an approved non-production DB can create the pilot `cloudmini_v3` provider source and plan-source mapping. T220 ran it on the approved Billing dev runtime env with `APP_ENV=dev`; migration plan showed `0` pending migrations and migration apply reported `0` applied migrations.
 - Mapping evidence collector status: T221 adds `scripts/cloudmini_mapping_evidence.sh` so an operator can verify the applied mapping on an approved non-production Billing DB without sharing DSNs, tokens, raw group IDs, or raw provider payloads in repo evidence. T220 ran it read-only and recorded `result=PASS`, readiness `ready`, source type `cloudmini_v3`, and redacted guardrails only.
 - Mutating pilot preflight status: T226 adds `scripts/cloudmini_mutating_pilot_preflight.sh` to fail closed unless non-production env, mapping evidence, owner fields, cleanup fields, private credential path, and exact one-resource guardrails are present. The script does not call provider mutating routes.
+- Runtime source-match status: T227 makes Cloudmini runtime selection fail closed when an operation carries a Billing provider source ID that is not explicitly configured, so an account-level endpoint cannot bypass a source mismatch.
 - Target DB access status: T220 used the approved test server Billing runtime env at `/opt/Billing/.env.dev`; the run confirmed `APP_ENV=dev` and `DB_DSN` presence without printing the DSN or provider secrets.
 - Pilot status: no create, delete, cleanup, or Billing end-to-end pilot has been run from this repository.
 

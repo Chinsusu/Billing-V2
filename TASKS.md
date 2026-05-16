@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-16` after T226 done:
+Current board snapshot on `2026-05-16` with T227 in review:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 223
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T227 | [tasks/active/T227_cloudmini_source_match_fail_closed.md](tasks/active/T227_cloudmini_source_match_fail_closed.md) | REVIEW | Codex | codex/t227-cloudmini-source-match-fail-closed | Fail closed when Cloudmini runtime config does not match the Billing provider source used by the job. |
 
 ## Done Task Files
 
