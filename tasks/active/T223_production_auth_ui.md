@@ -1,6 +1,6 @@
 # T223 - Production auth UI session path
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t223-production-auth-ui
 PR: https://github.com/Chinsusu/Billing-V2/pull/477
@@ -36,3 +36,4 @@ Add a production-oriented frontend login/session path so the UI can use backend 
 
 - 2026-05-16: Task created and claimed from latest `origin/main`.
 - 2026-05-16: Opened PR #477 after local lint, build, smoke, Go test/build, taskguard, and diff checks passed.
+- 2026-05-16: PR #477 merged into `main`; marking task DONE.
