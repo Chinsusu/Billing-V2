@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-16` after T222 PR opened:
+Current board snapshot on `2026-05-16` after T222 done:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 1
-- `DONE` task files in `tasks/active/`: 217
+- `DONE` task files in `tasks/active/`: 218
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T222 | [tasks/active/T222_notification_fallback_runbook.md](tasks/active/T222_notification_fallback_runbook.md) | REVIEW | Codex | codex/t222-notification-fallback-runbook | Define notification delivery/manual fallback evidence packet for launch. |
 
 ## Done Task Files
 
@@ -75,6 +74,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T003` to `T009`
 - `T011` to `T219`
 - `T221`
+- `T222`
 
 ## Removed Tasks
 
