@@ -114,7 +114,7 @@ func (handler *AuthHTTPHandler) handleLogin(w http.ResponseWriter, r *http.Reque
 	result, err := handler.service.Login(r.Context(), LoginInput{
 		Email:                  request.Email,
 		Password:               request.Password,
-		Domain:                 r.Host,
+		Domain:                 requestDomain(r),
 		LocalTenantID:          tenant.ID(r.Header.Get(tenant.HeaderTenantID)),
 		AllowLocalTenantHeader: handler.options.AllowLocalTenantHeader,
 		UserAgent:              r.UserAgent(),
@@ -167,7 +167,7 @@ func (handler *AuthHTTPHandler) handlePasswordResetRequest(w http.ResponseWriter
 	}
 	if _, err := handler.service.RequestPasswordReset(r.Context(), PasswordResetRequestInput{
 		Email:                  request.Email,
-		Domain:                 r.Host,
+		Domain:                 requestDomain(r),
 		LocalTenantID:          tenant.ID(r.Header.Get(tenant.HeaderTenantID)),
 		AllowLocalTenantHeader: handler.options.AllowLocalTenantHeader,
 		ClientIP:               requestClientIP(r),
@@ -310,6 +310,42 @@ func requestClientIP(r *http.Request) string {
 		return host
 	}
 	return r.RemoteAddr
+}
+
+func requestDomain(r *http.Request) string {
+	if r == nil {
+		return ""
+	}
+	if host := firstForwardedHost(r.Header.Get("X-Forwarded-Host")); host != "" {
+		return host
+	}
+	if host := forwardedHeaderHost(r.Header.Get("Forwarded")); host != "" {
+		return host
+	}
+	return r.Host
+}
+
+func firstForwardedHost(value string) string {
+	first, _, _ := strings.Cut(value, ",")
+	return cleanForwardedHost(first)
+}
+
+func forwardedHeaderHost(value string) string {
+	first, _, _ := strings.Cut(value, ",")
+	for _, part := range strings.Split(first, ";") {
+		key, raw, ok := strings.Cut(strings.TrimSpace(part), "=")
+		if !ok || !strings.EqualFold(strings.TrimSpace(key), "host") {
+			continue
+		}
+		return cleanForwardedHost(raw)
+	}
+	return ""
+}
+
+func cleanForwardedHost(value string) string {
+	value = strings.TrimSpace(value)
+	value = strings.Trim(value, `"`)
+	return strings.TrimSpace(value)
 }
 
 func decodeAuthJSON(w http.ResponseWriter, r *http.Request, destination any) bool {
