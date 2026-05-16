@@ -1,8 +1,8 @@
 # T217 - Cloudmini V3 multi-endpoint config
 
-Status: TODO
-Owner: -
-Branch: feat/cloudmini-v3-multi-endpoint-config
+Status: IN_PROGRESS
+Owner: Codex
+Branch: codex/t217-cloudmini-multi-endpoint-config
 PR: -
 Risk: provider/provisioning/credential/config
 Created: 2026-05-16
@@ -37,3 +37,7 @@ Support multiple Cloudmini V3 endpoint/API-key mappings when different provider 
 ## Agent Log
 
 - 2026-05-16: Task created as a follow-up note after provider evidence T216.
+- 2026-05-16: Claimed by Codex from latest `origin/main`. Scope remains runtime config/tests only; no real provider calls or secret values.
+- 2026-05-16: Implemented per-source and per-account Cloudmini endpoint mapping with backward-compatible single-endpoint env support.
+- 2026-05-16: Added local httptest coverage for provisioning through two different Cloudmini endpoints/API keys, account endpoint routing, and fail-closed missing mapping with no provider call.
+- 2026-05-16: Validation passed: `go test ./internal/modules/provider ./cmd/worker`; `go test ./internal/modules/provider -run SandboxContract`; `go test ./...`; `go run ./cmd/taskguard`; `git diff --check`; changed-file secret pattern scan returned no matches. `go build ./cmd/worker` hit local VCS stamping error, then `go build -buildvcs=false ./cmd/worker` passed.

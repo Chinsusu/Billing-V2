@@ -31,6 +31,8 @@ type CloudminiV3Config struct {
 	KeyVersion       string
 	DefaultSource    CloudminiV3SourceConfig
 	SourceConfigs    map[SourceID]CloudminiV3SourceConfig
+	SourceEndpoints  map[SourceID]CloudminiV3EndpointConfig
+	AccountEndpoints map[AccountID]CloudminiV3EndpointConfig
 	PollInterval     time.Duration
 	PollTimeout      time.Duration
 	HTTPClient       cloudminiV3HTTPDoer
@@ -38,18 +40,20 @@ type CloudminiV3Config struct {
 }
 
 type CloudminiV3Adapter struct {
-	client           *cloudminiV3Client
+	defaultClient    *cloudminiV3Client
 	credentialCipher CredentialCipher
 	keyVersion       string
 	defaultSource    CloudminiV3SourceConfig
 	sourceConfigs    map[SourceID]CloudminiV3SourceConfig
+	sourceEndpoints  map[SourceID]cloudminiV3RuntimeConfig
+	accountEndpoints map[AccountID]cloudminiV3RuntimeConfig
 	pollInterval     time.Duration
 	pollTimeout      time.Duration
 	now              func() time.Time
 }
 
 func NewCloudminiV3Adapter(config CloudminiV3Config) (*CloudminiV3Adapter, error) {
-	client, err := newCloudminiV3Client(config.BaseURL, config.APIToken, config.HTTPClient)
+	runtimeSet, err := cloudminiV3RuntimeFromConfig(config)
 	if err != nil {
 		return nil, err
 	}
@@ -64,16 +68,14 @@ func NewCloudminiV3Adapter(config CloudminiV3Config) (*CloudminiV3Adapter, error
 	if pollTimeout <= 0 {
 		pollTimeout = 30 * time.Second
 	}
-	sourceConfigs := make(map[SourceID]CloudminiV3SourceConfig, len(config.SourceConfigs))
-	for sourceID, sourceConfig := range config.SourceConfigs {
-		sourceConfigs[sourceID] = normalizeCloudminiV3SourceConfig(sourceConfig)
-	}
 	return &CloudminiV3Adapter{
-		client:           client,
+		defaultClient:    runtimeSet.defaultClient,
 		credentialCipher: config.CredentialCipher,
 		keyVersion:       strings.TrimSpace(config.KeyVersion),
 		defaultSource:    normalizeCloudminiV3SourceConfig(config.DefaultSource),
-		sourceConfigs:    sourceConfigs,
+		sourceConfigs:    runtimeSet.sourceConfigs,
+		sourceEndpoints:  runtimeSet.sourceEndpoints,
+		accountEndpoints: runtimeSet.accountEndpoints,
 		pollInterval:     pollInterval,
 		pollTimeout:      pollTimeout,
 		now:              config.Now,
@@ -90,7 +92,15 @@ func (adapter *CloudminiV3Adapter) CapabilityProfile() CapabilityProfile {
 
 func (adapter *CloudminiV3Adapter) CheckHealth(ctx context.Context, operation OperationContext, request HealthRequest) (HealthResult, error) {
 	observedAt := adapter.observedAt()
-	if _, err := adapter.client.getCapabilities(ctx, operation); err != nil {
+	runtime, err := adapter.runtimeConfig(operation)
+	if err != nil {
+		adapterErr := normalizeAdapterError(err, ErrorConfigInvalid, "cloudmini v3 endpoint mapping is missing")
+		return HealthResult{
+			HealthStatus: HealthStatusUnknown,
+			Result:       ResultFromError(adapterErr, observedAt),
+		}, adapterErr
+	}
+	if _, err := runtime.client.getCapabilities(ctx, operation); err != nil {
 		adapterErr := normalizeAdapterError(err, ErrorTemporary, "cloudmini v3 health check failed")
 		return HealthResult{
 			HealthStatus: healthStatusForCloudminiError(adapterErr),
@@ -105,18 +115,18 @@ func (adapter *CloudminiV3Adapter) CheckHealth(ctx context.Context, operation Op
 
 func (adapter *CloudminiV3Adapter) CheckStock(ctx context.Context, operation OperationContext, request StockRequest) (StockResult, error) {
 	observedAt := adapter.observedAt()
-	source, err := adapter.sourceConfig(operation)
+	runtime, err := adapter.runtimeConfig(operation)
 	if err != nil {
 		adapterErr := normalizeAdapterError(err, ErrorConfigInvalid, "cloudmini v3 source mapping is missing")
 		return StockResult{StockStatus: StockStatusUnknown, Result: ResultFromError(adapterErr, observedAt)}, adapterErr
 	}
-	inventory, err := adapter.client.listGroupInventory(ctx, operation, source.Kind)
+	inventory, err := runtime.client.listGroupInventory(ctx, operation, runtime.source.Kind)
 	if err != nil {
 		adapterErr := normalizeAdapterError(err, ErrorTemporary, "cloudmini v3 inventory check failed")
 		return StockResult{StockStatus: StockStatusUnknown, Result: ResultFromError(adapterErr, observedAt)}, err
 	}
 	for _, group := range inventory {
-		if group.ID != source.GroupID {
+		if group.ID != runtime.source.GroupID {
 			continue
 		}
 		if group.AllocatableUnits <= 0 {
@@ -141,17 +151,17 @@ func (adapter *CloudminiV3Adapter) Provision(ctx context.Context, operation Oper
 	if err := operation.Validate(); err != nil {
 		return adapter.resultForError(NewError(ErrorConfigInvalid, "provider operation context is invalid"), "", "")
 	}
-	source, err := adapter.sourceConfig(operation)
+	runtime, err := adapter.runtimeConfig(operation)
 	if err != nil {
 		return adapter.resultForError(normalizeAdapterError(err, ErrorConfigInvalid, "cloudmini v3 source mapping is missing"), "", "")
 	}
-	createResponse, err := adapter.client.createProxy(ctx, operation, cloudminiV3CreateProxyRequest{
-		Kind:             source.Kind,
-		GroupID:          source.GroupID,
-		NodeID:           optionalString(source.NodeID),
-		Protocol:         source.Protocol,
-		BandwidthLimitMB: source.BandwidthLimitMB,
-		SpeedLimitMBps:   source.SpeedLimitMBps,
+	createResponse, err := runtime.client.createProxy(ctx, operation, cloudminiV3CreateProxyRequest{
+		Kind:             runtime.source.Kind,
+		GroupID:          runtime.source.GroupID,
+		NodeID:           optionalString(runtime.source.NodeID),
+		Protocol:         runtime.source.Protocol,
+		BandwidthLimitMB: runtime.source.BandwidthLimitMB,
+		SpeedLimitMBps:   runtime.source.SpeedLimitMBps,
 		ExternalRef:      optionalString(string(operation.OperationID)),
 	})
 	if err != nil {
@@ -159,14 +169,14 @@ func (adapter *CloudminiV3Adapter) Provision(ctx context.Context, operation Oper
 	}
 	externalRequestID := ExternalRequestID(createResponse.Operation.ID)
 	externalResourceID := ExternalResourceID(createResponse.Resource.ID)
-	providerOperation, err := adapter.waitForOperation(ctx, operation, createResponse.Operation.ID)
+	providerOperation, err := adapter.waitForOperation(ctx, operation, runtime.client, createResponse.Operation.ID)
 	if err != nil {
 		return adapter.resultForError(normalizeAdapterError(err, ErrorTimeoutRequestKnown, "cloudmini v3 operation did not finish"), externalRequestID, externalResourceID)
 	}
 	if providerOperation.State != cloudminiV3OperationSucceeded {
 		return adapter.resultForError(NewError(ErrorPartialSuccess, "cloudmini v3 operation did not complete successfully"), externalRequestID, externalResourceID)
 	}
-	proxy, err := adapter.proxyFromOperationOrRead(ctx, operation, providerOperation, string(externalResourceID))
+	proxy, err := adapter.proxyFromOperationOrRead(ctx, operation, runtime.client, providerOperation, string(externalResourceID))
 	if err != nil {
 		return adapter.resultForError(normalizeAdapterError(err, ErrorCredentialMissing, "cloudmini v3 credential payload is missing"), externalRequestID, externalResourceID)
 	}
@@ -188,7 +198,11 @@ func (adapter *CloudminiV3Adapter) GetStatus(ctx context.Context, operation Oper
 	if resourceID == "" {
 		return adapter.resultForError(NewError(ErrorConfigInvalid, "cloudmini v3 resource id is missing"), "", "")
 	}
-	proxy, err := adapter.client.getProxy(ctx, operation, resourceID)
+	runtime, err := adapter.runtimeConfig(operation)
+	if err != nil {
+		return adapter.resultForError(normalizeAdapterError(err, ErrorConfigInvalid, "cloudmini v3 endpoint mapping is missing"), "", ExternalResourceID(resourceID))
+	}
+	proxy, err := runtime.client.getProxy(ctx, operation, resourceID)
 	if err != nil {
 		return adapter.resultForError(normalizeAdapterError(err, ErrorTemporary, "cloudmini v3 status read failed"), "", ExternalResourceID(resourceID))
 	}
@@ -215,11 +229,15 @@ func (adapter *CloudminiV3Adapter) Terminate(ctx context.Context, operation Oper
 	if resourceID == "" {
 		return adapter.resultForError(NewError(ErrorConfigInvalid, "cloudmini v3 resource id is missing"), "", "")
 	}
-	response, err := adapter.client.deleteProxy(ctx, operation, resourceID)
+	runtime, err := adapter.runtimeConfig(operation)
+	if err != nil {
+		return adapter.resultForError(normalizeAdapterError(err, ErrorConfigInvalid, "cloudmini v3 endpoint mapping is missing"), "", ExternalResourceID(resourceID))
+	}
+	response, err := runtime.client.deleteProxy(ctx, operation, resourceID)
 	if err != nil {
 		return adapter.resultForError(normalizeAdapterError(err, ErrorTimeoutUnknown, "cloudmini v3 delete result is unknown"), "", ExternalResourceID(resourceID))
 	}
-	return adapter.resultFromMutatingOperation(ctx, operation, response.Operation.ID, response.Resource.ID)
+	return adapter.resultFromMutatingOperation(ctx, operation, runtime.client, response.Operation.ID, response.Resource.ID)
 }
 
 func (adapter *CloudminiV3Adapter) Renew(ctx context.Context, operation OperationContext, request ResourceRequest) (OperationResult, error) {
@@ -231,17 +249,25 @@ func (adapter *CloudminiV3Adapter) ResetPassword(ctx context.Context, operation 
 }
 
 func (adapter *CloudminiV3Adapter) ChangeIP(ctx context.Context, operation OperationContext, request ResourceRequest) (OperationResult, error) {
-	source, err := adapter.sourceConfig(operation)
+	runtime, err := adapter.runtimeConfig(operation)
 	if err != nil {
 		return adapter.resultForError(normalizeAdapterError(err, ErrorConfigInvalid, "cloudmini v3 source mapping is missing"), "", request.ExternalResourceID)
 	}
-	if source.Kind != cloudminiV3KindResidential {
+	if runtime.source.Kind != cloudminiV3KindResidential {
 		return adapter.unsupported("cloudmini v3 change ip is residential only")
 	}
-	return adapter.proxyAction(ctx, operation, request, "change-ip")
+	return adapter.proxyActionWithRuntime(ctx, operation, runtime, request, "change-ip")
 }
 
 func (adapter *CloudminiV3Adapter) proxyAction(ctx context.Context, operation OperationContext, request ResourceRequest, action string) (OperationResult, error) {
+	runtime, err := adapter.runtimeConfig(operation)
+	if err != nil {
+		return adapter.resultForError(normalizeAdapterError(err, ErrorConfigInvalid, "cloudmini v3 endpoint mapping is missing"), "", request.ExternalResourceID)
+	}
+	return adapter.proxyActionWithRuntime(ctx, operation, runtime, request, action)
+}
+
+func (adapter *CloudminiV3Adapter) proxyActionWithRuntime(ctx context.Context, operation OperationContext, runtime cloudminiV3RuntimeConfig, request ResourceRequest, action string) (OperationResult, error) {
 	if err := operation.Validate(); err != nil {
 		return adapter.resultForError(NewError(ErrorConfigInvalid, "provider operation context is invalid"), "", "")
 	}
@@ -249,15 +275,15 @@ func (adapter *CloudminiV3Adapter) proxyAction(ctx context.Context, operation Op
 	if resourceID == "" {
 		return adapter.resultForError(NewError(ErrorConfigInvalid, "cloudmini v3 resource id is missing"), "", "")
 	}
-	response, err := adapter.client.proxyAction(ctx, operation, resourceID, action)
+	response, err := runtime.client.proxyAction(ctx, operation, resourceID, action)
 	if err != nil {
 		return adapter.resultForError(normalizeAdapterError(err, ErrorTimeoutUnknown, "cloudmini v3 action result is unknown"), "", ExternalResourceID(resourceID))
 	}
-	return adapter.resultFromMutatingOperation(ctx, operation, response.Operation.ID, response.Resource.ID)
+	return adapter.resultFromMutatingOperation(ctx, operation, runtime.client, response.Operation.ID, response.Resource.ID)
 }
 
-func (adapter *CloudminiV3Adapter) resultFromMutatingOperation(ctx context.Context, operation OperationContext, operationID string, resourceID string) (OperationResult, error) {
-	providerOperation, err := adapter.waitForOperation(ctx, operation, operationID)
+func (adapter *CloudminiV3Adapter) resultFromMutatingOperation(ctx context.Context, operation OperationContext, client *cloudminiV3Client, operationID string, resourceID string) (OperationResult, error) {
+	providerOperation, err := adapter.waitForOperation(ctx, operation, client, operationID)
 	externalRequestID := ExternalRequestID(operationID)
 	externalResourceID := ExternalResourceID(resourceID)
 	if err != nil {
@@ -273,14 +299,14 @@ func (adapter *CloudminiV3Adapter) resultFromMutatingOperation(ctx context.Conte
 	return result, nil
 }
 
-func (adapter *CloudminiV3Adapter) waitForOperation(ctx context.Context, operation OperationContext, operationID string) (cloudminiV3Operation, error) {
+func (adapter *CloudminiV3Adapter) waitForOperation(ctx context.Context, operation OperationContext, client *cloudminiV3Client, operationID string) (cloudminiV3Operation, error) {
 	pollCtx, cancel := context.WithTimeout(ctx, adapter.pollTimeout)
 	defer cancel()
 	ticker := time.NewTicker(adapter.pollInterval)
 	defer ticker.Stop()
 	var lastOperation cloudminiV3Operation
 	for {
-		providerOperation, err := adapter.client.getOperation(pollCtx, operation, operationID)
+		providerOperation, err := client.getOperation(pollCtx, operation, operationID)
 		if err != nil {
 			if pollCtx.Err() != nil {
 				return lastOperation, AdapterError{
@@ -310,14 +336,14 @@ func (adapter *CloudminiV3Adapter) waitForOperation(ctx context.Context, operati
 	}
 }
 
-func (adapter *CloudminiV3Adapter) proxyFromOperationOrRead(ctx context.Context, operation OperationContext, providerOperation cloudminiV3Operation, resourceID string) (cloudminiV3Proxy, error) {
+func (adapter *CloudminiV3Adapter) proxyFromOperationOrRead(ctx context.Context, operation OperationContext, client *cloudminiV3Client, providerOperation cloudminiV3Operation, resourceID string) (cloudminiV3Proxy, error) {
 	if providerOperation.ResourceSnapshot != nil {
 		proxy, err := providerOperation.proxySnapshot()
 		if err == nil && proxy.ID != "" {
 			return proxy, nil
 		}
 	}
-	return adapter.client.getProxy(ctx, operation, resourceID)
+	return client.getProxy(ctx, operation, resourceID)
 }
 
 func (adapter *CloudminiV3Adapter) credentialEnvelope(proxy cloudminiV3Proxy) (CredentialEnvelope, error) {
@@ -341,13 +367,6 @@ func (adapter *CloudminiV3Adapter) credentialEnvelope(proxy cloudminiV3Proxy) (C
 		payload["connection_uri"] = proxy.ConnectionURI
 	}
 	return NewEncryptedCredentialEnvelope(CredentialTypeProxyAuth, payload, proxy.maskedHint(), adapter.keyVersion, adapter.credentialCipher)
-}
-
-func (adapter *CloudminiV3Adapter) sourceConfig(operation OperationContext) (CloudminiV3SourceConfig, error) {
-	if source, ok := adapter.sourceConfigs[operation.SourceID]; ok {
-		return validateCloudminiV3SourceConfig(source)
-	}
-	return validateCloudminiV3SourceConfig(adapter.defaultSource)
 }
 
 func (adapter *CloudminiV3Adapter) resultForError(err AdapterError, externalRequestID ExternalRequestID, externalResourceID ExternalResourceID) (OperationResult, error) {
