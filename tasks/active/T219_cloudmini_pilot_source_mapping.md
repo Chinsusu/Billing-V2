@@ -1,6 +1,6 @@
 # T219 - Cloudmini pilot source mapping
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t219-cloudmini-pilot-mapping
 PR: https://github.com/Chinsusu/Billing-V2/pull/468
@@ -41,3 +41,4 @@ Add guarded tooling and docs for mapping the approved non-production Cloudmini V
 - 2026-05-16: Local `/opt/cred-cloudmini-dev.env` metadata was aligned to the pilot source ID and guardrails without persisting the approval flag.
 - 2026-05-16: Validation passed: `bash -n scripts/cloudmini_pilot_mapping.sh`; `go run ./cmd/migrate validate`; `go test ./cmd/migrate ./internal/platform/db ./internal/seed`; `go test ./...`; `go run ./cmd/taskguard`; `git diff --check`; guard checks for production refusal and missing approval refusal.
 - 2026-05-16: PR opened for review: https://github.com/Chinsusu/Billing-V2/pull/468.
+- 2026-05-16: PR #468 merged into `main`; marker PR opened to record T219 as done.
