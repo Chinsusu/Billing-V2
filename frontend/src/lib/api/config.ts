@@ -18,6 +18,25 @@ export function apiEnabled(): boolean {
   return apiBaseUrl().length > 0;
 }
 
+export function demoPortalModeEnabled(): boolean {
+  const authMode = process.env.NEXT_PUBLIC_BILLING_AUTH_MODE?.trim().toLowerCase();
+  if (authMode === "session") {
+    return false;
+  }
+  if (authMode === "demo") {
+    return true;
+  }
+  return process.env.NEXT_PUBLIC_BILLING_DEMO_PORTAL_MODE !== "false";
+}
+
+export function devActorHeadersEnabled(): boolean {
+  return process.env.NEXT_PUBLIC_BILLING_USE_DEV_ACTOR_HEADERS === "true";
+}
+
+export function loginTenantID(): string {
+  return process.env.NEXT_PUBLIC_BILLING_LOGIN_TENANT_ID?.trim() ?? "";
+}
+
 export function actorHeaders(actor: ApiActor): HeadersInit {
   const profile = ACTOR_PROFILES[actor];
   return {

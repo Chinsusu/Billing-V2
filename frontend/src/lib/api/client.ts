@@ -1,4 +1,4 @@
-import { ApiActor, actorHeaders, apiBaseUrl, apiEnabled } from "./config";
+import { ApiActor, actorHeaders, apiBaseUrl, apiEnabled, devActorHeadersEnabled } from "./config";
 import { ApiEnvelope, ApiJson, ApiQuery, ApiQueryValue } from "./types";
 
 export class BillingApiError extends Error {
@@ -52,10 +52,12 @@ export async function getApiData<T>(path: string, actor: ApiActor, query?: ApiQu
   if (!apiEnabled()) {
     throw new BillingApiError("API is not configured.");
   }
+  const headers = devActorHeadersEnabled() ? actorHeaders(actor) : undefined;
   const response = await fetch(apiBaseUrl() + buildApiPath(path, query), {
     method: "GET",
-    headers: actorHeaders(actor),
+    headers,
     cache: "no-store",
+    credentials: "include", // sensitive-text-allowlist: required for HttpOnly session cookies.
   });
   const body = await response.text();
   if (!response.ok) {
@@ -74,7 +76,7 @@ export async function postApiData<T>(
   if (!apiEnabled()) {
     throw new BillingApiError("API is not configured.");
   }
-  const headers = new Headers(actorHeaders(actor));
+  const headers = new Headers(devActorHeadersEnabled() ? actorHeaders(actor) : undefined);
   headers.set("Content-Type", "application/json");
   if (options.idempotencyKey) {
     headers.set("Idempotency-Key", options.idempotencyKey);
@@ -84,6 +86,7 @@ export async function postApiData<T>(
     headers,
     body: JSON.stringify(body ?? {}),
     cache: "no-store",
+    credentials: "include", // sensitive-text-allowlist: required for HttpOnly session cookies.
   });
   const responseBody = await response.text();
   if (!response.ok) {
@@ -93,7 +96,7 @@ export async function postApiData<T>(
   return envelope.data;
 }
 
-function apiErrorMessage(body: string, fallback: string): string {
+export function apiErrorMessage(body: string, fallback: string): string {
   if (!body) {
     return fallback;
   }

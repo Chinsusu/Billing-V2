@@ -197,6 +197,8 @@ reseller@local.billing   Demo reseller owner
 customer@local.billing   Demo customer
 ```
 
+Các actor này dùng password local-only `admin123` để kiểm thử `/auth/login`. Không dùng password này ngoài môi trường local/dev.
+
 Billing flow mẫu tạo wallet, top-up đã duyệt, order đã paid, service instance, invoice đã paid, wallet ledger debit và payment transaction liên kết với nhau bằng UUID cố định và `display_id` dạng số. Các API mẫu sau dùng header local, không dùng credential thật:
 
 ```bash

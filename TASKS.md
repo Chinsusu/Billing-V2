@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-16` after T222 done:
+Current board snapshot on `2026-05-16` after T223 started:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 1
 - `DONE` task files in `tasks/active/`: 218
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T223 | [tasks/active/T223_production_auth_ui.md](tasks/active/T223_production_auth_ui.md) | IN_PROGRESS | Codex | codex/t223-production-auth-ui | Add a production-oriented frontend login/session path and explicit demo/dev API controls. |
 
 ## Done Task Files
 
