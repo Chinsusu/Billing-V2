@@ -81,15 +81,16 @@ CLOUDMINI_V3_PLAN_SOURCE_DISPLAY_ID=<plan_source_display_id>
 
 The evidence collector runs in a read-only transaction and passes only when the selected plan source is `cloudmini_v3`, readiness is `ready`, priority is `1`, and first-pilot guardrails remain `1` create, `1` active resource, and `1` worker concurrency.
 
-T220 target-environment discovery did not find an approved Billing DB access path:
+T220 target-environment mapping evidence was applied on the approved Billing dev runtime env at `/opt/Billing/.env.dev`:
 
-- `/opt/cred-cloudmini-dev.env` has provider/dev SSH keys but no `DB_DSN`.
-- The reachable dev host did not contain a Billing repo or Billing runtime environment under `/opt`.
-- DB key-name discovery found only provider/manager deployment scripts, not an approved Billing DB target.
-- The local default Billing DSN from the runbook was not available on this runner.
-- No migration, mapping script, checkout, worker, or provider mutating call was run against an unverified DB.
+- `APP_ENV=dev` was confirmed before DB access.
+- `DB_DSN` presence was confirmed without printing the DSN.
+- Migration validation found `25` migrations, plan showed `0` pending, and `up` applied `0`.
+- The guarded mapping script returned plan-source display `10024`, source display `10012`, source type `cloudmini_v3`, active statuses, provider-live inventory mode, and priority `1`.
+- The read-only evidence collector returned `result=PASS`, plan display `10002`, product type `proxy`, readiness `ready`, redacted group ref `redacted:c6a7189f0a`, protocol `socks5`, one-create/one-active-resource/one-worker guardrails, and `failed_checks=none`.
+- No checkout, worker provisioning, provider create/delete, provider action, raw provider group id, DSN, token, or proxy credential was printed or stored in repo evidence.
 
-Keep the pilot blocked until an approved non-production Billing `DB_DSN` or equivalent operator-run T221 evidence is provided.
+This unblocks the dev mapping evidence gate only. Keep the mutating pilot blocked until the approval fields, owner sign-offs, timeout/idempotency evidence, and cleanup procedure below are complete.
 
 ## Required Approval Fields
 
@@ -203,6 +204,5 @@ If cleanup fails, keep the launch decision `NO-GO`, disable the source, and open
 Before broader pilot or multiple provider accounts:
 
 - T217 supports multiple Cloudmini V3 endpoint/API-key mappings through `CLOUDMINI_V3_MAPPINGS_JSON`; keep secret values in approved env/secret storage only.
-- The approved dev/staging Billing database still needs the T219 mapping script to be applied and verified through provider readiness evidence.
-- T221 provides the read-only mapping evidence collector, but it still needs an approved non-production Billing DB or operator-run output.
+- T220 verifies the dev pilot mapping. Any broader staging or production-equivalent mapping still needs an approved target environment and owner sign-off before use.
 - Runtime configuration must fail closed when the configured source id does not match the Billing provider source used by the provisioning job.
