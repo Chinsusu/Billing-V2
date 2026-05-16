@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-16` after T217 claimed:
+Current board snapshot on `2026-05-16` after T217 PR opened:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 1
 - `DONE` task files in `tasks/active/`: 215
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -66,7 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T217 | [tasks/active/T217_cloudmini_multi_endpoint_config.md](tasks/active/T217_cloudmini_multi_endpoint_config.md) | IN_PROGRESS | Codex | codex/t217-cloudmini-multi-endpoint-config | Support multiple Cloudmini V3 endpoint/API-key mappings by provider source/account. |
+| T217 | [tasks/active/T217_cloudmini_multi_endpoint_config.md](tasks/active/T217_cloudmini_multi_endpoint_config.md) | REVIEW | Codex | codex/t217-cloudmini-multi-endpoint-config | Support multiple Cloudmini V3 endpoint/API-key mappings by provider source/account. |
 
 ## Done Task Files
 

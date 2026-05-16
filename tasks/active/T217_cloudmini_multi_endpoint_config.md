@@ -1,9 +1,9 @@
 # T217 - Cloudmini V3 multi-endpoint config
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t217-cloudmini-multi-endpoint-config
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/471
 Risk: provider/provisioning/credential/config
 Created: 2026-05-16
 Updated: 2026-05-16
@@ -41,3 +41,4 @@ Support multiple Cloudmini V3 endpoint/API-key mappings when different provider 
 - 2026-05-16: Implemented per-source and per-account Cloudmini endpoint mapping with backward-compatible single-endpoint env support.
 - 2026-05-16: Added local httptest coverage for provisioning through two different Cloudmini endpoints/API keys, account endpoint routing, and fail-closed missing mapping with no provider call.
 - 2026-05-16: Validation passed: `go test ./internal/modules/provider ./cmd/worker`; `go test ./internal/modules/provider -run SandboxContract`; `go test ./...`; `go run ./cmd/taskguard`; `git diff --check`; changed-file secret pattern scan returned no matches. `go build ./cmd/worker` hit local VCS stamping error, then `go build -buildvcs=false ./cmd/worker` passed.
+- 2026-05-16: Opened PR #471 for review.
