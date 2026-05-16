@@ -1,8 +1,8 @@
 # Provider Sandbox Readiness Evidence
 
-**Tasks:** T199, T208, T211, T212, T213, T214, T215
+**Tasks:** T199, T208, T211, T212, T213, T214, T215, T216
 **Date:** 2026-05-16
-**Decision:** real provider sandbox is not launch-ready yet. Cloudmini V3 intake is partially known, but authenticated read-only checks are blocked at the provider edge/gateway and approved credential storage, owners, quota, source mapping, cleanup, and a real pilot run are still missing.
+**Decision:** real provider sandbox is not launch-ready yet. Cloudmini V3 intake and authenticated read-only reachability are now proven through the public hostname, but approved shared credential storage, owners, quota, source mapping, cleanup, idempotency evidence, and a real pilot run are still missing.
 
 ## Scope
 
@@ -14,26 +14,29 @@ This record separates local fake-provider evidence from real sandbox-provider re
 |---|---|---|---|
 | VPS local fake path | `ready` for local validation only | Fresh seed maps `vps-cx23-40gb-monthly` to `Local Fake Hetzner Ready`; provider contract tests cover fake Hetzner create, status, terminate, idempotency, and timeout mappings. | OK for local/CI smoke only. |
 | Proxy/manual local path | documented non-ready state | Fresh seed maps `proxy-static-10gb-monthly` first to an unsupported VPS-style source and has a manual fallback path. This proves the readiness API surfaces the gap instead of silently treating proxy as ready. | Not ready for real proxy sandbox provisioning. |
-| Real provider sandbox | `blocked` | Cloudmini V3 non-production base URL and API version are known. Unauthenticated `GET /api/v3/capabilities` returned HTTP `401`, confirming the endpoint is reachable and auth-gated. Authenticated read-only checks using bearer, `X-API-Key`, and `X-ACCESS-CODE` did not reach a successful V3 app envelope; the provider edge/gateway returned redacted HTTP `403` JSON. Approved credential storage path, account owner, quota/cost limit, source/group mapping, timeout policy, cleanup owner, and real pilot run are still missing. | Do not run pilot provisioning against real providers. |
+| Real provider sandbox | `blocked` | Cloudmini V3 non-production base URL and API version are known. A 2026-05-16 read-only rerun through `https://cz.resvn.net/` reached the V3 app: unauthenticated capabilities returned HTTP `401`, and authenticated capabilities plus inventory returned HTTP `200` V3 success envelopes using bearer, `X-API-Key`, and `X-ACCESS-CODE`. A local dev credential source was used without storing or printing the raw key. Approved shared credential storage path, account owner, quota/cost limit, source/group mapping, timeout policy, cleanup owner, and real pilot run are still missing. | Do not run pilot provisioning against real providers. |
 
 ## Proxy Cloudmini API V3 Candidate
 
-T211 inspected the local `/opt/proxy-cloudmini` source code and added a Billing adapter for its API V3 contract using local `httptest` coverage only. T212 added disabled-by-default worker registry wiring behind explicit environment config. T213 recorded partial non-production intake for the Cloudmini V3 API. T214 attempted authenticated read-only provider checks and found an edge/gateway access blocker. This is still not real sandbox pilot evidence.
+T211 inspected the local `/opt/proxy-cloudmini` source code and added a Billing adapter for its API V3 contract using local `httptest` coverage only. T212 added disabled-by-default worker registry wiring behind explicit environment config. T213 recorded partial non-production intake for the Cloudmini V3 API. T214 attempted authenticated read-only provider checks and found an edge/gateway access blocker. T216 reran read-only checks with the local dev credential source and reached successful V3 app envelopes through the public hostname. This is still not real sandbox pilot evidence.
 
-Known Cloudmini V3 intake as of 2026-05-15:
+Known Cloudmini V3 intake as of 2026-05-16:
 
 - Provider/API candidate: Cloudmini V3.
 - Non-production API base URL: `https://cz.resvn.net/`.
 - API version: V3.
-- Auth boundary check: unauthenticated `GET /api/v3/capabilities` returned HTTP `401` in `2.475843s`; no response body was captured.
-- Authenticated read-only check: transient credential input was used for `GET /api/v3/capabilities` and `GET /api/v3/inventory/groups?kind=<kind>` only. Bearer and `X-API-Key` returned HTTP `403` for capabilities, `ipv4_dc` inventory, and `residential` inventory. `X-ACCESS-CODE` returned HTTP `403` for both inventory checks and timed out once for capabilities after `20795ms`.
-- Edge error shape: the redacted HTTP `403` body had Cloudflare/gateway-style keys including `cloudflare_error`, `error_code`, `ray_id`, `owner_action_required`, and `retryable`, not the expected V3 app envelope.
-- Credential status: credential material must stay outside git, task notes, PR text, logs, and raw command output. T214 used it only as transient process input; an approved secret path or secret-manager reference is still required before shared authenticated testing.
-- Pilot status: no authenticated provider call, create, delete, cleanup, or Billing end-to-end pilot has been run from this repository.
+- Auth boundary check: unauthenticated `GET /api/v3/capabilities` returned HTTP `401` with app JSON in `711ms`, confirming the public hostname routes to the Cloudmini manager and keeps auth enforced.
+- Authenticated read-only rerun: T216 used the local dev credential source at `/opt/cred` without printing the raw key. The run used the Billing Go-client-style user-agent plus `X-Request-ID`; the checker was limited to read-only endpoints.
+- Header forwarding result: bearer `Authorization`, `X-API-Key`, and `X-ACCESS-CODE` each returned HTTP `200` V3 success envelopes for `GET /api/v3/capabilities`, `GET /api/v3/inventory/groups?kind=ipv4_dc`, and `GET /api/v3/inventory/groups?kind=residential`.
+- Capability summary: feature keys returned were `inventory_webhooks`, `prefer_wait`, `reservations`, and `tombstones`.
+- Inventory summary: `ipv4_dc` returned `2` groups, with `1` sellable and `1` exhausted, totaling `200` allocatable units. `residential` returned `4` groups, all exhausted, totaling `0` allocatable units.
+- Edge note: provider-side evidence reported Cloudflare still blocks the generic `Python-urllib/3.12` user-agent with HTTP `403` code `1010`. The Billing Go-client-style path passed, so launch evidence should use the Billing adapter or the provider checker user-agent override, not a generic scripting user-agent.
+- Credential status: credential material must stay outside git, task notes, PR text, logs, and raw command output. T216 used `/opt/cred` as a local dev-only credential source; an approved shared secret path or secret-manager reference is still required before shared authenticated testing or pilot provisioning.
+- Pilot status: no create, delete, cleanup, or Billing end-to-end pilot has been run from this repository.
 
 ## Cloudmini Edge/Gateway Unblock Runbook
 
-T215 documents the provider-owner handoff needed before another authenticated Cloudmini read-only check. The unblock is outside Billing runtime code because T214 reached the public base URL but received provider edge/gateway HTTP `403` responses before a successful V3 app envelope.
+T215 documents the provider-owner handoff needed for authenticated Cloudmini read-only checks. The unblock is outside Billing runtime code because T214 reached the public base URL but initially received provider edge/gateway HTTP `403` responses before a successful V3 app envelope. T216 shows the required read-only route/header path now works for the Billing Go-client-style path.
 
 Provider owner must confirm these items before Billing reruns authenticated checks:
 
@@ -53,7 +56,7 @@ Safe read-only rerun after unblock:
 4. Do not capture raw provider response bodies, raw auth headers, provider-private IDs, proxy credentials, or URL query credentials.
 5. Keep pilot readiness blocked unless both read-only checks return a successful V3 app envelope and owner/quota/mapping/cleanup evidence is recorded.
 
-Do not run these until read-only evidence passes and the remaining provider readiness items are complete:
+Although read-only evidence now passes, do not run these until the remaining provider readiness items are complete:
 
 - `POST /api/v3/proxies`
 - `DELETE /api/v3/proxies/:id`
@@ -77,23 +80,23 @@ Still missing for real sandbox readiness:
 
 - scoped credential storage path outside git;
 - sandbox account owner and cleanup owner;
-- provider edge/gateway allowlist or access policy that lets Billing reach `/api/v3` and evidence that the safe read-only rerun passed;
+- provider edge/gateway approval record for the read-only route/header policy;
 - source-to-group/SKU mapping for each Billing provider source;
 - quota, rate, concurrency, timeout, and spend guardrails;
 - redacted real error examples and one approved pilot create/delete run.
 
 ## Evidence Packet Status
 
-No approved real provider sandbox pilot evidence is stored in this repository as of 2026-05-15. The packet below is the minimum evidence to collect before changing the real provider sandbox decision from `blocked`.
+No approved real provider sandbox pilot evidence is stored in this repository as of 2026-05-16. The packet below is the minimum evidence to collect before changing the real provider sandbox decision from `blocked`.
 
 | Evidence area | Required proof | Current repo status |
 |---|---|---|
 | Provider intake | Provider name, sandbox account owner, support contact, docs/API version, and sandbox base URL. | Partial: Cloudmini V3, API V3, and `https://cz.resvn.net/` are recorded. Sandbox account owner and support contact are missing. |
-| Credential safety | Approved secret store or local-only `.env` path, least-privilege scopes, rotation/revocation owner, and confirmation that no secret is committed. | Partial: no credential is committed in repo evidence. T214 used transient process input only. Approved secret path, scope, and rotation/revocation owner are missing. |
+| Credential safety | Approved secret store or local-only `.env` path, least-privilege scopes, rotation/revocation owner, and confirmation that no secret is committed. | Partial: no credential is committed in repo evidence. T216 used `/opt/cred` as a local dev-only source without printing the raw key. Approved shared secret path, scope approval, and rotation/revocation owner are missing. |
 | Quota and cost guardrail | Sandbox quota, rate/concurrency limits, maximum spend or credit exposure, and stop condition. | Missing. |
-| Capability mapping | Product type, Billing plan code, provider SKU, location, inventory mode, auto/manual provisioning support, cancellation support, and credential retrieval behavior. | Missing: authenticated read-only inventory did not succeed because provider edge/gateway returned HTTP `403`. |
+| Capability mapping | Product type, Billing plan code, provider SKU, location, inventory mode, auto/manual provisioning support, cancellation support, and credential retrieval behavior. | Partial: authenticated read-only inventory now succeeds and shows `ipv4_dc` has sellable capacity while `residential` is exhausted. Explicit Billing source-to-group/SKU mapping is still missing. |
 | Retry/idempotency | Duplicate create behavior, timeout-after-send behavior, request/status lookup support, and mapping to retry safety or manual review. | Missing. |
-| Error examples | Redacted auth, permission, rate limit, validation, out-of-capacity, timeout, duplicate, 5xx, not-found, and cancel-rejected examples. | Partial: redacted provider edge/gateway HTTP `403` shape captured. V3 app-level auth, permission, rate limit, validation, capacity, timeout, duplicate, 5xx, not-found, and cancel-rejected examples are still missing. |
+| Error examples | Redacted auth, permission, rate limit, validation, out-of-capacity, timeout, duplicate, 5xx, not-found, and cancel-rejected examples. | Partial: redacted provider edge/gateway HTTP `403` shape from the earlier blocked run and app-level unauthenticated HTTP `401` were captured. V3 app-level permission, rate limit, validation, capacity, timeout, duplicate, 5xx, not-found, and cancel-rejected examples are still missing. |
 | Cleanup and rollback | How to list test resources, cancel/delete them, disable the provider source, and assign manual cleanup owner. | Missing. |
 | Pilot run | Redacted evidence for one approved sandbox order through checkout, reservation, provider request, service activation, credential storage/reveal audit, and cleanup. | Missing. |
 
