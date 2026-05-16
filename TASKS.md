@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-16` after T217 PR opened:
+Current board snapshot on `2026-05-16` after T217 done:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 1
-- `DONE` task files in `tasks/active/`: 215
+- `DONE` task files in `tasks/active/`: 216
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,15 +66,13 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T217 | [tasks/active/T217_cloudmini_multi_endpoint_config.md](tasks/active/T217_cloudmini_multi_endpoint_config.md) | REVIEW | Codex | codex/t217-cloudmini-multi-endpoint-config | Support multiple Cloudmini V3 endpoint/API-key mappings by provider source/account. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T216`
-- `T218` to `T219`
+- `T011` to `T219`
 
 ## Removed Tasks
 
