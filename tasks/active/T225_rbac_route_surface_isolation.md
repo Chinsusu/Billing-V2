@@ -1,9 +1,9 @@
 # T225 - RBAC route surface isolation
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t225-rbac-route-surface-isolation
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/481
 Risk: auth/RBAC/tenant-isolation/credential-safety
 Created: 2026-05-16
 Updated: 2026-05-16
@@ -33,3 +33,4 @@ Fix portal route isolation so client sessions cannot access reseller or admin AP
 ## Agent Log
 
 - 2026-05-16: Task created and claimed from latest `origin/main`.
+- 2026-05-16: Opened PR #481. Validation passed: `go test ./internal/modules/rbac ./cmd/api`; `make test`; `make build`; `go run ./cmd/contractguard`; `go run ./cmd/errorcodeguard`; `go run ./cmd/taskguard`; `git diff --check`.
