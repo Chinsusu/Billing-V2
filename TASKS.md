@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-16` after T217 done:
+Current board snapshot on `2026-05-16` after T221 PR opened:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 1
 - `DONE` task files in `tasks/active/`: 216
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T221 | [tasks/active/T221_cloudmini_mapping_evidence_script.md](tasks/active/T221_cloudmini_mapping_evidence_script.md) | REVIEW | Codex | codex/t221-cloudmini-mapping-evidence-script | Add read-only Cloudmini mapping evidence collector for approved non-production Billing DBs. |
 
 ## Done Task Files
 
