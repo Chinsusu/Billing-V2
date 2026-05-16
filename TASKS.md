@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-16` after T215 moved to review:
+Current board snapshot on `2026-05-16` after T215 done:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 211
+- `DONE` task files in `tasks/active/`: 212
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,14 +66,13 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T215 | [tasks/active/T215_cloudmini_edge_unblock_runbook.md](tasks/active/T215_cloudmini_edge_unblock_runbook.md) | REVIEW | Codex | codex/t215-cloudmini-edge-unblock | Document Cloudmini edge/gateway unblock and safe rerun procedure. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T214`
+- `T011` to `T215`
 
 ## Removed Tasks
 
