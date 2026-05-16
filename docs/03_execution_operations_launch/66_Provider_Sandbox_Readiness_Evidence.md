@@ -1,7 +1,7 @@
 # Provider Sandbox Readiness Evidence
 
-**Tasks:** T199, T208, T211, T212, T213, T214
-**Date:** 2026-05-15
+**Tasks:** T199, T208, T211, T212, T213, T214, T215
+**Date:** 2026-05-16
 **Decision:** real provider sandbox is not launch-ready yet. Cloudmini V3 intake is partially known, but authenticated read-only checks are blocked at the provider edge/gateway and approved credential storage, owners, quota, source mapping, cleanup, and a real pilot run are still missing.
 
 ## Scope
@@ -31,6 +31,35 @@ Known Cloudmini V3 intake as of 2026-05-15:
 - Credential status: credential material must stay outside git, task notes, PR text, logs, and raw command output. T214 used it only as transient process input; an approved secret path or secret-manager reference is still required before shared authenticated testing.
 - Pilot status: no authenticated provider call, create, delete, cleanup, or Billing end-to-end pilot has been run from this repository.
 
+## Cloudmini Edge/Gateway Unblock Runbook
+
+T215 documents the provider-owner handoff needed before another authenticated Cloudmini read-only check. The unblock is outside Billing runtime code because T214 reached the public base URL but received provider edge/gateway HTTP `403` responses before a successful V3 app envelope.
+
+Provider owner must confirm these items before Billing reruns authenticated checks:
+
+- Public hostname `https://cz.resvn.net/` routes `/api/v3/*` to the Cloudmini manager origin through the approved tunnel or gateway path.
+- Edge/WAF/Access policy allows non-browser server-to-server clients for `/api/v3/capabilities` and `/api/v3/inventory/groups`.
+- Edge policy allows the headers required by the code-read contract: `Authorization`, `X-API-Key`, `X-ACCESS-CODE`, `X-Request-ID`, and `Idempotency-Key`.
+- If IP allowlisting is required, the provider owner records a redacted allowlist reference for the Billing runner egress IP or approved staging egress, not the raw credential.
+- The provider API key is active, scoped to sandbox/non-production, and has read permission for capabilities and inventory plus later explicit `proxy_crud` permission only when create/delete pilot is approved.
+- The credential shared through chat is rotated or explicitly accepted by Security/Provider owner as a temporary sandbox-only credential before reuse.
+- Query-string credentials such as `?token=` or `?access_code=` are avoided for Billing evidence because they can leak through URL logs. Use headers unless a Security Owner signs a temporary exception.
+
+Safe read-only rerun after unblock:
+
+1. Store the rotated credential outside git in an approved secret path or local-only `.env` file.
+2. Run only `GET /api/v3/capabilities` and `GET /api/v3/inventory/groups?kind=ipv4_dc|residential`.
+3. Capture only status codes, envelope success, feature keys, inventory counts, sell-state counts, and redacted group references.
+4. Do not capture raw provider response bodies, raw auth headers, provider-private IDs, proxy credentials, or URL query credentials.
+5. Keep pilot readiness blocked unless both read-only checks return a successful V3 app envelope and owner/quota/mapping/cleanup evidence is recorded.
+
+Do not run these until read-only evidence passes and the remaining provider readiness items are complete:
+
+- `POST /api/v3/proxies`
+- `DELETE /api/v3/proxies/:id`
+- `POST /api/v3/proxies/:id/actions/:action`
+- Billing checkout/provisioning worker pilot with `PROVIDER_DEFAULT_MODE=cloudmini_v3`
+
 Code-read contract summary:
 
 - Auth supports `Authorization: Bearer <token>` and API-key fallback headers in the provider service. Billing adapter uses bearer auth.
@@ -48,7 +77,7 @@ Still missing for real sandbox readiness:
 
 - scoped credential storage path outside git;
 - sandbox account owner and cleanup owner;
-- provider edge/gateway allowlist or access policy that lets Billing reach `/api/v3`;
+- provider edge/gateway allowlist or access policy that lets Billing reach `/api/v3` and evidence that the safe read-only rerun passed;
 - source-to-group/SKU mapping for each Billing provider source;
 - quota, rate, concurrency, timeout, and spend guardrails;
 - redacted real error examples and one approved pilot create/delete run.
