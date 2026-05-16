@@ -1,9 +1,9 @@
 # T222 - Notification fallback runbook
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t222-notification-fallback-runbook
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/475
 Risk: launch readiness, notification delivery, support operations, security
 Created: 2026-05-16
 Updated: 2026-05-16
@@ -36,3 +36,4 @@ Define the production notification delivery or manual fallback evidence required
 
 - 2026-05-16: Task created and claimed by Codex from latest `origin/main`.
 - 2026-05-16: Added notification delivery/manual fallback runbook, launch evidence references, and documentation index entries. Validation passed: `go run ./cmd/taskguard`; `git diff --check`; changed-file secret pattern scan returned no matches.
+- 2026-05-16: Opened PR #475 for review.
