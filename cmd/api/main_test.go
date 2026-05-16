@@ -11,6 +11,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
+	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
 	"github.com/Chinsusu/Billing-V2/internal/platform/config"
 	platformdb "github.com/Chinsusu/Billing-V2/internal/platform/db"
 	"github.com/Chinsusu/Billing-V2/internal/platform/logger"
@@ -297,6 +299,40 @@ func TestNewOrderRoutesReturnsRegistrar(t *testing.T) {
 	}
 }
 
+func TestNewOrderRoutesRejectsClientActorOnResellerSurface(t *testing.T) {
+	registrar := newOrderRoutes(newStubDB())
+	mux := http.NewServeMux()
+	registrar.RegisterRoutes(mux)
+
+	response := httptest.NewRecorder()
+	request := orderSurfaceRequest("/reseller/services/00000000-0000-0000-0000-000000000909", identity.ActorTypeClient)
+	mux.ServeHTTP(response, request)
+
+	if response.Code != http.StatusForbidden {
+		t.Fatalf("expected client actor to be forbidden on reseller route, got %d: %s", response.Code, response.Body.String())
+	}
+	if !strings.Contains(response.Body.String(), "auth.permission_denied") {
+		t.Fatalf("expected permission denied response, got %s", response.Body.String())
+	}
+}
+
+func TestNewOrderRoutesRejectsResellerActorOnAdminSurface(t *testing.T) {
+	registrar := newOrderRoutes(newStubDB())
+	mux := http.NewServeMux()
+	registrar.RegisterRoutes(mux)
+
+	response := httptest.NewRecorder()
+	request := orderSurfaceRequest("/admin/services/00000000-0000-0000-0000-000000000909", identity.ActorTypeResellerStaff)
+	mux.ServeHTTP(response, request)
+
+	if response.Code != http.StatusForbidden {
+		t.Fatalf("expected reseller actor to be forbidden on admin route, got %d: %s", response.Code, response.Body.String())
+	}
+	if !strings.Contains(response.Body.String(), "auth.permission_denied") {
+		t.Fatalf("expected permission denied response, got %s", response.Body.String())
+	}
+}
+
 func TestNewServiceCredentialCipherRejectsInvalidKey(t *testing.T) {
 	_, err := newServiceCredentialCipher(config.Config{EncryptionKey: "short"})
 	if err == nil || !strings.Contains(err.Error(), "configure service credential cipher") {
@@ -392,6 +428,12 @@ func testRuntimeConfig(dsn string) config.Config {
 
 func testRuntimeLogger() *logger.Logger {
 	return logger.New(&bytes.Buffer{}, config.LogLevelDebug)
+}
+
+func orderSurfaceRequest(path string, actorType identity.ActorType) *http.Request {
+	ctx := tenant.WithContext(context.Background(), tenant.NewContext("tenant_a"))
+	ctx = identity.WithActor(ctx, identity.NewActor("user_1", "tenant_a", actorType))
+	return httptest.NewRequest(http.MethodGet, path, nil).WithContext(ctx)
 }
 
 func newStubDB() *sql.DB {

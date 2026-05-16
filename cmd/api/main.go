@@ -119,8 +119,8 @@ func newAccountRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	service := identity.NewAdminReadService(tenant.NewPostgresStore(executor), identity.NewPostgresUserStore(executor))
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return identity.NewAdminReadHTTPHandlerWithOptions(service, identity.AdminReadHTTPHandlerOptions{
-		AdminMiddleware:    accountAuthMiddleware(authorizer, rbac.PermissionTenantView, rbac.RiskLow),
-		ResellerMiddleware: accountAuthMiddleware(authorizer, rbac.PermissionTenantView, rbac.RiskLow),
+		AdminMiddleware:    accountAuthMiddleware(authorizer, rbac.PermissionTenantView, rbac.RiskLow, adminRouteActorTypes),
+		ResellerMiddleware: accountAuthMiddleware(authorizer, rbac.PermissionTenantView, rbac.RiskLow, resellerRouteActorTypes),
 	})
 }
 
@@ -129,7 +129,7 @@ func newAuditRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	service := audit.NewService(store)
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return audit.NewHTTPHandlerWithOptions(service, audit.HTTPHandlerOptions{
-		AdminMiddleware: auditAuthMiddleware(authorizer, rbac.PermissionAuditView, rbac.RiskHigh),
+		AdminMiddleware: auditAuthMiddleware(authorizer, rbac.PermissionAuditView, rbac.RiskHigh, adminRouteActorTypes),
 	})
 }
 
@@ -138,11 +138,11 @@ func newCatalogRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	service := catalog.NewService(store)
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return catalog.NewHTTPHandlerWithOptions(service, catalog.HTTPHandlerOptions{
-		AdminReadMiddleware:      catalogAuthMiddleware(authorizer, rbac.PermissionCatalogView, rbac.RiskLow),
-		AdminManageMiddleware:    catalogAuthMiddleware(authorizer, rbac.PermissionCatalogManage, rbac.RiskHigh),
-		ResellerViewMiddleware:   catalogAuthMiddleware(authorizer, rbac.PermissionCatalogView, rbac.RiskLow),
-		ResellerManageMiddleware: catalogAuthMiddleware(authorizer, rbac.PermissionCatalogManage, rbac.RiskMedium),
-		ClientMiddleware:         catalogAuthMiddleware(authorizer, rbac.PermissionCatalogView, rbac.RiskLow),
+		AdminReadMiddleware:      catalogAuthMiddleware(authorizer, rbac.PermissionCatalogView, rbac.RiskLow, adminRouteActorTypes),
+		AdminManageMiddleware:    catalogAuthMiddleware(authorizer, rbac.PermissionCatalogManage, rbac.RiskHigh, adminRouteActorTypes),
+		ResellerViewMiddleware:   catalogAuthMiddleware(authorizer, rbac.PermissionCatalogView, rbac.RiskLow, resellerRouteActorTypes),
+		ResellerManageMiddleware: catalogAuthMiddleware(authorizer, rbac.PermissionCatalogManage, rbac.RiskMedium, resellerRouteActorTypes),
+		ClientMiddleware:         catalogAuthMiddleware(authorizer, rbac.PermissionCatalogView, rbac.RiskLow, clientRouteActorTypes),
 	})
 }
 
@@ -152,7 +152,7 @@ func newCheckoutRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	service := checkout.NewService(invoice.NewServiceWithOrderReader(invoiceStore, orderStore))
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return checkout.NewHTTPHandlerWithOptions(service, checkout.HTTPHandlerOptions{
-		ClientMiddleware: checkoutAuthMiddleware(authorizer, rbac.PermissionOrderCreate, rbac.RiskMedium),
+		ClientMiddleware: checkoutAuthMiddleware(authorizer, rbac.PermissionOrderCreate, rbac.RiskMedium, clientRouteActorTypes),
 	})
 }
 
@@ -171,23 +171,23 @@ func newOrderRoutesWithCredentialCipher(executor platformdb.Executor, credential
 	})
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return order.NewHTTPHandlerWithOptions(service, order.HTTPHandlerOptions{
-		AdminMiddleware:                    orderAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
-		AdminManageMiddleware:              orderAuthMiddleware(authorizer, rbac.PermissionOrderManage, rbac.RiskHigh),
-		AdminServiceMiddleware:             orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
-		AdminServiceSuspendMiddleware:      orderAuthMiddleware(authorizer, rbac.PermissionServiceSuspend, rbac.RiskHigh),
-		AdminServiceUnsuspendMiddleware:    orderAuthMiddleware(authorizer, rbac.PermissionServiceUnsuspend, rbac.RiskHigh),
-		AdminServiceTerminateMiddleware:    orderAuthMiddleware(authorizer, rbac.PermissionServiceTerminate, rbac.RiskCritical),
-		AdminCredentialMiddleware:          orderAuthMiddleware(authorizer, rbac.PermissionServiceReveal, rbac.RiskHigh),
-		ResellerMiddleware:                 orderAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
-		ResellerServiceMiddleware:          orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
-		ResellerServiceSuspendMiddleware:   orderAuthMiddleware(authorizer, rbac.PermissionServiceSuspend, rbac.RiskHigh),
-		ResellerServiceUnsuspendMiddleware: orderAuthMiddleware(authorizer, rbac.PermissionServiceUnsuspend, rbac.RiskHigh),
-		ResellerServiceTerminateMiddleware: orderAuthMiddleware(authorizer, rbac.PermissionServiceTerminate, rbac.RiskCritical),
-		ResellerCredentialMiddleware:       orderAuthMiddleware(authorizer, rbac.PermissionServiceReveal, rbac.RiskHigh),
-		ClientMiddleware:                   orderAuthMiddleware(authorizer, rbac.PermissionOrderCreate, rbac.RiskMedium),
-		ClientServiceMiddleware:            orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow),
-		ClientServiceRenewMiddleware:       orderAuthMiddleware(authorizer, rbac.PermissionServiceRenew, rbac.RiskMedium),
-		ClientCredentialMiddleware:         orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskHigh),
+		AdminMiddleware:                    orderAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow, adminRouteActorTypes),
+		AdminManageMiddleware:              orderAuthMiddleware(authorizer, rbac.PermissionOrderManage, rbac.RiskHigh, adminRouteActorTypes),
+		AdminServiceMiddleware:             orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow, adminRouteActorTypes),
+		AdminServiceSuspendMiddleware:      orderAuthMiddleware(authorizer, rbac.PermissionServiceSuspend, rbac.RiskHigh, adminRouteActorTypes),
+		AdminServiceUnsuspendMiddleware:    orderAuthMiddleware(authorizer, rbac.PermissionServiceUnsuspend, rbac.RiskHigh, adminRouteActorTypes),
+		AdminServiceTerminateMiddleware:    orderAuthMiddleware(authorizer, rbac.PermissionServiceTerminate, rbac.RiskCritical, adminRouteActorTypes),
+		AdminCredentialMiddleware:          orderAuthMiddleware(authorizer, rbac.PermissionServiceReveal, rbac.RiskHigh, adminRouteActorTypes),
+		ResellerMiddleware:                 orderAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow, resellerRouteActorTypes),
+		ResellerServiceMiddleware:          orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow, resellerRouteActorTypes),
+		ResellerServiceSuspendMiddleware:   orderAuthMiddleware(authorizer, rbac.PermissionServiceSuspend, rbac.RiskHigh, resellerRouteActorTypes),
+		ResellerServiceUnsuspendMiddleware: orderAuthMiddleware(authorizer, rbac.PermissionServiceUnsuspend, rbac.RiskHigh, resellerRouteActorTypes),
+		ResellerServiceTerminateMiddleware: orderAuthMiddleware(authorizer, rbac.PermissionServiceTerminate, rbac.RiskCritical, resellerRouteActorTypes),
+		ResellerCredentialMiddleware:       orderAuthMiddleware(authorizer, rbac.PermissionServiceReveal, rbac.RiskHigh, resellerRouteActorTypes),
+		ClientMiddleware:                   orderAuthMiddleware(authorizer, rbac.PermissionOrderCreate, rbac.RiskMedium, clientRouteActorTypes),
+		ClientServiceMiddleware:            orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskLow, clientRouteActorTypes),
+		ClientServiceRenewMiddleware:       orderAuthMiddleware(authorizer, rbac.PermissionServiceRenew, rbac.RiskMedium, clientRouteActorTypes),
+		ClientCredentialMiddleware:         orderAuthMiddleware(authorizer, rbac.PermissionServiceView, rbac.RiskHigh, clientRouteActorTypes),
 	})
 }
 
@@ -207,9 +207,9 @@ func newInvoiceRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	service := invoice.NewService(store)
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return invoice.NewHTTPHandlerWithOptions(service, invoice.HTTPHandlerOptions{
-		AdminMiddleware:    invoiceAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
-		ResellerMiddleware: invoiceAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
-		ClientMiddleware:   invoiceAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
+		AdminMiddleware:    invoiceAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow, adminRouteActorTypes),
+		ResellerMiddleware: invoiceAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow, resellerRouteActorTypes),
+		ClientMiddleware:   invoiceAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow, clientRouteActorTypes),
 	})
 }
 
@@ -218,12 +218,12 @@ func newJobsRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	service := jobs.NewServiceWithAudit(store, audit.NewService(audit.NewPostgresStore(executor)))
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return jobs.NewHTTPHandlerWithOptions(service, jobs.HTTPHandlerOptions{
-		AdminMiddleware:             jobsAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
-		AdminSummaryMiddleware:      jobsAuthMiddleware(authorizer, rbac.PermissionProvisioningJobView, rbac.RiskLow),
-		AdminRetryMiddleware:        jobsAuthMiddleware(authorizer, rbac.PermissionProvisioningJobRetry, rbac.RiskHigh),
-		AdminManualReviewMiddleware: jobsAuthMiddleware(authorizer, rbac.PermissionManualReviewResolve, rbac.RiskHigh),
-		AdminCancelMiddleware:       jobsAuthMiddleware(authorizer, rbac.PermissionManualReviewResolve, rbac.RiskHigh),
-		ResellerMiddleware:          jobsAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow),
+		AdminMiddleware:             jobsAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow, adminRouteActorTypes),
+		AdminSummaryMiddleware:      jobsAuthMiddleware(authorizer, rbac.PermissionProvisioningJobView, rbac.RiskLow, adminRouteActorTypes),
+		AdminRetryMiddleware:        jobsAuthMiddleware(authorizer, rbac.PermissionProvisioningJobRetry, rbac.RiskHigh, adminRouteActorTypes),
+		AdminManualReviewMiddleware: jobsAuthMiddleware(authorizer, rbac.PermissionManualReviewResolve, rbac.RiskHigh, adminRouteActorTypes),
+		AdminCancelMiddleware:       jobsAuthMiddleware(authorizer, rbac.PermissionManualReviewResolve, rbac.RiskHigh, adminRouteActorTypes),
+		ResellerMiddleware:          jobsAuthMiddleware(authorizer, rbac.PermissionOrderView, rbac.RiskLow, resellerRouteActorTypes),
 	})
 }
 
@@ -232,9 +232,9 @@ func newPaymentRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	service := payment.NewServiceWithAudit(store, audit.NewService(audit.NewPostgresStore(executor)))
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return payment.NewHTTPHandlerWithOptions(service, payment.HTTPHandlerOptions{
-		AdminMiddleware:    paymentAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
-		ResellerMiddleware: paymentAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
-		ClientMiddleware:   paymentAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
+		AdminMiddleware:    paymentAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow, adminRouteActorTypes),
+		ResellerMiddleware: paymentAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow, resellerRouteActorTypes),
+		ClientMiddleware:   paymentAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow, clientRouteActorTypes),
 	})
 }
 
@@ -243,18 +243,18 @@ func newWalletRoutes(executor platformdb.Executor) app.RouteRegistrar {
 	service := wallet.NewServiceWithAudit(store, audit.NewService(audit.NewPostgresStore(executor)))
 	authorizer := rbac.NewStoreAuthorizer(rbac.NewPostgresStore(executor))
 	return wallet.NewHTTPHandlerWithOptions(service, wallet.HTTPHandlerOptions{
-		AdminMiddleware:           walletAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
-		AdminReviewMiddleware:     walletAuthMiddleware(authorizer, rbac.PermissionWalletTopupApprove, rbac.RiskHigh),
-		AdminAdjustmentMiddleware: walletAuthMiddleware(authorizer, rbac.PermissionWalletAdjustment, rbac.RiskCritical),
-		ResellerMiddleware:        walletAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
-		ClientMiddleware:          walletAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow),
+		AdminMiddleware:           walletAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow, adminRouteActorTypes),
+		AdminReviewMiddleware:     walletAuthMiddleware(authorizer, rbac.PermissionWalletTopupApprove, rbac.RiskHigh, adminRouteActorTypes),
+		AdminAdjustmentMiddleware: walletAuthMiddleware(authorizer, rbac.PermissionWalletAdjustment, rbac.RiskCritical, adminRouteActorTypes),
+		ResellerMiddleware:        walletAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow, resellerRouteActorTypes),
+		ClientMiddleware:          walletAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow, clientRouteActorTypes),
 	})
 }
 
-func auditAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) audit.RouteMiddleware {
+func auditAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel, allowedActorTypes []identity.ActorType) audit.RouteMiddleware {
 	return chainAuditMiddleware(
 		wrapAuditMiddleware(identity.HeaderActorMiddleware),
-		audit.RouteMiddleware(rbac.RequirePermission(authorizer, permission, risk)),
+		audit.RouteMiddleware(permissionMiddleware(authorizer, permission, risk, allowedActorTypes)),
 	)
 }
 
@@ -276,10 +276,10 @@ func wrapAuditMiddleware(middleware func(http.Handler) http.Handler) audit.Route
 	}
 }
 
-func accountAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) identity.AdminReadRouteMiddleware {
+func accountAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel, allowedActorTypes []identity.ActorType) identity.AdminReadRouteMiddleware {
 	return chainAccountMiddleware(
 		wrapAccountMiddleware(identity.HeaderActorMiddleware),
-		identity.AdminReadRouteMiddleware(rbac.RequirePermission(authorizer, permission, risk)),
+		identity.AdminReadRouteMiddleware(permissionMiddleware(authorizer, permission, risk, allowedActorTypes)),
 	)
 }
 
@@ -301,10 +301,10 @@ func wrapAccountMiddleware(middleware func(http.Handler) http.Handler) identity.
 	}
 }
 
-func orderAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) order.RouteMiddleware {
+func orderAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel, allowedActorTypes []identity.ActorType) order.RouteMiddleware {
 	return chainOrderMiddleware(
 		wrapOrderMiddleware(identity.HeaderActorMiddleware),
-		order.RouteMiddleware(rbac.RequirePermission(authorizer, permission, risk)),
+		order.RouteMiddleware(permissionMiddleware(authorizer, permission, risk, allowedActorTypes)),
 	)
 }
 
@@ -326,10 +326,10 @@ func wrapOrderMiddleware(middleware func(http.Handler) http.Handler) order.Route
 	}
 }
 
-func checkoutAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) checkout.RouteMiddleware {
+func checkoutAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel, allowedActorTypes []identity.ActorType) checkout.RouteMiddleware {
 	return chainCheckoutMiddleware(
 		wrapCheckoutMiddleware(identity.HeaderActorMiddleware),
-		checkout.RouteMiddleware(rbac.RequirePermission(authorizer, permission, risk)),
+		checkout.RouteMiddleware(permissionMiddleware(authorizer, permission, risk, allowedActorTypes)),
 	)
 }
 
@@ -351,10 +351,10 @@ func wrapCheckoutMiddleware(middleware func(http.Handler) http.Handler) checkout
 	}
 }
 
-func invoiceAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) invoice.RouteMiddleware {
+func invoiceAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel, allowedActorTypes []identity.ActorType) invoice.RouteMiddleware {
 	return chainInvoiceMiddleware(
 		wrapInvoiceMiddleware(identity.HeaderActorMiddleware),
-		invoice.RouteMiddleware(rbac.RequirePermission(authorizer, permission, risk)),
+		invoice.RouteMiddleware(permissionMiddleware(authorizer, permission, risk, allowedActorTypes)),
 	)
 }
 
@@ -376,10 +376,10 @@ func wrapInvoiceMiddleware(middleware func(http.Handler) http.Handler) invoice.R
 	}
 }
 
-func jobsAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) jobs.RouteMiddleware {
+func jobsAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel, allowedActorTypes []identity.ActorType) jobs.RouteMiddleware {
 	return chainJobsMiddleware(
 		wrapJobsMiddleware(identity.HeaderActorMiddleware),
-		jobs.RouteMiddleware(rbac.RequirePermission(authorizer, permission, risk)),
+		jobs.RouteMiddleware(permissionMiddleware(authorizer, permission, risk, allowedActorTypes)),
 	)
 }
 
@@ -401,10 +401,10 @@ func wrapJobsMiddleware(middleware func(http.Handler) http.Handler) jobs.RouteMi
 	}
 }
 
-func paymentAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) payment.RouteMiddleware {
+func paymentAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel, allowedActorTypes []identity.ActorType) payment.RouteMiddleware {
 	return chainPaymentMiddleware(
 		wrapPaymentMiddleware(identity.HeaderActorMiddleware),
-		payment.RouteMiddleware(rbac.RequirePermission(authorizer, permission, risk)),
+		payment.RouteMiddleware(permissionMiddleware(authorizer, permission, risk, allowedActorTypes)),
 	)
 }
 
@@ -426,10 +426,10 @@ func wrapPaymentMiddleware(middleware func(http.Handler) http.Handler) payment.R
 	}
 }
 
-func walletAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) wallet.RouteMiddleware {
+func walletAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel, allowedActorTypes []identity.ActorType) wallet.RouteMiddleware {
 	return chainWalletMiddleware(
 		wrapWalletMiddleware(identity.HeaderActorMiddleware),
-		wallet.RouteMiddleware(rbac.RequirePermission(authorizer, permission, risk)),
+		wallet.RouteMiddleware(permissionMiddleware(authorizer, permission, risk, allowedActorTypes)),
 	)
 }
 
@@ -451,11 +451,11 @@ func wrapWalletMiddleware(middleware func(http.Handler) http.Handler) wallet.Rou
 	}
 }
 
-func catalogAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel) catalog.RouteMiddleware {
+func catalogAuthMiddleware(authorizer rbac.Authorizer, permission rbac.Permission, risk rbac.RiskLevel, allowedActorTypes []identity.ActorType) catalog.RouteMiddleware {
 	return chainCatalogMiddleware(
 		wrapCatalogMiddleware(tenant.HeaderContextMiddleware),
 		wrapCatalogMiddleware(identity.HeaderActorMiddleware),
-		catalog.RouteMiddleware(rbac.RequirePermission(authorizer, permission, risk)),
+		catalog.RouteMiddleware(permissionMiddleware(authorizer, permission, risk, allowedActorTypes)),
 	)
 }
 

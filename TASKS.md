@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-16` after T224 done:
+Current board snapshot on `2026-05-16` after T225 claimed:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 1
 - `DONE` task files in `tasks/active/`: 220
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T225 | [tasks/active/T225_rbac_route_surface_isolation.md](tasks/active/T225_rbac_route_surface_isolation.md) | IN_PROGRESS | Codex | codex/t225-rbac-route-surface-isolation | Fix actor-type route isolation between client, reseller, and admin API surfaces. |
 
 ## Done Task Files
 

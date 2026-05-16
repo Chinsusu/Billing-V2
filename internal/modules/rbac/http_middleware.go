@@ -15,11 +15,12 @@ const HeaderAccessReason = "X-Access-Reason"
 type RouteMiddleware func(http.HandlerFunc) http.HandlerFunc
 
 type PermissionMiddlewareOptions struct {
-	Authorizer       Authorizer
-	Permission       Permission
-	Risk             RiskLevel
-	ReasonHeader     string
-	ResourceTenantID func(r *http.Request) tenant.ID
+	Authorizer        Authorizer
+	Permission        Permission
+	Risk              RiskLevel
+	AllowedActorTypes []identity.ActorType
+	ReasonHeader      string
+	ResourceTenantID  func(r *http.Request) tenant.ID
 }
 
 func RequirePermission(authorizer Authorizer, permission Permission, risk RiskLevel) RouteMiddleware {
@@ -46,6 +47,14 @@ func RequirePermissionWithOptions(options PermissionMiddlewareOptions) RouteMidd
 				writeAuthorizationError(w, r, err)
 				return
 			}
+			if err := actor.Validate(); err != nil {
+				writeAuthorizationError(w, r, err)
+				return
+			}
+			if !actorTypeAllowed(actor.Type, options.AllowedActorTypes) {
+				writeAuthorizationError(w, r, ErrPermissionDenied)
+				return
+			}
 			resourceTenantID := tenant.ID("")
 			if options.ResourceTenantID != nil {
 				resourceTenantID = options.ResourceTenantID(r)
@@ -66,6 +75,18 @@ func RequirePermissionWithOptions(options PermissionMiddlewareOptions) RouteMidd
 			next(w, r)
 		}
 	}
+}
+
+func actorTypeAllowed(actorType identity.ActorType, allowed []identity.ActorType) bool {
+	if len(allowed) == 0 {
+		return true
+	}
+	for _, current := range allowed {
+		if actorType == current {
+			return true
+		}
+	}
+	return false
 }
 
 func writeAuthorizationError(w http.ResponseWriter, r *http.Request, err error) {

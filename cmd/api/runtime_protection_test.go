@@ -21,6 +21,7 @@ func TestCatalogAuthMiddlewareUsesTenantHeaderContext(t *testing.T) {
 		rbac.StaticAuthorizer{Permissions: rbac.NewPermissionSet(rbac.PermissionCatalogView)},
 		rbac.PermissionCatalogView,
 		rbac.RiskLow,
+		resellerRouteActorTypes,
 	)(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
 	})
