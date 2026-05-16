@@ -1,0 +1,148 @@
+# 71 - Cloudmini Controlled Pilot Runbook
+
+**Date:** 2026-05-16
+**Scope:** Controlled pre-approval packet for the first Cloudmini V3 mutating pilot.
+**Decision:** Not approved for create/delete until every approval field below is complete.
+
+## Current Safe State
+
+Read-only evidence is complete for the Billing Go-client-style path:
+
+- `GET /api/v3/capabilities` without auth returns app-level HTTP `401`.
+- Authenticated `GET /api/v3/capabilities` returns HTTP `200` V3 success envelopes.
+- Authenticated `GET /api/v3/inventory/groups?kind=ipv4_dc` returns HTTP `200` V3 success envelopes.
+- Authenticated `GET /api/v3/inventory/groups?kind=residential` returns HTTP `200` V3 success envelopes.
+- No mutating provider route has been called from Billing evidence.
+
+## Pilot Mapping Candidate
+
+Use this mapping only after owner approval:
+
+```text
+Billing plan candidate: proxy-static-10gb-monthly
+Provider kind: ipv4_dc
+Provider group reference: redacted:c6a7189f0a
+Provider sell state: sellable
+Observed allocatable units: 200
+Protocol: socks5
+Credential/config source: /opt/cred-cloudmini-dev.env
+```
+
+Do not use the existing seeded `Local Fake Hetzner Ready` source as the Cloudmini pilot source. The pilot needs an explicit Cloudmini V3 provider source or equivalent dev/staging source record whose `source_type` is `cloudmini_v3`.
+
+Do not pilot `residential` yet. The read-only evidence shows `residential` inventory is exhausted.
+
+## Required Approval Fields
+
+Fill these before any mutating call:
+
+```text
+Pilot ID:
+Environment:
+Billing source display ID:
+Cloudmini source/account owner:
+Engineering owner:
+Ops owner:
+Security owner:
+Cleanup owner:
+Finance/quota owner:
+Approved credential path: /opt/cred-cloudmini-dev.env for dev only, or redacted shared secret reference
+Maximum create calls:
+Maximum active test resources:
+Maximum spend/quota exposure:
+Worker concurrency:
+Provider rate limit:
+Stop condition:
+Cleanup deadline:
+Reviewer sign-off:
+```
+
+Minimum guardrails for the first pilot:
+
+- `Maximum create calls`: `1`
+- `Maximum active test resources`: `1`
+- `Worker concurrency`: `1`
+- `Provider rate limit`: no parallel mutating calls
+- `Cleanup deadline`: same session as create
+
+## Required Preflight
+
+Run these before enabling a mutating pilot:
+
+```bash
+go test ./...
+go run ./cmd/taskguard
+```
+
+Then rerun read-only provider evidence from the local dev credential file:
+
+```bash
+set -a
+. /opt/cred-cloudmini-dev.env
+set +a
+VPM_BILLING_V3_BASE_URL="$CLOUDMINI_V3_BASE_URL" \
+VPM_BILLING_V3_AUTH_HEADER="Authorization" \
+VPM_BILLING_V3_USER_AGENT="$CLOUDMINI_V3_USER_AGENT" \
+VPM_BILLING_API_TOKEN="$CLOUDMINI_V3_API_TOKEN" \
+/tmp/proxy-cloudmini-billing-edge/scripts/check-billing-v3-edge.sh
+```
+
+The read-only result must show:
+
+- capabilities HTTP `200` and `success=true`;
+- `ipv4_dc` inventory HTTP `200` and `success=true`;
+- selected group ref still sellable with positive allocatable units;
+- no token, raw auth header, raw group id, proxy credential, or raw provider payload in captured evidence.
+
+## Mutating Pilot Boundary
+
+The first mutating pilot must run through the Billing checkout/provisioning path, not an ad hoc direct provider `POST`, unless Engineering and Security explicitly approve direct provider testing.
+
+The first run must create at most one provider resource. It must capture only redacted evidence for:
+
+- order display ID;
+- provider source display ID;
+- provisioning job display ID;
+- idempotency key presence, not raw token;
+- provider operation/result state;
+- redacted external resource reference;
+- service active state;
+- encrypted credential storage;
+- credential reveal audit, if reveal is tested;
+- cleanup operation and final provider state.
+
+## Stop Conditions
+
+Stop immediately and do not retry automatically if any of these occurs:
+
+- provider returns auth/permission failure;
+- provider returns rate limit or gateway block;
+- create request times out after being sent;
+- operation id is returned but polling does not finish;
+- provider returns a resource without credential data;
+- Billing records a manual review status;
+- a duplicate resource is suspected;
+- cleanup/delete does not complete;
+- wallet/ledger/reconciliation mismatch appears;
+- any raw secret, proxy credential, or provider payload is exposed.
+
+## Cleanup Procedure
+
+Cleanup must happen in the same pilot session:
+
+1. Record the redacted external resource reference.
+2. Call the approved Billing/service cleanup path or approved provider delete path.
+3. Poll provider operation status until terminal state.
+4. Confirm the resource is deleted, disabled, or otherwise no longer billable.
+5. Confirm Billing service state and provider mapping do not imply an active paid resource after cleanup.
+6. Record cleanup owner, time, result, and residual risk.
+
+If cleanup fails, keep the launch decision `NO-GO`, disable the source, and open an incident/follow-up before any further create attempt.
+
+## Remaining Code/Config Work
+
+Before broader pilot or multiple provider accounts:
+
+- T217 must support multiple Cloudmini V3 endpoint/API-key mappings if more than one URL/key is needed.
+- The dev/staging catalog needs an explicit Cloudmini V3 provider source and plan source mapping.
+- Runtime configuration must fail closed when the configured source id does not match the Billing provider source used by the provisioning job.

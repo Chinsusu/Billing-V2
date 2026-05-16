@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-16` after adding T217:
+Current board snapshot on `2026-05-16` with T218 in progress:
 
 - `TODO`: 1
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 213
@@ -67,6 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T218 | [tasks/active/T218_cloudmini_controlled_pilot_approval.md](tasks/active/T218_cloudmini_controlled_pilot_approval.md) | IN_PROGRESS | Codex | codex/t218-cloudmini-pilot-approval | Prepare Cloudmini controlled pilot mapping, quota, cleanup, and approval packet. |
 
 ## Done Task Files
 
