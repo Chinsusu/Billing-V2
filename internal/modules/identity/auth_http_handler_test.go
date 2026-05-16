@@ -54,6 +54,33 @@ func TestAuthHTTPHandlerLoginSetsHttpOnlySessionCookie(t *testing.T) {
 	}
 }
 
+func TestAuthHTTPHandlerLoginUsesForwardedHost(t *testing.T) {
+	service := &fakeAuthHTTPService{
+		loginResult: LoginResult{
+			Token:     "plain-session-token",
+			Session:   Session{ID: "session_1", ExpiresAt: time.Date(2026, 5, 13, 10, 0, 0, 0, time.UTC)},
+			User:      User{ID: "user_1", TenantID: "tenant_1", Type: UserTypePlatformStaff},
+			ExpiresAt: time.Date(2026, 5, 13, 10, 0, 0, 0, time.UTC),
+		},
+	}
+	mux := http.NewServeMux()
+	NewAuthHTTPHandlerWithOptions(service, AuthHTTPHandlerOptions{}).RegisterRoutes(mux)
+
+	request := httptest.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(`{"email":"admin@example.com","password":"admin123"}`))
+	request.Host = "127.0.0.1:8080"
+	request.Header.Set("X-Forwarded-Host", "billing.resvn.net")
+	response := httptest.NewRecorder()
+
+	mux.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.loginInput.Domain != "billing.resvn.net" {
+		t.Fatalf("expected forwarded login domain, got %q", service.loginInput.Domain)
+	}
+}
+
 func TestAuthHTTPHandlerLoginValidatesRequiredFields(t *testing.T) {
 	mux := http.NewServeMux()
 	NewAuthHTTPHandlerWithOptions(&fakeAuthHTTPService{}, AuthHTTPHandlerOptions{}).RegisterRoutes(mux)
@@ -129,6 +156,35 @@ func TestAuthHTTPHandlerPasswordResetRequestDoesNotReturnToken(t *testing.T) {
 	}
 	if strings.Contains(response.Body.String(), "token") {
 		t.Fatalf("password reset response must not expose token: %s", response.Body.String())
+	}
+}
+
+func TestAuthHTTPHandlerPasswordResetUsesForwardedHeaderHost(t *testing.T) {
+	service := &fakeAuthHTTPService{}
+	mux := http.NewServeMux()
+	NewAuthHTTPHandlerWithOptions(service, AuthHTTPHandlerOptions{}).RegisterRoutes(mux)
+
+	request := httptest.NewRequest(http.MethodPost, "/auth/password-reset/request", strings.NewReader(`{"email":"client@example.com"}`))
+	request.Host = "127.0.0.1:8080"
+	request.Header.Set("Forwarded", `for=203.0.113.10;proto=https;host="billing.resvn.net"`)
+	response := httptest.NewRecorder()
+
+	mux.ServeHTTP(response, request)
+
+	if response.Code != http.StatusAccepted {
+		t.Fatalf("expected status 202, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.resetRequest.Domain != "billing.resvn.net" {
+		t.Fatalf("expected forwarded reset domain, got %q", service.resetRequest.Domain)
+	}
+}
+
+func TestAuthRequestDomainFallsBackToHost(t *testing.T) {
+	request := httptest.NewRequest(http.MethodPost, "/auth/login", nil)
+	request.Host = "billing.resvn.net"
+
+	if got := requestDomain(request); got != "billing.resvn.net" {
+		t.Fatalf("expected host fallback, got %q", got)
 	}
 }
 
