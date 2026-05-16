@@ -1,6 +1,6 @@
 # T218 - Cloudmini controlled pilot approval
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t218-cloudmini-pilot-approval
 PR: https://github.com/Chinsusu/Billing-V2/pull/466
@@ -37,3 +37,4 @@ Prepare the controlled Cloudmini V3 mutating pilot approval packet with mapping,
 - 2026-05-16: Task created and claimed on `codex/t218-cloudmini-pilot-approval`.
 - 2026-05-16: Read-only inventory selected one sellable `ipv4_dc` group with redacted ref `c6a7189f0a` and `200` allocatable units. Raw group id stayed only in `/opt/cred-cloudmini-dev.env`.
 - 2026-05-16: Validation passed: `go run ./cmd/taskguard`; `git diff --check`; file length check; secret-pattern scan against changed files. Opened PR https://github.com/Chinsusu/Billing-V2/pull/466 and moved task to `REVIEW`.
+- 2026-05-16: PR https://github.com/Chinsusu/Billing-V2/pull/466 merged; marking task `DONE`.
