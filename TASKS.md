@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-16` after T215 claimed:
+Current board snapshot on `2026-05-16` after T215 moved to review:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 211
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -66,7 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T215 | [tasks/active/T215_cloudmini_edge_unblock_runbook.md](tasks/active/T215_cloudmini_edge_unblock_runbook.md) | IN_PROGRESS | Codex | codex/t215-cloudmini-edge-unblock | Document Cloudmini edge/gateway unblock and safe rerun procedure. |
+| T215 | [tasks/active/T215_cloudmini_edge_unblock_runbook.md](tasks/active/T215_cloudmini_edge_unblock_runbook.md) | REVIEW | Codex | codex/t215-cloudmini-edge-unblock | Document Cloudmini edge/gateway unblock and safe rerun procedure. |
 
 ## Done Task Files
 

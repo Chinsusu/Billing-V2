@@ -1,9 +1,9 @@
 # T215 - Cloudmini edge unblock runbook
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t215-cloudmini-edge-unblock
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/461
 Risk: provider/provisioning/credential/config
 Created: 2026-05-16
 Updated: 2026-05-16
@@ -34,3 +34,5 @@ Document the Cloudmini edge/gateway unblock requirements and safe read-only reru
 ## Agent Log
 
 - 2026-05-16: Task created and claimed on `codex/t215-cloudmini-edge-unblock`.
+- 2026-05-16: Validation passed: `go run ./cmd/taskguard`; `git diff --check`; generic token-pattern scan returned no matches in `/opt/Billing`.
+- 2026-05-16: Opened PR https://github.com/Chinsusu/Billing-V2/pull/461 and moved task to `REVIEW`.
