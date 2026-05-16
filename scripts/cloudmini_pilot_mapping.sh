@@ -77,14 +77,26 @@ require_one CLOUDMINI_V3_PILOT_MAX_ACTIVE_RESOURCES "$max_active"
 require_one CLOUDMINI_V3_WORKER_CONCURRENCY "$worker_concurrency"
 
 enum_exists="$(
-  psql "$DB_DSN" -X -qAt -v ON_ERROR_STOP=1 \
-    -c "SELECT EXISTS (SELECT 1 FROM pg_enum e JOIN pg_type t ON t.oid = e.enumtypid WHERE t.typname = 'catalog_provider_type' AND e.enumlabel = 'cloudmini_v3')"
+  psql "$DB_DSN" -X -qAt -v ON_ERROR_STOP=1 <<'SQL'
+SELECT EXISTS (
+  SELECT 1
+  FROM pg_enum e
+  JOIN pg_type t ON t.oid = e.enumtypid
+  WHERE t.typname = 'catalog_provider_type'
+    AND e.enumlabel = 'cloudmini_v3'
+);
+SQL
 )"
 [[ "$enum_exists" == "t" ]] || die "catalog_provider_type lacks cloudmini_v3; run migrations first"
 
 plan_exists="$(
-  psql "$DB_DSN" -X -qAt -v ON_ERROR_STOP=1 -v plan_code="$plan_code" \
-    -c "SELECT EXISTS (SELECT 1 FROM master_plans WHERE plan_code = :'plan_code')"
+  psql "$DB_DSN" -X -qAt -v ON_ERROR_STOP=1 -v plan_code="$plan_code" <<'SQL'
+SELECT EXISTS (
+  SELECT 1
+  FROM master_plans
+  WHERE plan_code = :'plan_code'
+);
+SQL
 )"
 [[ "$plan_exists" == "t" ]] || die "target plan code was not found"
 

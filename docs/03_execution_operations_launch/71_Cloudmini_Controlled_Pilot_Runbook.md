@@ -62,6 +62,25 @@ The script is intentionally narrow:
 
 After applying the mapping, verify the admin provider-readiness API shows the pilot proxy plan as `ready`, with `source_type=cloudmini_v3`, using display IDs only in evidence.
 
+For operator-run DB evidence without exposing the DSN, token, raw group id, or provider payloads, run the read-only evidence collector on the approved non-production Billing DB:
+
+```bash
+APP_ENV=dev \
+BILLING_CLOUDMINI_EVIDENCE_APPROVED=yes \
+DB_DSN="$DB_DSN" \
+CLOUDMINI_V3_PLAN_CODE=proxy-static-10gb-monthly \
+bash scripts/cloudmini_mapping_evidence.sh
+```
+
+Optional public-ID guards can be supplied after the mapping script prints them:
+
+```bash
+CLOUDMINI_V3_SOURCE_DISPLAY_ID=<source_display_id>
+CLOUDMINI_V3_PLAN_SOURCE_DISPLAY_ID=<plan_source_display_id>
+```
+
+The evidence collector runs in a read-only transaction and passes only when the selected plan source is `cloudmini_v3`, readiness is `ready`, priority is `1`, and first-pilot guardrails remain `1` create, `1` active resource, and `1` worker concurrency.
+
 T220 target-environment discovery did not find an approved Billing DB access path:
 
 - `/opt/cred-cloudmini-dev.env` has provider/dev SSH keys but no `DB_DSN`.
@@ -70,7 +89,7 @@ T220 target-environment discovery did not find an approved Billing DB access pat
 - The local default Billing DSN from the runbook was not available on this runner.
 - No migration, mapping script, checkout, worker, or provider mutating call was run against an unverified DB.
 
-Keep the pilot blocked until an approved non-production Billing `DB_DSN` or equivalent operator-run evidence is provided.
+Keep the pilot blocked until an approved non-production Billing `DB_DSN` or equivalent operator-run T221 evidence is provided.
 
 ## Required Approval Fields
 
@@ -185,4 +204,5 @@ Before broader pilot or multiple provider accounts:
 
 - T217 supports multiple Cloudmini V3 endpoint/API-key mappings through `CLOUDMINI_V3_MAPPINGS_JSON`; keep secret values in approved env/secret storage only.
 - The approved dev/staging Billing database still needs the T219 mapping script to be applied and verified through provider readiness evidence.
+- T221 provides the read-only mapping evidence collector, but it still needs an approved non-production Billing DB or operator-run output.
 - Runtime configuration must fail closed when the configured source id does not match the Billing provider source used by the provisioning job.
