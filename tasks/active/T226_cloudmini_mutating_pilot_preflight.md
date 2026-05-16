@@ -1,6 +1,6 @@
 # T226 - Cloudmini mutating pilot preflight
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t226-cloudmini-mutating-pilot-preflight
 PR: https://github.com/Chinsusu/Billing-V2/pull/485
@@ -44,3 +44,4 @@ Add a non-mutating Cloudmini V3 pilot preflight guard that verifies approval, ow
 - 2026-05-16: Test server positive validation passed with a temporary mode `0600` placeholder credential file and existing dev DB mapping evidence. No provider mutating route, Billing checkout, payment, or worker pilot was run.
 - 2026-05-16: Validation passed: `go run ./cmd/taskguard`; `bash -n scripts/cloudmini_mutating_pilot_preflight.sh scripts/cloudmini_mapping_evidence.sh scripts/cloudmini_pilot_mapping.sh`; `git diff --check`; changed-file secret pattern scan returned no matches.
 - 2026-05-16: PR opened for review: https://github.com/Chinsusu/Billing-V2/pull/485.
+- 2026-05-16: PR #485 merged into `main`; marking T226 DONE.
