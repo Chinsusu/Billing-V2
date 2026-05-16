@@ -205,7 +205,7 @@ func TestCloudminiV3AdapterRoutesProviderAccountEndpoint(t *testing.T) {
 	}
 
 	operation := validOperation()
-	operation.SourceID = "source-without-endpoint"
+	operation.SourceID = ""
 	operation.ProviderAccountID = "account-a"
 	result, err := adapter.CheckStock(context.Background(), operation, StockRequest{PlanKey: "proxy"})
 	if err != nil {
@@ -213,6 +213,41 @@ func TestCloudminiV3AdapterRoutesProviderAccountEndpoint(t *testing.T) {
 	}
 	if !sawInventory || result.StockStatus != StockStatusAvailable || result.CapacityCount != 7 {
 		t.Fatalf("unexpected account endpoint result: saw=%v result=%+v", sawInventory, result)
+	}
+}
+
+func TestCloudminiV3AdapterRejectsAccountFallbackWhenSourceMismatches(t *testing.T) {
+	var called bool
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		called = true
+		t.Fatalf("provider endpoint must not be called for source/account mismatch")
+	}))
+	defer server.Close()
+
+	adapter, err := NewCloudminiV3Adapter(CloudminiV3Config{
+		CredentialCipher: &cloudminiV3TestCipher{},
+		AccountEndpoints: map[AccountID]CloudminiV3EndpointConfig{
+			"account-a": {
+				BaseURL:  server.URL,
+				APIToken: "account-token",
+				Source:   CloudminiV3SourceConfig{Kind: "ipv4_dc", GroupID: "group-account", Protocol: "socks5"},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("create adapter: %v", err)
+	}
+
+	operation := validOperation()
+	operation.SourceID = "source-without-endpoint"
+	operation.ProviderAccountID = "account-a"
+	result, err := adapter.CheckStock(context.Background(), operation, StockRequest{PlanKey: "proxy"})
+	var adapterErr AdapterError
+	if !errors.As(err, &adapterErr) || adapterErr.Code != ErrorConfigInvalid {
+		t.Fatalf("expected config error, got result=%+v err=%v", result, err)
+	}
+	if called {
+		t.Fatal("provider endpoint was called despite source/account mismatch")
 	}
 }
 
@@ -339,7 +374,9 @@ func newTestCloudminiV3Adapter(t *testing.T, baseURL string, cipher CredentialCi
 		BaseURL:          baseURL,
 		APIToken:         "test-token",
 		CredentialCipher: cipher,
-		DefaultSource:    source,
+		SourceConfigs: map[SourceID]CloudminiV3SourceConfig{
+			validOperation().SourceID: source,
+		},
 		PollInterval:     time.Millisecond,
 		PollTimeout:      50 * time.Millisecond,
 		Now: func() time.Time {

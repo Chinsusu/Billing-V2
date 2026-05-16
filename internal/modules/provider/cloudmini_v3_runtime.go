@@ -97,6 +97,7 @@ func (adapter *CloudminiV3Adapter) runtimeConfig(operation OperationContext) (cl
 		if source, ok := adapter.sourceConfigs[operation.SourceID]; ok && adapter.defaultClient != nil {
 			return validateCloudminiV3RuntimeConfig(cloudminiV3RuntimeConfig{client: adapter.defaultClient, source: source})
 		}
+		return cloudminiV3RuntimeConfig{}, NewError(ErrorConfigInvalid, "cloudmini v3 endpoint mapping is missing")
 	}
 	if operation.ProviderAccountID != "" {
 		if runtime, ok := adapter.accountEndpoints[operation.ProviderAccountID]; ok {

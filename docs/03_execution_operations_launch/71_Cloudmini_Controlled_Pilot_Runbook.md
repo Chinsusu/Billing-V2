@@ -252,4 +252,4 @@ Before broader pilot or multiple provider accounts:
 
 - T217 supports multiple Cloudmini V3 endpoint/API-key mappings through `CLOUDMINI_V3_MAPPINGS_JSON`; keep secret values in approved env/secret storage only.
 - T220 verifies the dev pilot mapping. Any broader staging or production-equivalent mapping still needs an approved target environment and owner sign-off before use.
-- Runtime configuration must fail closed when the configured source id does not match the Billing provider source used by the provisioning job.
+- T227 makes runtime configuration fail closed when the configured source id does not match the Billing provider source used by the provisioning job.
