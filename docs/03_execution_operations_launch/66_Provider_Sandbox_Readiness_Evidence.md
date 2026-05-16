@@ -1,8 +1,8 @@
 # Provider Sandbox Readiness Evidence
 
-**Tasks:** T199, T208, T211, T212, T213, T214, T215, T216, T217, T218, T219, T220, T221
+**Tasks:** T199, T208, T211, T212, T213, T214, T215, T216, T217, T218, T219, T220, T221, T226
 **Date:** 2026-05-16
-**Decision:** real provider sandbox is not launch-ready yet. Cloudmini V3 intake and authenticated read-only reachability are proven through the public hostname, T218 defines a controlled pilot approval packet, T219/T221 provide guarded mapping/evidence tooling, and T220 applied the pilot mapping on an approved non-production Billing dev DB. Approved shared credential storage, named owners, cleanup sign-off, idempotency evidence, and a real create/delete pilot run are still missing.
+**Decision:** real provider sandbox is not launch-ready yet. Cloudmini V3 intake and authenticated read-only reachability are proven through the public hostname, T218 defines a controlled pilot approval packet, T219/T221 provide guarded mapping/evidence tooling, T220 applied the pilot mapping on an approved non-production Billing dev DB, and T226 adds a non-mutating pilot preflight guard. Approved shared credential storage, named owners, cleanup sign-off, idempotency evidence, and a real create/delete pilot run are still missing.
 
 ## Scope
 
@@ -36,6 +36,7 @@ Known Cloudmini V3 intake as of 2026-05-16:
 - Multi-endpoint status: T217 adds runtime support for multiple Cloudmini V3 endpoint/API-key mappings through `CLOUDMINI_V3_MAPPINGS_JSON`, keyed by provider source and optionally provider account. T220 covers only the single dev pilot source mapping; no multi-account target mapping or real provider pilot was run.
 - Catalog mapping status: T219 adds `migrations/0025_add_cloudmini_provider_type.sql` and `scripts/cloudmini_pilot_mapping.sh` so an approved non-production DB can create the pilot `cloudmini_v3` provider source and plan-source mapping. T220 ran it on the approved Billing dev runtime env with `APP_ENV=dev`; migration plan showed `0` pending migrations and migration apply reported `0` applied migrations.
 - Mapping evidence collector status: T221 adds `scripts/cloudmini_mapping_evidence.sh` so an operator can verify the applied mapping on an approved non-production Billing DB without sharing DSNs, tokens, raw group IDs, or raw provider payloads in repo evidence. T220 ran it read-only and recorded `result=PASS`, readiness `ready`, source type `cloudmini_v3`, and redacted guardrails only.
+- Mutating pilot preflight status: T226 adds `scripts/cloudmini_mutating_pilot_preflight.sh` to fail closed unless non-production env, mapping evidence, owner fields, cleanup fields, private credential path, and exact one-resource guardrails are present. The script does not call provider mutating routes.
 - Target DB access status: T220 used the approved test server Billing runtime env at `/opt/Billing/.env.dev`; the run confirmed `APP_ENV=dev` and `DB_DSN` presence without printing the DSN or provider secrets.
 - Pilot status: no create, delete, cleanup, or Billing end-to-end pilot has been run from this repository.
 
@@ -89,7 +90,7 @@ Still missing for real sandbox readiness:
 - owner-approved source-to-group/SKU mapping beyond the dev pilot evidence;
 - active Cloudmini V3 provider source and plan source readiness evidence for any additional target provider source;
 - multi-endpoint/account config if more than one Cloudmini V3 URL or API key is needed;
-- owner-approved quota, rate, concurrency, timeout, and spend guardrail sign-off beyond the dev defaults;
+- a filled T226 preflight run with real owner-approved values and owner-approved timeout/spend guardrail sign-off beyond the dev defaults;
 - redacted real error examples and one approved pilot create/delete run.
 
 ## Evidence Packet Status
@@ -100,7 +101,7 @@ No approved real provider sandbox mutating pilot evidence is stored in this repo
 |---|---|---|
 | Provider intake | Provider name, sandbox account owner, support contact, docs/API version, and sandbox base URL. | Partial: Cloudmini V3, API V3, and `https://cz.resvn.net/` are recorded. Sandbox account owner and support contact are missing. |
 | Credential safety | Approved secret store or local-only `.env` path, least-privilege scopes, rotation/revocation owner, and confirmation that no secret is committed. | Partial: no credential is committed in repo evidence. T216 used `/opt/cred` as a local dev-only source without printing the raw key. Approved shared secret path, scope approval, and rotation/revocation owner are missing. |
-| Quota and cost guardrail | Sandbox quota, rate/concurrency limits, maximum spend or credit exposure, and stop condition. | Partial: T220 recorded first-pilot dev guardrails of one create, one active resource, one worker concurrency, no parallel mutating calls, and single-dev-resource exposure. Owner sign-off, sandbox quota, and stop-condition approval are still missing. |
+| Quota and cost guardrail | Sandbox quota, rate/concurrency limits, maximum spend or credit exposure, and stop condition. | Partial: T220 recorded first-pilot dev guardrails of one create, one active resource, one worker concurrency, no parallel mutating calls, and single-dev-resource exposure. T226 adds a preflight guard that requires these fields, but owner sign-off, sandbox quota, and stop-condition approval are still missing. |
 | Capability mapping | Product type, Billing plan code, provider SKU, location, inventory mode, auto/manual provisioning support, cancellation support, and credential retrieval behavior. | Partial: authenticated read-only inventory succeeds and shows `ipv4_dc` has sellable capacity while `residential` is exhausted. T220 applied dev pilot mapping for `proxy-static-10gb-monthly` to `cloudmini_v3` with readiness `ready`; owner-approved SKU/source mapping and cleanup/cancellation behavior are still missing. |
 | Retry/idempotency | Duplicate create behavior, timeout-after-send behavior, request/status lookup support, and mapping to retry safety or manual review. | Missing. |
 | Error examples | Redacted auth, permission, rate limit, validation, out-of-capacity, timeout, duplicate, 5xx, not-found, and cancel-rejected examples. | Partial: redacted provider edge/gateway HTTP `403` shape from the earlier blocked run and app-level unauthenticated HTTP `401` were captured. V3 app-level permission, rate limit, validation, capacity, timeout, duplicate, 5xx, not-found, and cancel-rejected examples are still missing. |

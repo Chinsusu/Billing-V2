@@ -125,6 +125,53 @@ Minimum guardrails for the first pilot:
 - `Provider rate limit`: no parallel mutating calls
 - `Cleanup deadline`: same session as create
 
+## Mutating Pilot Preflight Guard
+
+T226 adds a non-mutating preflight guard:
+
+```text
+scripts/cloudmini_mutating_pilot_preflight.sh
+```
+
+Run it only after the approval fields above are filled with real owner-approved values:
+
+```bash
+APP_ENV=dev \
+BILLING_CLOUDMINI_MUTATING_PREFLIGHT_APPROVED=yes \
+DB_DSN="$DB_DSN" \
+CLOUDMINI_PILOT_ID=<approved-pilot-id> \
+CLOUDMINI_PILOT_ENVIRONMENT=dev \
+CLOUDMINI_SOURCE_ACCOUNT_OWNER=<owner> \
+CLOUDMINI_ENGINEERING_OWNER=<owner> \
+CLOUDMINI_OPS_OWNER=<owner> \
+CLOUDMINI_SECURITY_OWNER=<owner> \
+CLOUDMINI_CLEANUP_OWNER=<owner> \
+CLOUDMINI_FINANCE_QUOTA_OWNER=<owner> \
+CLOUDMINI_REVIEWER_SIGNOFF=<reviewer> \
+CLOUDMINI_PILOT_CLEANUP_DEADLINE=<same-session-deadline> \
+CLOUDMINI_PILOT_STOP_CONDITION=<approved-stop-condition> \
+CLOUDMINI_PILOT_READONLY_EVIDENCE_REF=<redacted-readonly-evidence-ref> \
+CLOUDMINI_PILOT_CLEANUP_PROCEDURE_REF=<redacted-cleanup-procedure-ref> \
+CLOUDMINI_PILOT_CREDENTIAL_PATH=/opt/cred-cloudmini-dev.env \
+CLOUDMINI_PILOT_MAX_CREATE_CALLS=1 \
+CLOUDMINI_PILOT_MAX_ACTIVE_RESOURCES=1 \
+CLOUDMINI_PILOT_WORKER_CONCURRENCY=1 \
+CLOUDMINI_PILOT_PROVIDER_RATE_LIMIT=no-parallel-mutating-calls \
+CLOUDMINI_PILOT_MAX_SPEND_EXPOSURE=single-dev-resource \
+bash scripts/cloudmini_mutating_pilot_preflight.sh
+```
+
+The preflight guard:
+
+- refuses `prod` and `production`;
+- requires `DB_DSN`, explicit preflight approval, owner fields, cleanup fields, read-only evidence reference, cleanup procedure reference, and exact one-resource guardrails;
+- requires the credential path to be outside the repo, readable, and not group/world accessible;
+- reruns the read-only mapping evidence collector and requires `result=PASS`;
+- prints only mapping display IDs, redacted guardrails, and presence flags;
+- does not call provider create/delete/action routes, Billing checkout, Billing payment, or the provisioning worker.
+
+Passing this preflight is not approval to run the mutating pilot by itself. It only proves the required fields are present and the mapped source is still ready.
+
 ## Required Preflight
 
 Run these before enabling a mutating pilot:
