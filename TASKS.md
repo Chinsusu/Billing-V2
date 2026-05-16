@@ -30,9 +30,9 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-16` after T216 done:
+Current board snapshot on `2026-05-16` after adding T217:
 
-- `TODO`: 0
+- `TODO`: 1
 - `IN_PROGRESS`: 0
 - `REVIEW`: 0
 - `BLOCKED`: 0
@@ -61,6 +61,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
+| T217 | [tasks/active/T217_cloudmini_multi_endpoint_config.md](tasks/active/T217_cloudmini_multi_endpoint_config.md) | feat/cloudmini-v3-multi-endpoint-config | provider | Support multiple Cloudmini V3 endpoint/API-key mappings by provider source/account. |
 
 ## In-Flight Task Files
 

@@ -32,6 +32,7 @@ Known Cloudmini V3 intake as of 2026-05-16:
 - Inventory summary: `ipv4_dc` returned `2` groups, with `1` sellable and `1` exhausted, totaling `200` allocatable units. `residential` returned `4` groups, all exhausted, totaling `0` allocatable units.
 - Edge note: provider-side evidence reported Cloudflare still blocks the generic `Python-urllib/3.12` user-agent with HTTP `403` code `1010`. The Billing Go-client-style path passed, so launch evidence should use the Billing adapter or the provider checker user-agent override, not a generic scripting user-agent.
 - Credential status: credential material must stay outside git, task notes, PR text, logs, and raw command output. T216 used `/opt/cred` as a local dev-only credential source; an approved shared secret path or secret-manager reference is still required before shared authenticated testing or pilot provisioning.
+- Multi-endpoint status: T217 tracks the runtime limitation that the worker currently supports one Cloudmini V3 base URL/API key and one configured source mapping. Multiple V3 endpoint/key mappings by provider source or account are not implemented yet.
 - Pilot status: no create, delete, cleanup, or Billing end-to-end pilot has been run from this repository.
 
 ## Cloudmini Edge/Gateway Unblock Runbook
@@ -82,6 +83,7 @@ Still missing for real sandbox readiness:
 - sandbox account owner and cleanup owner;
 - provider edge/gateway approval record for the read-only route/header policy;
 - source-to-group/SKU mapping for each Billing provider source;
+- multi-endpoint/account config if more than one Cloudmini V3 URL or API key is needed;
 - quota, rate, concurrency, timeout, and spend guardrails;
 - redacted real error examples and one approved pilot create/delete run.
 
