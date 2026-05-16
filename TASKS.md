@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-16` after T221 done:
+Current board snapshot on `2026-05-16` after T222 started:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 1
 - `DONE` task files in `tasks/active/`: 217
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T222 | [tasks/active/T222_notification_fallback_runbook.md](tasks/active/T222_notification_fallback_runbook.md) | IN_PROGRESS | Codex | codex/t222-notification-fallback-runbook | Define notification delivery/manual fallback evidence packet for launch. |
 
 ## Done Task Files
 
