@@ -30,12 +30,12 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-16` after T219 done:
+Current board snapshot on `2026-05-16` after T220 blocked:
 
 - `TODO`: 1
 - `IN_PROGRESS`: 0
 - `REVIEW`: 0
-- `BLOCKED`: 0
+- `BLOCKED`: 1
 - `DONE` task files in `tasks/active/`: 215
 - `REMOVED` task files in `tasks/removed/`: 2
 
