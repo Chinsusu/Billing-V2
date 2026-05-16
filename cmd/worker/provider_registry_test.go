@@ -67,6 +67,63 @@ func TestBuildWorkerProviderRegistryRegistersCloudminiAdapter(t *testing.T) {
 	}
 }
 
+func TestBuildWorkerProviderRegistryAcceptsCloudminiMappingsJSON(t *testing.T) {
+	env := workerProviderEnv{
+		Mode:                    "cloudmini_v3",
+		EncryptionKey:           strings.Repeat("1", 32),
+		CloudminiV3MappingsJSON: `[{"source_id":"source-a","base_url":"http://cloudmini-a.example","api_token":"token-a","kind":"ipv4_dc","group_id":"group-a","protocol":"socks5"},{"source_id":"source-b","provider_account_id":"account-b","base_url":"http://cloudmini-b.example","api_token":"token-b","kind":"residential","group_id":"group-b","node_id":"node-b","protocol":"http","bandwidth_limit_mb":100,"speed_limit_mbps":10}]`,
+		CloudminiV3PollInterval: "10ms",
+		CloudminiV3PollTimeout:  "1s",
+	}
+
+	config, err := cloudminiV3ConfigFromWorkerEnv(env)
+	if err != nil {
+		t.Fatalf("expected multi mapping config: %v", err)
+	}
+	if len(config.SourceEndpoints) != 2 {
+		t.Fatalf("expected two source endpoints, got %d", len(config.SourceEndpoints))
+	}
+	if len(config.AccountEndpoints) != 1 {
+		t.Fatalf("expected one account endpoint, got %d", len(config.AccountEndpoints))
+	}
+	if config.SourceEndpoints["source-a"].BaseURL != "http://cloudmini-a.example" ||
+		config.SourceEndpoints["source-a"].Source.GroupID != "group-a" {
+		t.Fatalf("unexpected source A endpoint: %+v", config.SourceEndpoints["source-a"])
+	}
+	if config.SourceEndpoints["source-b"].Source.NodeID != "node-b" ||
+		config.SourceEndpoints["source-b"].Source.BandwidthLimitMB != 100 ||
+		config.SourceEndpoints["source-b"].Source.SpeedLimitMBps != 10 {
+		t.Fatalf("unexpected source B endpoint: %+v", config.SourceEndpoints["source-b"])
+	}
+
+	registry, err := buildWorkerProviderRegistry(env)
+	if err != nil {
+		t.Fatalf("expected cloudmini registry: %v", err)
+	}
+	adapter, err := registry.Get(provider.TypeCloudminiV3)
+	if err != nil {
+		t.Fatalf("expected cloudmini adapter: %v", err)
+	}
+	result, err := adapter.CheckStock(context.Background(), provider.OperationContext{SourceID: "missing-source"}, provider.StockRequest{})
+	var adapterErr provider.AdapterError
+	if !errors.As(err, &adapterErr) || adapterErr.Code != provider.ErrorConfigInvalid {
+		t.Fatalf("expected fail-closed missing mapping, got result=%+v err=%v", result, err)
+	}
+}
+
+func TestCloudminiMappingsJSONRequiresSourceOrAccount(t *testing.T) {
+	env := workerProviderEnv{
+		Mode:                    "cloudmini_v3",
+		EncryptionKey:           strings.Repeat("1", 32),
+		CloudminiV3MappingsJSON: `[{"base_url":"http://cloudmini.example","api_token":"token-a","kind":"ipv4_dc","group_id":"group-a","protocol":"socks5"}]`,
+	}
+
+	_, err := cloudminiV3ConfigFromWorkerEnv(env)
+	if err == nil || !strings.Contains(err.Error(), "source_id or provider_account_id") {
+		t.Fatalf("expected selector error, got %v", err)
+	}
+}
+
 func TestCloudminiConfigRejectsInvalidSourceShape(t *testing.T) {
 	env := validCloudminiWorkerProviderEnv()
 	env.CloudminiV3Kind = "vps"

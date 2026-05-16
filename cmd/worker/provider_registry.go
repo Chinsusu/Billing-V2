@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"strconv"
@@ -21,6 +22,7 @@ type workerProviderEnv struct {
 	EncryptionKey           string
 	CloudminiV3BaseURL      string
 	CloudminiV3APIToken     string
+	CloudminiV3MappingsJSON string
 	CloudminiV3SourceID     string
 	CloudminiV3Kind         string
 	CloudminiV3GroupID      string
@@ -42,6 +44,7 @@ func readWorkerProviderEnv() workerProviderEnv {
 		EncryptionKey:           os.Getenv("ENCRYPTION_KEY"),
 		CloudminiV3BaseURL:      os.Getenv("CLOUDMINI_V3_BASE_URL"),
 		CloudminiV3APIToken:     os.Getenv("CLOUDMINI_V3_API_TOKEN"),
+		CloudminiV3MappingsJSON: os.Getenv("CLOUDMINI_V3_MAPPINGS_JSON"),
 		CloudminiV3SourceID:     os.Getenv("CLOUDMINI_V3_SOURCE_ID"),
 		CloudminiV3Kind:         os.Getenv("CLOUDMINI_V3_KIND"),
 		CloudminiV3GroupID:      os.Getenv("CLOUDMINI_V3_GROUP_ID"),
@@ -96,7 +99,23 @@ func newCloudminiV3WorkerRegistry(env workerProviderEnv) (*provider.Registry, er
 	return registry, nil
 }
 
+type cloudminiV3MappingEnv struct {
+	SourceID          string `json:"source_id"`
+	ProviderAccountID string `json:"provider_account_id"`
+	BaseURL           string `json:"base_url"`
+	APIToken          string `json:"api_token"`
+	Kind              string `json:"kind"`
+	GroupID           string `json:"group_id"`
+	NodeID            string `json:"node_id"`
+	Protocol          string `json:"protocol"`
+	BandwidthLimitMB  int    `json:"bandwidth_limit_mb"`
+	SpeedLimitMBps    int    `json:"speed_limit_mbps"`
+}
+
 func cloudminiV3ConfigFromWorkerEnv(env workerProviderEnv) (provider.CloudminiV3Config, error) {
+	if strings.TrimSpace(env.CloudminiV3MappingsJSON) != "" {
+		return cloudminiV3MultiConfigFromWorkerEnv(env)
+	}
 	baseURL, err := requiredCloudminiV3Env("CLOUDMINI_V3_BASE_URL", env.CloudminiV3BaseURL)
 	if err != nil {
 		return provider.CloudminiV3Config{}, err
@@ -158,6 +177,106 @@ func cloudminiV3ConfigFromWorkerEnv(env workerProviderEnv) (provider.CloudminiV3
 		PollInterval: pollInterval,
 		PollTimeout:  pollTimeout,
 	}, nil
+}
+
+func cloudminiV3MultiConfigFromWorkerEnv(env workerProviderEnv) (provider.CloudminiV3Config, error) {
+	mappings, err := parseCloudminiV3MappingsEnv(env.CloudminiV3MappingsJSON)
+	if err != nil {
+		return provider.CloudminiV3Config{}, err
+	}
+	sourceEndpoints := make(map[provider.SourceID]provider.CloudminiV3EndpointConfig)
+	accountEndpoints := make(map[provider.AccountID]provider.CloudminiV3EndpointConfig)
+	for _, mapping := range mappings {
+		endpoint, sourceID, accountID, err := cloudminiV3EndpointFromMappingEnv(mapping)
+		if err != nil {
+			return provider.CloudminiV3Config{}, err
+		}
+		if sourceID != "" {
+			if _, exists := sourceEndpoints[sourceID]; exists {
+				return provider.CloudminiV3Config{}, fmt.Errorf("CLOUDMINI_V3_MAPPINGS_JSON contains a duplicate source_id")
+			}
+			sourceEndpoints[sourceID] = endpoint
+		}
+		if accountID != "" {
+			if _, exists := accountEndpoints[accountID]; exists {
+				return provider.CloudminiV3Config{}, fmt.Errorf("CLOUDMINI_V3_MAPPINGS_JSON contains a duplicate provider_account_id")
+			}
+			accountEndpoints[accountID] = endpoint
+		}
+	}
+	pollInterval, err := optionalPositiveDurationEnv("CLOUDMINI_V3_POLL_INTERVAL", env.CloudminiV3PollInterval)
+	if err != nil {
+		return provider.CloudminiV3Config{}, err
+	}
+	pollTimeout, err := optionalPositiveDurationEnv("CLOUDMINI_V3_POLL_TIMEOUT", env.CloudminiV3PollTimeout)
+	if err != nil {
+		return provider.CloudminiV3Config{}, err
+	}
+	cipher, err := secrets.NewAESGCMCipher(env.EncryptionKey)
+	if err != nil {
+		return provider.CloudminiV3Config{}, fmt.Errorf("ENCRYPTION_KEY is required for cloudmini_v3 provider mode")
+	}
+	return provider.CloudminiV3Config{
+		CredentialCipher: cipher,
+		SourceEndpoints:  sourceEndpoints,
+		AccountEndpoints: accountEndpoints,
+		PollInterval:     pollInterval,
+		PollTimeout:      pollTimeout,
+	}, nil
+}
+
+func parseCloudminiV3MappingsEnv(value string) ([]cloudminiV3MappingEnv, error) {
+	var mappings []cloudminiV3MappingEnv
+	if err := json.Unmarshal([]byte(value), &mappings); err != nil {
+		return nil, fmt.Errorf("CLOUDMINI_V3_MAPPINGS_JSON must be valid JSON")
+	}
+	if len(mappings) == 0 {
+		return nil, fmt.Errorf("CLOUDMINI_V3_MAPPINGS_JSON must contain at least one mapping")
+	}
+	return mappings, nil
+}
+
+func cloudminiV3EndpointFromMappingEnv(mapping cloudminiV3MappingEnv) (provider.CloudminiV3EndpointConfig, provider.SourceID, provider.AccountID, error) {
+	sourceID := provider.SourceID(strings.TrimSpace(mapping.SourceID))
+	accountID := provider.AccountID(strings.TrimSpace(mapping.ProviderAccountID))
+	if sourceID == "" && accountID == "" {
+		return provider.CloudminiV3EndpointConfig{}, "", "", fmt.Errorf("CLOUDMINI_V3_MAPPINGS_JSON entries require source_id or provider_account_id")
+	}
+	baseURL, err := requiredCloudminiV3Env("CLOUDMINI_V3_MAPPINGS_JSON.base_url", mapping.BaseURL)
+	if err != nil {
+		return provider.CloudminiV3EndpointConfig{}, "", "", err
+	}
+	apiToken, err := requiredCloudminiV3Env("CLOUDMINI_V3_MAPPINGS_JSON.api_token", mapping.APIToken)
+	if err != nil {
+		return provider.CloudminiV3EndpointConfig{}, "", "", err
+	}
+	kind, err := requiredCloudminiV3Enum("CLOUDMINI_V3_MAPPINGS_JSON.kind", mapping.Kind, "ipv4_dc", "residential")
+	if err != nil {
+		return provider.CloudminiV3EndpointConfig{}, "", "", err
+	}
+	groupID, err := requiredCloudminiV3Env("CLOUDMINI_V3_MAPPINGS_JSON.group_id", mapping.GroupID)
+	if err != nil {
+		return provider.CloudminiV3EndpointConfig{}, "", "", err
+	}
+	protocol, err := requiredCloudminiV3Enum("CLOUDMINI_V3_MAPPINGS_JSON.protocol", mapping.Protocol, "http", "socks5")
+	if err != nil {
+		return provider.CloudminiV3EndpointConfig{}, "", "", err
+	}
+	if mapping.BandwidthLimitMB < 0 || mapping.SpeedLimitMBps < 0 {
+		return provider.CloudminiV3EndpointConfig{}, "", "", fmt.Errorf("CLOUDMINI_V3_MAPPINGS_JSON limits must be non-negative")
+	}
+	return provider.CloudminiV3EndpointConfig{
+		BaseURL:  baseURL,
+		APIToken: apiToken,
+		Source: provider.CloudminiV3SourceConfig{
+			Kind:             kind,
+			GroupID:          groupID,
+			NodeID:           strings.TrimSpace(mapping.NodeID),
+			Protocol:         protocol,
+			BandwidthLimitMB: mapping.BandwidthLimitMB,
+			SpeedLimitMBps:   mapping.SpeedLimitMBps,
+		},
+	}, sourceID, accountID, nil
 }
 
 func requiredCloudminiV3Env(key string, value string) (string, error) {

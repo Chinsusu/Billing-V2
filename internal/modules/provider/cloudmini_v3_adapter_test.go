@@ -90,6 +90,132 @@ func TestCloudminiV3AdapterProvisionEncryptsCredentialAndUsesIdempotency(t *test
 	}
 }
 
+func TestCloudminiV3AdapterRoutesSourcesToDistinctEndpoints(t *testing.T) {
+	var sawSourceA, sawSourceB bool
+	serverA := newCloudminiProvisionServer(t, "token-a", "ipv4_dc", "group-a", "proxy-a", "203.0.113.11", &sawSourceA)
+	defer serverA.Close()
+	serverB := newCloudminiProvisionServer(t, "token-b", "residential", "group-b", "proxy-b", "203.0.113.12", &sawSourceB)
+	defer serverB.Close()
+
+	adapter, err := NewCloudminiV3Adapter(CloudminiV3Config{
+		CredentialCipher: &cloudminiV3TestCipher{},
+		SourceEndpoints: map[SourceID]CloudminiV3EndpointConfig{
+			"source-a": {
+				BaseURL:  serverA.URL,
+				APIToken: "token-a",
+				Source:   CloudminiV3SourceConfig{Kind: "ipv4_dc", GroupID: "group-a", Protocol: "socks5"},
+			},
+			"source-b": {
+				BaseURL:  serverB.URL,
+				APIToken: "token-b",
+				Source:   CloudminiV3SourceConfig{Kind: "residential", GroupID: "group-b", Protocol: "http"},
+			},
+		},
+		PollInterval: time.Millisecond,
+		PollTimeout:  50 * time.Millisecond,
+	})
+	if err != nil {
+		t.Fatalf("create adapter: %v", err)
+	}
+
+	operationA := validOperation()
+	operationA.SourceID = "source-a"
+	resultA, err := adapter.Provision(context.Background(), operationA, ProvisionRequest{PlanKey: "proxy"})
+	if err != nil {
+		t.Fatalf("expected source A provision success: %v", err)
+	}
+	if resultA.ExternalResourceID != "proxy-a" || resultA.ServiceIdentifier != "203.0.113.11:1080" {
+		t.Fatalf("unexpected source A result: %+v", resultA)
+	}
+
+	operationB := validOperation()
+	operationB.SourceID = "source-b"
+	resultB, err := adapter.Provision(context.Background(), operationB, ProvisionRequest{PlanKey: "proxy"})
+	if err != nil {
+		t.Fatalf("expected source B provision success: %v", err)
+	}
+	if resultB.ExternalResourceID != "proxy-b" || resultB.ServiceIdentifier != "203.0.113.12:1080" {
+		t.Fatalf("unexpected source B result: %+v", resultB)
+	}
+	if !sawSourceA || !sawSourceB {
+		t.Fatalf("expected both endpoints to receive provision calls: sourceA=%v sourceB=%v", sawSourceA, sawSourceB)
+	}
+}
+
+func TestCloudminiV3AdapterMissingEndpointMappingDoesNotCallProvider(t *testing.T) {
+	var called bool
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		called = true
+		t.Fatalf("provider endpoint must not be called for missing source mapping")
+	}))
+	defer server.Close()
+
+	adapter, err := NewCloudminiV3Adapter(CloudminiV3Config{
+		CredentialCipher: &cloudminiV3TestCipher{},
+		SourceEndpoints: map[SourceID]CloudminiV3EndpointConfig{
+			"source-a": {
+				BaseURL:  server.URL,
+				APIToken: "token-a",
+				Source:   CloudminiV3SourceConfig{Kind: "ipv4_dc", GroupID: "group-a", Protocol: "socks5"},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("create adapter: %v", err)
+	}
+
+	operation := validOperation()
+	operation.SourceID = "missing-source"
+	result, err := adapter.Provision(context.Background(), operation, ProvisionRequest{PlanKey: "proxy"})
+	var adapterErr AdapterError
+	if !errors.As(err, &adapterErr) || adapterErr.Code != ErrorConfigInvalid {
+		t.Fatalf("expected config error, got result=%+v err=%v", result, err)
+	}
+	if called {
+		t.Fatal("provider endpoint was called despite missing source mapping")
+	}
+}
+
+func TestCloudminiV3AdapterRoutesProviderAccountEndpoint(t *testing.T) {
+	var sawInventory bool
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assertCloudminiBearer(t, r, "account-token")
+		if r.Method != http.MethodGet || r.URL.Path != "/api/v3/inventory/groups" || r.URL.Query().Get("kind") != "ipv4_dc" {
+			t.Fatalf("unexpected request %s %s?%s", r.Method, r.URL.Path, r.URL.RawQuery)
+		}
+		sawInventory = true
+		writeCloudminiSuccess(t, w, http.StatusOK, []cloudminiV3GroupInventory{
+			{ID: "group-account", Kind: "ipv4_dc", AllocatableUnits: 7},
+		})
+	}))
+	defer server.Close()
+
+	adapter, err := NewCloudminiV3Adapter(CloudminiV3Config{
+		CredentialCipher: &cloudminiV3TestCipher{},
+		AccountEndpoints: map[AccountID]CloudminiV3EndpointConfig{
+			"account-a": {
+				BaseURL:  server.URL,
+				APIToken: "account-token",
+				Source:   CloudminiV3SourceConfig{Kind: "ipv4_dc", GroupID: "group-account", Protocol: "socks5"},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("create adapter: %v", err)
+	}
+
+	operation := validOperation()
+	operation.SourceID = "source-without-endpoint"
+	operation.ProviderAccountID = "account-a"
+	result, err := adapter.CheckStock(context.Background(), operation, StockRequest{PlanKey: "proxy"})
+	if err != nil {
+		t.Fatalf("expected account endpoint stock success: %v", err)
+	}
+	if !sawInventory || result.StockStatus != StockStatusAvailable || result.CapacityCount != 7 {
+		t.Fatalf("unexpected account endpoint result: saw=%v result=%+v", sawInventory, result)
+	}
+}
+
 func TestCloudminiV3AdapterCheckStockMapsOutOfStock(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assertCloudminiAuth(t, r)
@@ -228,7 +354,12 @@ func newTestCloudminiV3Adapter(t *testing.T, baseURL string, cipher CredentialCi
 
 func assertCloudminiAuth(t *testing.T, r *http.Request) {
 	t.Helper()
-	if got := r.Header.Get("Authorization"); got != "Bearer test-token" {
+	assertCloudminiBearer(t, r, "test-token")
+}
+
+func assertCloudminiBearer(t *testing.T, r *http.Request, token string) {
+	t.Helper()
+	if got := r.Header.Get("Authorization"); got != "Bearer "+token {
 		t.Fatalf("expected bearer auth header, got %q", got)
 	}
 }
@@ -255,4 +386,50 @@ type cloudminiV3TestCipher struct {
 func (cipher *cloudminiV3TestCipher) Encrypt(plaintext string) (string, error) {
 	cipher.plaintexts = append(cipher.plaintexts, plaintext)
 	return "encrypted-proxy-payload", nil
+}
+
+func newCloudminiProvisionServer(t *testing.T, token string, kind string, groupID string, proxyID string, host string, sawCreate *bool) *httptest.Server {
+	t.Helper()
+	operationID := "op-" + proxyID
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assertCloudminiBearer(t, r, token)
+		switch {
+		case r.Method == http.MethodPost && r.URL.Path == "/api/v3/proxies":
+			*sawCreate = true
+			var payload cloudminiV3CreateProxyRequest
+			if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+				t.Fatalf("decode request: %v", err)
+			}
+			if payload.Kind != kind || payload.GroupID != groupID {
+				t.Fatalf("unexpected create payload: %+v", payload)
+			}
+			writeCloudminiSuccess(t, w, http.StatusAccepted, cloudminiV3ProxyMutationResponse{
+				Resource:  cloudminiV3Resource{ID: proxyID, Kind: kind, Status: "provisioning"},
+				Operation: cloudminiV3Operation{ID: operationID, State: cloudminiV3OperationAccepted},
+			})
+		case r.Method == http.MethodGet && r.URL.Path == "/api/v3/operations/"+operationID:
+			snapshot := cloudminiV3Proxy{
+				ID:         proxyID,
+				Kind:       kind,
+				Status:     "running",
+				Host:       host,
+				OutboundIP: host,
+				PortSocks:  1080,
+				Username:   "proxy-user",
+				Password:   "proxy-pass",
+			}
+			rawSnapshot, err := json.Marshal(snapshot)
+			if err != nil {
+				t.Fatalf("marshal snapshot: %v", err)
+			}
+			writeCloudminiSuccess(t, w, http.StatusOK, cloudminiV3Operation{
+				ID:               operationID,
+				ResourceID:       optionalString(proxyID),
+				State:            cloudminiV3OperationSucceeded,
+				ResourceSnapshot: rawSnapshot,
+			})
+		default:
+			t.Fatalf("unexpected request %s %s", r.Method, r.URL.Path)
+		}
+	}))
 }

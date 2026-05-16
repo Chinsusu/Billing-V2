@@ -183,6 +183,6 @@ If cleanup fails, keep the launch decision `NO-GO`, disable the source, and open
 
 Before broader pilot or multiple provider accounts:
 
-- T217 must support multiple Cloudmini V3 endpoint/API-key mappings if more than one URL/key is needed.
+- T217 supports multiple Cloudmini V3 endpoint/API-key mappings through `CLOUDMINI_V3_MAPPINGS_JSON`; keep secret values in approved env/secret storage only.
 - The approved dev/staging Billing database still needs the T219 mapping script to be applied and verified through provider readiness evidence.
 - Runtime configuration must fail closed when the configured source id does not match the Billing provider source used by the provisioning job.
