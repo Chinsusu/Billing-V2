@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-16` after T218 done:
+Current board snapshot on `2026-05-16` after T219 review:
 
 - `TODO`: 1
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 214
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -67,6 +67,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T219 | [tasks/active/T219_cloudmini_pilot_source_mapping.md](tasks/active/T219_cloudmini_pilot_source_mapping.md) | REVIEW | Codex | codex/t219-cloudmini-pilot-mapping | Add guarded non-production Cloudmini pilot provider-source and plan-source mapping tooling. |
 
 ## Done Task Files
 
