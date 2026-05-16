@@ -32,6 +32,36 @@ Do not use the existing seeded `Local Fake Hetzner Ready` source as the Cloudmin
 
 Do not pilot `residential` yet. The read-only evidence shows `residential` inventory is exhausted.
 
+## Catalog Mapping Procedure
+
+T219 adds the missing `cloudmini_v3` catalog provider type migration and a guarded mapping script:
+
+```text
+migrations/0025_add_cloudmini_provider_type.sql
+scripts/cloudmini_pilot_mapping.sh
+```
+
+Apply the mapping only on an approved non-production database, after the approval fields below are filled:
+
+```bash
+go run ./cmd/migrate -dsn "$DB_DSN" up
+APP_ENV=dev \
+BILLING_CLOUDMINI_PILOT_APPROVED=yes \
+bash scripts/cloudmini_pilot_mapping.sh
+```
+
+The script is intentionally narrow:
+
+- It refuses `prod` and `production`.
+- It requires `DB_DSN`, `APP_ENV`, and `BILLING_CLOUDMINI_PILOT_APPROVED=yes`.
+- It creates or updates a `cloudmini_v3` provider source for the pilot plan.
+- It links `proxy-static-10gb-monthly` to that source at priority `1`.
+- It moves only the seeded fake Hetzner link for that proxy plan to priority `5` so it cannot win the source selection tie.
+- It records only redacted group reference and guardrail metadata in `capacity_policy`.
+- It must not print or store raw API tokens, raw auth headers, raw provider group IDs, raw provider payloads, proxy credentials, or DSNs.
+
+After applying the mapping, verify the admin provider-readiness API shows the pilot proxy plan as `ready`, with `source_type=cloudmini_v3`, using display IDs only in evidence.
+
 ## Required Approval Fields
 
 Fill these before any mutating call:
@@ -144,5 +174,5 @@ If cleanup fails, keep the launch decision `NO-GO`, disable the source, and open
 Before broader pilot or multiple provider accounts:
 
 - T217 must support multiple Cloudmini V3 endpoint/API-key mappings if more than one URL/key is needed.
-- The dev/staging catalog needs an explicit Cloudmini V3 provider source and plan source mapping.
+- The approved dev/staging database still needs the T219 mapping script to be applied and verified through provider readiness evidence.
 - Runtime configuration must fail closed when the configured source id does not match the Billing provider source used by the provisioning job.
