@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-16` after T225 claimed:
+Current board snapshot on `2026-05-16` after T225 done:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 1
+- `IN_PROGRESS`: 0
 - `REVIEW`: 0
 - `BLOCKED`: 1
-- `DONE` task files in `tasks/active/`: 220
+- `DONE` task files in `tasks/active/`: 221
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T225 | [tasks/active/T225_rbac_route_surface_isolation.md](tasks/active/T225_rbac_route_surface_isolation.md) | IN_PROGRESS | Codex | codex/t225-rbac-route-surface-isolation | Fix actor-type route isolation between client, reseller, and admin API surfaces. |
 
 ## Done Task Files
 
@@ -78,6 +77,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T222`
 - `T223`
 - `T224`
+- `T225`
 
 ## Removed Tasks
 
