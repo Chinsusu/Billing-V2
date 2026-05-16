@@ -3,8 +3,11 @@ package seed
 import (
 	"context"
 	"database/sql"
+	"regexp"
 	"strings"
 	"testing"
+
+	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
 )
 
 func TestDevStatementsAreNamedAndIdempotent(t *testing.T) {
@@ -65,6 +68,30 @@ func TestDevStatementsIncludeBillingFlowData(t *testing.T) {
 	for _, value := range required {
 		if !strings.Contains(sql, value) {
 			t.Fatalf("expected seed SQL to contain %q", value)
+		}
+	}
+}
+
+func TestDevUserPasswordHashesAreUsable(t *testing.T) {
+	sql := joinSeedSQL(DevStatements())
+	normalizedSQL := strings.ToLower(sql)
+	if strings.Contains(sql, "dev-only-placeholder-hash") {
+		t.Fatal("dev user seed must not use placeholder password hashes")
+	}
+	if count := strings.Count(normalizedSQL, "password_hash = excluded.password_hash"); count < 3 {
+		t.Fatalf("expected dev user seed conflicts to update password hashes, got %d", count)
+	}
+	matches := regexp.MustCompile(`'\$argon2id[^']+'`).FindAllString(sql, -1)
+	if len(matches) == 0 {
+		t.Fatal("expected dev user seed to contain argon2id password hashes")
+	}
+	for _, match := range matches {
+		ok, err := identity.VerifyPasswordArgon2id("admin123", strings.Trim(match, "'"))
+		if err != nil {
+			t.Fatalf("dev user hash is invalid: %v", err)
+		}
+		if !ok {
+			t.Fatal("dev user hash does not verify the local-only password")
 		}
 	}
 }

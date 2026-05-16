@@ -6,7 +6,7 @@ SELECT
     '00000000-0000-0000-0000-000000000101',
     platform.tenant_id,
     'admin@local.billing',
-    'dev-only-placeholder-hash',
+    '$argon2id$v=19$m=65536,t=3,p=1$zCzeEQa7z27csWbw8dedxA$eRBKqKQhRqR5qQlDbprPjnxjMIEWgma7Mg0Uxw7mg+k',
     'Platform Admin',
     'platform_staff',
     'active',
@@ -15,6 +15,7 @@ FROM tenants platform
 WHERE platform.slug = 'platform'
 ON CONFLICT (tenant_id, email) DO UPDATE
 SET full_name = EXCLUDED.full_name,
+    password_hash = EXCLUDED.password_hash,
     user_type = EXCLUDED.user_type,
     status = EXCLUDED.status,
     two_factor_status = EXCLUDED.two_factor_status;
@@ -24,7 +25,7 @@ SELECT
     '00000000-0000-0000-0000-000000000102',
     reseller.tenant_id,
     'reseller@local.billing',
-    'dev-only-placeholder-hash',
+    '$argon2id$v=19$m=65536,t=3,p=1$zCzeEQa7z27csWbw8dedxA$eRBKqKQhRqR5qQlDbprPjnxjMIEWgma7Mg0Uxw7mg+k',
     'Demo Reseller Owner',
     'reseller_staff',
     'active',
@@ -33,6 +34,7 @@ FROM tenants reseller
 WHERE reseller.slug = 'demo-reseller'
 ON CONFLICT (tenant_id, email) DO UPDATE
 SET full_name = EXCLUDED.full_name,
+    password_hash = EXCLUDED.password_hash,
     user_type = EXCLUDED.user_type,
     status = EXCLUDED.status,
     two_factor_status = EXCLUDED.two_factor_status;
@@ -42,7 +44,7 @@ SELECT
     '00000000-0000-0000-0000-000000000103',
     reseller.tenant_id,
     'customer@local.billing',
-    'dev-only-placeholder-hash',
+    '$argon2id$v=19$m=65536,t=3,p=1$zCzeEQa7z27csWbw8dedxA$eRBKqKQhRqR5qQlDbprPjnxjMIEWgma7Mg0Uxw7mg+k',
     'Demo Customer',
     'client',
     'active',
@@ -51,6 +53,7 @@ FROM tenants reseller
 WHERE reseller.slug = 'demo-reseller'
 ON CONFLICT (tenant_id, email) DO UPDATE
 SET full_name = EXCLUDED.full_name,
+    password_hash = EXCLUDED.password_hash,
     user_type = EXCLUDED.user_type,
     status = EXCLUDED.status,
     two_factor_status = EXCLUDED.two_factor_status;
