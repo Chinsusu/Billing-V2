@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-16` with T220 in review:
+Current board snapshot on `2026-05-16` after T220 done:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 221
+- `DONE` task files in `tasks/active/`: 222
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,14 +66,13 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T220 | [tasks/active/T220_cloudmini_dev_mapping_evidence.md](tasks/active/T220_cloudmini_dev_mapping_evidence.md) | REVIEW | Codex | codex/t220-cloudmini-dev-mapping-evidence-unblock | Apply and verify guarded Cloudmini V3 pilot source mapping on approved non-production dev DB. |
 
 ## Done Task Files
 
 The following task files under `tasks/active/` are already `DONE` and should not be claimed:
 
 - `T003` to `T009`
-- `T011` to `T219`
+- `T011` to `T220`
 - `T221`
 - `T222`
 - `T223`
