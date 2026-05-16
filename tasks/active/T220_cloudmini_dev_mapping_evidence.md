@@ -1,9 +1,9 @@
 # T220 - Cloudmini dev mapping evidence
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t220-cloudmini-dev-mapping-evidence-unblock
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/483
 Risk: provider/provisioning/credential/config/database
 Created: 2026-05-16
 Updated: 2026-05-16
@@ -66,3 +66,5 @@ T220 was unblocked by the approved non-production Billing test server runtime en
 - 2026-05-16: Validation passed for blocker record: `go run ./cmd/taskguard`; `git diff --check`; changed-file secret pattern scan returned no matches.
 - 2026-05-16: Task unblocked by approved non-production test server Billing runtime env at `/opt/Billing/.env.dev`; starting guarded mapping/evidence run without printing DSN or provider secrets.
 - 2026-05-16: Test server run passed: `APP_ENV=dev`, migration validate/plan/up, guarded mapping apply, and read-only mapping evidence `PASS`. No provider mutating route, Billing checkout, payment, or worker pilot was run.
+- 2026-05-16: Validation passed: `go run ./cmd/taskguard`; `go run ./cmd/migrate validate`; `bash -n scripts/cloudmini_pilot_mapping.sh scripts/cloudmini_mapping_evidence.sh`; `go test ./cmd/migrate ./internal/platform/db ./internal/seed`; `git diff --check`; changed-file secret pattern scan returned no matches.
+- 2026-05-16: PR opened for review: https://github.com/Chinsusu/Billing-V2/pull/483.

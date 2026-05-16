@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-16` with T220 in progress:
+Current board snapshot on `2026-05-16` with T220 in review:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 221
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -66,7 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T220 | [tasks/active/T220_cloudmini_dev_mapping_evidence.md](tasks/active/T220_cloudmini_dev_mapping_evidence.md) | IN_PROGRESS | Codex | codex/t220-cloudmini-dev-mapping-evidence-unblock | Apply and verify guarded Cloudmini V3 pilot source mapping on approved non-production dev DB. |
+| T220 | [tasks/active/T220_cloudmini_dev_mapping_evidence.md](tasks/active/T220_cloudmini_dev_mapping_evidence.md) | REVIEW | Codex | codex/t220-cloudmini-dev-mapping-evidence-unblock | Apply and verify guarded Cloudmini V3 pilot source mapping on approved non-production dev DB. |
 
 ## Done Task Files
 
