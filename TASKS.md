@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-16` after T224 review:
+Current board snapshot on `2026-05-16` after T224 done:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 1
-- `DONE` task files in `tasks/active/`: 219
+- `DONE` task files in `tasks/active/`: 220
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T224 | [tasks/active/T224_auth_forwarded_host.md](tasks/active/T224_auth_forwarded_host.md) | REVIEW | Codex | codex/t224-auth-forwarded-host | Resolve auth tenant domains from forwarded host headers behind reverse proxies. |
 
 ## Done Task Files
 
@@ -77,6 +76,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T221`
 - `T222`
 - `T223`
+- `T224`
 
 ## Removed Tasks
 
