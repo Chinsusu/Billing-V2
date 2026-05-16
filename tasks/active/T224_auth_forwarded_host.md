@@ -1,9 +1,9 @@
 # T224 - Auth forwarded host domain resolution
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t224-auth-forwarded-host
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/479
 Risk: auth/session/tenant-domain/reverse-proxy
 Created: 2026-05-16
 Updated: 2026-05-16
@@ -33,3 +33,4 @@ Fix domain auth behind the frontend reverse proxy so `/auth/login` and password 
 ## Agent Log
 
 - 2026-05-16: Task created and claimed from latest `origin/main`.
+- 2026-05-16: Opened PR #479 after backend tests, build, taskguard, and diff checks passed.
