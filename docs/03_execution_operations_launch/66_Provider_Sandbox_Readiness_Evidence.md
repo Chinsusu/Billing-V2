@@ -1,8 +1,8 @@
 # Provider Sandbox Readiness Evidence
 
-**Tasks:** T199, T208, T211, T212, T213, T214, T215, T216, T217, T218, T219
+**Tasks:** T199, T208, T211, T212, T213, T214, T215, T216, T217, T218, T219, T220
 **Date:** 2026-05-16
-**Decision:** real provider sandbox is not launch-ready yet. Cloudmini V3 intake and authenticated read-only reachability are now proven through the public hostname, T218 defines a controlled pilot approval packet, and T219 adds guarded non-production catalog mapping tooling. Approved shared credential storage, owners, applied source-readiness evidence, cleanup, idempotency evidence, and a real pilot run are still missing.
+**Decision:** real provider sandbox is not launch-ready yet. Cloudmini V3 intake and authenticated read-only reachability are now proven through the public hostname, T218 defines a controlled pilot approval packet, and T219 adds guarded non-production catalog mapping tooling. T220 could not apply the mapping because no approved Billing DB access path was found. Approved shared credential storage, owners, applied source-readiness evidence, cleanup, idempotency evidence, and a real pilot run are still missing.
 
 ## Scope
 
@@ -14,7 +14,7 @@ This record separates local fake-provider evidence from real sandbox-provider re
 |---|---|---|---|
 | VPS local fake path | `ready` for local validation only | Fresh seed maps `vps-cx23-40gb-monthly` to `Local Fake Hetzner Ready`; provider contract tests cover fake Hetzner create, status, terminate, idempotency, and timeout mappings. | OK for local/CI smoke only. |
 | Proxy/manual local path | documented non-ready state | Fresh seed maps `proxy-static-10gb-monthly` first to an unsupported VPS-style source and has a manual fallback path. This proves the readiness API surfaces the gap instead of silently treating proxy as ready. | Not ready for real proxy sandbox provisioning. |
-| Real provider sandbox | `blocked` | Cloudmini V3 non-production base URL and API version are known. A 2026-05-16 read-only rerun through `https://cz.resvn.net/` reached the V3 app: unauthenticated capabilities returned HTTP `401`, and authenticated capabilities plus inventory returned HTTP `200` V3 success envelopes using bearer, `X-API-Key`, and `X-ACCESS-CODE`. T218 selected a redacted `ipv4_dc` pilot mapping candidate from sellable read-only inventory and defines quota/cleanup approval requirements. T219 adds migration/script support for a guarded Cloudmini pilot source mapping, but no approved DB apply or readiness evidence is recorded here yet. Approved shared credential storage path, account owner, applied active Cloudmini source mapping, timeout policy, cleanup owner, and real pilot run are still missing. | Do not run pilot provisioning against real providers until the T218 approval fields are complete and the T219 mapping is applied and verified on an approved non-production DB. |
+| Real provider sandbox | `blocked` | Cloudmini V3 non-production base URL and API version are known. A 2026-05-16 read-only rerun through `https://cz.resvn.net/` reached the V3 app: unauthenticated capabilities returned HTTP `401`, and authenticated capabilities plus inventory returned HTTP `200` V3 success envelopes using bearer, `X-API-Key`, and `X-ACCESS-CODE`. T218 selected a redacted `ipv4_dc` pilot mapping candidate from sellable read-only inventory and defines quota/cleanup approval requirements. T219 adds migration/script support for a guarded Cloudmini pilot source mapping. T220 found no approved Billing DB access path, so no DB apply or readiness evidence is recorded here yet. Approved shared credential storage path, account owner, applied active Cloudmini source mapping, timeout policy, cleanup owner, and real pilot run are still missing. | Do not run pilot provisioning against real providers until the T218 approval fields are complete and the T219 mapping is applied and verified on an approved non-production Billing DB. |
 
 ## Proxy Cloudmini API V3 Candidate
 
@@ -35,6 +35,7 @@ Known Cloudmini V3 intake as of 2026-05-16:
 - Credential status: credential material must stay outside git, task notes, PR text, logs, and raw command output. The local dev provider credential has been split into `/opt/cred-cloudmini-dev.env` with mode `0600`; an approved shared secret path or secret-manager reference is still required before shared authenticated testing or pilot provisioning.
 - Multi-endpoint status: T217 tracks the runtime limitation that the worker currently supports one Cloudmini V3 base URL/API key and one configured source mapping. Multiple V3 endpoint/key mappings by provider source or account are not implemented yet.
 - Catalog mapping status: T219 adds `migrations/0025_add_cloudmini_provider_type.sql` and `scripts/cloudmini_pilot_mapping.sh` so an approved non-production DB can create the pilot `cloudmini_v3` provider source and plan-source mapping. This tooling has not been recorded as applied to shared dev/staging in this evidence packet.
+- Target DB access status: T220 checked local secret key names and SSH-based dev discovery without printing secret values. No Billing `DB_DSN`, Billing repo, or Billing runtime environment was found, so the mapping was not applied.
 - Pilot status: no create, delete, cleanup, or Billing end-to-end pilot has been run from this repository.
 
 ## Cloudmini Edge/Gateway Unblock Runbook

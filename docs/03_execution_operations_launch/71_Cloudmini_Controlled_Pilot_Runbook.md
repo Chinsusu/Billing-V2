@@ -62,6 +62,16 @@ The script is intentionally narrow:
 
 After applying the mapping, verify the admin provider-readiness API shows the pilot proxy plan as `ready`, with `source_type=cloudmini_v3`, using display IDs only in evidence.
 
+T220 target-environment discovery did not find an approved Billing DB access path:
+
+- `/opt/cred-cloudmini-dev.env` has provider/dev SSH keys but no `DB_DSN`.
+- The reachable dev host did not contain a Billing repo or Billing runtime environment under `/opt`.
+- DB key-name discovery found only provider/manager deployment scripts, not an approved Billing DB target.
+- The local default Billing DSN from the runbook was not available on this runner.
+- No migration, mapping script, checkout, worker, or provider mutating call was run against an unverified DB.
+
+Keep the pilot blocked until an approved non-production Billing `DB_DSN` or equivalent operator-run evidence is provided.
+
 ## Required Approval Fields
 
 Fill these before any mutating call:
@@ -174,5 +184,5 @@ If cleanup fails, keep the launch decision `NO-GO`, disable the source, and open
 Before broader pilot or multiple provider accounts:
 
 - T217 must support multiple Cloudmini V3 endpoint/API-key mappings if more than one URL/key is needed.
-- The approved dev/staging database still needs the T219 mapping script to be applied and verified through provider readiness evidence.
+- The approved dev/staging Billing database still needs the T219 mapping script to be applied and verified through provider readiness evidence.
 - Runtime configuration must fail closed when the configured source id does not match the Billing provider source used by the provisioning job.
