@@ -1,9 +1,9 @@
 # T227 - Cloudmini source match fail closed
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t227-cloudmini-source-match-fail-closed
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/487
 Risk: provider/provisioning/credential/config
 Created: 2026-05-16
 Updated: 2026-05-16
@@ -37,3 +37,4 @@ Make Cloudmini V3 runtime selection fail closed when an operation carries a Bill
 - 2026-05-16: Updated Cloudmini runtime selection to require explicit source mapping whenever an operation carries `SourceID`; account endpoint fallback remains available only when no source ID is present.
 - 2026-05-16: Added provider tests proving account endpoint checks still work without a source ID and source/account mismatch returns `PROVIDER_CONFIG_INVALID` without calling the provider endpoint.
 - 2026-05-16: Validation passed: `go test ./internal/modules/provider ./cmd/worker`; `go test ./internal/modules/order`; `go test ./cmd/worker ./internal/modules/provider ./internal/modules/order`; `go test ./...`; `go run ./cmd/taskguard`; `git diff --check`; added-line secret pattern scan returned no matches. Changed-file scan matches an existing proxy URI test fixture that was already present and was not added by this diff.
+- 2026-05-16: PR opened for review: https://github.com/Chinsusu/Billing-V2/pull/487.
