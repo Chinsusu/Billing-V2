@@ -30,9 +30,9 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-17` with T228 in progress:
+Current board snapshot on `2026-05-17` with T228 in progress and T229 queued:
 
-- `TODO`: 0
+- `TODO`: 1
 - `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
@@ -61,6 +61,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
+| T229 | [tasks/active/T229_cloudmini_pilot_hardening.md](tasks/active/T229_cloudmini_pilot_hardening.md) | codex/t229-cloudmini-pilot-hardening | provider/provisioning | Harden Cloudmini cleanup and terminal resource status behavior before broader pilot use. |
 
 ## In-Flight Task Files
 
