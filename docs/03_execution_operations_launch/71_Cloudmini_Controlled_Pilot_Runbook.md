@@ -308,6 +308,35 @@ Target test-server run:
 
 This proves config/runtime activation only. It is not proof that a lifecycle cleanup job can safely mutate Cloudmini; that still needs a separate one-resource owner-approved activation window.
 
+## T232 Mutating/Lifecycle Activation Attempt
+
+T232 ran an owner-approved dev activation window on the approved Billing test server. The goal was to create one active Cloudmini-backed Billing service, prepare exactly one termination lifecycle job, and run `cmd/worker lifecycle-once` with the real Cloudmini registry.
+
+Preflight:
+
+- `APP_ENV=dev`.
+- Protected credential path `/opt/cred-cloudmini-dev.env`, mode `0600`, owner `root:root`.
+- Mapping evidence `PASS` for plan display `10002`, plan-source display `10024`, source display `10012`, source type `cloudmini_v3`, readiness `ready`, priority `1`, and redacted group ref `redacted:c6a7189f0a`.
+- One-resource guardrails present: max create `1`, max active resources `1`, worker concurrency `1`, provider rate limit `no-parallel-mutating-calls`, maximum exposure `single-dev-resource`.
+- Before mutation: ready jobs `0`, provisioning nonterminal records `0`, Cloudmini active services `0`.
+
+Activation result:
+
+- The always-on `billing-worker` was stopped before payment and restarted after cleanup; it remains in fake-provider mode.
+- Billing path created one dev order display `10002`, invoice display `10003`, payment transaction display `10002`, and provider provisioning job display `10002`.
+- One-off worker command used `PROVIDER_DEFAULT_MODE=cloudmini_v3` and `cmd/worker provision-once` with batch size `1`.
+- Worker result: `claimed=1`, `succeeded=0`, `manual_review=1`, `terminal_failed=0`, `cancelled=0`.
+- Provisioning job result: `manual_review`, attempt count `1`, error code `PROVIDER_PARTIAL_SUCCESS`.
+- Provider resource lookup by `external_ref` succeeded with redacted resource ref `redacted:6e3d4ecffc7f` and provider status `creating`.
+- Same-session fallback cleanup used Cloudmini V3 delete and reached `succeeded`.
+- Final provider `GET /api/v3/proxies/:id` returned HTTP `404`.
+
+Lifecycle result:
+
+- No active Billing service was created because T229 correctly treats Cloudmini status `creating` as non-usable.
+- `cmd/worker lifecycle-once` was not run for provider cleanup because that would require manually inserting or faking a service record.
+- Broader readiness remains blocked until Cloudmini returns a usable status by operation completion or Billing adds an approved wait/read policy that preserves fail-closed behavior.
+
 ## Required Preflight
 
 Run these before enabling a mutating pilot:
