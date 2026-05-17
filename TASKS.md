@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-17` after T236 merge:
+Current board snapshot on `2026-05-17` after T237 creation:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 233
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T237 | [tasks/active/T237_target_credential_reveal_audit_evidence.md](tasks/active/T237_target_credential_reveal_audit_evidence.md) | IN_PROGRESS | Codex | codex/t237-target-credential-reveal | Prove target credential reveal audit and redaction evidence. |
 
 ## Blocked Task Files
 
