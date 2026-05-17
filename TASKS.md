@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-17` after T240 done:
+Current board snapshot on `2026-05-17` after T241 creation:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 237
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T241 | [tasks/active/T241_single_admin_launch_owner_record.md](tasks/active/T241_single_admin_launch_owner_record.md) | IN_PROGRESS | Codex | codex/t241-single-admin-owner-record | Record single Admin launch owner assignment. |
 
 ## Blocked Task Files
 
