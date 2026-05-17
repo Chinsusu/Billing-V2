@@ -30,12 +30,12 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-17` with T231 done:
+Current board snapshot on `2026-05-17` with T232 blocked and T233 ready:
 
-- `TODO`: 0
+- `TODO`: 1
 - `IN_PROGRESS`: 0
 - `REVIEW`: 0
-- `BLOCKED`: 0
+- `BLOCKED`: 1
 - `DONE` task files in `tasks/active/`: 228
 - `REMOVED` task files in `tasks/removed/`: 2
 
@@ -61,11 +61,18 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
+| T233 | [tasks/active/T233_cloudmini_usable_status_wait.md](tasks/active/T233_cloudmini_usable_status_wait.md) | codex/t233-cloudmini-usable-status-wait | provider | Add a bounded Cloudmini status wait/read policy without weakening fail-closed provisioning. |
 
 ## In-Flight Task Files
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+
+## Blocked Task Files
+
+| ID | Task File | Status | Owner | Branch | Summary |
+| --- | --- | --- | --- | --- | --- |
+| T232 | [tasks/active/T232_cloudmini_lifecycle_activation.md](tasks/active/T232_cloudmini_lifecycle_activation.md) | BLOCKED | Codex | codex/t232-cloudmini-lifecycle-activation | Cloudmini lifecycle activation blocked because provider create returns non-usable `creating` status and no active service is created. |
 
 ## Done Task Files
 
