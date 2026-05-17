@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-16` after T227 merged:
+Current board snapshot on `2026-05-17` with T228 in progress:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 224
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T228 | [tasks/active/T228_cloudmini_controlled_mutating_pilot.md](tasks/active/T228_cloudmini_controlled_mutating_pilot.md) | IN_PROGRESS | Codex | codex/t228-cloudmini-controlled-pilot | Run the first guarded Cloudmini V3 mutating pilot through Billing path and record redacted cleanup evidence. |
 
 ## Done Task Files
 
