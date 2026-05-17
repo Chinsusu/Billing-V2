@@ -1,6 +1,6 @@
 # T234 - Top-up review authorization alignment
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t234-topup-review-authorization
 PR: https://github.com/Chinsusu/Billing-V2/pull/500
@@ -39,3 +39,4 @@ Fix or deliberately document the top-up review authorization path so approved de
 - 2026-05-17: Claimed by Codex on branch `codex/t234-topup-review-authorization`; inspecting wallet top-up review RBAC/tenant path before coding.
 - 2026-05-17: Added reseller top-up approve/reject route wiring, route/middleware tests, runtime protection test, smoke update, and API contract docs.
 - 2026-05-17: Opened PR #500 for review after local validation: focused tests, `make fmt`, `make test`, `make build`, contract guard, error-code guard, taskguard, and `git diff --check` passed.
+- 2026-05-17: PR #500 merged into `main`; marking task DONE with marker branch `codex/t234-done-marker`.
