@@ -21,6 +21,29 @@ func (handler *HTTPHandler) resellerTopupRequestsRoute(w http.ResponseWriter, r 
 	})
 }
 
+func (handler *HTTPHandler) resellerTopupRequestRoute(w http.ResponseWriter, r *http.Request) {
+	topupRequestID, action, ok := topupRequestPath(w, r, resellerTopupRequestPrefix)
+	if !ok {
+		return
+	}
+	switch action {
+	case "approve":
+		dispatchWalletMethods(w, r, map[string]http.HandlerFunc{
+			http.MethodPost: handler.tenantRoute(func(w http.ResponseWriter, r *http.Request) {
+				handler.handleApproveAdminTopupRequest(w, r, topupRequestID)
+			}, handler.options.ResellerReviewMiddleware),
+		})
+	case "reject":
+		dispatchWalletMethods(w, r, map[string]http.HandlerFunc{
+			http.MethodPost: handler.tenantRoute(func(w http.ResponseWriter, r *http.Request) {
+				handler.handleRejectAdminTopupRequest(w, r, topupRequestID)
+			}, handler.options.ResellerReviewMiddleware),
+		})
+	default:
+		writeWalletError(w, r, ErrTopupRequestIDMissing)
+	}
+}
+
 func (handler *HTTPHandler) adminTopupRequestRoute(w http.ResponseWriter, r *http.Request) {
 	topupRequestID, action, ok := topupRequestPath(w, r, adminTopupRequestPrefix)
 	if !ok {

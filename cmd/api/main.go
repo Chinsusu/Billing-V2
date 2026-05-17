@@ -247,6 +247,7 @@ func newWalletRoutes(executor platformdb.Executor) app.RouteRegistrar {
 		AdminReviewMiddleware:     walletAuthMiddleware(authorizer, rbac.PermissionWalletTopupApprove, rbac.RiskHigh, adminRouteActorTypes),
 		AdminAdjustmentMiddleware: walletAuthMiddleware(authorizer, rbac.PermissionWalletAdjustment, rbac.RiskCritical, adminRouteActorTypes),
 		ResellerMiddleware:        walletAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow, resellerRouteActorTypes),
+		ResellerReviewMiddleware:  walletAuthMiddleware(authorizer, rbac.PermissionWalletTopupApprove, rbac.RiskHigh, resellerRouteActorTypes),
 		ClientMiddleware:          walletAuthMiddleware(authorizer, rbac.PermissionWalletView, rbac.RiskLow, clientRouteActorTypes),
 	})
 }

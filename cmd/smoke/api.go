@@ -256,6 +256,10 @@ func adminHeaders() map[string]string {
 	return actorHeaders(demoResellerID, "reseller_owner")
 }
 
+func resellerHeaders() map[string]string {
+	return actorHeaders(demoResellerID, "reseller_owner")
+}
+
 func actorHeaders(actorID string, actorType string) map[string]string {
 	return map[string]string{
 		"X-Tenant-Id":       demoTenantID,

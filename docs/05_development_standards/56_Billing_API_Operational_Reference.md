@@ -129,8 +129,8 @@ Operation error:
 | Client and admin wallets | `wallet.view` |
 | Client and admin transactions | `wallet.view` |
 | Client top-up create and read | `wallet.view` |
-| Admin top-up read | `wallet.view` |
-| Admin top-up approve or reject | `wallet.topup.approve` |
+| Admin and reseller top-up read | `wallet.view` |
+| Admin and reseller top-up approve or reject | `wallet.topup.approve` |
 | Admin wallet refunds and adjustments | `wallet.adjustment.create` |
 | Admin daily reconciliation | `wallet.view` |
 | Admin payment reconciliation | `wallet.view` |
@@ -512,6 +512,22 @@ The job read API does not expose `payload_json` or `idempotency_key`.
   - body: `review_note`
   - response: one `topup_request`
   - note: `review_note` is required on reject
+
+- `POST /reseller/topup-requests/{topup_request_id}/approve`
+  - auth: reseller actor, `wallet.topup.approve`
+  - body: `review_note`
+  - response: one `topup_request`
+  - notes:
+    - tenant scope is forced to the current reseller tenant
+    - approval credits the wallet and returns `ledger_entry_id`
+
+- `POST /reseller/topup-requests/{topup_request_id}/reject`
+  - auth: reseller actor, `wallet.topup.approve`
+  - body: `review_note`
+  - response: one `topup_request`
+  - notes:
+    - tenant scope is forced to the current reseller tenant
+    - `review_note` is required on reject
 
 ### 4.6 Transactions and wallet payment
 

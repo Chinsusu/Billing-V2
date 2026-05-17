@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/Chinsusu/Billing-V2/internal/modules/identity"
+	"github.com/Chinsusu/Billing-V2/internal/modules/rbac"
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
 )
 
@@ -233,4 +234,113 @@ func TestHTTPHandlerRejectAdminTopupRequestRequiresNote(t *testing.T) {
 	if service.rejectCalls != 1 {
 		t.Fatalf("expected service validation call, got %d", service.rejectCalls)
 	}
+}
+
+func TestHTTPHandlerApproveResellerTopupRequestRequiresPermission(t *testing.T) {
+	service := &fakeWalletHTTPService{topup: TopupRequest{ID: "topup_2", DisplayID: 90006, Status: TopupStatusApproved}}
+	handler := registerWalletReviewTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodPost, "/reseller/topup-requests/topup_2/approve", strings.NewReader(`{"review_note":"verified reseller payment"}`))
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("reseller_1", "tenant_1", identity.ActorTypeResellerOwner)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.approveCalls != 1 {
+		t.Fatalf("expected approve once, got %d", service.approveCalls)
+	}
+	if service.approveInput.ID != TopupRequestID("topup_2") ||
+		service.approveInput.TenantID != tenant.ID("tenant_1") ||
+		service.approveInput.ReviewedBy != identity.UserID("reseller_1") ||
+		service.approveInput.ReviewNote != "verified reseller payment" {
+		t.Fatalf("unexpected approve input: %+v", service.approveInput)
+	}
+}
+
+func TestHTTPHandlerRejectResellerTopupRequestRequiresPermission(t *testing.T) {
+	service := &fakeWalletHTTPService{topup: TopupRequest{ID: "topup_2", DisplayID: 90007, Status: TopupStatusRejected}}
+	handler := registerWalletReviewTestHandler(service)
+
+	request := httptest.NewRequest(http.MethodPost, "/reseller/topup-requests/topup_2/reject", strings.NewReader(`{"review_note":"payment not found"}`))
+	request = request.WithContext(tenant.WithContext(request.Context(), tenant.NewContext("tenant_1")))
+	request = request.WithContext(identity.WithActor(request.Context(), identity.NewActor("reseller_1", "tenant_1", identity.ActorTypeResellerStaff)))
+	response := httptest.NewRecorder()
+
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", response.Code, response.Body.String())
+	}
+	if service.rejectCalls != 1 {
+		t.Fatalf("expected reject once, got %d", service.rejectCalls)
+	}
+	if service.rejectInput.ID != TopupRequestID("topup_2") ||
+		service.rejectInput.TenantID != tenant.ID("tenant_1") ||
+		service.rejectInput.ReviewedBy != identity.UserID("reseller_1") ||
+		service.rejectInput.ReviewNote != "payment not found" {
+		t.Fatalf("unexpected reject input: %+v", service.rejectInput)
+	}
+}
+
+func TestHTTPHandlerResellerTopupReviewMiddlewareDeniesWrongScope(t *testing.T) {
+	tests := []struct {
+		name       string
+		context    tenant.Context
+		actor      identity.Actor
+		errorToken string
+	}{
+		{
+			name:       "client actor",
+			context:    tenant.NewContext("tenant_1"),
+			actor:      identity.NewActor("client_1", "tenant_1", identity.ActorTypeClient),
+			errorToken: "auth.permission_denied",
+		},
+		{
+			name:       "cross tenant reseller actor",
+			context:    tenant.NewContext("tenant_1"),
+			actor:      identity.NewActor("reseller_2", "tenant_2", identity.ActorTypeResellerOwner),
+			errorToken: "tenant.context_mismatch",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			service := &fakeWalletHTTPService{topup: TopupRequest{ID: "topup_2", DisplayID: 90008, Status: TopupStatusApproved}}
+			handler := registerWalletReviewTestHandler(service)
+
+			request := httptest.NewRequest(http.MethodPost, "/reseller/topup-requests/topup_2/approve", strings.NewReader(`{"review_note":"verified"}`))
+			request = request.WithContext(tenant.WithContext(request.Context(), test.context))
+			request = request.WithContext(identity.WithActor(request.Context(), test.actor))
+			response := httptest.NewRecorder()
+
+			handler.ServeHTTP(response, request)
+
+			if response.Code != http.StatusForbidden {
+				t.Fatalf("expected status 403, got %d: %s", response.Code, response.Body.String())
+			}
+			if !strings.Contains(response.Body.String(), test.errorToken) {
+				t.Fatalf("expected %q response, got %s", test.errorToken, response.Body.String())
+			}
+			if service.approveCalls != 0 {
+				t.Fatalf("expected approve to be blocked, got %d calls", service.approveCalls)
+			}
+		})
+	}
+}
+
+func registerWalletReviewTestHandler(service HTTPService) http.Handler {
+	mux := http.NewServeMux()
+	NewHTTPHandlerWithOptions(service, HTTPHandlerOptions{
+		ResellerReviewMiddleware: RouteMiddleware(rbac.RequirePermissionWithOptions(rbac.PermissionMiddlewareOptions{
+			Authorizer:        rbac.StaticAuthorizer{Permissions: rbac.NewPermissionSet(rbac.PermissionWalletTopupApprove)},
+			Permission:        rbac.PermissionWalletTopupApprove,
+			Risk:              rbac.RiskHigh,
+			AllowedActorTypes: []identity.ActorType{identity.ActorTypeResellerOwner, identity.ActorTypeResellerStaff},
+		})),
+	}).RegisterRoutes(mux)
+	return mux
 }

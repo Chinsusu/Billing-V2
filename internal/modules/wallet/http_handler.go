@@ -18,6 +18,7 @@ type HTTPHandlerOptions struct {
 	AdminReviewMiddleware     RouteMiddleware
 	AdminAdjustmentMiddleware RouteMiddleware
 	ResellerMiddleware        RouteMiddleware
+	ResellerReviewMiddleware  RouteMiddleware
 	ClientMiddleware          RouteMiddleware
 }
 
@@ -32,6 +33,7 @@ const (
 	adminWalletAdjustmentsPath = "/admin/wallet-adjustments"
 	adminTopupRequestPrefix    = "/admin/topup-requests/"
 	resellerWalletPrefix       = "/reseller/wallets/"
+	resellerTopupRequestPrefix = "/reseller/topup-requests/"
 	clientWalletPrefix         = "/client/wallets/"
 	clientTopupRequestPrefix   = "/client/topup-requests/"
 )
@@ -54,6 +56,7 @@ func (handler *HTTPHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/reseller/wallets", handler.resellerWalletsRoute)
 	mux.HandleFunc("/reseller/wallets/", handler.resellerWalletRoute)
 	mux.HandleFunc("/reseller/topup-requests", handler.resellerTopupRequestsRoute)
+	mux.HandleFunc("/reseller/topup-requests/", handler.resellerTopupRequestRoute)
 	mux.HandleFunc("/client/wallets", handler.clientWalletsRoute)
 	mux.HandleFunc("/client/wallets/", handler.clientWalletRoute)
 	mux.HandleFunc("/client/topup-requests", handler.clientTopupRequestsRoute)

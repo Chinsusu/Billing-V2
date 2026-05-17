@@ -714,7 +714,7 @@ wallet.topup.submitted
 ### 7.3 Approve client top-up
 
 ```text
-POST /reseller/wallet/topups/{topup_request_id}/approve
+POST /reseller/topup-requests/{topup_request_id}/approve
 ```
 
 Allowed:
