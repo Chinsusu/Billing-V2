@@ -1,6 +1,6 @@
 # T236 - Target auth session and RBAC evidence
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t236-target-auth-rbac-smoke
 PR: https://github.com/Chinsusu/Billing-V2/pull/504
@@ -43,3 +43,4 @@ Prove target-environment auth/session and RBAC negative checks with a repeatable
 - 2026-05-17: Deployed current branch to the approved test server and ran `./bin/smoke -timeout 90s dev-target-auth-rbac` with `APP_ENV=dev` and local API base URL. Result PASS: client session cookie-only access, admin 2FA gate, invalid session denial, missing actor denial, cross-tenant mismatch denial, three low-permission RBAC denials, provider mutation routes called `no`, and money mutation routes called `no`.
 - 2026-05-17: Local focused validation passed: `gofmt`, `go test ./cmd/smoke`, `go run ./cmd/taskguard`, `git diff --check`.
 - 2026-05-17: Opened PR #504 and moved task to `REVIEW`.
+- 2026-05-17: PR #504 merged into `main`; task marked `DONE`.
