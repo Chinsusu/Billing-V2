@@ -1,6 +1,6 @@
 # 70 - Launch Evidence Completion Packet
 
-**Date:** 2026-05-16
+**Date:** 2026-05-17
 **Scope:** Single completion packet for the remaining launch blockers before reconsidering the pilot Go/No-Go decision.  
 **Decision:** NO-GO until every required evidence section below is complete, redacted, reviewed, and signed off.
 
@@ -31,7 +31,7 @@ Use display IDs, redacted placeholders, dates, command names, check counts, and 
 | Staging/full E2E | Partial. T204 proves local/dev full gate with fake provider. | Approved staging or signed staging-equivalent run covering auth/RBAC, top-up approval, checkout, wallet payment, provisioning boundary, service activation, T206 renewal, lifecycle jobs, frontend smoke, and audit checks. | QA Lead, Engineering Lead, Product Owner |
 | Notification delivery or fallback | Partial. T200 provides local notification foundation only. T222 defines the manual fallback owner/SLA/evidence packet, but no production delivery proof or approved fallback drill is recorded. | Production SMTP/Telegram delivery proof for launch-critical events, or a manual fallback with owner, SLA, escalation path, and sample redacted notification records. | Ops Lead, Support Owner, Security Owner |
 | Launch-day owners | Blocked. Roles are documented but unassigned in repo evidence. | Named Product, Engineering, QA, Ops, Finance, Security, Support, and Provider owners with contact/escalation path and launch-day availability. | Product Owner, Engineering Lead |
-| Target-environment verification | Partial. T230 proves the hardened backend/worker/frontend code deploys and builds on the approved test server, target services are active, `/healthz`, `/readyz`, and frontend return HTTP `200`, and protected Cloudmini dev credentials stay outside git. T231 proves non-mutating Cloudmini registry activation. T232 proves the target can reach a real Cloudmini create path and safely cleanup by fallback. T233 proves one target Cloudmini lifecycle-worker cleanup activation. Auth/session, 2FA, credential reveal audit, finance reconciliation, cross-tenant negative checks, and top-up review E2E remain missing. | Target auth/session check, admin 2FA enrollment/enforcement, credential reveal audit access, finance reconciliation owner run, cross-tenant negative check, target secret/key handling review, and top-up approval/rejection verification. | Security Owner, Finance Lead, QA Lead |
+| Target-environment verification | Partial. T230 proves the hardened backend/worker/frontend code deploys and builds on the approved test server, target services are active, `/healthz`, `/readyz`, and frontend return HTTP `200`, and protected Cloudmini dev credentials stay outside git. T231 proves non-mutating Cloudmini registry activation. T232 proves the target can reach a real Cloudmini create path and safely cleanup by fallback. T233 proves one target Cloudmini lifecycle-worker cleanup activation. T235 proves target top-up review create/approve/reject via HTTP API on the approved test server: approve top-up display `10003` posted ledger display `10005` and audit display `10015`; reject top-up display `10004` posted no ledger and audit display `10016`; wallet delta was `111`; provider side effects were `none`. Auth/session, 2FA, credential reveal audit, finance reconciliation owner review, cross-tenant negative checks, and target secret/key handling review remain missing. | Target auth/session check, admin 2FA enrollment/enforcement, credential reveal audit access, finance reconciliation owner run, cross-tenant negative check, and target secret/key handling review. | Security Owner, Finance Lead, QA Lead |
 
 Any missing required sign-off keeps the launch decision at NO-GO.
 
@@ -190,6 +190,7 @@ Pass criteria:
 Auth/session target check:
 Admin 2FA enrollment/enforcement:
 Credential reveal audit access:
+Top-up review target check: T235 PASS on the approved test server. Approve top-up display 10003 posted ledger display 10005 and audit display 10015. Reject top-up display 10004 posted no ledger and audit display 10016. Wallet delta was 111 minor units. Provider side effects were none.
 Secret/key handling review:
 Finance reconciliation owner run:
 Cross-tenant negative check:
