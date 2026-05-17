@@ -1,9 +1,9 @@
 # T233 - Cloudmini usable status wait policy
 
-Status: TODO
-Owner: Unassigned
+Status: REVIEW
+Owner: Codex
 Branch: codex/t233-cloudmini-usable-status-wait
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/498
 Risk: provider/provisioning/credential/ops
 Created: 2026-05-17
 Updated: 2026-05-17
@@ -36,3 +36,7 @@ Add an approved Cloudmini V3 provisioning wait/read policy so Billing can handle
 ## Agent Log
 
 - 2026-05-17: Follow-up created from T232 after the approved dev activation attempt reached Cloudmini create but provider status stayed `creating`, blocking active service creation and lifecycle cleanup.
+- 2026-05-17: Claimed by Codex on branch `codex/t233-cloudmini-usable-status-wait`.
+- 2026-05-17: Added bounded Cloudmini post-create status polling, preserving manual review for non-usable timeout and credential-missing fail-closed behavior.
+- 2026-05-17: Verification passed: `go test ./...`, `go run ./cmd/taskguard`, and `git diff --check`.
+- 2026-05-17: Opened PR #498 for review and CI.

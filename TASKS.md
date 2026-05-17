@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-17` with T232 blocked and T233 ready:
+Current board snapshot on `2026-05-17` with T232 blocked and T233 in review:
 
-- `TODO`: 1
+- `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 1
 - `DONE` task files in `tasks/active/`: 228
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -61,12 +61,12 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T233 | [tasks/active/T233_cloudmini_usable_status_wait.md](tasks/active/T233_cloudmini_usable_status_wait.md) | codex/t233-cloudmini-usable-status-wait | provider | Add a bounded Cloudmini status wait/read policy without weakening fail-closed provisioning. |
 
 ## In-Flight Task Files
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T233 | [tasks/active/T233_cloudmini_usable_status_wait.md](tasks/active/T233_cloudmini_usable_status_wait.md) | REVIEW | Codex | codex/t233-cloudmini-usable-status-wait | Add a bounded Cloudmini status wait/read policy without weakening fail-closed provisioning. |
 
 ## Blocked Task Files
 

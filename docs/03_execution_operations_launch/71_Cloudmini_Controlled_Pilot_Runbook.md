@@ -337,6 +337,18 @@ Lifecycle result:
 - `cmd/worker lifecycle-once` was not run for provider cleanup because that would require manually inserting or faking a service record.
 - Broader readiness remains blocked until Cloudmini returns a usable status by operation completion or Billing adds an approved wait/read policy that preserves fail-closed behavior.
 
+## T233 Bounded Usable-Status Wait Policy
+
+T233 adds the approved repo-side wait/read policy for Cloudmini create responses that finish the async operation before the proxy itself reports a usable status.
+
+Behavior after T233:
+
+- After `POST /api/v3/proxies` and operation state `succeeded`, Billing reads/polls `GET /api/v3/proxies/:id`.
+- Billing only creates an active service after status is `running`, `active`, `ready`, or `available` and credential fields are present.
+- If the proxy remains `creating`, empty, unknown, or otherwise non-usable until the configured timeout, Billing returns partial success/manual review and does not create an active service.
+- If the proxy becomes usable but credential fields are missing, Billing fails closed with credential-missing handling.
+- The provider cleanup/lifecycle activation evidence is still not complete until this code is deployed to the approved test server and T232 is rerun in a new owner-approved activation window.
+
 ## Required Preflight
 
 Run these before enabling a mutating pilot:
