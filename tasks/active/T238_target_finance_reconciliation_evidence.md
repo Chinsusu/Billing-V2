@@ -1,6 +1,6 @@
 # T238 - Target finance reconciliation evidence
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t238-target-finance-reconciliation
 PR: https://github.com/Chinsusu/Billing-V2/pull/508
@@ -43,3 +43,4 @@ Add and run a repeatable target-environment smoke that proves finance reconcilia
 - 2026-05-17: Deployed current branch to the approved test server and ran `./bin/smoke -timeout 90s dev-target-finance-reconciliation` with `APP_ENV=dev` and local API base URL. Result PASS for evidence collection: transaction display `51001`, invoice display `44001`, wallet display `41001`, ledger display `50002`, daily date `2026-04-23`, daily status `mismatched`, wallets checked `2`, wallet mismatches `1`, invoices checked `1`, invoice mismatches `0`, payments checked `1`, duplicate payment references `0`, money mutation routes called `no`, and provider mutation routes called `no`. Finance owner review remains required because the report is not balanced.
 - 2026-05-17: Local validation passed: `make fmt`, `go test ./cmd/smoke`, `make test`, `make build`, `go run ./cmd/contractguard`, `go run ./cmd/errorcodeguard`, `go run ./cmd/taskguard`, and `git diff --check`.
 - 2026-05-17: Opened PR #508 and moved task to `REVIEW`.
+- 2026-05-17: PR #508 merged into `main`; task marked `DONE`.
