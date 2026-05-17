@@ -1,6 +1,6 @@
 # T240 - Target secret/key handling evidence
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t240-target-secret-key-evidence
 PR: https://github.com/Chinsusu/Billing-V2/pull/512
@@ -39,3 +39,4 @@ Capture target-environment secret/key handling evidence and remove the visible c
 - 2026-05-17: Updated target cloudflared systemd service from token flag usage to `--token-file /etc/cloudflared/tunnel.token`, ran daemon reload, restarted cloudflared, and verified cloudflared active with `cloudflared_token_in_argv=no`.
 - 2026-05-17: Target reachability check passed with HTTP `200` for `http://localhost:3000`, `https://billing.resvn.net`, `https://reseller.resvn.net`, and `https://client.resvn.net`.
 - 2026-05-17: Local validation passed: `go run ./cmd/taskguard`, `git diff --check`, and staged secret scan. Opened PR #512 and moved task to `REVIEW`.
+- 2026-05-17: PR #512 merged into `main`; task marked `DONE`.
