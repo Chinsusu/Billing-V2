@@ -19,7 +19,7 @@ The gate proves the current fake-provider local flow:
 - direct client service renewal debits wallet balance, creates a paid renewal invoice, posts payment/ledger records, extends the service term, and writes renewal audit evidence;
 - frontend install, audit, sensitive-text guard, lint, build, and admin browser smoke pass.
 
-It does not prove real provider sandbox readiness, production auth hardening, production delivery channels, or launch owner sign-off. Those remain separate T205 inputs.
+It does not prove real provider sandbox readiness, production auth hardening, or production delivery channels. T245 records Admin acceptance of the T243 staging-equivalent full E2E scope for the pilot evidence packet.
 
 ## Safety Boundary
 
@@ -176,5 +176,5 @@ Frontend result: npm ci, audit, sensitive-text guard, lint, build, and admin bro
 Cleanup: temporary DB dropped; follow-up verification found billing_t243_e2e_% database count 0
 Result: pass
 Issues found and fixed: dev-api smoke admin headers updated to platform_staff for admin route RBAC; full E2E target deploy-copy mode can skip git diff only when local diff check is run separately; frontend smoke build now forces demo portal env
-Follow-up: owner acceptance of staging-equivalent scope is still required before GO
+Follow-up: Admin accepted the staging-equivalent scope in T245; real provider and production auth-session evidence remain separate gates before GO.
 ```
