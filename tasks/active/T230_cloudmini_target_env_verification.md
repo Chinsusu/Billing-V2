@@ -1,6 +1,6 @@
 # T230 - Cloudmini target-env hardening verification
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t230-target-env-t229-verification
 PR: https://github.com/Chinsusu/Billing-V2/pull/493
@@ -39,3 +39,4 @@ Deploy or verify the T229 Cloudmini hardening on the approved Billing test serve
 - 2026-05-17: Target server confirmed T229 source markers, passed focused provider/order/worker tests, taskguard, Go API/worker builds, frontend build, service restart, `/healthz`, `/readyz`, frontend HTTP checks, and port checks. No Cloudmini mutating route or Billing provisioning mutation was run.
 - 2026-05-17: Local validation passed: `go test ./internal/modules/provider ./internal/modules/order ./cmd/worker`; `go run ./cmd/taskguard`; `git diff --check`; changed-file secret scan found only existing documentation text about avoiding `?token=` query credentials.
 - 2026-05-17: Opened PR https://github.com/Chinsusu/Billing-V2/pull/493.
+- 2026-05-17: PR https://github.com/Chinsusu/Billing-V2/pull/493 merged after CI passed.
