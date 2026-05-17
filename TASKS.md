@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-17` with T232 blocked and T233 in review:
+Current board snapshot on `2026-05-17` after T233 target activation evidence, with T234 ready:
 
-- `TODO`: 0
+- `TODO`: 1
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
-- `BLOCKED`: 1
-- `DONE` task files in `tasks/active/`: 228
+- `REVIEW`: 0
+- `BLOCKED`: 0
+- `DONE` task files in `tasks/active/`: 230
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -61,18 +61,17 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
+| T234 | [tasks/active/T234_topup_review_authorization.md](tasks/active/T234_topup_review_authorization.md) | codex/t234-topup-review-authorization | wallet/RBAC/API | Fix or document top-up review authorization so approved operators can approve dev/staging top-ups through API. |
 
 ## In-Flight Task Files
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T233 | [tasks/active/T233_cloudmini_usable_status_wait.md](tasks/active/T233_cloudmini_usable_status_wait.md) | REVIEW | Codex | codex/t233-cloudmini-usable-status-wait | Add a bounded Cloudmini status wait/read policy without weakening fail-closed provisioning. |
 
 ## Blocked Task Files
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T232 | [tasks/active/T232_cloudmini_lifecycle_activation.md](tasks/active/T232_cloudmini_lifecycle_activation.md) | BLOCKED | Codex | codex/t232-cloudmini-lifecycle-activation | Cloudmini lifecycle activation blocked because provider create returns non-usable `creating` status and no active service is created. |
 
 ## Done Task Files
 
@@ -91,6 +90,8 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T229`
 - `T230`
 - `T231`
+- `T232`
+- `T233`
 
 ## Removed Tasks
 

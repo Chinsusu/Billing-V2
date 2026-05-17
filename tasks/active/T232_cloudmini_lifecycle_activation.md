@@ -1,9 +1,9 @@
 # T232 - Cloudmini lifecycle cleanup activation
 
-Status: BLOCKED
+Status: DONE
 Owner: Codex
 Branch: codex/t232-cloudmini-lifecycle-activation
-PR: https://github.com/Chinsusu/Billing-V2/pull/497
+PR: https://github.com/Chinsusu/Billing-V2/pull/497, https://github.com/Chinsusu/Billing-V2/pull/499
 Risk: provider/provisioning/lifecycle/credential/ops
 Created: 2026-05-17
 Updated: 2026-05-17
@@ -30,10 +30,9 @@ Run a one-resource, owner-approved Cloudmini lifecycle cleanup activation on the
 
 ## Notes
 
-- Blocked on 2026-05-17: the approved dev activation reached the Billing/Go-client Cloudmini mutating path, but provisioning correctly entered manual review because Cloudmini returned provider resource status `creating`, which T229 treats as non-usable.
-- Same-session cleanup succeeded through the approved V3 provider delete fallback; final provider `GET /api/v3/proxies/:id` returned HTTP `404`.
-- No lifecycle-worker provider cleanup job was run because no active Billing service was created. Do not bypass this by manually inserting a service.
-- Next unblock is a provider/Billing decision: either Cloudmini must return a usable status by the time operation success is reported, or Billing needs an approved follow-up to poll/read resource status until it becomes usable without weakening fail-closed behavior.
+- Initial T232 activation was blocked on 2026-05-17 because Cloudmini returned provider resource status `creating`; T233 added the bounded wait/read policy needed to keep fail-closed behavior while allowing resources that become usable to activate.
+- After T233 merged and was deployed to the approved test server, the owner-approved rerun created one active Cloudmini-backed Billing service and cleaned it up through `cmd/worker lifecycle-once` with the real Cloudmini registry.
+- Broader pilot remains blocked by shared secret-store, named owners, live duplicate/timeout evidence, redacted provider error examples, and launch sign-off gaps.
 
 ## Agent Log
 
@@ -43,3 +42,4 @@ Run a one-resource, owner-approved Cloudmini lifecycle cleanup activation on the
 - 2026-05-17: Provisioning worker claimed exactly one job and returned `manual_review` with error code `PROVIDER_PARTIAL_SUCCESS` because provider status was `creating`; no active service was created.
 - 2026-05-17: Found the resource by provider `external_ref`, cleaned it up through V3 `DELETE`, verified final provider `GET` returned HTTP `404`, and restarted `billing-worker`.
 - 2026-05-17: Opened PR #497 with blocked evidence and T233 follow-up task.
+- 2026-05-17: T233 target rerun passed: `provision-once` claimed one job and succeeded, service display `10002` became active with one encrypted active credential, `lifecycle-once` claimed one terminate job and succeeded, final provider `GET` returned HTTP `404`, and `billing-worker` was restored active.

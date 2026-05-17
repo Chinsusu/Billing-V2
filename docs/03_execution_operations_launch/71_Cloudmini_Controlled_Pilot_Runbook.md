@@ -347,7 +347,29 @@ Behavior after T233:
 - Billing only creates an active service after status is `running`, `active`, `ready`, or `available` and credential fields are present.
 - If the proxy remains `creating`, empty, unknown, or otherwise non-usable until the configured timeout, Billing returns partial success/manual review and does not create an active service.
 - If the proxy becomes usable but credential fields are missing, Billing fails closed with credential-missing handling.
-- The provider cleanup/lifecycle activation evidence is still not complete until this code is deployed to the approved test server and T232 is rerun in a new owner-approved activation window.
+- The target rerun after deployment proved this path for one dev resource without broadening allowed statuses.
+
+## T233 Target Lifecycle Activation Rerun
+
+After PR #498 merged, T233 was deployed to the approved Billing test server and rerun in a new one-resource activation window.
+
+Preflight and deployment:
+
+- Mapping evidence still passed for plan display `10002`, plan-source display `10024`, source display `10012`, and redacted group ref `redacted:c6a7189f0a`.
+- Ready provider/lifecycle jobs were `0`, non-terminated Cloudmini services were `0`, and due lifecycle candidates were `0`.
+- Target tests/build passed for `go test ./internal/modules/provider ./internal/modules/order ./cmd/worker`, `go build -o bin/api ./cmd/api`, and `go build -o bin/worker ./cmd/worker`.
+
+Activation result:
+
+- Existing dev wallet balance was used because top-up review authorization is tracked separately in T234.
+- The always-on fake worker was stopped before payment and restored active after cleanup.
+- Billing path created order display `10003`, invoice display `10004`, payment transaction display `10003`, and provider job display `10003`.
+- `provision-once` ran with `PROVIDER_DEFAULT_MODE=cloudmini_v3`, batch size `1`, and returned `claimed=1`, `succeeded=1`, `manual_review=0`.
+- Service display `10002` became `active`/`paid` with provider resource ref `redacted:52be893bcb0f`.
+- Credential storage check passed: one active credential, encrypted payload present, masked hint present.
+- One lifecycle terminate job display `10004` was prepared and `lifecycle-once` returned `claimed=1`, `succeeded=1`, `manual_review=0`.
+- Final service display `10002` was `terminated`; final provider `GET /api/v3/proxies/:id` returned HTTP `404`.
+- No raw DSN, token, provider id, provider payload, raw group id, or proxy credential was printed or recorded.
 
 ## Required Preflight
 
