@@ -23,6 +23,7 @@ const (
 	commandLifecycleScheduleOnce = "lifecycle-schedule-once"
 	commandLifecycleOnce         = "lifecycle-once"
 	commandLifecycleLoop         = "lifecycle-loop"
+	commandProviderRegistryCheck = "provider-registry-check"
 	defaultWorkerCommand         = commandProvisionOnce
 )
 
@@ -108,15 +109,18 @@ func runWithDependencies(args []string, deps workerDependencies) error {
 		return runLifecycleOnce(cfg, deps)
 	case commandLifecycleLoop:
 		return runLifecycleLoop(cfg, deps)
+	case commandProviderRegistryCheck:
+		return runProviderRegistryCheck(deps.stdout)
 	default:
 		return fmt.Errorf(
-			"unknown command %q; use %s, %s, %s, %s, or %s",
+			"unknown command %q; use %s, %s, %s, %s, %s, or %s",
 			command,
 			commandProvisionOnce,
 			commandProvisionLoop,
 			commandLifecycleScheduleOnce,
 			commandLifecycleOnce,
 			commandLifecycleLoop,
+			commandProviderRegistryCheck,
 		)
 	}
 }

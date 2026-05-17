@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-17
 **Scope:** Controlled pre-approval packet for the first Cloudmini V3 mutating pilot.
-**Decision:** One controlled dev create/delete pilot has passed. T229 fixes the repo-side non-usable-status and lifecycle-worker cleanup gaps, and T230 proves that hardening deploys/builds on the approved test server. Broader pilot remains blocked until live duplicate/timeout evidence, shared secret storage, owner-approved Cloudmini runtime activation, and owner sign-offs are complete.
+**Decision:** One controlled dev create/delete pilot has passed. T229 fixes the repo-side non-usable-status and lifecycle-worker cleanup gaps, T230 proves that hardening deploys/builds on the approved test server, and T231 proves non-mutating Cloudmini registry activation. Broader pilot remains blocked until live duplicate/timeout evidence, shared secret storage, owner-approved mutating/lifecycle activation, and owner sign-offs are complete.
 
 ## Current Safe State
 
@@ -15,6 +15,7 @@ Read-only evidence is complete for the Billing Go-client-style path:
 - T228 ran one approved dev mutating pilot through Billing checkout/payment/provisioning worker and cleaned up the provider resource in the same session.
 - T229 makes Cloudmini provisioning fail closed when the provider resource status is not usable and makes lifecycle-worker termination call provider delete before marking a service terminated.
 - T230 deployed the T229 hardening to the approved Billing test server and verified build/service health without calling Cloudmini mutating routes.
+- T231 verified the worker can build a real Cloudmini provider registry from the protected dev credential path without opening DB state, claiming jobs, or calling provider APIs.
 
 ## Pilot Mapping Candidate
 
@@ -220,7 +221,7 @@ Residual risks before broader pilot:
 - T229 changes Cloudmini provisioning to fail closed if the resource status is not usable. Operation success with provider status `creating` now moves to manual review instead of creating an active service.
 - Duplicate-create and timeout-after-send behavior are still not proven against the live provider.
 - Production/shared secret-store owner and named launch owners are still not recorded in repo evidence.
-- The always-on target worker remains on `PROVIDER_DEFAULT_MODE=fake`; Cloudmini runtime activation requires a new owner-approved window.
+- The always-on target worker remains on `PROVIDER_DEFAULT_MODE=fake`; Cloudmini mutating or lifecycle cleanup activation requires a new owner-approved window.
 
 ## T229 Cleanup And Status Hardening
 
@@ -271,6 +272,41 @@ Explicit non-actions:
 - No `POST /api/v3/proxies/:id/actions/:action`.
 - No Billing checkout, payment, provisioning worker mutation, or lifecycle mutation was run.
 - No raw DSN, token, provider group id, provider resource id, provider payload, or proxy credential was printed or stored in repo evidence.
+
+## T231 Non-Mutating Runtime Activation Evidence
+
+T231 added a worker command for activation preflight only:
+
+```bash
+cmd/worker provider-registry-check
+```
+
+The command:
+
+- refuses `APP_ENV=prod` and `APP_ENV=production`;
+- builds the worker provider registry from environment variables;
+- does not require `DB_DSN`;
+- does not open the database;
+- does not claim provisioning or lifecycle jobs;
+- does not call Cloudmini `GET`, `POST`, `DELETE`, or action routes;
+- prints only redacted counts and boolean evidence.
+
+Target test-server run:
+
+- Runtime path: `/opt/Billing`.
+- Environment: `APP_ENV=dev`.
+- Credential path: `/opt/cred-cloudmini-dev.env`, mode `0600`, owner `root:root`.
+- Command: `PROVIDER_DEFAULT_MODE=cloudmini_v3 go run ./cmd/worker provider-registry-check`.
+- Result: `PASS`.
+- Adapter: real Cloudmini V3 adapter.
+- Source mappings: `1`.
+- Account mappings: `0`.
+- Provider API called: `no`.
+- Mutating routes called: `no`.
+- Jobs claimed: `0`.
+- Secrets printed: `no`.
+
+This proves config/runtime activation only. It is not proof that a lifecycle cleanup job can safely mutate Cloudmini; that still needs a separate one-resource owner-approved activation window.
 
 ## Required Preflight
 

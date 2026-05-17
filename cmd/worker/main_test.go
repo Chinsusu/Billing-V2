@@ -188,11 +188,75 @@ func TestRunLifecycleOnceUsesLifecycleRunner(t *testing.T) {
 	}
 }
 
+func TestRunProviderRegistryCheckDoesNotRequireDSNAndRedactsConfig(t *testing.T) {
+	t.Setenv("APP_ENV", "local")
+	t.Setenv("DB_DSN", "")
+	setCloudminiWorkerProviderEnv(t, validCloudminiWorkerProviderEnv())
+	var output bytes.Buffer
+
+	err := runWithDependencies([]string{commandProviderRegistryCheck}, workerDependencies{stdout: &output})
+	if err != nil {
+		t.Fatalf("expected provider registry check success: %v", err)
+	}
+	got := output.String()
+	for _, want := range []string{
+		"provider-registry-check result=PASS",
+		"mode=cloudmini_v3",
+		"cloudmini_v3_adapter=real",
+		"cloudmini_source_mappings=1",
+		"cloudmini_account_mappings=0",
+		"provider_api_called=no",
+		"mutating_routes_called=no",
+		"jobs_claimed=0",
+		"secrets_printed=no",
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected output to contain %q, got %s", want, got)
+		}
+	}
+	for _, forbidden := range []string{
+		"sandbox-token",
+		"source-cloudmini-1",
+		"group-cloudmini-1",
+		"http://cloudmini.example",
+	} {
+		if strings.Contains(got, forbidden) {
+			t.Fatalf("provider registry check output leaked %q: %s", forbidden, got)
+		}
+	}
+}
+
+func TestRunProviderRegistryCheckRejectsProduction(t *testing.T) {
+	t.Setenv("APP_ENV", "production")
+	setCloudminiWorkerProviderEnv(t, validCloudminiWorkerProviderEnv())
+
+	err := runWithDependencies([]string{commandProviderRegistryCheck}, workerDependencies{})
+	if err == nil || !strings.Contains(err.Error(), "refusing to run worker") {
+		t.Fatalf("expected production guard error, got %v", err)
+	}
+}
+
 func TestRunRejectsUnknownCommand(t *testing.T) {
 	err := runWithDependencies([]string{"unknown"}, workerDependencies{newRunner: (&fakeRunnerFactory{}).newRunner})
 	if err == nil || !strings.Contains(err.Error(), "unknown command") {
 		t.Fatalf("expected unknown command error, got %v", err)
 	}
+}
+
+func setCloudminiWorkerProviderEnv(t *testing.T, env workerProviderEnv) {
+	t.Helper()
+	t.Setenv("PROVIDER_DEFAULT_MODE", env.Mode)
+	t.Setenv("ENCRYPTION_KEY", env.EncryptionKey)
+	t.Setenv("CLOUDMINI_V3_BASE_URL", env.CloudminiV3BaseURL)
+	t.Setenv("CLOUDMINI_V3_API_TOKEN", env.CloudminiV3APIToken)
+	t.Setenv("CLOUDMINI_V3_SOURCE_ID", env.CloudminiV3SourceID)
+	t.Setenv("CLOUDMINI_V3_KIND", env.CloudminiV3Kind)
+	t.Setenv("CLOUDMINI_V3_GROUP_ID", env.CloudminiV3GroupID)
+	t.Setenv("CLOUDMINI_V3_PROTOCOL", env.CloudminiV3Protocol)
+	t.Setenv("CLOUDMINI_V3_BANDWIDTH_LIMIT_MB", env.CloudminiV3BandwidthMB)
+	t.Setenv("CLOUDMINI_V3_SPEED_LIMIT_MBPS", env.CloudminiV3SpeedMBps)
+	t.Setenv("CLOUDMINI_V3_POLL_INTERVAL", env.CloudminiV3PollInterval)
+	t.Setenv("CLOUDMINI_V3_POLL_TIMEOUT", env.CloudminiV3PollTimeout)
 }
 
 type fakeLifecycleSchedulerFactory struct {
