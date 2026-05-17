@@ -1,9 +1,9 @@
 # T239 - Target finance mismatch resolution
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t239-finance-mismatch-investigation
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/510
 Risk: finance/wallet/ledger/database/audit
 Created: 2026-05-17
 Updated: 2026-05-17
@@ -44,3 +44,4 @@ Investigate and resolve the target-environment finance reconciliation mismatch s
 - 2026-05-17: Deployed current branch to the approved target test server, ran repair plan for wallet display `41001`, then applied projection repair with `APP_ENV=dev` and `BILLING_DEV_WALLET_PROJECTION_REPAIR_APPROVED=yes`. Result: before `950`, after `1750`, ledger `1750`, audit display `10018`, ledger rows inserted `0`, posted ledger rows updated `0`, mutating routes called `no`, secrets printed `no`.
 - 2026-05-17: Target validation passed: `go test ./internal/seed ./cmd/smoke`; `APP_ENV=dev API_BASE_URL=http://127.0.0.1:8080 ./bin/smoke -timeout 90s dev-target-finance-reconciliation` returned `balanced` for daily date `2026-04-23` with wallet mismatches `0`, invoice mismatches `0`, duplicate payment references `0`, money mutation routes called `no`, and provider mutation routes called `no`.
 - 2026-05-17: Local validation passed: `make fmt`, `bash -n scripts/dev_wallet_projection_repair.sh`, `go test ./internal/seed ./cmd/smoke`, `make test`, `make build`, `go run ./cmd/migrate validate`, `go run ./cmd/taskguard`, `go run ./cmd/contractguard`, `go run ./cmd/errorcodeguard`, and `git diff --check`. Local `dev-db` smoke was not run because local `DB_DSN` is not set; target finance smoke covered the approved test-server DB after repair.
+- 2026-05-17: Opened PR #510 and moved task to `REVIEW`.
