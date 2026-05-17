@@ -1,6 +1,6 @@
 # T245 - Target evidence owner sign-off
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t245-target-evidence-signoff
 PR: https://github.com/Chinsusu/Billing-V2/pull/522
@@ -39,3 +39,4 @@ Record Admin owner sign-off for completed target/staging-equivalent evidence gat
 - 2026-05-17: Recorded Admin sign-off for T242 backup/restore, T243 full E2E/renewal, T239 finance reconciliation, T237/T240 security evidence, and completed target evidence scope while preserving provider/shared-secret/duplicate-timeout blockers.
 - 2026-05-17: Local validation passed: `go run ./cmd/taskguard`, `git diff --check`, added-line secret-pattern scan, and changed-file line counts under 500.
 - 2026-05-17: Opened PR https://github.com/Chinsusu/Billing-V2/pull/522 for review.
+- 2026-05-17: PR https://github.com/Chinsusu/Billing-V2/pull/522 merged; marking task DONE.
