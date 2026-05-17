@@ -1,8 +1,8 @@
 # 71 - Cloudmini Controlled Pilot Runbook
 
-**Date:** 2026-05-16
+**Date:** 2026-05-17
 **Scope:** Controlled pre-approval packet for the first Cloudmini V3 mutating pilot.
-**Decision:** Not approved for create/delete until every approval field below is complete.
+**Decision:** One controlled dev create/delete pilot has passed. Broader pilot remains blocked until the T228 residual risks are fixed or explicitly accepted.
 
 ## Current Safe State
 
@@ -12,7 +12,7 @@ Read-only evidence is complete for the Billing Go-client-style path:
 - Authenticated `GET /api/v3/capabilities` returns HTTP `200` V3 success envelopes.
 - Authenticated `GET /api/v3/inventory/groups?kind=ipv4_dc` returns HTTP `200` V3 success envelopes.
 - Authenticated `GET /api/v3/inventory/groups?kind=residential` returns HTTP `200` V3 success envelopes.
-- No mutating provider route has been called from Billing evidence.
+- T228 ran one approved dev mutating pilot through Billing checkout/payment/provisioning worker and cleaned up the provider resource in the same session.
 
 ## Pilot Mapping Candidate
 
@@ -90,7 +90,7 @@ T220 target-environment mapping evidence was applied on the approved Billing dev
 - The read-only evidence collector returned `result=PASS`, plan display `10002`, product type `proxy`, readiness `ready`, redacted group ref `redacted:c6a7189f0a`, protocol `socks5`, one-create/one-active-resource/one-worker guardrails, and `failed_checks=none`.
 - No checkout, worker provisioning, provider create/delete, provider action, raw provider group id, DSN, token, or proxy credential was printed or stored in repo evidence.
 
-This unblocks the dev mapping evidence gate only. Keep the mutating pilot blocked until the approval fields, owner sign-offs, timeout/idempotency evidence, and cleanup procedure below are complete.
+This unblocks the dev mapping evidence gate only. Keep broader mutating use blocked until owner sign-offs, timeout/idempotency evidence, cleanup hardening, and residual-risk follow-ups below are complete.
 
 ## Required Approval Fields
 
@@ -171,6 +171,53 @@ The preflight guard:
 - does not call provider create/delete/action routes, Billing checkout, Billing payment, or the provisioning worker.
 
 Passing this preflight is not approval to run the mutating pilot by itself. It only proves the required fields are present and the mapped source is still ready.
+
+## T228 Controlled Dev Pilot Evidence
+
+Pilot ID: `T228-dev-20260517T004039Z`
+
+Environment and preflight:
+
+- Target environment: `APP_ENV=dev` on the approved non-production Billing test server.
+- Local checks before pilot: `go test ./...` passed; `go run ./cmd/taskguard` passed.
+- T226 preflight: `preflight_result=PASS`.
+- Provider `proxy_crud` read permission precheck: `GET /api/v3/proxies?external_ref=<redacted-empty-ref>` returned HTTP `200` with `success=true`.
+- Before create: Cloudmini active Billing services `0`, queued provider jobs `0`, selected group sellable, allocatable `200`, active proxy count `0`, pending create count `0`, reserved count `0`.
+- Worker loop was stopped before payment so the default fake worker could not claim the pilot job.
+
+Billing path evidence:
+
+- Plan display ID: `10002`.
+- Source display ID: `10012`.
+- Order display ID: `10001`.
+- Invoice display ID: `10002`.
+- Transaction display ID: `10001`.
+- Ledger display ID: `10002`.
+- Provisioning job display ID: `10001`.
+- Job idempotency key: present, not printed.
+- Provider external ref: `redacted:8794850e2b96`.
+- One-off worker command used `PROVIDER_DEFAULT_MODE=cloudmini_v3` and returned `claimed=1 succeeded=1 retried=0 manual_review=0 terminal_failed=0 cancelled=0`.
+- Provisioning result: display ID `10001`, status `provisioned`.
+- Service display ID: `10001`, status `active`, billing status `paid`.
+- External provider resource ref: `redacted:dc3d9457bf5b`.
+- Credential storage: active credential count `1`, encrypted payload present, masked hint present.
+
+Cleanup evidence:
+
+- Provider `GET /api/v3/proxies/<resource>` after create returned HTTP `200`, kind `ipv4_dc`, provider resource status `creating`.
+- Provider cleanup used the approved V3 provider delete path because Billing service terminate currently does not invoke provider deletion.
+- Provider delete operation reached `succeeded`.
+- Provider `GET /api/v3/proxies/<resource>` after cleanup returned HTTP `404`.
+- Billing service cleanup used the reseller service terminate route with an access reason and returned service status `terminated`.
+- After cleanup: Cloudmini active Billing services `0`; provider selected group allocatable `200`, active proxy count `0`, pending create count `0`, reserved count `0`.
+- The regular `billing-worker` service was restarted after the pilot.
+
+Residual risks before broader pilot:
+
+- Billing service terminate is lifecycle-only today; it does not call provider `DELETE`, so T228 cleanup needed the provider delete path directly.
+- Provider `GET` immediately after Billing activation returned resource status `creating` even though the provider operation and worker completed successfully. A follow-up must decide whether Billing should wait for a terminal usable resource status before marking the service active, or document that `creating` after operation success is provider-compatible.
+- Duplicate-create and timeout-after-send behavior are still not proven against the live provider.
+- Production/shared secret-store owner and named launch owners are still not recorded in repo evidence.
 
 ## Required Preflight
 
@@ -253,3 +300,4 @@ Before broader pilot or multiple provider accounts:
 - T217 supports multiple Cloudmini V3 endpoint/API-key mappings through `CLOUDMINI_V3_MAPPINGS_JSON`; keep secret values in approved env/secret storage only.
 - T220 verifies the dev pilot mapping. Any broader staging or production-equivalent mapping still needs an approved target environment and owner sign-off before use.
 - T227 makes runtime configuration fail closed when the configured source id does not match the Billing provider source used by the provisioning job.
+- T228 proves one controlled dev create/delete pilot, but broader pilot must first resolve or accept the lifecycle cleanup and terminal resource status residual risks.

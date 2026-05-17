@@ -1,8 +1,8 @@
 # Provider Sandbox Readiness Evidence
 
-**Tasks:** T199, T208, T211, T212, T213, T214, T215, T216, T217, T218, T219, T220, T221, T226, T227
-**Date:** 2026-05-16
-**Decision:** real provider sandbox is not launch-ready yet. Cloudmini V3 intake and authenticated read-only reachability are proven through the public hostname, T218 defines a controlled pilot approval packet, T219/T221 provide guarded mapping/evidence tooling, T220 applied the pilot mapping on an approved non-production Billing dev DB, T226 adds a non-mutating pilot preflight guard, and T227 closes source/account runtime fallback mismatch. Approved shared credential storage, named owners, cleanup sign-off, idempotency evidence, and a real create/delete pilot run are still missing.
+**Tasks:** T199, T208, T211, T212, T213, T214, T215, T216, T217, T218, T219, T220, T221, T226, T227, T228
+**Date:** 2026-05-17
+**Decision:** real provider sandbox is not launch-ready yet. Cloudmini V3 intake, authenticated read-only reachability, guarded dev mapping, source-match fail-closed behavior, and one controlled dev create/delete pilot are proven. Approved shared credential storage, named launch owners, duplicate/timeout evidence, provider error examples, and cleanup/status hardening are still missing before broader pilot or production-like provisioning.
 
 ## Scope
 
@@ -14,13 +14,13 @@ This record separates local fake-provider evidence from real sandbox-provider re
 |---|---|---|---|
 | VPS local fake path | `ready` for local validation only | Fresh seed maps `vps-cx23-40gb-monthly` to `Local Fake Hetzner Ready`; provider contract tests cover fake Hetzner create, status, terminate, idempotency, and timeout mappings. | OK for local/CI smoke only. |
 | Proxy/manual local path | documented non-ready state | Fresh seed maps `proxy-static-10gb-monthly` first to an unsupported VPS-style source and has a manual fallback path. This proves the readiness API surfaces the gap instead of silently treating proxy as ready. | Not ready for real proxy sandbox provisioning. |
-| Real provider sandbox | `blocked` | Cloudmini V3 non-production base URL and API version are known. A 2026-05-16 read-only rerun through `https://cz.resvn.net/` reached the V3 app: unauthenticated capabilities returned HTTP `401`, and authenticated capabilities plus inventory returned HTTP `200` V3 success envelopes using bearer, `X-API-Key`, and `X-ACCESS-CODE`. T218 selected a redacted `ipv4_dc` pilot mapping candidate from sellable read-only inventory and defines quota/cleanup approval requirements. T220 applied the guarded Cloudmini pilot mapping on the approved Billing dev runtime env and T221 evidence passed with plan display `10002`, plan-source display `10024`, source display `10012`, source type `cloudmini_v3`, readiness `ready`, priority `1`, and first-pilot guardrails of one create, one active resource, and one worker concurrency. Approved shared credential storage path, account owner, timeout policy, cleanup owner, and real create/delete pilot run are still missing. | Do not run pilot provisioning against real providers until the remaining approval fields, owner sign-offs, timeout/idempotency evidence, cleanup procedure, and same-session cleanup plan are complete. |
+| Real provider sandbox | `blocked for broader pilot` | Cloudmini V3 non-production base URL and API version are known. A 2026-05-16 read-only rerun through `https://cz.resvn.net/` reached the V3 app: unauthenticated capabilities returned HTTP `401`, and authenticated capabilities plus inventory returned HTTP `200` V3 success envelopes using bearer, `X-API-Key`, and `X-ACCESS-CODE`. T218 selected a redacted `ipv4_dc` pilot mapping candidate from sellable read-only inventory and defines quota/cleanup approval requirements. T220 applied the guarded Cloudmini pilot mapping on the approved Billing dev runtime env and T221 evidence passed with plan display `10002`, plan-source display `10024`, source display `10012`, source type `cloudmini_v3`, readiness `ready`, priority `1`, and first-pilot guardrails of one create, one active resource, and one worker concurrency. T228 ran one controlled dev Billing checkout/payment/provisioning worker pilot with one provider resource, encrypted credential storage, provider delete cleanup, and Billing service termination. | Do not broaden pilot provisioning until named owner sign-offs, shared credential storage, duplicate/timeout evidence, redacted error examples, provider-backed cleanup or accepted cleanup procedure, and terminal resource status semantics are complete. |
 
 ## Proxy Cloudmini API V3 Candidate
 
 T211 inspected the local `/opt/proxy-cloudmini` source code and added a Billing adapter for its API V3 contract using local `httptest` coverage only. T212 added disabled-by-default worker registry wiring behind explicit environment config. T213 recorded partial non-production intake for the Cloudmini V3 API. T214 attempted authenticated read-only provider checks and found an edge/gateway access blocker. T216 reran read-only checks with the local dev credential source and reached successful V3 app envelopes through the public hostname. This is still not real sandbox pilot evidence.
 
-Known Cloudmini V3 intake as of 2026-05-16:
+Known Cloudmini V3 intake as of 2026-05-17:
 
 - Provider/API candidate: Cloudmini V3.
 - Non-production API base URL: `https://cz.resvn.net/`.
@@ -39,7 +39,7 @@ Known Cloudmini V3 intake as of 2026-05-16:
 - Mutating pilot preflight status: T226 adds `scripts/cloudmini_mutating_pilot_preflight.sh` to fail closed unless non-production env, mapping evidence, owner fields, cleanup fields, private credential path, and exact one-resource guardrails are present. The script does not call provider mutating routes.
 - Runtime source-match status: T227 makes Cloudmini runtime selection fail closed when an operation carries a Billing provider source ID that is not explicitly configured, so an account-level endpoint cannot bypass a source mismatch.
 - Target DB access status: T220 used the approved test server Billing runtime env at `/opt/Billing/.env.dev`; the run confirmed `APP_ENV=dev` and `DB_DSN` presence without printing the DSN or provider secrets.
-- Pilot status: no create, delete, cleanup, or Billing end-to-end pilot has been run from this repository.
+- Pilot status: T228 ran one controlled dev Billing-path create/delete pilot. The one-off worker created one Cloudmini `ipv4_dc` resource through `PROVIDER_DEFAULT_MODE=cloudmini_v3`, stored one encrypted credential with a masked hint, cleaned up the provider resource through V3 `DELETE`, and marked the Billing service terminated. Evidence uses display IDs and redacted hashes only.
 
 ## Cloudmini Edge/Gateway Unblock Runbook
 
@@ -63,7 +63,7 @@ Safe read-only rerun after unblock:
 4. Do not capture raw provider response bodies, raw auth headers, provider-private IDs, proxy credentials, or URL query credentials.
 5. Keep pilot readiness blocked unless both read-only checks return a successful V3 app envelope and owner/quota/mapping/cleanup evidence is recorded.
 
-Although read-only evidence now passes, do not run these until the remaining provider readiness items are complete:
+Although read-only evidence and the first dev pilot now pass, do not run these outside the controlled dev pilot boundary until the remaining provider readiness items are complete:
 
 - `POST /api/v3/proxies`
 - `DELETE /api/v3/proxies/:id`
@@ -83,7 +83,7 @@ Code-read contract summary:
 - Credential-bearing proxy response fields are encrypted by Billing adapter tests before returning a provider `CredentialEnvelope`.
 - Worker runtime stays on `PROVIDER_DEFAULT_MODE=fake` by default. `PROVIDER_DEFAULT_MODE=cloudmini_v3` requires Cloudmini base URL, API token, Billing source id, kind, group id, protocol, and `ENCRYPTION_KEY` before startup.
 
-Still missing for real sandbox readiness:
+Still missing for broader real sandbox readiness:
 
 - scoped credential storage path outside git;
 - sandbox account owner and cleanup owner;
@@ -91,12 +91,15 @@ Still missing for real sandbox readiness:
 - owner-approved source-to-group/SKU mapping beyond the dev pilot evidence;
 - active Cloudmini V3 provider source and plan source readiness evidence for any additional target provider source;
 - multi-endpoint/account config if more than one Cloudmini V3 URL or API key is needed;
-- a filled T226 preflight run with real owner-approved values and owner-approved timeout/spend guardrail sign-off beyond the dev defaults;
-- redacted real error examples and one approved pilot create/delete run.
+- owner-approved timeout/spend guardrail sign-off beyond the dev defaults;
+- redacted real error examples;
+- duplicate create and timeout-after-send evidence;
+- Billing lifecycle cleanup that calls provider delete, or an explicitly approved direct provider cleanup exception;
+- clear handling of provider resource status `creating` after operation success.
 
 ## Evidence Packet Status
 
-No approved real provider sandbox mutating pilot evidence is stored in this repository as of 2026-05-16. The packet below is the minimum evidence to collect before changing the real provider sandbox decision from `blocked`.
+One approved dev mutating pilot evidence packet is stored in this repository as of 2026-05-17. The packet below is still required before changing broader real provider sandbox readiness from `blocked for broader pilot`.
 
 | Evidence area | Required proof | Current repo status |
 |---|---|---|
@@ -106,8 +109,8 @@ No approved real provider sandbox mutating pilot evidence is stored in this repo
 | Capability mapping | Product type, Billing plan code, provider SKU, location, inventory mode, auto/manual provisioning support, cancellation support, and credential retrieval behavior. | Partial: authenticated read-only inventory succeeds and shows `ipv4_dc` has sellable capacity while `residential` is exhausted. T220 applied dev pilot mapping for `proxy-static-10gb-monthly` to `cloudmini_v3` with readiness `ready`; owner-approved SKU/source mapping and cleanup/cancellation behavior are still missing. |
 | Retry/idempotency | Duplicate create behavior, timeout-after-send behavior, request/status lookup support, and mapping to retry safety or manual review. | Missing. |
 | Error examples | Redacted auth, permission, rate limit, validation, out-of-capacity, timeout, duplicate, 5xx, not-found, and cancel-rejected examples. | Partial: redacted provider edge/gateway HTTP `403` shape from the earlier blocked run and app-level unauthenticated HTTP `401` were captured. V3 app-level permission, rate limit, validation, capacity, timeout, duplicate, 5xx, not-found, and cancel-rejected examples are still missing. |
-| Cleanup and rollback | How to list test resources, cancel/delete them, disable the provider source, and assign manual cleanup owner. | Missing. |
-| Pilot run | Redacted evidence for one approved sandbox order through checkout, reservation, provider request, service activation, credential storage/reveal audit, and cleanup. | Missing. |
+| Cleanup and rollback | How to list test resources, cancel/delete them, disable the provider source, and assign manual cleanup owner. | Partial: T228 cleaned up the single dev resource through provider V3 `DELETE` and marked the Billing service terminated. Billing lifecycle terminate does not yet call provider delete. |
+| Pilot run | Redacted evidence for one approved sandbox order through checkout, reservation, provider request, service activation, credential storage/reveal audit, and cleanup. | Partial/pass for one dev pilot: T228 created one order/job/service through Billing path, stored encrypted credential metadata, and completed same-session provider cleanup. Duplicate create, timeout-after-send, credential reveal audit, and broader owner sign-off remain missing. |
 
 ## Evidence Packet Template
 
