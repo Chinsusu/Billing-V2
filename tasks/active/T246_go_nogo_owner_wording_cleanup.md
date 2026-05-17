@@ -1,6 +1,6 @@
 # T246 - Go/No-Go owner wording cleanup
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t246-go-nogo-owner-wording
 PR: https://github.com/Chinsusu/Billing-V2/pull/524
@@ -34,3 +34,4 @@ Clean up stale Go/No-Go wording that still implied launch owners were unassigned
 - 2026-05-17: Updated Go/No-Go wording to reflect T241/T245 owner evidence while keeping NO-GO and provider/shared-secret/duplicate-timeout blockers explicit.
 - 2026-05-17: Local validation passed: `go run ./cmd/taskguard`, `git diff --check`, added-line secret-pattern scan, and changed-file line counts under 500.
 - 2026-05-17: Opened PR https://github.com/Chinsusu/Billing-V2/pull/524 for review.
+- 2026-05-17: PR https://github.com/Chinsusu/Billing-V2/pull/524 merged; marking task DONE.
