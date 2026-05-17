@@ -3,7 +3,7 @@
 Status: BLOCKED
 Owner: Codex
 Branch: codex/t232-cloudmini-lifecycle-activation
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/497
 Risk: provider/provisioning/lifecycle/credential/ops
 Created: 2026-05-17
 Updated: 2026-05-17
@@ -42,3 +42,4 @@ Run a one-resource, owner-approved Cloudmini lifecycle cleanup activation on the
 - 2026-05-17: Stopped the always-on fake worker, created one Billing dev order/invoice/payment, and ran `cmd/worker provision-once` with `PROVIDER_DEFAULT_MODE=cloudmini_v3`, batch size `1`.
 - 2026-05-17: Provisioning worker claimed exactly one job and returned `manual_review` with error code `PROVIDER_PARTIAL_SUCCESS` because provider status was `creating`; no active service was created.
 - 2026-05-17: Found the resource by provider `external_ref`, cleaned it up through V3 `DELETE`, verified final provider `GET` returned HTTP `404`, and restarted `billing-worker`.
+- 2026-05-17: Opened PR #497 with blocked evidence and T233 follow-up task.
