@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-17` with T235 in review:
+Current board snapshot on `2026-05-17` after T235 merge:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 231
+- `DONE` task files in `tasks/active/`: 232
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T235 | [tasks/active/T235_topup_review_e2e_evidence.md](tasks/active/T235_topup_review_e2e_evidence.md) | REVIEW | Codex | codex/t235-topup-review-e2e | Prove target top-up review create/approve/reject E2E evidence without provider provisioning. |
 
 ## Blocked Task Files
 
@@ -93,6 +92,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T232`
 - `T233`
 - `T234`
+- `T235`
 
 ## Removed Tasks
 
