@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-17` with T228 in review and T229 queued:
+Current board snapshot on `2026-05-17` with T228 done and T229 queued:
 
 - `TODO`: 1
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 224
+- `DONE` task files in `tasks/active/`: 225
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -67,7 +67,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T228 | [tasks/active/T228_cloudmini_controlled_mutating_pilot.md](tasks/active/T228_cloudmini_controlled_mutating_pilot.md) | REVIEW | Codex | codex/t228-cloudmini-controlled-pilot | Run the first guarded Cloudmini V3 mutating pilot through Billing path and record redacted cleanup evidence. |
 
 ## Done Task Files
 
@@ -82,6 +81,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T225`
 - `T226`
 - `T227`
+- `T228`
 
 ## Removed Tasks
 

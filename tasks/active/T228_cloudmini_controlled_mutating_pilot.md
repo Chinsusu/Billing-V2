@@ -1,6 +1,6 @@
 # T228 - Cloudmini controlled mutating pilot
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t228-cloudmini-controlled-pilot
 PR: https://github.com/Chinsusu/Billing-V2/pull/489
@@ -46,3 +46,4 @@ Run the first approved Cloudmini V3 mutating pilot through the Billing checkout/
 - 2026-05-17: Cleanup completed in the same session: provider V3 delete operation reached `succeeded`, provider GET after cleanup returned HTTP `404`, Billing reseller service terminate returned service status `terminated`, Cloudmini active Billing services returned to `0`, selected provider group returned to allocatable `200`, active proxy count `0`, pending create count `0`, reserved count `0`, and the default `billing-worker` service was restarted.
 - 2026-05-17: Residual risks recorded in docs: Billing service terminate does not call provider delete, provider GET immediately after create returned resource status `creating` despite operation/worker success, and duplicate-create plus timeout-after-send evidence remain missing.
 - 2026-05-17: Opened PR https://github.com/Chinsusu/Billing-V2/pull/489. Validation passed: `go test ./...`; `go run ./cmd/taskguard`; `git diff --check`; changed-file secret scan found placeholder env variable names only.
+- 2026-05-17: PR https://github.com/Chinsusu/Billing-V2/pull/489 merged after CI passed.
