@@ -1,9 +1,9 @@
 # T233 - Cloudmini usable status wait policy
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t233-cloudmini-usable-status-wait
-PR: https://github.com/Chinsusu/Billing-V2/pull/498
+PR: https://github.com/Chinsusu/Billing-V2/pull/498, https://github.com/Chinsusu/Billing-V2/pull/499
 Risk: provider/provisioning/credential/ops
 Created: 2026-05-17
 Updated: 2026-05-17
@@ -32,6 +32,7 @@ Add an approved Cloudmini V3 provisioning wait/read policy so Billing can handle
 
 - Do not solve this by manually inserting service records or broadening acceptable statuses.
 - If provider semantics say `creating` should be considered billable/usable, record explicit Provider Owner and Security/Engineering approval before changing the usable-status list.
+- Target activation rerun passed after deployment, proving the wait/read policy can activate a resource that becomes usable and the lifecycle worker can clean it up through the real Cloudmini registry.
 
 ## Agent Log
 
@@ -40,3 +41,5 @@ Add an approved Cloudmini V3 provisioning wait/read policy so Billing can handle
 - 2026-05-17: Added bounded Cloudmini post-create status polling, preserving manual review for non-usable timeout and credential-missing fail-closed behavior.
 - 2026-05-17: Verification passed: `go test ./...`, `go run ./cmd/taskguard`, and `git diff --check`.
 - 2026-05-17: Opened PR #498 for review and CI.
+- 2026-05-17: PR #498 merged after GitHub CI passed.
+- 2026-05-17: Deployed T233 to the approved test server, ran target tests/builds, and reran the one-resource activation window; provisioning, encrypted credential storage, lifecycle worker cleanup, provider final `404`, and worker restore all passed with redacted evidence only.
