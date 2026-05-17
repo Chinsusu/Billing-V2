@@ -1,6 +1,6 @@
 GO ?= go
 
-.PHONY: go-packages fmt test build build-api build-migrate build-seed build-smoke build-worker run-api run-worker migrate-validate seed-plan seed-dev smoke-dev-db smoke-dev-api smoke-dev-billing smoke-dev-topup-review smoke-dev-target-auth-rbac smoke-dev-target-credential-reveal backup-restore-drill-plan backup-restore-drill full-e2e-quality-gate contract-guard error-code-guard task-guard
+.PHONY: go-packages fmt test build build-api build-migrate build-seed build-smoke build-worker run-api run-worker migrate-validate seed-plan seed-dev smoke-dev-db smoke-dev-api smoke-dev-billing smoke-dev-topup-review smoke-dev-target-auth-rbac smoke-dev-target-credential-reveal smoke-dev-target-finance-reconciliation backup-restore-drill-plan backup-restore-drill full-e2e-quality-gate contract-guard error-code-guard task-guard
 
 go-packages:
 	$(GO) run ./cmd/gopackages
@@ -69,6 +69,9 @@ smoke-dev-target-auth-rbac:
 
 smoke-dev-target-credential-reveal:
 	$(GO) run ./cmd/smoke dev-target-credential-reveal
+
+smoke-dev-target-finance-reconciliation:
+	$(GO) run ./cmd/smoke dev-target-finance-reconciliation
 
 backup-restore-drill-plan:
 	bash scripts/backup_restore_drill.sh --plan

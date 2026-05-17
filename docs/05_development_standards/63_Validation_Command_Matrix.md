@@ -39,6 +39,7 @@ Use this before opening a PR. Add the commands you actually ran to the task log 
 | Top-up review smoke | `make smoke-dev-topup-review` | `go run ./cmd/smoke dev-topup-review` | Top-up request create, approve, reject, ledger credit, or top-up audit path changed. |
 | Target auth/RBAC smoke | `make smoke-dev-target-auth-rbac` | `go run ./cmd/smoke dev-target-auth-rbac` | Target auth session, 2FA gate, RBAC denial, or cross-tenant denial evidence changed. |
 | Target credential reveal smoke | `make smoke-dev-target-credential-reveal` | `go run ./cmd/smoke dev-target-credential-reveal` | Target credential reveal, no-store response, reveal audit, redaction, or reveal rate-limit evidence changed. |
+| Target finance reconciliation smoke | `make smoke-dev-target-finance-reconciliation` | `go run ./cmd/smoke dev-target-finance-reconciliation` | Target payment reconciliation, daily reconciliation, wallet/ledger balance report, or finance launch evidence changed. |
 | Full E2E launch gate | `make full-e2e-quality-gate` | `bash scripts/full_e2e_quality_gate.sh` | T204/T205 launch-readiness validation on an approved local/dev database. |
 | Provider sandbox contract | n/a | `go test ./internal/modules/provider -run SandboxContract` | Provider adapter behavior or provider sandbox readiness changed. |
 | Whitespace check | n/a | `git diff --check` | Every PR before commit or review. |
@@ -73,6 +74,8 @@ Use this before opening a PR. Add the commands you actually ran to the task log 
 `dev-target-auth-rbac` requires the API and database to point at the same approved dev/test environment. It creates dev/test auth sessions, verifies cookie-only client access, 2FA admin blocking, invalid session denial, missing actor denial, cross-tenant denial, and RBAC permission denial. It must never point at production.
 
 `dev-target-credential-reveal` requires the API and database to point at the same approved dev/test environment with `ENCRYPTION_KEY` available to the smoke runner. It creates or refreshes one encrypted dev/test credential fixture for the seeded demo service, logs in as the seeded client, reveals the fixture through the client API, verifies no-store headers, reveal metadata, rate-limit state, and redacted audit evidence. It must never point at production or real customer data.
+
+`dev-target-finance-reconciliation` requires the API and database to point at the same approved dev/test environment. It is read-only: it selects an existing posted wallet payment, verifies payment reconciliation list/detail and daily reconciliation API evidence, and verifies database counters and wallet balance projection did not change. It must never point at production or real customer data.
 
 Frontend browser smoke uses mock/intercepted data and does not need a backend or provider account.
 
