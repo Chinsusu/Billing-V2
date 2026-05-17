@@ -37,6 +37,7 @@ type serviceInstanceSmokeResponse struct {
 	ExternalResourceID string `json:"external_resource_id"`
 	Status             string `json:"status"`
 	BillingStatus      string `json:"billing_status"`
+	TermEnd            string `json:"term_end"`
 }
 
 func runProvisioningFulfillmentSmoke(

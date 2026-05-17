@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-17` after T242 done:
+Current board snapshot on `2026-05-17` with T243 in progress:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 239
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T243 | [tasks/active/T243_target_renewal_e2e_evidence.md](tasks/active/T243_target_renewal_e2e_evidence.md) | IN_PROGRESS | Codex | codex/t243-target-renewal-e2e-evidence | Add and capture target staging-equivalent renewal E2E evidence. |
 
 ## Blocked Task Files
 

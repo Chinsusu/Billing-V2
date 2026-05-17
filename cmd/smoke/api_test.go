@@ -27,11 +27,11 @@ func TestNormalizedAPIURLRequiresHost(t *testing.T) {
 func TestAPISmokeChecksIncludeAdminAudit(t *testing.T) {
 	checks := apiSmokeChecks()
 	for _, check := range checks {
-		if check.Name == "admin audit list" && check.Headers["X-Actor-Type"] == "reseller_owner" {
+		if check.Name == "admin audit list" && check.Headers["X-Actor-Type"] == "platform_staff" {
 			return
 		}
 	}
-	t.Fatal("expected admin audit smoke check with reseller actor")
+	t.Fatal("expected admin audit smoke check with platform staff actor")
 }
 
 func TestAPISmokeChecksIncludeAdminProviderReadiness(t *testing.T) {
@@ -43,7 +43,7 @@ func TestAPISmokeChecksIncludeAdminProviderReadiness(t *testing.T) {
 		if check.Path != "/admin/catalog/provider-readiness?status=active&limit=20" {
 			t.Fatalf("unexpected readiness path %q", check.Path)
 		}
-		if check.Headers["X-Actor-Type"] != "reseller_owner" {
+		if check.Headers["X-Actor-Type"] != "platform_staff" {
 			t.Fatalf("expected admin actor headers, got %+v", check.Headers)
 		}
 		for _, expected := range []string{`"plan_display_id":`, `"source_display_id":`, `"state":`, `"reason":`} {
@@ -107,7 +107,7 @@ func TestAPISmokeChecksIncludeAdminPublicIDFilters(t *testing.T) {
 		if check.Path != want.path {
 			t.Fatalf("unexpected public ID smoke path for %q: %s", check.Name, check.Path)
 		}
-		if check.Headers["X-Actor-Type"] != "reseller_owner" {
+		if check.Headers["X-Actor-Type"] != "platform_staff" {
 			t.Fatalf("expected admin actor headers for %q, got %+v", check.Name, check.Headers)
 		}
 		for _, token := range want.contains {

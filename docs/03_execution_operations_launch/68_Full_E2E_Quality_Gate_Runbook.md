@@ -1,7 +1,7 @@
 # 68 - Full E2E Quality Gate Runbook
 
 **Date:** 2026-05-14  
-**Scope:** Repeatable local/dev launch-critical quality gate for backend, database smoke, API smoke, billing mutation smoke, worker provisioning, and frontend smoke.
+**Scope:** Repeatable local/dev launch-critical quality gate for backend, database smoke, API smoke, billing mutation smoke, worker provisioning, client renewal, and frontend smoke.
 
 ## Purpose
 
@@ -16,6 +16,7 @@ The gate proves the current fake-provider local flow:
 - payment queues exactly one `provider.provision` job;
 - fake-provider worker provisions the service;
 - service activation is visible through API;
+- direct client service renewal debits wallet balance, creates a paid renewal invoice, posts payment/ledger records, extends the service term, and writes renewal audit evidence;
 - frontend install, audit, sensitive-text guard, lint, build, and admin browser smoke pass.
 
 It does not prove real provider sandbox readiness, production auth hardening, production delivery channels, or launch owner sign-off. Those remain separate T205 inputs.
@@ -45,6 +46,7 @@ real payment or provider endpoints
 
 The script refuses production-like markers in `DB_DSN` and `API_BASE_URL`, and refuses `APP_ENV=staging`, `APP_ENV=prod`, or `APP_ENV=production` because the smoke uses local dev actor headers.
 The script logs smoke commands with `DB_DSN` redacted.
+Frontend build/smoke steps force `NEXT_PUBLIC_BILLING_AUTH_MODE=demo` and `NEXT_PUBLIC_BILLING_DEMO_PORTAL_MODE=true` so target `.env.dev` auth/session settings cannot turn the mocked browser smoke into an auth-session test.
 
 ## Prerequisites
 
@@ -87,6 +89,12 @@ make full-e2e-quality-gate
 
 Do not use the skip flag for launch evidence unless the exact dependency install was already captured in the same evidence packet.
 
+For a deploy-copy target without `.git`, keep local `git diff --check` as PR validation and set this only for the target run:
+
+```bash
+export BILLING_E2E_SKIP_GIT_DIFF_CHECK=1
+```
+
 ## Gate Steps
 
 ```text
@@ -99,7 +107,7 @@ git diff --check
 go run ./cmd/smoke -dsn "$DB_DSN" dev-db
 start local API with the same DB_DSN
 go run ./cmd/smoke -dsn "$DB_DSN" -base-url "$API_BASE_URL" dev-api
-go run ./cmd/smoke -dsn "$DB_DSN" -base-url "$API_BASE_URL" dev-billing
+go run ./cmd/smoke -dsn "$DB_DSN" -base-url "$API_BASE_URL" dev-billing, including fake-provider fulfillment and client renewal
 npm --prefix frontend ci
 npm --prefix frontend audit --omit=dev
 npm --prefix frontend run check:sensitive-text
@@ -122,6 +130,7 @@ Backend result:
 DB smoke result:
 API smoke result:
 Billing mutation result:
+Renewal result:
 Frontend result:
 CI result:
 Result: pass/fail
@@ -146,4 +155,26 @@ Frontend result: npm ci, audit, sensitive-text guard, lint, build, and admin bro
 Result: pass
 Issues found and fixed: catalog admin auth missing tenant header context; smoke job JSON UUID cast; jobs claim RETURNING ambiguity; DB_DSN redaction in gate logs
 Follow-up: repeat against approved shared staging inputs before final T205 launch sign-off
+```
+
+## T243 Target Staging-Equivalent Evidence
+
+```text
+Gate ID: T243-target-20260517T140625Z
+Operator: Codex
+Environment: target test server staging-equivalent dev
+DB classification: temporary target database billing_t243_e2e_20260517140625, no production data
+API base URL: http://127.0.0.1:18083
+Command: bash scripts/full_e2e_quality_gate.sh with redacted target DB_DSN
+Deploy-copy exception: BILLING_E2E_SKIP_GIT_DIFF_CHECK=1 because /opt/Billing has no .git; local git diff --check remains required before PR
+Backend result: taskguard, make test, contract guard, error code guard, and build passed
+DB smoke result: dev-db passed, 25 migrations, 20 checks
+API smoke result: dev-api passed, 35 checks including RBAC negative checks
+Billing mutation result: dev-billing passed; top-up, checkout, wallet payment, provisioning job, fake-provider worker fulfillment, and active service verified
+Renewal result: service display 10000 renewed; renewal invoice 10002 paid; renewal transaction 10001 posted; renewal ledger 10002 recorded; service.renewed and invoice.wallet_paid audit checks passed
+Frontend result: npm ci, audit, sensitive-text guard, lint, build, and admin browser smoke passed in demo portal mode
+Cleanup: temporary DB dropped; follow-up verification found billing_t243_e2e_% database count 0
+Result: pass
+Issues found and fixed: dev-api smoke admin headers updated to platform_staff for admin route RBAC; full E2E target deploy-copy mode can skip git diff only when local diff check is run separately; frontend smoke build now forces demo portal env
+Follow-up: owner acceptance of staging-equivalent scope is still required before GO
 ```

@@ -253,7 +253,7 @@ func clientHeaders() map[string]string {
 }
 
 func adminHeaders() map[string]string {
-	return actorHeaders(demoResellerID, "reseller_owner")
+	return actorHeaders(demoResellerID, "platform_staff")
 }
 
 func resellerHeaders() map[string]string {
