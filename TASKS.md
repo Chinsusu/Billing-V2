@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-17` after T233 target activation evidence, with T234 ready:
+Current board snapshot on `2026-05-17` with T234 in review:
 
-- `TODO`: 1
+- `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 230
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -61,12 +61,12 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T234 | [tasks/active/T234_topup_review_authorization.md](tasks/active/T234_topup_review_authorization.md) | codex/t234-topup-review-authorization | wallet/RBAC/API | Fix or document top-up review authorization so approved operators can approve dev/staging top-ups through API. |
 
 ## In-Flight Task Files
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T234 | [tasks/active/T234_topup_review_authorization.md](tasks/active/T234_topup_review_authorization.md) | REVIEW | Codex | codex/t234-topup-review-authorization | Fix or document top-up review authorization so approved operators can approve dev/staging top-ups through API. |
 
 ## Blocked Task Files
 

@@ -151,7 +151,7 @@ func runTopupApprovalSmoke(
 		return topupResponse{}, fmt.Errorf("expected submitted topup with display id, got %+v", created)
 	}
 
-	approved, err := doJSON[topupResponse](ctx, client, http.MethodPost, baseURL, "/admin/topup-requests/"+created.ID+"/approve", adminHeaders(), reviewTopupBody{
+	approved, err := doJSON[topupResponse](ctx, client, http.MethodPost, baseURL, "/reseller/topup-requests/"+created.ID+"/approve", resellerHeaders(), reviewTopupBody{
 		ReviewNote: "Smoke approval " + scenario.RunID,
 	}, http.StatusOK)
 	if err != nil {

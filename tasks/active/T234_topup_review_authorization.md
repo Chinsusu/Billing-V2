@@ -1,9 +1,9 @@
 # T234 - Top-up review authorization alignment
 
-Status: TODO
-Owner: -
+Status: REVIEW
+Owner: Codex
 Branch: codex/t234-topup-review-authorization
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/500
 Risk: wallet/RBAC/API/finance
 Created: 2026-05-17
 Updated: 2026-05-17
@@ -31,7 +31,11 @@ Fix or deliberately document the top-up review authorization path so approved de
 - During T233 target activation, `/admin/topup-requests/:id/approve` returned `auth.permission_denied` for the demo reseller owner because the route uses admin review middleware restricted to platform actor types.
 - Retrying with platform admin headers returned `tenant.context_mismatch` because the generic tenant header middleware does not build a platform emergency target-tenant context for this route.
 - T233 activation used existing dev wallet balance instead of creating a new approved top-up, so provider lifecycle evidence is valid but top-up review remains unproven for launch.
+- Decision for this task: implement the normal reseller review path for client top-ups. Platform-admin emergency target-tenant review remains separate from this change because it needs explicit target context, reason, 2FA, and audit policy.
 
 ## Agent Log
 
 - 2026-05-17: Task created from T233 target activation residual risk.
+- 2026-05-17: Claimed by Codex on branch `codex/t234-topup-review-authorization`; inspecting wallet top-up review RBAC/tenant path before coding.
+- 2026-05-17: Added reseller top-up approve/reject route wiring, route/middleware tests, runtime protection test, smoke update, and API contract docs.
+- 2026-05-17: Opened PR #500 for review after local validation: focused tests, `make fmt`, `make test`, `make build`, contract guard, error-code guard, taskguard, and `git diff --check` passed.
