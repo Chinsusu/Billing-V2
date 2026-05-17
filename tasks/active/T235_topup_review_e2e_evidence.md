@@ -1,9 +1,9 @@
 # T235 - Target top-up review E2E evidence
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t235-topup-review-e2e
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/502
 Risk: wallet/RBAC/API/finance/audit
 Created: 2026-05-17
 Updated: 2026-05-17
@@ -41,3 +41,4 @@ Prove the fixed reseller top-up review path with a controlled target-environment
 - 2026-05-17: Added `dev-topup-review` smoke command using a temporary dev/test wallet; it verifies approve ledger/audit, reject no-ledger/audit, and no order/provider/service side effects.
 - 2026-05-17: Deployed current branch to the approved test server and ran `./bin/smoke -timeout 90s dev-topup-review` with `APP_ENV=dev` and local API base URL. Result PASS: approve top-up display `10003`, ledger display `10005`, audit display `10015`; reject top-up display `10004`, audit display `10016`; reject ledger count `0`; wallet delta `111`; provider side effects `none`.
 - 2026-05-17: Local focused validation passed: `gofmt`, `go test ./cmd/smoke`, `go run ./cmd/taskguard`, `git diff --check`.
+- 2026-05-17: Opened PR #502 and moved task to `REVIEW`.
