@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-17` with T245 in progress:
+Current board snapshot on `2026-05-17` with T245 in review:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 241
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -66,7 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T245 | [tasks/active/T245_target_evidence_owner_signoff.md](tasks/active/T245_target_evidence_owner_signoff.md) | IN_PROGRESS | Codex | codex/t245-target-evidence-signoff | Record Admin sign-off for completed target evidence gates. |
+| T245 | [tasks/active/T245_target_evidence_owner_signoff.md](tasks/active/T245_target_evidence_owner_signoff.md) | REVIEW | Codex | codex/t245-target-evidence-signoff | Record Admin sign-off for completed target evidence gates. |
 
 ## Blocked Task Files
 
