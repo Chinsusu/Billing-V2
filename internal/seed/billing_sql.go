@@ -10,7 +10,7 @@ SELECT
     customer.user_id,
     'USD',
     'active',
-    3200,
+    3600,
     0,
     '{"seed":"billing_flow","label":"Demo customer wallet"}'::jsonb
 FROM tenants reseller
@@ -203,7 +203,7 @@ SELECT
     invoice.currency,
     'purchase',
     'posted',
-    3200,
+    3600,
     'invoice',
     invoice.invoice_id,
     'invoice-payment:00000000-0000-0000-0000-000000000904:seed-payment-1',

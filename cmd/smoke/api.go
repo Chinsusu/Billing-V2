@@ -203,7 +203,7 @@ func apiSmokeChecks() []apiSmokeCheck {
 		{Name: "health", Path: "/healthz", Contains: []string{`"status":"ok"`}},
 		{Name: "readiness", Path: "/readyz", Contains: []string{`"status":"ready"`}},
 		{Name: "client wallet list", Path: "/client/wallets", Headers: client, Contains: []string{`"display_id":41001`, `"owner_display_id":10002`}},
-		{Name: "client wallet detail", Path: "/client/wallets/00000000-0000-0000-0000-000000000901", Headers: client, Contains: []string{`"available_balance_minor":3200`, `"owner_display_id":10002`}},
+		{Name: "client wallet detail", Path: "/client/wallets/00000000-0000-0000-0000-000000000901", Headers: client, Contains: []string{`"available_balance_minor":3600`, `"owner_display_id":10002`}},
 		{Name: "client wallet ledger", Path: "/client/wallets/00000000-0000-0000-0000-000000000901/ledger", Headers: client, Contains: []string{`"display_id":50001`, `"display_id":50002`, `"reference_display_id":52001`, `"reference_display_id":44001`}},
 		{Name: "client order list", Path: "/client/orders", Headers: client, Contains: []string{`"display_id":42001`, `"buyer_display_id":10002`}},
 		{Name: "client order detail", Path: "/client/orders/00000000-0000-0000-0000-000000000903", Headers: client, Contains: []string{`"order_status":"paid"`, `"buyer_display_id":10002`}},
