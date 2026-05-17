@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-17` with T234 in review:
+Current board snapshot on `2026-05-17` after T234 merge:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 230
+- `DONE` task files in `tasks/active/`: 231
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T234 | [tasks/active/T234_topup_review_authorization.md](tasks/active/T234_topup_review_authorization.md) | REVIEW | Codex | codex/t234-topup-review-authorization | Fix or document top-up review authorization so approved operators can approve dev/staging top-ups through API. |
 
 ## Blocked Task Files
 
@@ -92,6 +91,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T231`
 - `T232`
 - `T233`
+- `T234`
 
 ## Removed Tasks
 
