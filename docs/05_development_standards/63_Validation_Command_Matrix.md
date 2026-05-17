@@ -36,6 +36,7 @@ Use this before opening a PR. Add the commands you actually ran to the task log 
 | DB smoke | `make smoke-dev-db` | `go run ./cmd/smoke dev-db` | Migration, seed, DB lifecycle, or billing seed data changed. |
 | API smoke | `make smoke-dev-api` | `go run ./cmd/smoke dev-api` | API read paths or seeded billing API behavior changed and local API is running. |
 | Billing mutation smoke | `make smoke-dev-billing` | `go run ./cmd/smoke dev-billing` | Checkout, wallet, payment, order finalization, job creation, provisioning, or service activation changed. |
+| Top-up review smoke | `make smoke-dev-topup-review` | `go run ./cmd/smoke dev-topup-review` | Top-up request create, approve, reject, ledger credit, or top-up audit path changed. |
 | Full E2E launch gate | `make full-e2e-quality-gate` | `bash scripts/full_e2e_quality_gate.sh` | T204/T205 launch-readiness validation on an approved local/dev database. |
 | Provider sandbox contract | n/a | `go test ./internal/modules/provider -run SandboxContract` | Provider adapter behavior or provider sandbox readiness changed. |
 | Whitespace check | n/a | `git diff --check` | Every PR before commit or review. |
@@ -53,6 +54,7 @@ Use this before opening a PR. Add the commands you actually ran to the task log 
 | Frontend UI or app shell | `cd frontend && npm run check:sensitive-text`, `npm run lint`, `npm run build`, `git diff --check` | `npm run smoke:admin` for admin screens/nav/API mapping; `npm audit --omit=dev` for dependency changes. |
 | Frontend CI or standalone smoke | `cd frontend && npm run check:sensitive-text`, `npm run lint`, `npm run build`, `npm run smoke:admin:ci`, `git diff --check` | `npx playwright install chromium` when local browser runtime is missing. |
 | Full-stack billing flow | Backend API/service commands, frontend commands, `go run ./cmd/smoke dev-billing`, `git diff --check` | `go run ./cmd/smoke dev-db` when DB setup changed. |
+| Top-up review flow | `make fmt`, `make test`, `make build`, `go run ./cmd/smoke dev-topup-review`, `git diff --check` | `go run ./cmd/contractguard` and `go run ./cmd/errorcodeguard` when API route/error behavior changes. |
 | CI or workflow | Local equivalent of the changed job plus `git diff --check` | Run the exact frontend/backend commands the workflow invokes. |
 
 ## Smoke Prerequisites
@@ -62,6 +64,8 @@ Use this before opening a PR. Add the commands you actually ran to the task log 
 `dev-api` requires the API to be running against the same seeded database. Use `-base-url` when it is not on `http://localhost:8080`.
 
 `dev-billing` requires the same database for the API, smoke command, and local fake-provider worker. It must never point at production.
+
+`dev-topup-review` requires the API and database to point at the same approved dev/test environment. It creates two top-up requests, approves one, rejects one, verifies wallet ledger/audit behavior, and must never point at production.
 
 Frontend browser smoke uses mock/intercepted data and does not need a backend or provider account.
 
