@@ -1,6 +1,6 @@
 # T231 - Cloudmini runtime activation preflight
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t231-cloudmini-runtime-activation
 PR: https://github.com/Chinsusu/Billing-V2/pull/495
@@ -38,3 +38,4 @@ Add and run a non-mutating worker runtime activation check that validates the Cl
 - 2026-05-17: Deployed to the approved test server and ran the check with `APP_ENV=dev`, `PROVIDER_DEFAULT_MODE=cloudmini_v3`, `.env.dev`, and `/opt/cred-cloudmini-dev.env`. Result passed with real Cloudmini adapter, one source mapping, no provider API calls, no mutating routes, no job claims, and no secrets printed.
 - 2026-05-17: Validation passed: target `go test ./cmd/worker`; target `go build -o bin/worker ./cmd/worker`; local `go test ./...`; local `go build -buildvcs=false -o bin/worker ./cmd/worker`; `go run ./cmd/taskguard`; `git diff --check`; changed-file secret scan found only existing documentation text about avoiding `?token=` query credentials. Local plain `go build -o bin/worker ./cmd/worker` was blocked by a stray `/tmp/.git` VCS stamping issue, so compile was verified with `-buildvcs=false` locally and plain build on the target server.
 - 2026-05-17: Opened PR https://github.com/Chinsusu/Billing-V2/pull/495.
+- 2026-05-17: PR https://github.com/Chinsusu/Billing-V2/pull/495 merged after CI passed.
