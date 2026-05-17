@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-17` after T239 done:
+Current board snapshot on `2026-05-17` after T240 creation:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 236
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T240 | [tasks/active/T240_target_secret_key_handling_evidence.md](tasks/active/T240_target_secret_key_handling_evidence.md) | IN_PROGRESS | Codex | codex/t240-target-secret-key-evidence | Capture target secret/key handling evidence. |
 
 ## Blocked Task Files
 
