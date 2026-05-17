@@ -16,6 +16,8 @@ Optional:
   BILLING_E2E_API_LOG            API log path, defaults to /tmp/billing-full-e2e-api.log
   BILLING_E2E_TIMEOUT            smoke timeout, defaults to 90s
   BILLING_E2E_SKIP_NPM_CI        set to 1 to skip npm ci when node_modules is already trusted
+  BILLING_E2E_SKIP_GIT_DIFF_CHECK
+                                 set to 1 only for deploy-copy target evidence with no .git
   GO                             Go binary, defaults to go
 
 This gate is local/dev only. Do not run it with production services, production
@@ -82,10 +84,29 @@ run_without_db_dsn() {
 	env -u DB_DSN "$@"
 }
 
+run_frontend_step() {
+	log "$*"
+	env \
+		NEXT_PUBLIC_BILLING_AUTH_MODE=demo \
+		NEXT_PUBLIC_BILLING_DEMO_PORTAL_MODE=true \
+		"$@"
+}
+
 run_dev_db_smoke() {
 	local timeout="$1"
 	log "${GO:-go} run ./cmd/smoke -dsn <redacted> -timeout ${timeout} dev-db"
 	"${GO:-go}" run ./cmd/smoke -dsn "$DB_DSN" -timeout "$timeout" dev-db
+}
+
+run_git_diff_check() {
+	if [[ "${BILLING_E2E_SKIP_GIT_DIFF_CHECK:-}" == "1" ]]; then
+		log "skipping git diff --check because BILLING_E2E_SKIP_GIT_DIFF_CHECK=1"
+		return 0
+	fi
+	if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+		die "git diff --check requires a git worktree; set BILLING_E2E_SKIP_GIT_DIFF_CHECK=1 only for deploy-copy target evidence and run local git diff --check separately"
+	fi
+	run_step git diff --check
 }
 
 run_api_smoke() {
@@ -169,7 +190,7 @@ main() {
 	run_without_db_dsn make contract-guard
 	run_without_db_dsn make error-code-guard
 	run_without_db_dsn make build
-	run_step git diff --check
+	run_git_diff_check
 	run_dev_db_smoke "$timeout"
 
 	start_api "$api_addr" "$api_log"
@@ -186,13 +207,13 @@ main() {
 	run_billing_smoke "$api_base" "$timeout"
 
 	if [[ "${BILLING_E2E_SKIP_NPM_CI:-}" != "1" ]]; then
-		run_step npm --prefix frontend ci
+		run_frontend_step npm --prefix frontend ci
 	fi
-	run_step npm --prefix frontend audit --omit=dev
-	run_step npm --prefix frontend run check:sensitive-text
-	run_step npm --prefix frontend run lint
-	run_step npm --prefix frontend run build
-	run_step npm --prefix frontend run smoke:admin:ci
+	run_frontend_step npm --prefix frontend audit --omit=dev
+	run_frontend_step npm --prefix frontend run check:sensitive-text
+	run_frontend_step npm --prefix frontend run lint
+	run_frontend_step npm --prefix frontend run build
+	run_frontend_step npm --prefix frontend run smoke:admin:ci
 
 	log "full E2E quality gate passed"
 }

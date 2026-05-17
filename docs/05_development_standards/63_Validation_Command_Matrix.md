@@ -41,7 +41,7 @@ Use this before opening a PR. Add the commands you actually ran to the task log 
 | Target credential reveal smoke | `make smoke-dev-target-credential-reveal` | `go run ./cmd/smoke dev-target-credential-reveal` | Target credential reveal, no-store response, reveal audit, redaction, or reveal rate-limit evidence changed. |
 | Target finance reconciliation smoke | `make smoke-dev-target-finance-reconciliation` | `go run ./cmd/smoke dev-target-finance-reconciliation` | Target payment reconciliation, daily reconciliation, wallet/ledger balance report, or finance launch evidence changed. |
 | Dev wallet projection repair | n/a | `APP_ENV=dev BILLING_DEV_WALLET_PROJECTION_REPAIR_APPROVED=yes scripts/dev_wallet_projection_repair.sh` | Approved non-production wallet projection drift must be repaired from posted ledger source-of-truth before finance smoke evidence. |
-| Full E2E launch gate | `make full-e2e-quality-gate` | `bash scripts/full_e2e_quality_gate.sh` | T204/T205 launch-readiness validation on an approved local/dev database. |
+| Full E2E launch gate | `make full-e2e-quality-gate` | `bash scripts/full_e2e_quality_gate.sh` | T204/T205/T243 launch-readiness validation on an approved local/dev database, including T206 renewal coverage. |
 | Provider sandbox contract | n/a | `go test ./internal/modules/provider -run SandboxContract` | Provider adapter behavior or provider sandbox readiness changed. |
 | Whitespace check | n/a | `git diff --check` | Every PR before commit or review. |
 
@@ -79,6 +79,8 @@ Use this before opening a PR. Add the commands you actually ran to the task log 
 `dev-target-finance-reconciliation` requires the API and database to point at the same approved dev/test environment. It is read-only: it selects an existing posted wallet payment, verifies payment reconciliation list/detail and daily reconciliation API evidence, and verifies database counters and wallet balance projection did not change. It must never point at production or real customer data.
 
 `scripts/dev_wallet_projection_repair.sh` is a non-production repair tool for approved dev/test projection drift only. It fails closed without `APP_ENV`, `DB_DSN`, and `BILLING_DEV_WALLET_PROJECTION_REPAIR_APPROVED=yes`, updates wallet projection from posted ledger source-of-truth, writes an audit row, and must never point at production or real customer data.
+
+`full_e2e_quality_gate.sh` requires a Git worktree for `git diff --check` by default. On a deploy-copy target with no `.git`, set `BILLING_E2E_SKIP_GIT_DIFF_CHECK=1` only if `git diff --check` is run separately on the task branch and recorded in the same evidence packet.
 
 Frontend browser smoke uses mock/intercepted data and does not need a backend or provider account.
 

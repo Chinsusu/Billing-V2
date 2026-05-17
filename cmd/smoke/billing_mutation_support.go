@@ -56,6 +56,12 @@ type invoiceWalletPaymentBody struct {
 	WalletID  string `json:"wallet_id"`
 }
 
+type clientServiceRenewalBody struct {
+	WalletID   string `json:"wallet_id"`
+	FromStatus string `json:"from_status"`
+	Reason     string `json:"reason"`
+}
+
 type topupResponse struct {
 	ID            string `json:"id"`
 	DisplayID     int64  `json:"display_id"`
@@ -154,6 +160,10 @@ func (scenario billingMutationScenario) checkoutIdempotencyKey() string {
 
 func (scenario billingMutationScenario) paymentIdempotencyKey() string {
 	return "smoke-payment-" + scenario.RunID
+}
+
+func (scenario billingMutationScenario) renewalIdempotencyKey() string {
+	return "smoke-renewal-" + scenario.RunID
 }
 
 func paymentLedgerDisplayID(record invoiceWalletPaymentResponse) int64 {

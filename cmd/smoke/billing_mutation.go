@@ -21,8 +21,10 @@ const (
 	smokeOrderCurrency = "USD"
 	auditActionTopup   = "wallet.topup.approved"
 	auditActionInvoice = "invoice.wallet_paid"
+	auditActionRenewed = "service.renewed"
 	auditTargetTopup   = "topup_request"
 	auditTargetInvoice = "invoice"
+	auditTargetService = "service"
 )
 
 var (
@@ -95,6 +97,10 @@ func runDevBillingMutationSmoke(dsn string, baseURL string, timeout time.Duratio
 	if err != nil {
 		return err
 	}
+	renewalRecord, err := runClientServiceRenewalSmoke(ctx, client, baseURL, scenario, serviceRecord)
+	if err != nil {
+		return err
+	}
 
 	checks := []auditMutationCheck{
 		{
@@ -111,6 +117,20 @@ func runDevBillingMutationSmoke(dsn string, baseURL string, timeout time.Duratio
 			MetadataContains: fmt.Sprintf(`"transaction_display_id":%d`, paymentRecord.Transaction.DisplayID),
 			AfterContains:    `"status":"paid"`,
 		},
+		{
+			Action:           auditActionRenewed,
+			TargetType:       auditTargetService,
+			TargetID:         serviceRecord.ID,
+			MetadataContains: fmt.Sprintf(`"display_id":%d`, serviceRecord.DisplayID),
+			AfterContains:    `"status":"active"`,
+		},
+		{
+			Action:           auditActionInvoice,
+			TargetType:       auditTargetInvoice,
+			TargetID:         renewalRecord.Invoice.ID,
+			MetadataContains: fmt.Sprintf(`"transaction_display_id":%d`, renewalRecord.PaymentTransaction.DisplayID),
+			AfterContains:    `"status":"paid"`,
+		},
 	}
 	for _, check := range checks {
 		if err := verifyAuditMutation(ctx, client, baseURL, check); err != nil {
@@ -118,13 +138,16 @@ func runDevBillingMutationSmoke(dsn string, baseURL string, timeout time.Duratio
 		}
 	}
 
-	fmt.Printf("dev billing smoke passed: topup=%d order=%d invoice=%d transaction=%d ledger=%d service=%d\n",
+	fmt.Printf("dev billing smoke passed: topup=%d order=%d invoice=%d transaction=%d ledger=%d service=%d renewal_invoice=%d renewal_transaction=%d renewal_ledger=%d\n",
 		topup.DisplayID,
 		orderRecord.DisplayID,
 		paymentRecord.Invoice.DisplayID,
 		paymentRecord.Transaction.DisplayID,
 		paymentLedgerDisplayID(paymentRecord),
 		serviceRecord.DisplayID,
+		renewalRecord.Invoice.DisplayID,
+		renewalRecord.PaymentTransaction.DisplayID,
+		renewalRecord.Ledger.DisplayID,
 	)
 	return nil
 }
