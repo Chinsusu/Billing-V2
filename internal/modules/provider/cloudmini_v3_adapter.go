@@ -184,8 +184,13 @@ func (adapter *CloudminiV3Adapter) Provision(ctx context.Context, operation Oper
 	if err != nil {
 		return adapter.resultForError(normalizeAdapterError(err, ErrorCredentialMissing, "cloudmini v3 credential payload is missing"), externalRequestID, externalResourceID)
 	}
-	if adapterErr, ok := cloudminiV3ProxyStatusNotUsable(proxy.Status); ok {
+	proxy, err = adapter.waitForUsableProxy(ctx, operation, runtime.client, proxy, string(externalResourceID))
+	if err != nil {
+		adapterErr := normalizeAdapterError(err, ErrorPartialSuccess, "cloudmini v3 proxy status is not usable yet")
 		result, err := adapter.resultForError(adapterErr, externalRequestID, ExternalResourceID(proxy.ID))
+		if proxy.ID == "" {
+			result.ExternalResourceID = externalResourceID
+		}
 		result.ProviderStatus = strings.TrimSpace(proxy.Status)
 		return result, err
 	}
