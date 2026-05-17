@@ -1,9 +1,9 @@
 # T241 - Single admin launch owner record
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t241-single-admin-owner-record
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/514
 Risk: launch-governance/sign-off/security/finance/ops
 Created: 2026-05-17
 Updated: 2026-05-17
@@ -35,3 +35,4 @@ Record the user-provided launch ownership decision that `Admin` is the single ac
 - 2026-05-17: Task created and claimed by Codex on branch `codex/t241-single-admin-owner-record`.
 - 2026-05-17: Updated launch owner records to assign Product, Engineering, QA, Ops, Finance, Security, Support, and Provider roles to `Admin`, with explicit single-owner concentration-of-duty risk and remaining NO-GO blockers.
 - 2026-05-17: Local validation passed: `go run ./cmd/taskguard` and `git diff --check`.
+- 2026-05-17: Opened PR #514 and moved task to `REVIEW`.
