@@ -100,11 +100,11 @@ The drill is valid only when all items are true:
 
 ## Shared Staging Evidence Status
 
-T242 records a target-server staging-equivalent restore drill on 2026-05-17 using temporary non-production source and restore databases on the approved test server. This proves the target runner, PostgreSQL tooling, backup artifact handling, restore path, and `dev-db` smoke path for a clean staging-equivalent database. It does not prove restore of the long-lived target app database, because that database contains prior dev/test smoke mutations and failed the strict seed-baseline `dev-db` smoke after restore. Use the T242 result as launch evidence only if Ops/QA/Security accept the temporary staging-equivalent scope; otherwise run an additional drill against an approved clean shared staging source.
+T242 records a target-server staging-equivalent restore drill on 2026-05-17 using temporary non-production source and restore databases on the approved test server. This proves the target runner, PostgreSQL tooling, backup artifact handling, restore path, and `dev-db` smoke path for a clean staging-equivalent database. It does not prove restore of the long-lived target app database, because that database contains prior dev/test smoke mutations and failed the strict seed-baseline `dev-db` smoke after restore. T245 records Admin/Ops/QA/Security acceptance of the temporary staging-equivalent scope for the pilot evidence packet; run an additional drill against an approved clean shared staging source if the launch scope requires long-lived app DB restore proof.
 
 | Evidence area | Required proof | Current repo status |
 |---|---|---|
-| Environment approval | Ops owner confirms source and target are non-production and target may be overwritten. | T242 pass for temporary target-server staging-equivalent source/restore DBs; final scope acceptance pending Admin/Ops/QA/Security review. |
+| Environment approval | Ops owner confirms source and target are non-production and target may be overwritten. | T242 pass for temporary target-server staging-equivalent source/restore DBs; T245 records Admin/Ops/QA/Security acceptance of this staging-equivalent scope. |
 | Data classification | Source data classification, masking status if any copied data exists, and confirmation that no production customer data is used without approval. | T242 source and target were temporary seeded dev/test DBs with no production data. |
 | Tooling prerequisites | `pg_dump`, `pg_restore`, `psql`, `sha256sum`, and `go` versions or runner image. | T242 target check found all required tools present on the test server. |
 | Plan run | `make backup-restore-drill-plan` or equivalent dry-run reviewed before destructive restore. | T242 ran `bash scripts/backup_restore_drill.sh --plan` before restore. |
@@ -113,7 +113,7 @@ T242 records a target-server staging-equivalent restore drill on 2026-05-17 usin
 | Restore result | Restore completed without `pg_restore` errors against the approved target. | T242 restore completed and reported `backup/restore drill passed`. |
 | Smoke result | `dev-db` smoke passed against the restored target with migration/check counts recorded. | T242 restored target applied 0 new migrations and passed 20 `dev-db` smoke checks after source passed 25 migrations and 20 checks. |
 | Cleanup/retention | Backup artifact retention or deletion decision, target cleanup owner, and follow-up issues. | T242 deleted dump/checksum files and dropped both temporary databases after evidence capture; cleanup owner is Admin by T241 assignment. |
-| Sign-off | Operator, Ops owner, QA owner, and date/time UTC. | Operator: Codex. Assigned Ops/QA/Security owner: Admin by T241. Final launch sign-off remains pending evidence packet review. |
+| Sign-off | Operator, Ops owner, QA owner, and date/time UTC. | Operator: Codex. Assigned Ops/QA/Security owner: Admin by T241. T245 records Admin acceptance of the T242 backup/restore evidence for the pilot scope. |
 
 ## Shared Staging Evidence Packet Template
 
@@ -219,9 +219,9 @@ Drill ID: T242-target-20260517T134247Z
 Date/time UTC: 2026-05-17 13:42:47
 Operator: Codex
 Environment: staging-equivalent test server
-Ops owner approval: Admin assigned by T241; final scope acceptance pending evidence review
-QA reviewer: Admin assigned by T241; final scope acceptance pending evidence review
-Security reviewer: Admin assigned by T241; final scope acceptance pending evidence review
+Ops owner approval: Admin accepted the T242 staging-equivalent scope in T245
+QA reviewer: Admin accepted the T242 staging-equivalent scope in T245
+Security reviewer: Admin accepted the T242 staging-equivalent scope in T245
 Source classification: temporary target-server staging-equivalent seed DB, no production data
 Target classification: temporary target-server staging-equivalent restore DB, approved to overwrite
 Source database: billing_t242_source_20260517134247
@@ -240,6 +240,6 @@ Backup artifact retention/deletion: dump and checksum files deleted after eviden
 Target cleanup owner: Admin
 Cleanup result: source and target temporary databases dropped
 Issues: the long-lived target app DB was not used as pass evidence because strict seed-baseline dev-db smoke failed after restore due prior dev/test smoke mutations.
-Follow-up: if launch requires proof against the long-lived app DB snapshot, run an approved app-DB restore drill with a smoke designed for long-lived staging data or record an owner-approved staging-equivalent exception.
-Sign-off decision: evidence collected; final Admin/Ops/QA/Security launch sign-off pending
+Follow-up: if launch requires proof against the long-lived app DB snapshot, run an approved app-DB restore drill with a smoke designed for long-lived staging data or replace the T245 staging-equivalent acceptance.
+Sign-off decision: Admin/Ops/QA/Security accepted the T242 staging-equivalent evidence for the pilot scope in T245.
 ```
