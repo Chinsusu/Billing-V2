@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-17` after T245 completion:
+Current board snapshot on `2026-05-17` with T246 in progress:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 242
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T246 | [tasks/active/T246_go_nogo_owner_wording_cleanup.md](tasks/active/T246_go_nogo_owner_wording_cleanup.md) | IN_PROGRESS | Codex | codex/t246-go-nogo-owner-wording | Clean up stale Go/No-Go owner wording after T245. |
 
 ## Blocked Task Files
 
