@@ -1,9 +1,9 @@
 # T237 - Target credential reveal audit evidence
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t237-target-credential-reveal
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/506
 Risk: credentials/auth/RBAC/tenant/audit
 Created: 2026-05-17
 Updated: 2026-05-17
@@ -42,3 +42,4 @@ Add and run a repeatable target-environment smoke that proves credential reveal 
 - 2026-05-17: Added `dev-target-credential-reveal` smoke command and focused unit coverage for cookie-only reveal, response redaction checks, and audit leak detection errors.
 - 2026-05-17: Deployed current branch to the approved test server and ran `./bin/smoke -timeout 90s dev-target-credential-reveal` with `APP_ENV=dev` and local API base URL. Result PASS: service display `43001`, credential type `recovery_code`, client session cookie-only reveal, no-store response headers, audit display `10017`, client actor reveal metadata, one reveal rate-limit attempt, provider mutation routes called `no`, and money mutation routes called `no`.
 - 2026-05-17: Local validation passed: `make fmt`, `go test ./cmd/smoke`, `make test`, `make build`, `go run ./cmd/contractguard`, `go run ./cmd/errorcodeguard`, `go run ./cmd/taskguard`, CI-equivalent basic secret scan, and `git diff --check`.
+- 2026-05-17: Opened PR #506 and moved task to `REVIEW`.
