@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-16
 **Scope:** Launch-critical notification delivery proof or approved manual fallback evidence.
-**Decision:** Not launch-ready until production delivery proof or the manual fallback packet below is completed with named owners.
+**Decision:** Manual fallback is launch-ready for an owner-approved pilot after T244, but production SMTP/Telegram delivery is still not proven.
 
 ## Current State
 
@@ -17,6 +17,8 @@ This is not production delivery proof. Before GO, launch evidence must show eith
 
 - production SMTP/Telegram delivery proof for launch-critical events; or
 - an approved manual fallback with owner, SLA, escalation path, and redacted evidence.
+
+T244 records the second path for the current pilot scope: Admin owns Support, Ops, and Security fallback decisions; fallback messages use the Admin direct launch channel; sample events are redacted dev/test evidence references; and no external production delivery channel is claimed.
 
 ## Launch-Critical Events
 
@@ -181,3 +183,62 @@ Escalate immediately to Security and Ops if:
 - support coverage is unavailable during the pilot window.
 
 Escalation result must be recorded in the evidence packet before GO can be reconsidered.
+
+## T244 Manual Fallback Evidence
+
+```text
+Fallback ID:
+T244-manual-fallback-20260517
+Date/time UTC:
+2026-05-17T14:30Z
+Environment:
+Approved target test server evidence plus owner-approved pilot fallback procedure.
+Evidence collector:
+Codex
+Support owner:
+Admin
+Ops owner:
+Admin
+Security owner:
+Admin
+Coverage window:
+Entire approved pilot window plus 2 hours after pilot close; no launch window is approved yet.
+Escalation channel reference:
+Admin direct launch channel.
+P0 acknowledgement SLA:
+15 minutes.
+P0 customer-contact SLA:
+30 minutes for customer-facing P0 events.
+P1 customer-contact SLA:
+4 business hours.
+Events sampled:
+Customer-facing P1 top-up approved event from T235: top-up display 10003, ledger display 10005, audit display 10015.
+Ops-facing P0 provisioning manual-review event from T232: Cloudmini create reached provider status creating and Billing moved the job to manual review before same-session cleanup.
+Delivery channel used:
+Manual fallback through Admin direct launch channel. No SMTP, Telegram, or automated production delivery channel was used.
+Delivery result:
+PASS for manual fallback drill review. No external customer message was sent because the sampled events are dev/test evidence.
+SLA result:
+PASS for owner-approved SLA values; live SLA measurement starts only when an approved pilot window starts.
+Redacted evidence reference:
+T235 and T232 task logs plus this T244 packet; no payload, credential, token, DSN, provider ID, provider payload, cookie, reset token, or customer data is recorded.
+Open exceptions:
+Production SMTP/Telegram delivery remains unproven. If Admin is unavailable or misses SLA, pilot must pause and launch-critical events stay in manual review.
+Support owner sign-off:
+Admin, by T241 owner assignment and T244 fallback acceptance.
+Ops owner sign-off:
+Admin, by T241 owner assignment and T244 fallback acceptance.
+Security owner sign-off:
+Admin, by T241 owner assignment and T244 fallback acceptance.
+Decision:
+PASS for manual fallback readiness; not proof of production notification delivery.
+```
+
+Safe message samples approved for manual fallback:
+
+```text
+Top-up #10003 was approved and wallet credit was recorded. If the balance is not visible, contact support through the approved pilot channel.
+Provisioning for the pilot service needs manual review before retry. Do not retry provider create until provider state is verified.
+```
+
+These samples intentionally omit credentials, reset tokens, raw provider references, raw payment proof, backend UUIDs, and private support details.

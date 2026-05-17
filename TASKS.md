@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-17` after T243 completion:
+Current board snapshot on `2026-05-17` with T244 in progress:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 240
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T244 | [tasks/active/T244_notification_manual_fallback_evidence.md](tasks/active/T244_notification_manual_fallback_evidence.md) | IN_PROGRESS | Codex | codex/t244-notification-fallback-evidence | Record owner-approved manual fallback evidence for launch-critical notifications. |
 
 ## Blocked Task Files
 
