@@ -1,7 +1,7 @@
 # T229 - Cloudmini pilot hardening
 
-Status: TODO
-Owner: -
+Status: IN_PROGRESS
+Owner: Codex
 Branch: codex/t229-cloudmini-pilot-hardening
 PR: -
 Risk: provider/provisioning/lifecycle/credential
@@ -35,3 +35,4 @@ Harden the Cloudmini V3 pilot path before broader provider use by resolving the 
 ## Agent Log
 
 - 2026-05-17: Task created as follow-up from T228 controlled dev pilot residual risks.
+- 2026-05-17: Claimed by Codex from latest `origin/main` on branch `codex/t229-cloudmini-pilot-hardening`.

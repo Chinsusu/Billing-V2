@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-17` with T228 done and T229 queued:
+Current board snapshot on `2026-05-17` with T228 done and T229 in progress:
 
-- `TODO`: 1
-- `IN_PROGRESS`: 0
+- `TODO`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 225
@@ -61,12 +61,12 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T229 | [tasks/active/T229_cloudmini_pilot_hardening.md](tasks/active/T229_cloudmini_pilot_hardening.md) | codex/t229-cloudmini-pilot-hardening | provider/provisioning | Harden Cloudmini cleanup and terminal resource status behavior before broader pilot use. |
 
 ## In-Flight Task Files
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T229 | [tasks/active/T229_cloudmini_pilot_hardening.md](tasks/active/T229_cloudmini_pilot_hardening.md) | IN_PROGRESS | Codex | codex/t229-cloudmini-pilot-hardening | Harden Cloudmini cleanup and terminal resource status behavior before broader pilot use. |
 
 ## Done Task Files
 
