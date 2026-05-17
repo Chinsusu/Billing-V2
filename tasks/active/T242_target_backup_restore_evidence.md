@@ -1,9 +1,9 @@
 # T242 - Target staging-equivalent backup restore evidence
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t242-target-backup-restore-evidence
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/516
 Risk: operations/database-safety/backup-restore/launch-readiness/secrets
 Created: 2026-05-17
 Updated: 2026-05-17
@@ -39,3 +39,5 @@ Capture redacted backup/restore evidence from the approved test server as stagin
 - 2026-05-17: Task created and claimed by Codex on branch `codex/t242-target-backup-restore-evidence`.
 - 2026-05-17: Target server clean staging-equivalent drill passed with temporary DBs `billing_t242_source_20260517134247` and `billing_t242_restore_20260517134247`: source `dev-db` smoke applied 25 migrations and passed 20 checks, restore applied 0 new migrations and passed 20 checks, checksum `be364dcbd3b434402f89bfbfef941d66e96c04e3d88e4d7ef70b91d9b4f0c0e2`, dump/checksum files deleted, and both temporary DBs dropped. No DSNs, passwords, tokens, provider payloads, dump files, or credentials were recorded.
 - 2026-05-17: Verified cleanup on the target server: `billing_t242_%` database count `0` and `/tmp/billing-t242-backup-restore` file count `0`.
+- 2026-05-17: Local validation passed: `go run ./cmd/taskguard`, `git diff --check`, and staged secret scan for raw DSNs/tokens/password assignments/private keys.
+- 2026-05-17: Opened PR #516 and moved task to `REVIEW`.
