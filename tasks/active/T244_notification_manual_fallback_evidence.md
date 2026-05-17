@@ -1,6 +1,6 @@
 # T244 - Notification manual fallback evidence
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t244-notification-fallback-evidence
 PR: https://github.com/Chinsusu/Billing-V2/pull/520
@@ -39,3 +39,4 @@ Record an owner-approved manual fallback evidence packet for launch-critical not
 - 2026-05-17: Recorded T244 manual fallback evidence with Admin-owned Support/Ops/Security roles, pilot-window coverage rule, P0/P1 SLA values, Admin direct launch escalation, customer-facing T235 top-up sample, ops-facing T232 provisioning manual-review sample, safe message examples, and explicit production SMTP/Telegram non-proof caveat.
 - 2026-05-17: Local validation passed: `go run ./cmd/taskguard`, `git diff --check`, changed-diff secret-pattern scan, and changed-file line counts under 500.
 - 2026-05-17: Opened PR https://github.com/Chinsusu/Billing-V2/pull/520 for review.
+- 2026-05-17: PR https://github.com/Chinsusu/Billing-V2/pull/520 merged; marking task DONE.
