@@ -1,9 +1,9 @@
 # T243 - Target staging-equivalent renewal E2E evidence
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t243-target-renewal-e2e-evidence
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/518
 Risk: wallet/ledger/service-lifecycle/audit/full-e2e/launch-readiness
 Created: 2026-05-17
 Updated: 2026-05-17
@@ -36,3 +36,5 @@ Add and capture staging-equivalent full E2E evidence for the T206 client service
 - 2026-05-17: Task created and claimed by Codex on branch `codex/t243-target-renewal-e2e-evidence`.
 - 2026-05-17: Added renewal coverage to `dev-billing`: after fake-provider service activation, the smoke renews the service, verifies a paid renewal invoice, posted payment transaction, purchase ledger, active paid service state, increased `term_end`, and `service.renewed`/`invoice.wallet_paid` audit rows.
 - 2026-05-17: Target staging-equivalent full E2E passed on temporary DB `billing_t243_e2e_20260517140625`: backend taskguard/test/contract/error/build passed, target deploy-copy skipped only `git diff --check`, `dev-db` passed 25 migrations and 20 checks, `dev-api` passed 35 checks, `dev-billing` passed with service `10000` and renewal invoice `10002`, transaction `10001`, ledger `10002`, frontend `npm ci`, audit, sensitive-text, lint, build, and admin browser smoke passed. Temporary DB cleanup verified count `0`.
+- 2026-05-17: Local validation passed: `make fmt`, `go test ./cmd/smoke`, `bash -n scripts/full_e2e_quality_gate.sh`, `make test`, `make build`, `go run ./cmd/contractguard`, `go run ./cmd/errorcodeguard`, `go run ./cmd/taskguard`, `git diff --check`, and staged secret-pattern scan.
+- 2026-05-17: Opened PR https://github.com/Chinsusu/Billing-V2/pull/518 for review.
