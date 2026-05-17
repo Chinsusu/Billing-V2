@@ -170,6 +170,32 @@ func TestProviderProvisioningHandlerMovesUnknownTimeoutToManualReview(t *testing
 	}
 }
 
+func TestProviderProvisioningHandlerDoesNotCreateServiceForPartialProviderSuccess(t *testing.T) {
+	now := fixedProvisioningWorkerTime()
+	adapter := provider.NewFakeAdapter(provider.TypeManual)
+	adapter.SetError(provider.OperationProvision, provider.NewError(provider.ErrorPartialSuccess, "provider resource is not usable yet"))
+	registry, err := provider.NewRegistry(adapter)
+	if err != nil {
+		t.Fatalf("expected registry: %v", err)
+	}
+	recorder := &fakeProvisioningResultRecorder{}
+	handler := &ProviderProvisioningHandler{Registry: registry, Recorder: recorder, Now: func() time.Time { return now }}
+
+	completion, err := handler.Handle(context.Background(), provisioningWorkerJob())
+	if err != nil {
+		t.Fatalf("expected handled partial success: %v", err)
+	}
+	if completion.Status != jobs.StatusManualReview || completion.RetrySafety != jobs.RetrySafetyManualReviewRequired {
+		t.Fatalf("expected manual review completion, got %+v", completion)
+	}
+	if recorder.input.Status != ProvisioningStatusManualReview || recorder.input.LastErrorCode != string(provider.ErrorPartialSuccess) {
+		t.Fatalf("unexpected recorded partial result: %+v", recorder.input)
+	}
+	if recorder.serviceInput.ExternalResourceID != "" || recorder.credentialCalled {
+		t.Fatalf("service and credential must not be created for partial provider success: service=%+v credential=%v", recorder.serviceInput, recorder.credentialCalled)
+	}
+}
+
 func TestProviderProvisioningHandlerRejectsInvalidPayload(t *testing.T) {
 	registry, err := provider.NewFakeRegistry(provider.TypeManual)
 	if err != nil {

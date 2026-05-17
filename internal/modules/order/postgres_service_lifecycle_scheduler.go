@@ -6,62 +6,69 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Chinsusu/Billing-V2/internal/modules/catalog"
+	"github.com/Chinsusu/Billing-V2/internal/modules/provider"
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
 )
 
 const listDueServiceLifecycleActionsSQL = `
 SELECT
-    service_instance_id,
-    tenant_id,
-    status,
+    svc.service_instance_id,
+    svc.tenant_id,
+    svc.provider_source_id,
+    source.source_type,
+    svc.external_resource_id,
+    svc.status,
     CASE
-        WHEN status = 'active' THEN 'expire'
-        WHEN status = 'expired' THEN 'grace'
+        WHEN svc.status = 'active' THEN 'expire'
+        WHEN svc.status = 'expired' THEN 'grace'
         ELSE 'terminate'
     END AS action,
     CASE
-        WHEN status = 'active' THEN 'expired'
-        WHEN status = 'expired' THEN 'suspended'
+        WHEN svc.status = 'active' THEN 'expired'
+        WHEN svc.status = 'expired' THEN 'suspended'
         ELSE 'terminated'
     END AS to_status,
     'overdue' AS billing_status,
     CASE
-        WHEN status = 'expired' THEN 'expiry'
-        WHEN status = 'suspended' THEN suspension_reason::text
+        WHEN svc.status = 'expired' THEN 'expiry'
+        WHEN svc.status = 'suspended' THEN svc.suspension_reason::text
         ELSE NULL
     END AS suspension_reason,
     CASE
-        WHEN status = 'active' THEN 'paid'
+        WHEN svc.status = 'active' THEN 'paid'
         ELSE 'overdue'
     END AS expected_billing_status,
     CASE
-        WHEN status = 'suspended' THEN 'expiry'
+        WHEN svc.status = 'suspended' THEN 'expiry'
         ELSE NULL
     END AS expected_suspension_reason,
     CASE
-        WHEN status = 'active' THEN 'service term expired'
-        WHEN status = 'expired' THEN 'service entered expiry grace'
+        WHEN svc.status = 'active' THEN 'service term expired'
+        WHEN svc.status = 'expired' THEN 'service entered expiry grace'
         ELSE 'service expired beyond grace period'
     END AS reason,
-    term_end
-FROM service_instances
+    svc.term_end
+FROM service_instances svc
+JOIN provider_sources source
+  ON source.source_id = svc.provider_source_id
 WHERE (
-        status = 'active'
-        AND billing_status = 'paid'
-        AND term_end <= $1
+        svc.status = 'active'
+        AND svc.billing_status = 'paid'
+        AND svc.term_end <= $1
     )
    OR (
-        status = 'expired'
-        AND billing_status = 'overdue'
-        AND term_end <= $1
+        svc.status = 'expired'
+        AND svc.billing_status = 'overdue'
+        AND svc.term_end <= $1
     )
    OR (
-        status = 'suspended'
-        AND billing_status = 'overdue'
-        AND suspension_reason = 'expiry'
-        AND term_end <= $2
+        svc.status = 'suspended'
+        AND svc.billing_status = 'overdue'
+        AND svc.suspension_reason = 'expiry'
+        AND svc.term_end <= $2
     )
-ORDER BY term_end ASC, created_at ASC
+ORDER BY svc.term_end ASC, svc.created_at ASC
 LIMIT $3`
 
 func (store *PostgresStore) ListDueServiceLifecycleActions(ctx context.Context, input ListDueServiceLifecycleActionsInput) ([]ServiceLifecycleDueAction, error) {
@@ -107,13 +114,16 @@ func scanDueServiceLifecycleAction(row interface {
 	Scan(dest ...interface{}) error
 }) (ServiceLifecycleDueAction, error) {
 	var action ServiceLifecycleDueAction
-	var serviceID, tenantID, fromStatus, lifecycleAction, toStatus, billingStatus string
+	var serviceID, tenantID, providerSourceID, providerType, externalResourceID, fromStatus, lifecycleAction, toStatus, billingStatus string
 	var suspensionReason, expectedSuspensionReason sql.NullString
 	var expectedBillingStatus string
 	var termEnd time.Time
 	if err := row.Scan(
 		&serviceID,
 		&tenantID,
+		&providerSourceID,
+		&providerType,
+		&externalResourceID,
 		&fromStatus,
 		&lifecycleAction,
 		&toStatus,
@@ -128,6 +138,9 @@ func scanDueServiceLifecycleAction(row interface {
 	}
 	action.ServiceID = ServiceID(serviceID)
 	action.TenantID = tenant.ID(tenantID)
+	action.ProviderSourceID = catalog.ProviderSourceID(providerSourceID)
+	action.ProviderType = provider.Type(providerType)
+	action.ExternalResourceID = provider.ExternalResourceID(externalResourceID)
 	action.FromStatus = ServiceStatus(fromStatus)
 	action.Action = ServiceLifecycleAction(lifecycleAction)
 	action.ToStatus = ServiceStatus(toStatus)

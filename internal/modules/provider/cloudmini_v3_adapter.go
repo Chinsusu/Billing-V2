@@ -13,6 +13,10 @@ const (
 	cloudminiV3KindResidential = "residential"
 	cloudminiV3ProtocolHTTP    = "http"
 	cloudminiV3ProtocolSOCKS5  = "socks5"
+	cloudminiV3StatusActive    = "active"
+	cloudminiV3StatusAvailable = "available"
+	cloudminiV3StatusReady     = "ready"
+	cloudminiV3StatusRunning   = "running"
 )
 
 type CloudminiV3SourceConfig struct {
@@ -179,6 +183,11 @@ func (adapter *CloudminiV3Adapter) Provision(ctx context.Context, operation Oper
 	proxy, err := adapter.proxyFromOperationOrRead(ctx, operation, runtime.client, providerOperation, string(externalResourceID))
 	if err != nil {
 		return adapter.resultForError(normalizeAdapterError(err, ErrorCredentialMissing, "cloudmini v3 credential payload is missing"), externalRequestID, externalResourceID)
+	}
+	if adapterErr, ok := cloudminiV3ProxyStatusNotUsable(proxy.Status); ok {
+		result, err := adapter.resultForError(adapterErr, externalRequestID, ExternalResourceID(proxy.ID))
+		result.ProviderStatus = strings.TrimSpace(proxy.Status)
+		return result, err
 	}
 	credential, err := adapter.credentialEnvelope(proxy)
 	if err != nil {
@@ -367,6 +376,25 @@ func (adapter *CloudminiV3Adapter) credentialEnvelope(proxy cloudminiV3Proxy) (C
 		payload["connection_uri"] = proxy.ConnectionURI
 	}
 	return NewEncryptedCredentialEnvelope(CredentialTypeProxyAuth, payload, proxy.maskedHint(), adapter.keyVersion, adapter.credentialCipher)
+}
+
+func cloudminiV3ProxyStatusNotUsable(status string) (AdapterError, bool) {
+	if cloudminiV3ProxyStatusUsable(status) {
+		return AdapterError{}, false
+	}
+	return NewError(ErrorPartialSuccess, "cloudmini v3 proxy status is not usable yet"), true
+}
+
+func cloudminiV3ProxyStatusUsable(status string) bool {
+	switch strings.ToLower(strings.TrimSpace(status)) {
+	case cloudminiV3StatusActive,
+		cloudminiV3StatusAvailable,
+		cloudminiV3StatusReady,
+		cloudminiV3StatusRunning:
+		return true
+	default:
+		return false
+	}
 }
 
 func (adapter *CloudminiV3Adapter) resultForError(err AdapterError, externalRequestID ExternalRequestID, externalResourceID ExternalResourceID) (OperationResult, error) {

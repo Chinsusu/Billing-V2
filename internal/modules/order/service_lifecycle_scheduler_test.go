@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/Chinsusu/Billing-V2/internal/modules/jobs"
+	"github.com/Chinsusu/Billing-V2/internal/modules/provider"
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
 )
 
@@ -19,6 +20,9 @@ func TestServiceLifecycleSchedulerSchedulesDueActionsWithIdempotentKeys(t *testi
 		actions: []ServiceLifecycleDueAction{{
 			ServiceID:             "11111111-1111-1111-1111-111111111111",
 			TenantID:              tenant.ID("22222222-2222-2222-2222-222222222222"),
+			ProviderSourceID:      "55555555-5555-5555-5555-555555555555",
+			ProviderType:          provider.TypeCloudminiV3,
+			ExternalResourceID:    "proxy-1",
 			Action:                ServiceLifecycleActionExpire,
 			FromStatus:            ServiceStatusActive,
 			ToStatus:              ServiceStatusExpired,
@@ -55,6 +59,9 @@ func TestServiceLifecycleSchedulerSchedulesDueActionsWithIdempotentKeys(t *testi
 		input.ReferenceID != jobs.ReferenceID("11111111-1111-1111-1111-111111111111") {
 		t.Fatalf("unexpected queued job input: %+v", input)
 	}
+	if input.SourceID != jobs.SourceID("55555555-5555-5555-5555-555555555555") {
+		t.Fatalf("unexpected provider source id: %+v", input)
+	}
 	if !strings.Contains(input.IdempotencyKey, "service_lifecycle:22222222-2222-2222-2222-222222222222:11111111-1111-1111-1111-111111111111:expire:active:expired") {
 		t.Fatalf("unexpected idempotency key: %s", input.IdempotencyKey)
 	}
@@ -64,6 +71,9 @@ func TestServiceLifecycleSchedulerSchedulesDueActionsWithIdempotentKeys(t *testi
 		t.Fatalf("expected valid payload: %v", err)
 	}
 	if payload.Action != ServiceLifecycleActionExpire ||
+		payload.ProviderSourceID != "55555555-5555-5555-5555-555555555555" ||
+		payload.ProviderType != provider.TypeCloudminiV3 ||
+		payload.ExternalResourceID != "proxy-1" ||
 		payload.ExpectedBillingStatus != BillingStatusPaid ||
 		!payload.TermEnd.Equal(termEnd) {
 		t.Fatalf("unexpected payload: %+v", payload)
