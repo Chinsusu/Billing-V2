@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-17` after T238 review:
+Current board snapshot on `2026-05-17` after T238 done:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 234
+- `DONE` task files in `tasks/active/`: 235
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T238 | [tasks/active/T238_target_finance_reconciliation_evidence.md](tasks/active/T238_target_finance_reconciliation_evidence.md) | REVIEW | Codex | codex/t238-target-finance-reconciliation | Prove target finance reconciliation read evidence. |
 
 ## Blocked Task Files
 
@@ -96,6 +95,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T235`
 - `T236`
 - `T237`
+- `T238`
 
 ## Removed Tasks
 
