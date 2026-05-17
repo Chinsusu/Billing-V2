@@ -67,8 +67,10 @@ func run(args []string) error {
 		return runDevTargetAuthRBACSmoke(*baseURL, *timeout)
 	case "dev-target-credential-reveal":
 		return runDevTargetCredentialRevealSmoke(*dsn, *baseURL, *timeout)
+	case "dev-target-finance-reconciliation":
+		return runDevTargetFinanceReconciliationSmoke(*dsn, *baseURL, *timeout)
 	default:
-		return fmt.Errorf("unknown command %q; use dev-db, dev-api, dev-billing, dev-topup-review, dev-target-auth-rbac, or dev-target-credential-reveal", command)
+		return fmt.Errorf("unknown command %q; use dev-db, dev-api, dev-billing, dev-topup-review, dev-target-auth-rbac, dev-target-credential-reveal, or dev-target-finance-reconciliation", command)
 	}
 }
 
