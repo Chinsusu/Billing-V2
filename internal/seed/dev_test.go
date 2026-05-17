@@ -72,6 +72,19 @@ func TestDevStatementsIncludeBillingFlowData(t *testing.T) {
 	}
 }
 
+func TestBillingFlowSeedWalletProjectionMatchesLedger(t *testing.T) {
+	sql := seedBillingFlowSQL
+	for _, expected := range []string{
+		"available_balance_minor, locked_balance_minor, metadata)",
+		"    3600,\n    0,\n    '{\"seed\":\"billing_flow\",\"label\":\"Demo customer wallet\"}'::jsonb",
+		"    'debit',\n    invoice.total_minor,\n    invoice.currency,\n    'purchase',\n    'posted',\n    3600,",
+	} {
+		if !strings.Contains(sql, expected) {
+			t.Fatalf("billing flow seed must keep wallet projection aligned with posted ledger; missing %q", expected)
+		}
+	}
+}
+
 func TestDevUserPasswordHashesAreUsable(t *testing.T) {
 	sql := joinSeedSQL(DevStatements())
 	normalizedSQL := strings.ToLower(sql)

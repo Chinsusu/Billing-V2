@@ -175,7 +175,7 @@ func seededBillingChecks() []smokeCheck {
 		minCheck("rbac permissions", "SELECT COUNT(*) FROM permissions WHERE permission_key IN ('wallet.view', 'order.view', 'audit.view')", 3),
 		minCheck("provider source", "SELECT COUNT(*) FROM provider_sources WHERE display_id >= 10000", 1),
 		exactCheck("tenant plan", "SELECT COUNT(*) FROM tenant_plans WHERE tenant_plan_id = '00000000-0000-0000-0000-000000000801'", 1),
-		exactCheck("demo wallet", "SELECT COUNT(*) FROM wallets WHERE wallet_id = '00000000-0000-0000-0000-000000000901' AND display_id = 41001 AND available_balance_minor = 3200", 1),
+		exactCheck("demo wallet", "SELECT COUNT(*) FROM wallets WHERE wallet_id = '00000000-0000-0000-0000-000000000901' AND display_id = 41001 AND available_balance_minor = 3600", 1),
 		exactCheck("topup request", "SELECT COUNT(*) FROM topup_requests WHERE topup_request_id = '00000000-0000-0000-0000-000000000908' AND display_id = 52001 AND status = 'approved'", 1),
 		exactCheck("topup idempotency", "SELECT COUNT(*) FROM topup_requests WHERE tenant_id = '00000000-0000-0000-0000-000000000010' AND idempotency_key = 'seed-topup-request-1'", 1),
 		exactCheck("demo order", "SELECT COUNT(*) FROM orders WHERE order_id = '00000000-0000-0000-0000-000000000903' AND display_id = 42001 AND order_status = 'paid' AND billing_status = 'paid'", 1),
@@ -184,6 +184,7 @@ func seededBillingChecks() []smokeCheck {
 		exactCheck("paid invoice", "SELECT COUNT(*) FROM invoices WHERE invoice_id = '00000000-0000-0000-0000-000000000904' AND display_id = 44001 AND status = 'paid'", 1),
 		exactCheck("invoice item", "SELECT COUNT(*) FROM invoice_items WHERE invoice_item_id = '00000000-0000-0000-0000-000000000905'", 1),
 		exactCheck("wallet ledger entries", "SELECT COUNT(*) FROM wallet_ledger_entries WHERE wallet_id = '00000000-0000-0000-0000-000000000901' AND display_id IN (50001, 50002) AND status = 'posted'", 2),
+		exactCheck("wallet ledger projection", "SELECT COUNT(*) FROM wallets wallet WHERE wallet.wallet_id = '00000000-0000-0000-0000-000000000901' AND wallet.available_balance_minor = (SELECT COALESCE(SUM(CASE WHEN entry.direction = 'credit' THEN entry.amount_minor ELSE -entry.amount_minor END), 0) FROM wallet_ledger_entries entry WHERE entry.wallet_id = wallet.wallet_id AND entry.tenant_id = wallet.tenant_id AND entry.status = 'posted')", 1),
 		exactCheck("payment transaction", "SELECT COUNT(*) FROM payment_transactions WHERE payment_transaction_id = '00000000-0000-0000-0000-000000000907' AND display_id = 51001 AND status = 'posted'", 1),
 		exactCheck("payment idempotency", "SELECT COUNT(*) FROM payment_transactions WHERE tenant_id = '00000000-0000-0000-0000-000000000010' AND idempotency_key = 'seed-payment-1'", 1),
 	}
