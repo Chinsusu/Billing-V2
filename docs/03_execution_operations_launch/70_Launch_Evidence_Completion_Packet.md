@@ -8,7 +8,7 @@
 
 This packet is the final evidence checklist for the work that cannot be proven by repository code or local/dev smokes alone.
 
-The repository currently has strong local/dev evidence for core implementation, a T241 single-owner launch assignment to `Admin`, T242 target-server staging-equivalent backup/restore evidence, and T243 target-server staging-equivalent full E2E evidence including T206 renewal. It still does not contain full real provider account proof, production notification delivery proof, or final target-environment security/finance/QA sign-off.
+The repository currently has strong local/dev evidence for core implementation, a T241 single-owner launch assignment to `Admin`, T242 target-server staging-equivalent backup/restore evidence, T243 target-server staging-equivalent full E2E evidence including T206 renewal, and T244 owner-approved notification manual fallback evidence. It still does not contain full real provider account proof, production notification delivery proof, or final target-environment security/finance/QA sign-off.
 
 Do not change the pilot decision to GO or CONDITIONAL GO by filling this packet with assumptions. Every row needs actual evidence or an explicit owner-approved exception.
 
@@ -29,7 +29,7 @@ Use display IDs, redacted placeholders, dates, command names, check counts, and 
 | Real provider sandbox | Blocked for broader pilot. T199 proves local fake provider behavior; doc 66/T208 defines the provider evidence packet. T213 records Cloudmini V3 API version and non-production base URL. T214 recorded the earlier edge/gateway HTTP `403` blocker; T215 documents the provider-owner unblock; T216 records a successful 2026-05-16 read-only rerun through the public hostname using bearer, `X-API-Key`, and `X-ACCESS-CODE` from a local dev credential source. T217 adds multi-endpoint runtime support. T218 defines a controlled pilot approval packet with a redacted `ipv4_dc` mapping candidate and quota/cleanup guardrails. T219 adds guarded non-production catalog mapping tooling. T220 applied the mapping on the approved Billing dev runtime env and T221 read-only evidence passed with readiness `ready` for the pilot `cloudmini_v3` source. T228 ran one controlled dev Billing-path create/delete pilot with encrypted credential storage and same-session cleanup. T229 adds repo-side fail-closed handling for non-usable Cloudmini statuses and lifecycle-worker provider cleanup before service termination. T230 deployed and build-tested that hardening on the approved test server without provider mutations. T231 proves non-mutating worker registry activation with the real Cloudmini adapter and protected dev credential path. T232 attempted owner-approved dev mutating/lifecycle activation; Billing reached Cloudmini create but manual-reviewed provider status `creating`, then same-session direct V3 cleanup succeeded. T233 adds bounded post-create status polling and the target rerun passed with one active service, encrypted credential storage, lifecycle-worker provider cleanup, provider final `404`, and worker restore. T241 assigns the owner roles to `Admin`, but approved shared credential storage, live duplicate/timeout evidence, full error examples, usable-status owner sign-off, target auth/RBAC/finance/security sign-off, or broader owner approval is still not recorded. | Approved sandbox account, shared secret-store path, owner-approved quota/cost limit, SKU/location sign-off, live timeout/idempotency behavior, redacted error examples, cleanup owner, edge/gateway access approval record, Cloudmini usable-status semantics, and target/staging owner sign-off. | Provider Owner, Engineering Lead, Ops Lead, Security Owner |
 | Shared staging backup/restore | Partial with target staging-equivalent pass. T203 proves local restore. T242 proves a target-server staging-equivalent clean source/restore drill with checksum, restore, smoke, and cleanup evidence. The long-lived target app DB was not used as pass evidence because prior dev/test smoke mutations make strict seed-baseline `dev-db` smoke unsuitable. | Admin/Ops/QA/Security acceptance of the staging-equivalent scope, or an additional approved clean shared staging app snapshot restore with suitable post-restore smoke. | Ops Lead, QA Lead, Security Owner |
 | Staging/full E2E | Partial with target staging-equivalent pass. T204 proves local/dev full gate with fake provider. T243 extends the gate to include T206 renewal and passes it on the approved test server using a temporary target DB, local API, fake-provider fulfillment, and mocked frontend browser smoke. | Admin/QA/Engineering/Product acceptance of the staging-equivalent scope, plus any required external browser/auth-session evidence before GO. Real provider work remains excluded unless the provider gate is complete. | QA Lead, Engineering Lead, Product Owner |
-| Notification delivery or fallback | Partial. T200 provides local notification foundation only. T222 defines the manual fallback owner/SLA/evidence packet, but no production delivery proof or approved fallback drill is recorded. | Production SMTP/Telegram delivery proof for launch-critical events, or a manual fallback with owner, SLA, escalation path, and sample redacted notification records. | Ops Lead, Support Owner, Security Owner |
+| Notification delivery or fallback | Manual fallback pass for owner-approved pilot scope. T200 provides local notification foundation, T222 defines the fallback packet, and T244 records Admin-owned manual fallback SLA/escalation with redacted customer-facing and ops-facing sample events. Production SMTP/Telegram delivery remains unproven. | Use T244 manual fallback for the pilot, or replace it with production SMTP/Telegram delivery proof before a broader launch. Pause launch if Admin coverage or SLA cannot be met. | Ops Lead, Support Owner, Security Owner |
 | Launch-day owners | Assigned with single-owner risk. T241 records the user-provided assignment that `Admin` owns Product, Engineering, QA, Ops, Finance, Security, Support, and Provider launch-day roles. | A launch window, escalation path, and explicit acceptance that one person owns all role decisions for the selected launch scope. | Product Owner, Engineering Lead |
 | Target-environment verification | Partial. T230 proves the hardened backend/worker/frontend code deploys and builds on the approved test server, target services are active, `/healthz`, `/readyz`, and frontend return HTTP `200`, and protected Cloudmini dev credentials stay outside git. T231 proves non-mutating Cloudmini registry activation. T232 proves the target can reach a real Cloudmini create path and safely cleanup by fallback. T233 proves one target Cloudmini lifecycle-worker cleanup activation. T235 proves target top-up review create/approve/reject via HTTP API on the approved test server: approve top-up display `10003` posted ledger display `10005` and audit display `10015`; reject top-up display `10004` posted no ledger and audit display `10016`; wallet delta was `111`; provider side effects were `none`. T236 proves target API session/RBAC behavior on the approved test server: client cookie-only `/client/catalog` passed without `X-Actor-*`, unsatisfied platform admin session was blocked with `auth.2fa_required`, invalid session was blocked with `auth.session_invalid`, missing actor was blocked with `auth.actor_required`, cross-tenant mismatch was blocked with `tenant.context_mismatch`, and three low-permission RBAC checks were blocked with `auth.permission_denied`. T237 proves target credential reveal audit/redaction behavior: the seeded client session revealed one encrypted dev/test fixture for service display `43001`, response headers were `no-store`, audit display `10017` was recorded, reveal rate-limit state was recorded, and smoke output excluded plaintext credentials, encrypted payloads, raw credential IDs, session tokens, cookies, DSNs, provider payloads, and provider credentials. T238 proved target finance reconciliation read paths and found one dev/test wallet projection mismatch. T239 fixed the seed baseline, repaired the target dev/test projection from posted ledger source-of-truth with audit display `10018`, and reran target finance reconciliation with `balanced` status and zero mismatch counts. T240 removed cloudflared token flag exposure from process argv by switching to `--token-file`, verified restricted secret file modes, and confirmed target local/domain HTTP `200`. External browser auth, Finance owner sign-off, Security owner sign-off, and broader owner sign-off still remain missing. | Finance owner review/sign-off for the balanced T239 evidence, Security owner review/sign-off for T240 secret/key evidence, external browser auth evidence if required for launch, and owner sign-off. | Security Owner, Finance Lead, QA Lead |
 
@@ -177,16 +177,27 @@ Pass criteria:
 
 ```text
 Delivery mode: SMTP / Telegram / dashboard / manual fallback
+manual fallback
 Launch-critical events covered:
+Top-up status, provisioning failure/manual review, service lifecycle, password reset, support/abuse critical events by manual fallback procedure.
 Credential/secret storage path: redacted secret-store reference only
+N/A for manual fallback; no notification credential is used.
 Successful delivery evidence:
+T244 manual fallback drill review passed; sampled customer-facing top-up approved event from T235 and ops-facing Cloudmini manual-review event from T232.
 Failure/retry evidence:
+If Admin misses SLA or cannot deliver a fallback message, pilot pauses and the related event remains in manual review until Security/Ops review.
 Manual fallback owner:
+Admin
 Manual fallback SLA:
+P0 acknowledgement 15 minutes; P0 customer contact 30 minutes; P1 customer contact 4 business hours.
 Escalation path:
+Admin direct launch channel; single-owner escalation accepted for this fallback scope.
 Support owner sign-off:
+Admin
 Ops sign-off:
+Admin
 Security sign-off:
+Admin
 ```
 
 Pass criteria:
@@ -222,7 +233,7 @@ Not approved until remaining P0 evidence gates are complete.
 Owner availability confirmed:
 Yes for owner assignment by user statement on 2026-05-17: "1 mình tao cân hết. Admin".
 Single-owner risk:
-Accepted for owner assignment only. This does not waive missing staging, backup/restore, notification/fallback, provider duplicate/timeout/error, shared secret-store, or final sign-off evidence.
+Accepted for owner assignment and T244 notification manual fallback only. This does not waive missing provider duplicate/timeout/error, shared secret-store, production notification delivery, or final sign-off evidence.
 ```
 
 Pass criteria:
@@ -246,8 +257,11 @@ Finance reconciliation owner run:
 T238 evidence captured on the approved test server local API/DB. The read-only smoke selected transaction display 51001, invoice display 44001, wallet display 41001, and ledger display 50002; payment reconciliation list/detail returned matching public display evidence; daily reconciliation for 2026-04-23 initially returned `mismatched` with one wallet mismatch. T239 traced the root cause to dev/test wallet projection drift from an inconsistent seed baseline and later smoke runs, fixed the seed baseline, repaired wallet display 41001 from posted ledger source-of-truth with audit display 10018, and reran the target smoke. The rerun returned `balanced` with wallets checked 2, wallet mismatches 0, invoices checked 1, invoice mismatches 0, payments checked 1, and duplicate payment references 0. The repair inserted no ledger rows, updated no posted ledger rows, called no money/provider mutation routes, and printed no secrets. Finance owner review/sign-off is still missing.
 Cross-tenant negative check: T236 PASS on the approved test server local API. A mismatched actor tenant was denied with `tenant.context_mismatch`, and low-permission RBAC checks returned `auth.permission_denied`.
 Support coverage check:
+T244 PASS for owner-approved manual fallback readiness. Admin owns Support/Ops/Security fallback decisions, coverage is the approved pilot window plus 2 hours, P0 acknowledgement SLA is 15 minutes, P0 customer-contact SLA is 30 minutes, and P1 customer-contact SLA is 4 business hours. Evidence samples include T235 top-up display 10003 and T232 provisioning manual-review evidence. Production SMTP/Telegram delivery remains unproven.
 Residual risks:
+Single-person support/ops/security coverage; no automated production notification delivery; live SLA has not started because no launch window is approved.
 Security sign-off:
+Admin for manual fallback scope; final broader security sign-off still depends on provider and secret-store gates.
 Finance sign-off:
 QA sign-off:
 ```
