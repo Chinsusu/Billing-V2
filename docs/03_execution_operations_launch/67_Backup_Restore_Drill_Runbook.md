@@ -100,20 +100,20 @@ The drill is valid only when all items are true:
 
 ## Shared Staging Evidence Status
 
-No approved shared staging or staging-equivalent restore evidence is stored in this repository as of 2026-05-14. T203 proves the local drill path only. A launch gate can use this runbook only after a separate operator packet records approved non-production source and target details without DSNs or secrets.
+T242 records a target-server staging-equivalent restore drill on 2026-05-17 using temporary non-production source and restore databases on the approved test server. This proves the target runner, PostgreSQL tooling, backup artifact handling, restore path, and `dev-db` smoke path for a clean staging-equivalent database. It does not prove restore of the long-lived target app database, because that database contains prior dev/test smoke mutations and failed the strict seed-baseline `dev-db` smoke after restore. Use the T242 result as launch evidence only if Ops/QA/Security accept the temporary staging-equivalent scope; otherwise run an additional drill against an approved clean shared staging source.
 
 | Evidence area | Required proof | Current repo status |
 |---|---|---|
-| Environment approval | Ops owner confirms source and target are non-production and target may be overwritten. | Missing. |
-| Data classification | Source data classification, masking status if any copied data exists, and confirmation that no production customer data is used without approval. | Missing. |
-| Tooling prerequisites | `pg_dump`, `pg_restore`, `psql`, `sha256sum`, and `go` versions or runner image. | Missing. |
-| Plan run | `make backup-restore-drill-plan` or equivalent dry-run reviewed before destructive restore. | Missing. |
-| Backup artifact | Redacted backup path outside the repository and checksum path or checksum value. | Missing. |
-| Restore confirmation | Target database name and `BILLING_BACKUP_RESTORE_CONFIRM` value captured without DSN, password, or host secret. | Missing. |
-| Restore result | Restore completed without `pg_restore` errors against the approved target. | Missing. |
-| Smoke result | `dev-db` smoke passed against the restored target with migration/check counts recorded. | Missing. |
-| Cleanup/retention | Backup artifact retention or deletion decision, target cleanup owner, and follow-up issues. | Missing. |
-| Sign-off | Operator, Ops owner, QA owner, and date/time UTC. | Missing. |
+| Environment approval | Ops owner confirms source and target are non-production and target may be overwritten. | T242 pass for temporary target-server staging-equivalent source/restore DBs; final scope acceptance pending Admin/Ops/QA/Security review. |
+| Data classification | Source data classification, masking status if any copied data exists, and confirmation that no production customer data is used without approval. | T242 source and target were temporary seeded dev/test DBs with no production data. |
+| Tooling prerequisites | `pg_dump`, `pg_restore`, `psql`, `sha256sum`, and `go` versions or runner image. | T242 target check found all required tools present on the test server. |
+| Plan run | `make backup-restore-drill-plan` or equivalent dry-run reviewed before destructive restore. | T242 ran `bash scripts/backup_restore_drill.sh --plan` before restore. |
+| Backup artifact | Redacted backup path outside the repository and checksum path or checksum value. | T242 wrote the dump/checksum under `/tmp/billing-t242-backup-restore`, recorded checksum `be364dcbd3b434402f89bfbfef941d66e96c04e3d88e4d7ef70b91d9b4f0c0e2`, then deleted both files. |
+| Restore confirmation | Target database name and `BILLING_BACKUP_RESTORE_CONFIRM` value captured without DSN, password, or host secret. | T242 confirm probe required `restore:billing_t242_restore_20260517134247`; no DSN/password was recorded. |
+| Restore result | Restore completed without `pg_restore` errors against the approved target. | T242 restore completed and reported `backup/restore drill passed`. |
+| Smoke result | `dev-db` smoke passed against the restored target with migration/check counts recorded. | T242 restored target applied 0 new migrations and passed 20 `dev-db` smoke checks after source passed 25 migrations and 20 checks. |
+| Cleanup/retention | Backup artifact retention or deletion decision, target cleanup owner, and follow-up issues. | T242 deleted dump/checksum files and dropped both temporary databases after evidence capture; cleanup owner is Admin by T241 assignment. |
+| Sign-off | Operator, Ops owner, QA owner, and date/time UTC. | Operator: Codex. Assigned Ops/QA/Security owner: Admin by T241. Final launch sign-off remains pending evidence packet review. |
 
 ## Shared Staging Evidence Packet Template
 
@@ -210,4 +210,36 @@ Result: pass
 Cleanup: temporary source/target databases and local dump/checksum files removed after evidence capture
 Issues: none
 Follow-up: repeat against approved shared staging before final T205 launch sign-off
+```
+
+## T242 Target Staging-Equivalent Evidence
+
+```text
+Drill ID: T242-target-20260517T134247Z
+Date/time UTC: 2026-05-17 13:42:47
+Operator: Codex
+Environment: staging-equivalent test server
+Ops owner approval: Admin assigned by T241; final scope acceptance pending evidence review
+QA reviewer: Admin assigned by T241; final scope acceptance pending evidence review
+Security reviewer: Admin assigned by T241; final scope acceptance pending evidence review
+Source classification: temporary target-server staging-equivalent seed DB, no production data
+Target classification: temporary target-server staging-equivalent restore DB, approved to overwrite
+Source database: billing_t242_source_20260517134247
+Target database: billing_t242_restore_20260517134247
+Production data present: no
+Plan command: bash scripts/backup_restore_drill.sh --plan
+Plan result: pass
+Restore command: bash scripts/backup_restore_drill.sh --run with redacted target-server DSNs
+Confirm value used: restore:billing_t242_restore_20260517134247
+Backup artifact path: /tmp/billing-t242-backup-restore/billing-billing_t242_source_20260517134247-20260517T134248Z.dump
+Backup checksum: be364dcbd3b434402f89bfbfef941d66e96c04e3d88e4d7ef70b91d9b4f0c0e2
+Source smoke: dev-db passed, 25 migrations, 20 checks
+Restore result: pass; pg_restore completed without error
+Restored target smoke: dev-db passed, 0 new migrations, 20 checks
+Backup artifact retention/deletion: dump and checksum files deleted after evidence capture
+Target cleanup owner: Admin
+Cleanup result: source and target temporary databases dropped
+Issues: the long-lived target app DB was not used as pass evidence because strict seed-baseline dev-db smoke failed after restore due prior dev/test smoke mutations.
+Follow-up: if launch requires proof against the long-lived app DB snapshot, run an approved app-DB restore drill with a smoke designed for long-lived staging data or record an owner-approved staging-equivalent exception.
+Sign-off decision: evidence collected; final Admin/Ops/QA/Security launch sign-off pending
 ```
