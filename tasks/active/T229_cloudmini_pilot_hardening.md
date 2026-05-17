@@ -1,9 +1,9 @@
 # T229 - Cloudmini pilot hardening
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t229-cloudmini-pilot-hardening
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/491
 Risk: provider/provisioning/lifecycle/credential
 Created: 2026-05-17
 Updated: 2026-05-17
@@ -39,3 +39,4 @@ Harden the Cloudmini V3 pilot path before broader provider use by resolving the 
 - 2026-05-17: Implemented Cloudmini fail-closed service activation: provider operation success with non-usable proxy status now returns `PROVIDER_PARTIAL_SUCCESS`/manual review and does not create an active service or credential.
 - 2026-05-17: Added provider-backed lifecycle-worker terminate path: provider `Terminate` runs before service `terminated`; timeout/unknown cleanup blocks the transition and moves the job to manual review.
 - 2026-05-17: Added tests for Cloudmini non-usable status, delete/idempotency, delete timeout/manual review, lifecycle provider cleanup success/failure, and provisioning partial success not creating a service.
+- 2026-05-17: Opened PR https://github.com/Chinsusu/Billing-V2/pull/491. Validation passed: `go test ./internal/modules/provider`; `go test ./internal/modules/order`; `go test ./cmd/worker`; `go test ./...`; `go run ./cmd/taskguard`; `git diff --check`; changed-file secret scan found placeholder env names and the `APIToken` field name only.
