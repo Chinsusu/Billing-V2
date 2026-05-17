@@ -63,8 +63,10 @@ func run(args []string) error {
 		return runDevBillingMutationSmoke(*dsn, *baseURL, *timeout)
 	case "dev-topup-review":
 		return runDevTopupReviewSmoke(*dsn, *baseURL, *timeout)
+	case "dev-target-auth-rbac":
+		return runDevTargetAuthRBACSmoke(*baseURL, *timeout)
 	default:
-		return fmt.Errorf("unknown command %q; use dev-db, dev-api, dev-billing, or dev-topup-review", command)
+		return fmt.Errorf("unknown command %q; use dev-db, dev-api, dev-billing, dev-topup-review, or dev-target-auth-rbac", command)
 	}
 }
 

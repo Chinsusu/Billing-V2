@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-17` after T235 merge:
+Current board snapshot on `2026-05-17` with T236 in progress:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 232
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T236 | [tasks/active/T236_target_auth_rbac_session_evidence.md](tasks/active/T236_target_auth_rbac_session_evidence.md) | IN_PROGRESS | Codex | codex/t236-target-auth-rbac-smoke | Prove target session auth, 2FA gate, RBAC, and cross-tenant denial evidence. |
 
 ## Blocked Task Files
 
