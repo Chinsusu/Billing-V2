@@ -61,18 +61,18 @@ These items do not replace P0 blockers. If a later review moves from NO-GO to CO
 
 ## Launch-Day Owner Record
 
-No named launch-day owners were found in repository evidence. Do not mark GO until these are assigned and recorded in `docs/03_execution_operations_launch/70_Launch_Evidence_Completion_Packet.md`.
+T241 records the user-provided owner assignment that `Admin` is the single accountable owner for every launch-day role. This closes the unassigned-owner placeholder gap, but it creates a concentration-of-duty risk because product, engineering, QA, ops, finance, security, support, and provider decisions are held by one person. Do not mark GO until the remaining P0 evidence gates are complete and the single-owner risk is explicitly accepted for the launch scope.
 
 | Role | Required responsibility | Current assignment |
 | --- | --- | --- |
-| Product Owner | Final pilot scope, customer list, and communication approval | unassigned |
-| Engineering Lead | Release readiness, rollback, and incident technical owner | unassigned |
-| QA Lead | P0 evidence packet and final smoke approval | unassigned |
-| Ops Lead | Deployment, monitoring, backup/restore, and provider operational handoff | unassigned |
-| Finance Lead | Wallet, ledger, top-up, refund, adjustment, and daily reconciliation sign-off | unassigned |
-| Security Owner | 2FA, credential, secret, audit, and incident response sign-off | unassigned |
-| Support Owner | Ticket handling, abuse response, macros, and escalation coverage | unassigned |
-| Provider Owner | Sandbox account, quota, provider support contact, cleanup, and rollback | unassigned |
+| Product Owner | Final pilot scope, customer list, and communication approval | Admin |
+| Engineering Lead | Release readiness, rollback, and incident technical owner | Admin |
+| QA Lead | P0 evidence packet and final smoke approval | Admin |
+| Ops Lead | Deployment, monitoring, backup/restore, and provider operational handoff | Admin |
+| Finance Lead | Wallet, ledger, top-up, refund, adjustment, and daily reconciliation sign-off | Admin |
+| Security Owner | 2FA, credential, secret, audit, and incident response sign-off | Admin |
+| Support Owner | Ticket handling, abuse response, macros, and escalation coverage | Admin |
+| Provider Owner | Sandbox account, quota, provider support contact, cleanup, and rollback | Admin |
 
 ## Required Actions Before Reconsidering GO
 
@@ -82,14 +82,16 @@ No named launch-day owners were found in repository evidence. Do not mark GO unt
 ## Sign-Off
 
 ```text
-Product Owner: unassigned
-Engineering Lead: unassigned
-QA Lead: unassigned
-Ops Lead: unassigned
-Finance Lead: unassigned
-Security Owner: unassigned
-Support Owner: unassigned
-Provider Owner: unassigned
+Product Owner: Admin
+Engineering Lead: Admin
+QA Lead: Admin
+Ops Lead: Admin
+Finance Lead: Admin
+Security Owner: Admin
+Support Owner: Admin
+Provider Owner: Admin
+Owner assignment evidence: user statement on 2026-05-17, "1 mình tao cân hết. Admin"
+Single-owner risk: accepted for owner assignment only; remaining P0 evidence gates still decide GO/NO-GO.
 Launch Date: not approved
 Decision: NO-GO
 ```
