@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-17` with T237 in review:
+Current board snapshot on `2026-05-17` after T237 merge:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 233
+- `DONE` task files in `tasks/active/`: 234
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T237 | [tasks/active/T237_target_credential_reveal_audit_evidence.md](tasks/active/T237_target_credential_reveal_audit_evidence.md) | REVIEW | Codex | codex/t237-target-credential-reveal | Prove target credential reveal audit and redaction evidence. |
 
 ## Blocked Task Files
 
@@ -95,6 +94,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T234`
 - `T235`
 - `T236`
+- `T237`
 
 ## Removed Tasks
 
