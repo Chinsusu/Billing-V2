@@ -8,7 +8,7 @@
 
 This packet is the final evidence checklist for the work that cannot be proven by repository code or local/dev smokes alone.
 
-The repository currently has strong local/dev evidence for core implementation and a T241 single-owner launch assignment to `Admin`, but it does not contain real provider account proof, approved shared staging restore evidence, staging/full E2E proof, production notification delivery proof, or final target-environment security/finance sign-off.
+The repository currently has strong local/dev evidence for core implementation, a T241 single-owner launch assignment to `Admin`, and T242 target-server staging-equivalent backup/restore evidence. It still does not contain full real provider account proof, staging/full E2E proof, production notification delivery proof, or final target-environment security/finance/QA sign-off.
 
 Do not change the pilot decision to GO or CONDITIONAL GO by filling this packet with assumptions. Every row needs actual evidence or an explicit owner-approved exception.
 
@@ -27,7 +27,7 @@ Use display IDs, redacted placeholders, dates, command names, check counts, and 
 | Gate | Current repo status | Required completion evidence | Required owner sign-off |
 |---|---|---|---|
 | Real provider sandbox | Blocked for broader pilot. T199 proves local fake provider behavior; doc 66/T208 defines the provider evidence packet. T213 records Cloudmini V3 API version and non-production base URL. T214 recorded the earlier edge/gateway HTTP `403` blocker; T215 documents the provider-owner unblock; T216 records a successful 2026-05-16 read-only rerun through the public hostname using bearer, `X-API-Key`, and `X-ACCESS-CODE` from a local dev credential source. T217 adds multi-endpoint runtime support. T218 defines a controlled pilot approval packet with a redacted `ipv4_dc` mapping candidate and quota/cleanup guardrails. T219 adds guarded non-production catalog mapping tooling. T220 applied the mapping on the approved Billing dev runtime env and T221 read-only evidence passed with readiness `ready` for the pilot `cloudmini_v3` source. T228 ran one controlled dev Billing-path create/delete pilot with encrypted credential storage and same-session cleanup. T229 adds repo-side fail-closed handling for non-usable Cloudmini statuses and lifecycle-worker provider cleanup before service termination. T230 deployed and build-tested that hardening on the approved test server without provider mutations. T231 proves non-mutating worker registry activation with the real Cloudmini adapter and protected dev credential path. T232 attempted owner-approved dev mutating/lifecycle activation; Billing reached Cloudmini create but manual-reviewed provider status `creating`, then same-session direct V3 cleanup succeeded. T233 adds bounded post-create status polling and the target rerun passed with one active service, encrypted credential storage, lifecycle-worker provider cleanup, provider final `404`, and worker restore. T241 assigns the owner roles to `Admin`, but approved shared credential storage, live duplicate/timeout evidence, full error examples, usable-status owner sign-off, target auth/RBAC/finance/security sign-off, or broader owner approval is still not recorded. | Approved sandbox account, shared secret-store path, owner-approved quota/cost limit, SKU/location sign-off, live timeout/idempotency behavior, redacted error examples, cleanup owner, edge/gateway access approval record, Cloudmini usable-status semantics, and target/staging owner sign-off. | Provider Owner, Engineering Lead, Ops Lead, Security Owner |
-| Shared staging backup/restore | Partial. T203 proves local restore; doc 67/T209 defines shared staging evidence. | Approved source/target, destructive restore confirmation, backup checksum, restore result, `dev-db` smoke result, cleanup/retention decision, and Ops/QA review. | Ops Lead, QA Lead, Security Owner |
+| Shared staging backup/restore | Partial with target staging-equivalent pass. T203 proves local restore. T242 proves a target-server staging-equivalent clean source/restore drill with checksum, restore, smoke, and cleanup evidence. The long-lived target app DB was not used as pass evidence because prior dev/test smoke mutations make strict seed-baseline `dev-db` smoke unsuitable. | Admin/Ops/QA/Security acceptance of the staging-equivalent scope, or an additional approved clean shared staging app snapshot restore with suitable post-restore smoke. | Ops Lead, QA Lead, Security Owner |
 | Staging/full E2E | Partial. T204 proves local/dev full gate with fake provider. | Approved staging or signed staging-equivalent run covering auth/RBAC, top-up approval, checkout, wallet payment, provisioning boundary, service activation, T206 renewal, lifecycle jobs, frontend smoke, and audit checks. | QA Lead, Engineering Lead, Product Owner |
 | Notification delivery or fallback | Partial. T200 provides local notification foundation only. T222 defines the manual fallback owner/SLA/evidence packet, but no production delivery proof or approved fallback drill is recorded. | Production SMTP/Telegram delivery proof for launch-critical events, or a manual fallback with owner, SLA, escalation path, and sample redacted notification records. | Ops Lead, Support Owner, Security Owner |
 | Launch-day owners | Assigned with single-owner risk. T241 records the user-provided assignment that `Admin` owns Product, Engineering, QA, Ops, Finance, Security, Support, and Provider launch-day roles. | A launch window, escalation path, and explicit acceptance that one person owns all role decisions for the selected launch scope. | Product Owner, Engineering Lead |
@@ -84,21 +84,37 @@ Pass criteria:
 
 ```text
 Drill ID:
+T242-target-20260517T134247Z
 Source classification:
+Temporary target-server staging-equivalent seed DB, no production data.
 Target classification:
+Temporary target-server staging-equivalent restore DB, approved to overwrite.
 Target overwrite approval:
+Bounded to billing_t242_restore_20260517134247 only.
 Backup artifact path: redacted non-repo path
+/tmp/billing-t242-backup-restore/billing-billing_t242_source_20260517134247-20260517T134248Z.dump
 Backup checksum:
+be364dcbd3b434402f89bfbfef941d66e96c04e3d88e4d7ef70b91d9b4f0c0e2
 Restore command:
+bash scripts/backup_restore_drill.sh --run with redacted target-server DSNs
 Restore result:
+PASS; pg_restore completed and the drill reported backup/restore passed.
 Smoke command:
+go run ./cmd/smoke -dsn "$BILLING_RESTORE_TARGET_DSN" -timeout 90s dev-db
 Smoke result:
+PASS on restored target.
 Migration count:
+Source smoke applied 25 migrations; restored target applied 0 new migrations and reported 25 schema migration rows.
 Smoke check count:
+20 checks on source and 20 checks on restored target.
 Cleanup/retention decision:
+Dump/checksum files deleted after evidence capture; temporary source and restore DBs dropped.
 Ops sign-off:
+Admin assigned by T241; final evidence acceptance pending.
 QA sign-off:
+Admin assigned by T241; final evidence acceptance pending.
 Security sign-off:
+Admin assigned by T241; final evidence acceptance pending.
 ```
 
 Pass criteria:

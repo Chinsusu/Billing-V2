@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-17` after T241 done:
+Current board snapshot on `2026-05-17` with T242 in progress:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 238
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T242 | [tasks/active/T242_target_backup_restore_evidence.md](tasks/active/T242_target_backup_restore_evidence.md) | IN_PROGRESS | Codex | codex/t242-target-backup-restore-evidence | Capture redacted target staging-equivalent backup/restore evidence. |
 
 ## Blocked Task Files
 
