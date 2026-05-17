@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-17
 **Scope:** Controlled pre-approval packet for the first Cloudmini V3 mutating pilot.
-**Decision:** One controlled dev create/delete pilot has passed. T229 fixes the repo-side non-usable-status and lifecycle-worker cleanup gaps, but broader pilot remains blocked until live duplicate/timeout evidence, shared secret storage, target-environment verification, and owner sign-offs are complete.
+**Decision:** One controlled dev create/delete pilot has passed. T229 fixes the repo-side non-usable-status and lifecycle-worker cleanup gaps, and T230 proves that hardening deploys/builds on the approved test server. Broader pilot remains blocked until live duplicate/timeout evidence, shared secret storage, owner-approved Cloudmini runtime activation, and owner sign-offs are complete.
 
 ## Current Safe State
 
@@ -14,6 +14,7 @@ Read-only evidence is complete for the Billing Go-client-style path:
 - Authenticated `GET /api/v3/inventory/groups?kind=residential` returns HTTP `200` V3 success envelopes.
 - T228 ran one approved dev mutating pilot through Billing checkout/payment/provisioning worker and cleaned up the provider resource in the same session.
 - T229 makes Cloudmini provisioning fail closed when the provider resource status is not usable and makes lifecycle-worker termination call provider delete before marking a service terminated.
+- T230 deployed the T229 hardening to the approved Billing test server and verified build/service health without calling Cloudmini mutating routes.
 
 ## Pilot Mapping Candidate
 
@@ -219,6 +220,7 @@ Residual risks before broader pilot:
 - T229 changes Cloudmini provisioning to fail closed if the resource status is not usable. Operation success with provider status `creating` now moves to manual review instead of creating an active service.
 - Duplicate-create and timeout-after-send behavior are still not proven against the live provider.
 - Production/shared secret-store owner and named launch owners are still not recorded in repo evidence.
+- The always-on target worker remains on `PROVIDER_DEFAULT_MODE=fake`; Cloudmini runtime activation requires a new owner-approved window.
 
 ## T229 Cleanup And Status Hardening
 
@@ -235,6 +237,40 @@ Operator boundary:
 - Use `cmd/worker lifecycle-once` or `cmd/worker lifecycle-loop` with the same approved Cloudmini provider registry env used for provisioning when validating provider-backed cleanup.
 - Do not treat `POST /admin/services/:id/terminate` or `POST /reseller/services/:id/terminate` as provider cleanup evidence; those routes remain lifecycle APIs.
 - A direct provider delete is allowed only as a documented dev-pilot exception with owner approval, one-resource scope, same-session cleanup, and redacted evidence.
+
+## T230 Target Test-Server Deployment Evidence
+
+T230 verified the T229 hardening on the approved Billing dev test server without mutating Cloudmini or Billing provisioning state.
+
+Target state:
+
+- Runtime path: `/opt/Billing`.
+- Environment: `APP_ENV=dev`, `APP_HTTP_ADDR=:8080`.
+- Always-on provider mode: `PROVIDER_DEFAULT_MODE=fake`.
+- Runtime secrets: `DB_DSN` and `ENCRYPTION_KEY` present in the local env file but not printed.
+- Cloudmini dev credential path: `/opt/cred-cloudmini-dev.env`, mode `0600`, owner `root:root`.
+- Source markers confirmed on target: `cloudminiV3ProxyStatusUsable` and `NewProviderBackedServiceLifecycleRunner`.
+
+Target validation:
+
+- `go test ./internal/modules/provider ./internal/modules/order ./cmd/worker` passed.
+- `go run ./cmd/taskguard` passed.
+- `go build -o bin/api ./cmd/api` passed.
+- `go build -o bin/worker ./cmd/worker` passed.
+- `npm --prefix frontend run build` passed.
+- `billing-api`, `billing-worker`, `billing-frontend`, and `cloudflared` were active after restart.
+- `GET http://127.0.0.1:8080/healthz` returned HTTP `200`.
+- `GET http://127.0.0.1:8080/readyz` returned HTTP `200`.
+- `GET http://127.0.0.1:3000/` returned HTTP `200`.
+- Ports `8080` and `3000` were listening.
+
+Explicit non-actions:
+
+- No `POST /api/v3/proxies`.
+- No `DELETE /api/v3/proxies/:id`.
+- No `POST /api/v3/proxies/:id/actions/:action`.
+- No Billing checkout, payment, provisioning worker mutation, or lifecycle mutation was run.
+- No raw DSN, token, provider group id, provider resource id, provider payload, or proxy credential was printed or stored in repo evidence.
 
 ## Required Preflight
 
