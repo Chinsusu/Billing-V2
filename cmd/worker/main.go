@@ -360,8 +360,13 @@ func newLifecycleRunner(ctx context.Context, cfg workerConfig) (provisionRunner,
 	jobStore := jobs.NewPostgresStore(conn)
 	orderStore := order.NewPostgresStore(conn)
 	auditService := audit.NewService(audit.NewPostgresStore(conn))
+	registry, err := newWorkerProviderRegistry()
+	if err != nil {
+		_ = conn.Close()
+		return nil, nil, err
+	}
 	orderService := order.NewServiceWithOptions(order.ServiceOptions{Store: orderStore, Audit: auditService})
-	runner := order.NewServiceLifecycleRunner(jobStore, orderService, jobs.WorkerID(cfg.WorkerID))
+	runner := order.NewProviderBackedServiceLifecycleRunner(jobStore, orderService, registry, jobs.WorkerID(cfg.WorkerID))
 	runner.BatchSize = cfg.BatchSize
 	runner.LockFor = cfg.LockFor
 	return runner, closeDatabase(conn), nil

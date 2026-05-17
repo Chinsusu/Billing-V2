@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-17
 **Scope:** Controlled pre-approval packet for the first Cloudmini V3 mutating pilot.
-**Decision:** One controlled dev create/delete pilot has passed. Broader pilot remains blocked until the T228 residual risks are fixed or explicitly accepted.
+**Decision:** One controlled dev create/delete pilot has passed. T229 fixes the repo-side non-usable-status and lifecycle-worker cleanup gaps, but broader pilot remains blocked until live duplicate/timeout evidence, shared secret storage, target-environment verification, and owner sign-offs are complete.
 
 ## Current Safe State
 
@@ -13,6 +13,7 @@ Read-only evidence is complete for the Billing Go-client-style path:
 - Authenticated `GET /api/v3/inventory/groups?kind=ipv4_dc` returns HTTP `200` V3 success envelopes.
 - Authenticated `GET /api/v3/inventory/groups?kind=residential` returns HTTP `200` V3 success envelopes.
 - T228 ran one approved dev mutating pilot through Billing checkout/payment/provisioning worker and cleaned up the provider resource in the same session.
+- T229 makes Cloudmini provisioning fail closed when the provider resource status is not usable and makes lifecycle-worker termination call provider delete before marking a service terminated.
 
 ## Pilot Mapping Candidate
 
@@ -90,7 +91,7 @@ T220 target-environment mapping evidence was applied on the approved Billing dev
 - The read-only evidence collector returned `result=PASS`, plan display `10002`, product type `proxy`, readiness `ready`, redacted group ref `redacted:c6a7189f0a`, protocol `socks5`, one-create/one-active-resource/one-worker guardrails, and `failed_checks=none`.
 - No checkout, worker provisioning, provider create/delete, provider action, raw provider group id, DSN, token, or proxy credential was printed or stored in repo evidence.
 
-This unblocks the dev mapping evidence gate only. Keep broader mutating use blocked until owner sign-offs, timeout/idempotency evidence, cleanup hardening, and residual-risk follow-ups below are complete.
+This unblocks the dev mapping evidence gate only. Keep broader mutating use blocked until owner sign-offs, timeout/idempotency evidence, target-environment lifecycle-worker cleanup evidence, and residual-risk follow-ups below are complete.
 
 ## Required Approval Fields
 
@@ -214,10 +215,26 @@ Cleanup evidence:
 
 Residual risks before broader pilot:
 
-- Billing service terminate is lifecycle-only today; it does not call provider `DELETE`, so T228 cleanup needed the provider delete path directly.
-- Provider `GET` immediately after Billing activation returned resource status `creating` even though the provider operation and worker completed successfully. A follow-up must decide whether Billing should wait for a terminal usable resource status before marking the service active, or document that `creating` after operation success is provider-compatible.
+- Direct HTTP service terminate remains a lifecycle transition API. For provider-backed cleanup, use the lifecycle worker path with provider registry configured. Direct provider delete remains a dev-pilot exception only when owner approved and redacted cleanup evidence is recorded.
+- T229 changes Cloudmini provisioning to fail closed if the resource status is not usable. Operation success with provider status `creating` now moves to manual review instead of creating an active service.
 - Duplicate-create and timeout-after-send behavior are still not proven against the live provider.
 - Production/shared secret-store owner and named launch owners are still not recorded in repo evidence.
+
+## T229 Cleanup And Status Hardening
+
+Repo behavior after T229:
+
+- Cloudmini provisioning treats only provider resource statuses `running`, `active`, `ready`, and `available` as usable for service activation.
+- Cloudmini resource statuses such as `creating`, `provisioning`, `pending`, empty, or unknown produce `PROVIDER_PARTIAL_SUCCESS`, retry safety `manual_review_required`, and no active service or credential record.
+- Provider delete uses the Cloudmini V3 `DELETE /api/v3/proxies/:id` path with the job idempotency key and waits for the provider operation to reach `succeeded`.
+- Lifecycle-worker termination calls provider `Terminate` before transitioning the Billing service to `terminated` when a provider registry is configured.
+- If provider delete is timeout/unknown, missing cleanup metadata, or adapter lookup fails, the lifecycle job moves to manual review and the Billing service is not marked `terminated`.
+
+Operator boundary:
+
+- Use `cmd/worker lifecycle-once` or `cmd/worker lifecycle-loop` with the same approved Cloudmini provider registry env used for provisioning when validating provider-backed cleanup.
+- Do not treat `POST /admin/services/:id/terminate` or `POST /reseller/services/:id/terminate` as provider cleanup evidence; those routes remain lifecycle APIs.
+- A direct provider delete is allowed only as a documented dev-pilot exception with owner approval, one-resource scope, same-session cleanup, and redacted evidence.
 
 ## Required Preflight
 
@@ -285,11 +302,13 @@ Stop immediately and do not retry automatically if any of these occurs:
 Cleanup must happen in the same pilot session:
 
 1. Record the redacted external resource reference.
-2. Call the approved Billing/service cleanup path or approved provider delete path.
+2. Prefer the lifecycle worker provider-backed cleanup path when the service is eligible for lifecycle termination, with the Cloudmini provider registry configured.
 3. Poll provider operation status until terminal state.
 4. Confirm the resource is deleted, disabled, or otherwise no longer billable.
 5. Confirm Billing service state and provider mapping do not imply an active paid resource after cleanup.
 6. Record cleanup owner, time, result, and residual risk.
+
+If the lifecycle worker path is not applicable for a dev pilot, an approved direct provider delete may be used as the fallback cleanup exception. Record the owner approval and keep broader readiness blocked until target-environment lifecycle cleanup evidence exists.
 
 If cleanup fails, keep the launch decision `NO-GO`, disable the source, and open an incident/follow-up before any further create attempt.
 
@@ -300,4 +319,5 @@ Before broader pilot or multiple provider accounts:
 - T217 supports multiple Cloudmini V3 endpoint/API-key mappings through `CLOUDMINI_V3_MAPPINGS_JSON`; keep secret values in approved env/secret storage only.
 - T220 verifies the dev pilot mapping. Any broader staging or production-equivalent mapping still needs an approved target environment and owner sign-off before use.
 - T227 makes runtime configuration fail closed when the configured source id does not match the Billing provider source used by the provisioning job.
-- T228 proves one controlled dev create/delete pilot, but broader pilot must first resolve or accept the lifecycle cleanup and terminal resource status residual risks.
+- T228 proves one controlled dev create/delete pilot.
+- T229 resolves the repo-side lifecycle cleanup and terminal resource status residual risks with fail-closed code and tests. Broader pilot still needs live duplicate/timeout evidence, shared secret ownership, target-environment lifecycle-worker cleanup evidence, and named owner sign-off.

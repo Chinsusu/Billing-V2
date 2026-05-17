@@ -36,3 +36,6 @@ Harden the Cloudmini V3 pilot path before broader provider use by resolving the 
 
 - 2026-05-17: Task created as follow-up from T228 controlled dev pilot residual risks.
 - 2026-05-17: Claimed by Codex from latest `origin/main` on branch `codex/t229-cloudmini-pilot-hardening`.
+- 2026-05-17: Implemented Cloudmini fail-closed service activation: provider operation success with non-usable proxy status now returns `PROVIDER_PARTIAL_SUCCESS`/manual review and does not create an active service or credential.
+- 2026-05-17: Added provider-backed lifecycle-worker terminate path: provider `Terminate` runs before service `terminated`; timeout/unknown cleanup blocks the transition and moves the job to manual review.
+- 2026-05-17: Added tests for Cloudmini non-usable status, delete/idempotency, delete timeout/manual review, lifecycle provider cleanup success/failure, and provisioning partial success not creating a service.

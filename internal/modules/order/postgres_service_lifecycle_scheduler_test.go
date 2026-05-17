@@ -26,15 +26,19 @@ func TestListDueServiceLifecycleActionsArgsUseGraceCutoff(t *testing.T) {
 
 func TestListDueServiceLifecycleActionsSQLGuardsStatusesAndGrace(t *testing.T) {
 	for _, clause := range []string{
-		"status = 'active'",
-		"billing_status = 'paid'",
-		"status = 'expired'",
-		"billing_status = 'overdue'",
-		"status = 'suspended'",
-		"suspension_reason = 'expiry'",
+		"svc.provider_source_id",
+		"source.source_type",
+		"svc.external_resource_id",
+		"JOIN provider_sources source",
+		"svc.status = 'active'",
+		"svc.billing_status = 'paid'",
+		"svc.status = 'expired'",
+		"svc.billing_status = 'overdue'",
+		"svc.status = 'suspended'",
+		"svc.suspension_reason = 'expiry'",
 		"expected_billing_status",
 		"expected_suspension_reason",
-		"term_end <= $2",
+		"svc.term_end <= $2",
 		"LIMIT $3",
 	} {
 		if !strings.Contains(listDueServiceLifecycleActionsSQL, clause) {

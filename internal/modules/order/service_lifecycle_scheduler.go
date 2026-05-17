@@ -8,7 +8,9 @@ import (
 	"time"
 
 	"github.com/Chinsusu/Billing-V2/internal/modules/audit"
+	"github.com/Chinsusu/Billing-V2/internal/modules/catalog"
 	"github.com/Chinsusu/Billing-V2/internal/modules/jobs"
+	"github.com/Chinsusu/Billing-V2/internal/modules/provider"
 	"github.com/Chinsusu/Billing-V2/internal/modules/tenant"
 )
 
@@ -56,6 +58,9 @@ type ListDueServiceLifecycleActionsInput struct {
 type ServiceLifecycleDueAction struct {
 	ServiceID                ServiceID
 	TenantID                 tenant.ID
+	ProviderSourceID         catalog.ProviderSourceID
+	ProviderType             provider.Type
+	ExternalResourceID       provider.ExternalResourceID
 	Action                   ServiceLifecycleAction
 	FromStatus               ServiceStatus
 	ToStatus                 ServiceStatus
@@ -73,22 +78,26 @@ type ServiceLifecycleScheduleSummary struct {
 }
 
 type ServiceLifecycleJobPayload struct {
-	ServiceID                ServiceID              `json:"service_id"`
-	TenantID                 tenant.ID              `json:"tenant_id"`
-	Action                   ServiceLifecycleAction `json:"action"`
-	FromStatus               ServiceStatus          `json:"from_status"`
-	ToStatus                 ServiceStatus          `json:"to_status"`
-	BillingStatus            BillingStatus          `json:"billing_status,omitempty"`
-	SuspensionReason         SuspensionReason       `json:"suspension_reason,omitempty"`
-	ExpectedBillingStatus    BillingStatus          `json:"expected_billing_status,omitempty"`
-	ExpectedSuspensionReason SuspensionReason       `json:"expected_suspension_reason,omitempty"`
-	Reason                   string                 `json:"reason,omitempty"`
-	TermEnd                  time.Time              `json:"term_end"`
+	ServiceID                ServiceID                   `json:"service_id"`
+	TenantID                 tenant.ID                   `json:"tenant_id"`
+	ProviderSourceID         catalog.ProviderSourceID    `json:"provider_source_id,omitempty"`
+	ProviderType             provider.Type               `json:"provider_type,omitempty"`
+	ExternalResourceID       provider.ExternalResourceID `json:"external_resource_id,omitempty"`
+	Action                   ServiceLifecycleAction      `json:"action"`
+	FromStatus               ServiceStatus               `json:"from_status"`
+	ToStatus                 ServiceStatus               `json:"to_status"`
+	BillingStatus            BillingStatus               `json:"billing_status,omitempty"`
+	SuspensionReason         SuspensionReason            `json:"suspension_reason,omitempty"`
+	ExpectedBillingStatus    BillingStatus               `json:"expected_billing_status,omitempty"`
+	ExpectedSuspensionReason SuspensionReason            `json:"expected_suspension_reason,omitempty"`
+	Reason                   string                      `json:"reason,omitempty"`
+	TermEnd                  time.Time                   `json:"term_end"`
 }
 
 type ServiceLifecycleHandler struct {
-	Transitioner ServiceLifecycleTransitioner
-	Now          func() time.Time
+	Transitioner     ServiceLifecycleTransitioner
+	ProviderRegistry *provider.Registry
+	Now              func() time.Time
 }
 
 func NewServiceLifecycleScheduler(store ServiceLifecycleDueStore, queue jobs.QueueStore) *ServiceLifecycleScheduler {
@@ -123,6 +132,7 @@ func (scheduler *ServiceLifecycleScheduler) ScheduleDue(ctx context.Context, inp
 			Type:           ServiceLifecycleJobType,
 			ReferenceType:  ServiceLifecycleReferenceType,
 			ReferenceID:    jobs.ReferenceID(action.ServiceID),
+			SourceID:       jobs.SourceID(action.ProviderSourceID),
 			PayloadJSON:    payload,
 			Priority:       defaultServiceLifecyclePriority,
 			IdempotencyKey: serviceLifecycleJobKey(action),
@@ -140,10 +150,32 @@ func NewServiceLifecycleHandler(transitioner ServiceLifecycleTransitioner) *Serv
 	return &ServiceLifecycleHandler{Transitioner: transitioner}
 }
 
+func NewServiceLifecycleHandlerWithProviderRegistry(
+	transitioner ServiceLifecycleTransitioner,
+	registry *provider.Registry,
+) *ServiceLifecycleHandler {
+	return &ServiceLifecycleHandler{Transitioner: transitioner, ProviderRegistry: registry}
+}
+
 func NewServiceLifecycleRunner(store jobs.Store, transitioner ServiceLifecycleTransitioner, workerID jobs.WorkerID) jobs.Runner {
 	return jobs.Runner{
 		Store:     store,
 		Handler:   NewServiceLifecycleHandler(transitioner),
+		WorkerID:  workerID,
+		BatchSize: defaultServiceLifecycleLimit,
+		Types:     []jobs.Type{ServiceLifecycleJobType},
+	}
+}
+
+func NewProviderBackedServiceLifecycleRunner(
+	store jobs.Store,
+	transitioner ServiceLifecycleTransitioner,
+	registry *provider.Registry,
+	workerID jobs.WorkerID,
+) jobs.Runner {
+	return jobs.Runner{
+		Store:     store,
+		Handler:   NewServiceLifecycleHandlerWithProviderRegistry(transitioner, registry),
 		WorkerID:  workerID,
 		BatchSize: defaultServiceLifecycleLimit,
 		Types:     []jobs.Type{ServiceLifecycleJobType},
@@ -163,6 +195,9 @@ func (handler *ServiceLifecycleHandler) Handle(ctx context.Context, job jobs.Job
 			LastErrorMessageRedacted: "service lifecycle job payload is invalid",
 			FinishedAt:               handler.now(),
 		}, nil
+	}
+	if completion, handled, err := handler.terminateProviderBeforeLifecycle(ctx, job, payload); handled || err != nil {
+		return completion, err
 	}
 	_, err = handler.Transitioner.TransitionServiceLifecycle(ctx, payload.TransitionInput())
 	if err == nil || errors.Is(err, ErrServiceStatusConflict) || errors.Is(err, ErrServiceNotFound) {
@@ -188,6 +223,9 @@ func (action ServiceLifecycleDueAction) Normalize() ServiceLifecycleDueAction {
 	output := action
 	output.ServiceID = ServiceID(trim(string(output.ServiceID)))
 	output.TenantID = tenant.ID(trim(string(output.TenantID)))
+	output.ProviderSourceID = catalog.ProviderSourceID(trim(string(output.ProviderSourceID)))
+	output.ProviderType = provider.Type(trim(string(output.ProviderType)))
+	output.ExternalResourceID = provider.ExternalResourceID(trim(string(output.ExternalResourceID)))
 	output.Action = ServiceLifecycleAction(trim(string(output.Action)))
 	output.FromStatus = ServiceStatus(trim(string(output.FromStatus)))
 	output.ToStatus = ServiceStatus(trim(string(output.ToStatus)))
@@ -232,6 +270,9 @@ func (action ServiceLifecycleDueAction) PayloadJSON() (json.RawMessage, error) {
 	body, err := json.Marshal(ServiceLifecycleJobPayload{
 		ServiceID:                action.ServiceID,
 		TenantID:                 action.TenantID,
+		ProviderSourceID:         action.ProviderSourceID,
+		ProviderType:             action.ProviderType,
+		ExternalResourceID:       action.ExternalResourceID,
 		Action:                   action.Action,
 		FromStatus:               action.FromStatus,
 		ToStatus:                 action.ToStatus,
@@ -264,6 +305,9 @@ func (payload ServiceLifecycleJobPayload) Normalize() ServiceLifecycleJobPayload
 	output := payload
 	output.ServiceID = ServiceID(trim(string(output.ServiceID)))
 	output.TenantID = tenant.ID(trim(string(output.TenantID)))
+	output.ProviderSourceID = catalog.ProviderSourceID(trim(string(output.ProviderSourceID)))
+	output.ProviderType = provider.Type(trim(string(output.ProviderType)))
+	output.ExternalResourceID = provider.ExternalResourceID(trim(string(output.ExternalResourceID)))
 	output.Action = ServiceLifecycleAction(trim(string(output.Action)))
 	output.FromStatus = ServiceStatus(trim(string(output.FromStatus)))
 	output.ToStatus = ServiceStatus(trim(string(output.ToStatus)))
