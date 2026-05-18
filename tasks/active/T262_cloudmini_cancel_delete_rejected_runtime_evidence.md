@@ -1,6 +1,6 @@
 # T262 - Cloudmini cancel/delete rejected runtime evidence
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t262-cloudmini-cancel-delete-runtime
 Provider Branch: codex/v3-delete-rejected-fixture
@@ -44,3 +44,4 @@ Add and run safe Cloudmini V3 cancel/delete rejected evidence so Billing can clo
 - 2026-05-18: Billing smoke returned PASS for `cancel_delete_rejected_fixture`: HTTP `200`, provider failed operation code `DELETE_FAILED`, normalized `PROVIDER_PARTIAL_SUCCESS`, retry `manual_review_required`, `mutating_routes_called=false`, one fixture request, and no raw secrets/provider payloads printed.
 - 2026-05-18: Billing validation passed: `GOFLAGS=-buildvcs=false make fmt`, `GOFLAGS=-buildvcs=false go test ./cmd/smoke ./internal/modules/provider -run 'CloudminiErrorEvidence|CloudminiV3AdapterTerminateFailedOperation'`, `GOFLAGS=-buildvcs=false make test`, `GOFLAGS=-buildvcs=false make build`, `GOFLAGS=-buildvcs=false go run ./cmd/taskguard`, `git diff --check`, diff secret scan, and touched-file line count check.
 - 2026-05-18: Opened Billing PR #556 and moved task to REVIEW.
+- 2026-05-18: Billing PR #556 merged into `main`; task marked DONE.
