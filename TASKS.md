@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-18` after T259 review:
+Current board snapshot on `2026-05-18` after T259 completion:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 255
+- `DONE` task files in `tasks/active/`: 256
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T259 | [tasks/active/T259_cloudmini_provider_error_fixture.md](tasks/active/T259_cloudmini_provider_error_fixture.md) | REVIEW | Codex | codex/t259-cloudmini-provider-error-fixture | Add provider V3 error fixture path and collect Billing rate-limit evidence if deployed. |
 
 ## Blocked Task Files
 
@@ -117,6 +116,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T256`
 - `T257`
 - `T258`
+- `T259`
 
 ## Removed Tasks
 
