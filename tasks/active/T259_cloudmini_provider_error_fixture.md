@@ -1,11 +1,11 @@
 # T259 - Cloudmini provider error fixture path
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t259-cloudmini-provider-error-fixture
 Provider Branch: codex/v3-error-fixtures
 Provider PR: https://github.com/Chinsusu/proxy-cloudmini/pull/9
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/550
 Risk: provider provisioning, credentials, launch-readiness evidence
 Created: 2026-05-18
 Updated: 2026-05-18
@@ -43,3 +43,4 @@ Add a safe Cloudmini provider V3 error fixture path for Billing evidence and col
 - 2026-05-18: Did not run live Billing rate-limit evidence because no local `vpm-manager`/Cloudmini manager service is running on this host; dev provider deployment to `https://cz.resvn.net/` still needs the merged provider code plus `VPM_BILLING_ERROR_FIXTURES_ENABLED=yes`.
 - 2026-05-18: Provider validation passed for PR #9: targeted API tests, manager/agent build with `-buildvcs=false`, and `git diff --check`; provider full `go test -buildvcs=false ./...` remains blocked by pre-existing root `test_list.go` and `cmd/test_ssh` compile issues.
 - 2026-05-18: Billing validation passed: `make fmt`, `go test ./cmd/smoke -run 'CloudminiErrorEvidence'`, `make test`, `make build`, `go run ./cmd/taskguard`, `git diff --check`, and targeted diff secret-value scan excluding fake test fixtures.
+- 2026-05-18: Opened Billing PR #550 and moved task to REVIEW.
