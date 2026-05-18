@@ -1,6 +1,6 @@
 # T263 - Cloudmini broader provider owner approval packet
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t263-provider-owner-approval
 PR: https://github.com/Chinsusu/Billing-V2/pull/558
@@ -37,3 +37,4 @@ Record owner-approved Cloudmini provider account, support, quota, mapping, and b
 - 2026-05-18: Task created and claimed by Codex from Billing `origin/main`.
 - 2026-05-18: Updated docs 66, 69, and 70 to record Admin approval for the selected bounded Cloudmini provider scope, including support contact, edge/header policy, one-resource quota, SKU mapping, cleanup ownership, and no-secret boundaries. Launch remains NO-GO for other P0 production-readiness gates.
 - 2026-05-18: Opened Billing PR #558 and moved task to REVIEW.
+- 2026-05-18: Billing PR #558 merged into `main`; task marked DONE.
