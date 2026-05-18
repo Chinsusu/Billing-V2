@@ -1,12 +1,13 @@
 # T260 - Cloudmini rate-limit runtime evidence
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t260-cloudmini-rate-limit-runtime
 PR: https://github.com/Chinsusu/Billing-V2/pull/552
 Risk: provider provisioning, credentials, launch-readiness evidence
 Created: 2026-05-18
 Updated: 2026-05-18
+Merged: 2026-05-18
 
 ## Summary
 
@@ -41,3 +42,4 @@ Deploy or verify the merged Cloudmini V3 rate-limit fixture on the approved dev 
 - 2026-05-18: Guarded Billing smoke passed with HTTP `429`, provider code `RATE_LIMITED`, normalized `PROVIDER_RATE_LIMITED`, retry safety `safe_retry`, one fixture request, and `mutating_routes_called=false`.
 - 2026-05-18: Removed the fixture env drop-in after evidence collection, restarted `vpm-manager`, verified the service active, verified fixture env absent, and verified public/local capabilities still return `401 application/json`.
 - 2026-05-18: Opened Billing PR #552 and moved task to REVIEW.
+- 2026-05-18: Billing PR #552 merged and task marked DONE.
