@@ -1,9 +1,9 @@
 # T264 - Notification manual fallback selected pilot approval
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t264-notification-fallback-approval
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/560
 Risk: notification, support, launch-readiness evidence
 Created: 2026-05-18
 Updated: 2026-05-18
@@ -35,3 +35,4 @@ Record owner approval that the selected bounded pilot uses the existing Admin-ow
 
 - 2026-05-18: Task created and claimed by Codex from Billing `origin/main`.
 - 2026-05-18: Updated docs 69 and 70 to accept T244 manual fallback as the selected bounded pilot notification path, while keeping automated production SMTP/Telegram delivery unproven for broader launch.
+- 2026-05-18: Opened Billing PR #560 and moved task to REVIEW.

@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-18` after T264 claim:
+Current board snapshot on `2026-05-18` after T264 review:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 260
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -66,7 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T264 | [tasks/active/T264_notification_manual_fallback_selected_pilot_approval.md](tasks/active/T264_notification_manual_fallback_selected_pilot_approval.md) | IN_PROGRESS | Codex | codex/t264-notification-fallback-approval | Record selected-pilot manual notification fallback approval. |
+| T264 | [tasks/active/T264_notification_manual_fallback_selected_pilot_approval.md](tasks/active/T264_notification_manual_fallback_selected_pilot_approval.md) | REVIEW | Codex | codex/t264-notification-fallback-approval | Record selected-pilot manual notification fallback approval. |
 
 ## Blocked Task Files
 
