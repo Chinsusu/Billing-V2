@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-18` after T250 completion:
+Current board snapshot on `2026-05-18` after T251 creation:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 247
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T251 | [tasks/active/T251_provider_test_stability.md](tasks/active/T251_provider_test_stability.md) | IN_PROGRESS | Codex | codex/t251-provider-test-stability | Stabilize Cloudmini provider hardening test timeout behavior. |
 
 ## Blocked Task Files
 
