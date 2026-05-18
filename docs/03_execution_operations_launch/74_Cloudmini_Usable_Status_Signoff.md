@@ -48,12 +48,13 @@ For service termination, Billing must call provider delete before marking the Bi
 - T233 proves bounded status polling, successful activation only after a usable status, encrypted credential storage, lifecycle-worker cleanup, and final provider `404`.
 - T249 proves timeout-after-send maps to `PROVIDER_TIMEOUT_REQUEST_KNOWN` and `manual_review_required` with cleanup.
 - T251 stabilizes the provider hardening test so CI consistently verifies the non-usable-status manual-review behavior.
+- T254 proves selected-host self-managed secret-store handling after owner-confirmed key rotation.
 
 ## Boundaries
 
 This sign-off does not approve:
 
-- production/shared credential storage;
+- using a new host or secret path without repeating T254-style secret-store proof;
 - production customer data or production provider accounts;
 - provider-controlled permission-denied, rate-limited, out-of-capacity, provider-5xx, or cancel-rejected evidence gaps;
 - increasing create limits, active-resource limits, worker concurrency, or provider rate limits;

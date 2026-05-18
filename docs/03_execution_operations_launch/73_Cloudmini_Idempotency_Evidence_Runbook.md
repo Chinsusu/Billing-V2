@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-18
 **Scope:** Operator instructions and T249 redacted target dev/test evidence for the Cloudmini duplicate-create and timeout-after-send evidence smoke.
-**Decision:** T249 captured both approved target dev/test scenarios with same-session cleanup. This is still non-production evidence and does not replace production/shared secret-store proof or broader provider owner approval.
+**Decision:** T249 captured both approved target dev/test scenarios with same-session cleanup. This is still non-production evidence and does not replace T254-style secret-store proof for any new host/path or broader provider owner approval.
 
 ## Boundary
 

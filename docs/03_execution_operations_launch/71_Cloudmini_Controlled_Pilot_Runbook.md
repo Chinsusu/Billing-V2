@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-17
 **Scope:** Controlled pre-approval packet for the first Cloudmini V3 mutating pilot.
-**Decision:** One controlled dev create/delete pilot has passed. T229 fixes the repo-side non-usable-status and lifecycle-worker cleanup gaps, T230 proves that hardening deploys/builds on the approved test server, and T231 proves non-mutating Cloudmini registry activation. Broader pilot remains blocked until live duplicate/timeout evidence, shared secret storage, owner-approved mutating/lifecycle activation, and owner sign-offs are complete.
+**Decision:** One controlled dev create/delete pilot has passed. T229 fixes the repo-side non-usable-status and lifecycle-worker cleanup gaps, T230 proves that hardening deploys/builds on the approved test server, T231 proves non-mutating Cloudmini registry activation, T249 proves live duplicate/timeout behavior, and T254 proves selected-host self-managed secret-store handling after owner-confirmed key rotation. Broader pilot remains blocked until provider-controlled error examples and broader provider owner approval are complete.
 
 ## Current Safe State
 
@@ -28,7 +28,7 @@ Provider group reference: redacted:c6a7189f0a
 Provider sell state: sellable
 Observed allocatable units: 200
 Protocol: socks5
-Credential/config source: /opt/cred-cloudmini-dev.env
+Credential/config source: /etc/billing/secrets/cloudmini.env on the selected host; legacy dev source /opt/cred-cloudmini-dev.env remains historical evidence only.
 ```
 
 Do not use the existing seeded `Local Fake Hetzner Ready` source as the Cloudmini pilot source. The pilot needs an explicit Cloudmini V3 provider source or equivalent dev/staging source record whose `source_type` is `cloudmini_v3`.
@@ -109,7 +109,7 @@ Ops owner:
 Security owner:
 Cleanup owner:
 Finance/quota owner:
-Approved credential path: /opt/cred-cloudmini-dev.env for dev only, or redacted shared secret reference
+Approved credential path: /etc/billing/secrets/cloudmini.env on the selected host, or a new owner-approved protected path with repeated T254-style proof
 Maximum create calls:
 Maximum active test resources:
 Maximum spend/quota exposure:
@@ -155,7 +155,7 @@ CLOUDMINI_PILOT_CLEANUP_DEADLINE=<same-session-deadline> \
 CLOUDMINI_PILOT_STOP_CONDITION=<approved-stop-condition> \
 CLOUDMINI_PILOT_READONLY_EVIDENCE_REF=<redacted-readonly-evidence-ref> \
 CLOUDMINI_PILOT_CLEANUP_PROCEDURE_REF=<redacted-cleanup-procedure-ref> \
-CLOUDMINI_PILOT_CREDENTIAL_PATH=/opt/cred-cloudmini-dev.env \
+CLOUDMINI_PILOT_CREDENTIAL_PATH=/etc/billing/secrets/cloudmini.env \
 CLOUDMINI_PILOT_MAX_CREATE_CALLS=1 \
 CLOUDMINI_PILOT_MAX_ACTIVE_RESOURCES=1 \
 CLOUDMINI_PILOT_WORKER_CONCURRENCY=1 \
@@ -229,8 +229,8 @@ Residual risks before broader pilot:
 
 - Direct HTTP service terminate remains a lifecycle transition API. For provider-backed cleanup, use the lifecycle worker path with provider registry configured. Direct provider delete remains a dev-pilot exception only when owner approved and redacted cleanup evidence is recorded.
 - T229 changes Cloudmini provisioning to fail closed if the resource status is not usable. Operation success with provider status `creating` now moves to manual review instead of creating an active service.
-- Duplicate-create and timeout-after-send behavior are still not proven against the live provider.
-- Production/shared secret-store owner and named launch owners are still not recorded in repo evidence.
+- T249 proved duplicate-create and timeout-after-send behavior against the approved target dev/test provider account with same-session cleanup.
+- T254 records selected-host self-managed secret-store proof after owner-confirmed key rotation; repeat that proof before using any new host or secret path.
 - The always-on target worker remains on `PROVIDER_DEFAULT_MODE=fake`; Cloudmini mutating or lifecycle cleanup activation requires a new owner-approved window.
 
 ## T229 Cleanup And Status Hardening
@@ -390,11 +390,11 @@ go test ./...
 go run ./cmd/taskguard
 ```
 
-Then rerun read-only provider evidence from the local dev credential file:
+Then rerun read-only provider evidence from the selected-host credential file:
 
 ```bash
 set -a
-. /opt/cred-cloudmini-dev.env
+. /etc/billing/secrets/cloudmini.env
 set +a
 VPM_BILLING_V3_BASE_URL="$CLOUDMINI_V3_BASE_URL" \
 VPM_BILLING_V3_AUTH_HEADER="Authorization" \
@@ -467,4 +467,4 @@ Before broader pilot or multiple provider accounts:
 - T220 verifies the dev pilot mapping. Any broader staging or production-equivalent mapping still needs an approved target environment and owner sign-off before use.
 - T227 makes runtime configuration fail closed when the configured source id does not match the Billing provider source used by the provisioning job.
 - T228 proves one controlled dev create/delete pilot.
-- T229 resolves the repo-side lifecycle cleanup and terminal resource status residual risks with fail-closed code and tests. Broader pilot still needs live duplicate/timeout evidence, shared secret ownership, target-environment lifecycle-worker cleanup evidence, and named owner sign-off.
+- T229 resolves the repo-side lifecycle cleanup and terminal resource status residual risks with fail-closed code and tests. T249 proves live duplicate/timeout evidence, T253 records cleanup ownership, and T254 records selected-host secret-store proof. Broader pilot still needs provider-controlled error examples and broader provider owner approval.

@@ -60,12 +60,13 @@ Stop all additional Cloudmini create attempts if any of these occurs:
 - T233 proved lifecycle-worker provider cleanup on the approved target dev/test server for one Cloudmini resource.
 - T249 proved cleanup success for duplicate-create and timeout-after-send evidence scenarios.
 - T253 assigns Admin as cleanup owner and records the required cleanup/rollback procedure for selected pilot runs.
+- T254 records selected-host self-managed secret-store proof after owner-confirmed key rotation.
 
 ## Boundaries
 
 This cleanup owner packet does not approve:
 
-- production/shared credential storage;
+- using a new host or secret path without repeating T254-style secret-store proof;
 - production customer data or production provider accounts;
 - new provider create/delete runs without separate owner-approved run evidence;
 - increasing create limits, active-resource limits, worker concurrency, or provider rate limits;
