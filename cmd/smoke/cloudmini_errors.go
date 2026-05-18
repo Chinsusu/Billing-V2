@@ -3,8 +3,6 @@ package main
 import (
 	"bytes"
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -18,10 +16,13 @@ import (
 )
 
 type cloudminiErrorEvidenceConfig struct {
-	AppEnv        string
-	BaseURL       string
-	APIToken      string
-	IncludeCreate bool
+	AppEnv                    string
+	BaseURL                   string
+	APIToken                  string
+	IncludeCreate             bool
+	IncludePermissionDenied   bool
+	PermissionKeyManagementOK string
+	PermissionKeyMaxCreate    string
 }
 
 type cloudminiErrorEvidenceExample struct {
@@ -37,15 +38,19 @@ type cloudminiErrorEvidenceExample struct {
 }
 
 type cloudminiErrorEvidenceResult struct {
-	Name              string
-	HTTPStatus        int
-	ProviderCode      string
-	NormalizedCode    provider.ErrorCode
-	RetrySafety       provider.RetrySafety
-	ErrorEnvelope     bool
-	ErrorMessageField bool
-	ErrorDetailsField bool
-	MutatingRoute     bool
+	Name                   string
+	HTTPStatus             int
+	ProviderCode           string
+	NormalizedCode         provider.ErrorCode
+	RetrySafety            provider.RetrySafety
+	ErrorEnvelope          bool
+	ErrorMessageField      bool
+	ErrorDetailsField      bool
+	MutatingRoute          bool
+	SideEffectCreated      string
+	TemporaryKey           bool
+	TemporaryKeyRevoked    bool
+	ActiveKeyCountRestored bool
 }
 
 type cloudminiErrorEnvelope struct {
@@ -75,6 +80,14 @@ func runCloudminiErrorEvidenceSmokeWithWriter(timeout time.Duration, out io.Writ
 	results := make([]cloudminiErrorEvidenceResult, 0, len(examples))
 	for _, example := range examples {
 		result, err := runCloudminiErrorEvidenceExample(ctx, config, example)
+		results = append(results, result)
+		if err != nil {
+			printCloudminiErrorEvidenceSummary(out, config, results, "FAIL")
+			return err
+		}
+	}
+	if config.IncludePermissionDenied {
+		result, err := runCloudminiPermissionDeniedEvidence(ctx, config)
 		results = append(results, result)
 		if err != nil {
 			printCloudminiErrorEvidenceSummary(out, config, results, "FAIL")
@@ -115,10 +128,13 @@ func cloudminiErrorEvidenceConfigFromEnv() (cloudminiErrorEvidenceConfig, error)
 		}
 	}
 	config := cloudminiErrorEvidenceConfig{
-		AppEnv:        appEnv,
-		BaseURL:       strings.TrimSpace(os.Getenv("CLOUDMINI_V3_BASE_URL")),
-		APIToken:      strings.TrimSpace(os.Getenv("CLOUDMINI_V3_API_TOKEN")),
-		IncludeCreate: os.Getenv("CLOUDMINI_ERROR_EVIDENCE_ALLOW_INVALID_CREATE") == "yes",
+		AppEnv:                    appEnv,
+		BaseURL:                   strings.TrimSpace(os.Getenv("CLOUDMINI_V3_BASE_URL")),
+		APIToken:                  strings.TrimSpace(os.Getenv("CLOUDMINI_V3_API_TOKEN")),
+		IncludeCreate:             os.Getenv("CLOUDMINI_ERROR_EVIDENCE_ALLOW_INVALID_CREATE") == "yes",
+		IncludePermissionDenied:   os.Getenv("CLOUDMINI_ERROR_EVIDENCE_ALLOW_PERMISSION_DENIED") == "yes",
+		PermissionKeyManagementOK: strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_PERMISSION_KEY_MANAGEMENT_APPROVED")),
+		PermissionKeyMaxCreate:    strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_PERMISSION_KEY_MAX_CREATE")),
 	}
 	if config.BaseURL == "" {
 		return cloudminiErrorEvidenceConfig{}, fmt.Errorf("CLOUDMINI_V3_BASE_URL is required")
@@ -135,6 +151,14 @@ func cloudminiErrorEvidenceConfigFromEnv() (cloudminiErrorEvidenceConfig, error)
 		}
 		if strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_MAX_CREATE_ATTEMPTS")) != "1" {
 			return cloudminiErrorEvidenceConfig{}, fmt.Errorf("CLOUDMINI_ERROR_EVIDENCE_MAX_CREATE_ATTEMPTS must be 1")
+		}
+	}
+	if config.IncludePermissionDenied {
+		if config.PermissionKeyManagementOK != "yes" {
+			return cloudminiErrorEvidenceConfig{}, fmt.Errorf("CLOUDMINI_ERROR_EVIDENCE_PERMISSION_KEY_MANAGEMENT_APPROVED=yes is required for permission-denied evidence")
+		}
+		if config.PermissionKeyMaxCreate != "1" {
+			return cloudminiErrorEvidenceConfig{}, fmt.Errorf("CLOUDMINI_ERROR_EVIDENCE_PERMISSION_KEY_MAX_CREATE must be 1")
 		}
 	}
 	return config, nil
@@ -252,6 +276,7 @@ func parseCloudminiErrorEvidenceResult(example cloudminiErrorEvidenceExample, st
 		ErrorMessageField: strings.TrimSpace(apiErr.Message) != "",
 		ErrorDetailsField: len(apiErr.Details) > 0 && string(apiErr.Details) != "null",
 		MutatingRoute:     example.MutatingRoute,
+		SideEffectCreated: "not_applicable",
 	}
 }
 
@@ -311,53 +336,4 @@ func mapCloudminiErrorEvidenceCode(statusCode int, providerCode string) provider
 		}
 		return provider.ErrorResponseInvalid
 	}
-}
-
-func safeCloudminiProviderErrorCode(value string) string {
-	value = strings.TrimSpace(value)
-	if value == "" {
-		return "none"
-	}
-	for _, r := range value {
-		if (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '_' {
-			continue
-		}
-		return "redacted:" + hashCloudminiErrorEvidence(value)
-	}
-	return value
-}
-
-func printCloudminiErrorEvidenceSummary(out io.Writer, config cloudminiErrorEvidenceConfig, results []cloudminiErrorEvidenceResult, result string) {
-	fmt.Fprintf(out, "cloudmini_error_evidence result=%s\n", result)
-	fmt.Fprintf(out, "pilot_environment=%s\n", config.AppEnv)
-	fmt.Fprintln(out, "approval_fields_present=yes")
-	fmt.Fprintln(out, "owner_fields_present=yes")
-	fmt.Fprintf(out, "example_count=%d\n", len(results))
-	mutatingCalled := false
-	for _, item := range results {
-		if item.MutatingRoute {
-			mutatingCalled = true
-		}
-	}
-	fmt.Fprintf(out, "mutating_routes_called=%t\n", mutatingCalled)
-	for index, item := range results {
-		fmt.Fprintf(out, "example_%d_name=%s\n", index+1, item.Name)
-		fmt.Fprintf(out, "example_%d_http_status=%d\n", index+1, item.HTTPStatus)
-		fmt.Fprintf(out, "example_%d_provider_error_code=%s\n", index+1, item.ProviderCode)
-		fmt.Fprintf(out, "example_%d_normalized_error_code=%s\n", index+1, item.NormalizedCode)
-		fmt.Fprintf(out, "example_%d_retry_safety=%s\n", index+1, item.RetrySafety)
-		fmt.Fprintf(out, "example_%d_error_envelope_present=%t\n", index+1, item.ErrorEnvelope)
-		fmt.Fprintf(out, "example_%d_error_message_field_present=%t\n", index+1, item.ErrorMessageField)
-		fmt.Fprintf(out, "example_%d_error_details_field_present=%t\n", index+1, item.ErrorDetailsField)
-	}
-	fmt.Fprintln(out, "raw_response_body_printed=no")
-	fmt.Fprintln(out, "sensitive_values_printed=no")
-	fmt.Fprintln(out, "raw_provider_ids_printed=no")
-	fmt.Fprintln(out, "provider_payloads_printed=no")
-	fmt.Fprintln(out, "remaining_provider_controlled_examples=permission_denied,rate_limited,out_of_capacity,provider_5xx,cancel_rejected")
-}
-
-func hashCloudminiErrorEvidence(value string) string {
-	sum := sha256.Sum256([]byte(value))
-	return hex.EncodeToString(sum[:])[:12]
 }
