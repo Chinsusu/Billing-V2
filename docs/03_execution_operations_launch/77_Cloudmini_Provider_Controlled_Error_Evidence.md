@@ -1,9 +1,9 @@
 # 77 - Cloudmini Provider-Controlled Error Evidence
 
-**Tasks:** T255, T256, T257, T258
+**Tasks:** T255, T256, T257, T258, T259
 **Date:** 2026-05-18
 **Scope:** Remaining Cloudmini V3 provider-controlled error cases for launch evidence.
-**Decision:** partially closed. T255 records source-inspection evidence and a safe execution plan. T256 closes the permission-denied runtime case with a temporary low-scope key and same-run revoke. T257 closes the out-of-capacity runtime case with one bounded exhausted-group reservation probe. T258 adds a guarded Billing runner for a future provider-owned rate-limit fixture, but does not close the runtime case because no safe provider fixture is present in the inspected Cloudmini source. No provider proxy create/delete run was performed.
+**Decision:** partially closed. T255 records source-inspection evidence and a safe execution plan. T256 closes the permission-denied runtime case with a temporary low-scope key and same-run revoke. T257 closes the out-of-capacity runtime case with one bounded exhausted-group reservation probe. T258 adds a guarded Billing runner for a provider-owned rate-limit fixture. T259 adds and merges the provider-side fixture code in Cloudmini PR #9, but live rate-limit runtime evidence remains blocked until that provider code is deployed to the approved dev manager with the fixture env enabled. No provider proxy create/delete run was performed.
 
 ## Boundary
 
@@ -24,7 +24,7 @@ Provider source inspected from `/opt/proxy-cloudmini` without reading provider s
 | --- | --- | --- |
 | V3 routes use `AuthMiddleware`; mutating and proxy read routes require `proxy_crud`. | `/opt/proxy-cloudmini/internal/api/router.go` defines `/api/v3` auth and `RequirePermission("proxy_crud")` on reservations, proxies, operations, and actions. | Supports a permission-denied test only with a valid low-scope API key. |
 | Missing `proxy_crud` returns HTTP `403`. | `/opt/proxy-cloudmini/internal/api/auth_handler.go` `RequirePermission` returns forbidden when permissions do not include the required permission or wildcard. | T256 captured temporary low-scope API key runtime evidence and same-run revoke. |
-| Global V2/API limiter returns `RATE_LIMITED`; no V3-specific low-limit fixture was found. | `/opt/proxy-cloudmini/internal/api/router.go` has v1/v2 limiter responses with code `RATE_LIMITED`; `/api/v3` has auth/idempotency handlers but no low-limit fixture route in the inspected source. | T258 adds a Billing smoke runner for a future side-effect-free V3 fixture. Do not induce this on the shared provider; runtime evidence still needs isolated fixture deployment. |
+| Global V2/API limiter returns `RATE_LIMITED`; T259 adds a disabled-by-default V3 fixture path. | `/opt/proxy-cloudmini/internal/api/router.go` has v1/v2 limiter responses with code `RATE_LIMITED`. Cloudmini PR #9 adds `GET /api/v3/error-fixtures/rate-limited`, guarded by `VPM_BILLING_ERROR_FIXTURES_ENABLED` and `X-Cloudmini-Error-Fixture: rate_limited`. | Runtime evidence still needs deployment to the approved dev manager and one guarded Billing smoke run. Do not induce the shared limiter. |
 | Capacity exhaustion exists before reservation persistence. | `/opt/proxy-cloudmini/internal/api/handler/v3_handler.go` `CreateReservation` checks group inventory and returns `CAPACITY_EXHAUSTED` before creating a reservation when no allocatable units exist. | T257 captured owner-approved exhausted-group reservation probe evidence with no reservation created. |
 | V3 returns `INTERNAL_ERROR` on repository/service failures. | `/opt/proxy-cloudmini/internal/api/handler/v3_handler.go` returns `INTERNAL_ERROR` for inventory, reservation, operation, create, delete, and action storage/service failures. | No safe shared-provider trigger; needs provider-side fixture. |
 | Delete/action rejection is asynchronous for real proxies; immediate proxy-delete not-found is already covered by `PROXY_NOT_FOUND`. | `/opt/proxy-cloudmini/internal/api/handler/v3_handler.go` starts async delete/action operations and records `DELETE_FAILED` or `ACTION_FAILED` only after service failure. | Needs provider-side fixture or owner-approved controlled resource state. |
@@ -34,7 +34,7 @@ Provider source inspected from `/opt/proxy-cloudmini` without reading provider s
 | Case | Required Billing mapping | Safe evidence path | Current status |
 | --- | --- | --- | --- |
 | Permission denied | HTTP `403` -> `PROVIDER_PERMISSION_DENIED`, retry `do_not_retry`. | Create a temporary non-production API key with read-only permission, call a `proxy_crud` route such as `GET /api/v3/proxies`, record redacted `403`, then revoke and verify active key count returns to the previous value. | Closed by T256: runtime `403`, normalized `PROVIDER_PERMISSION_DENIED`, `do_not_retry`, temporary key revoked, active key count restored. |
-| Rate limited | HTTP `429`/`RATE_LIMITED` -> `PROVIDER_RATE_LIMITED`, retry `safe_retry`. | Use provider-owned isolated low-limit fixture or test route. Do not trip the shared 1000 req/min limiter. | Blocked after T258: Billing can call one approved fixture request, but the inspected provider source has no safe V3 fixture route to run. |
+| Rate limited | HTTP `429`/`RATE_LIMITED` -> `PROVIDER_RATE_LIMITED`, retry `safe_retry`. | Use provider-owned isolated low-limit fixture or test route. Do not trip the shared 1000 req/min limiter. | Blocked after T259: provider fixture code is merged in Cloudmini PR #9, but it has not been deployed/run on the approved dev manager. |
 | Out of capacity | `CAPACITY_EXHAUSTED` -> `PROVIDER_OUT_OF_STOCK`, retry `do_not_retry`. | Use an owner-approved exhausted group reservation probe with max attempt `1`, TTL no more than `60s`, and cleanup/verification if a reservation is unexpectedly created. | Closed by T257: runtime `409`, provider code `CAPACITY_EXHAUSTED`, normalized `PROVIDER_OUT_OF_STOCK`, `do_not_retry`, exhausted group selected, reservation created `false`. |
 | Provider 5xx | HTTP `5xx`/`INTERNAL_ERROR` -> `PROVIDER_TEMPORARY_ERROR`, retry `safe_retry`. | Use a provider-owned non-production fixture that returns the normal V3 error envelope without breaking the shared service. | Blocked: no safe fixture exists in current Billing evidence. |
 | Cancel/delete rejected | Provider delete/action failure -> `PROVIDER_PARTIAL_SUCCESS` or provider-specific failed operation mapping with manual review as applicable. | Use a provider-owned non-production fixture or a controlled resource state that rejects delete/action without deleting a sellable resource. | Blocked: no safe fixture or controlled resource-state evidence exists in current Billing evidence. |
@@ -43,7 +43,8 @@ Provider source inspected from `/opt/proxy-cloudmini` without reading provider s
 
 Before the remaining blockers can close, the provider owner must supply:
 
-- a non-production error fixture that returns V3 envelopes for `RATE_LIMITED`, `INTERNAL_ERROR`, and delete/action failure without side effects.
+- deployment of the merged rate-limit fixture from Cloudmini PR #9 on the approved dev manager with `VPM_BILLING_ERROR_FIXTURES_ENABLED=yes`;
+- a non-production error fixture that returns V3 envelopes for `INTERNAL_ERROR` and delete/action failure without side effects.
 
 The fixture must be disabled or inaccessible in production-like customer paths unless explicitly approved by Security and Provider owners.
 
@@ -57,6 +58,7 @@ provider_error_code=RATE_LIMITED
 response_shape=V3 success:false error envelope with message
 side_effects=none
 shared_limiter_tripped=no
+required_header=X-Cloudmini-Error-Fixture: rate_limited
 ```
 
 Billing will only call this fixture when these guardrails are set:
@@ -205,6 +207,34 @@ provider_payloads_printed=no
 
 This is readiness for future fixture evidence, not provider runtime evidence. The rate-limit case remains blocked until the provider fixture above is deployed and an approved non-production run records redacted stdout.
 
+## T259 Provider Fixture Implementation
+
+Cloudmini provider PR #9 merged the rate-limit fixture implementation:
+
+```text
+provider_pr=https://github.com/Chinsusu/proxy-cloudmini/pull/9
+method=GET
+path=/api/v3/error-fixtures/rate-limited
+required_provider_env=VPM_BILLING_ERROR_FIXTURES_ENABLED=yes
+required_header=X-Cloudmini-Error-Fixture: rate_limited
+http_status=429
+provider_error_code=RATE_LIMITED
+side_effects=none
+```
+
+Provider validation run before PR #9:
+
+```text
+go test -buildvcs=false ./internal/api ./internal/api/handler ./internal/api/middleware ./pkg/dto ./pkg/errcode
+go build -buildvcs=false ... ./cmd/manager
+go build -buildvcs=false ... ./cmd/agent
+git diff --check
+```
+
+Provider full `go test -buildvcs=false ./...` was not used as pass evidence because the current provider base already has unrelated compile failures in root `test_list.go` and `cmd/test_ssh`.
+
+No live Billing rate-limit run was performed in T259. This Billing host did not have a local `vpm-manager`/Cloudmini manager service running, so the merged provider fixture still needs deployment to the approved dev manager before Billing can collect redacted runtime evidence.
+
 ## T255 Non-Actions
 
 T255 did not:
@@ -216,4 +246,4 @@ T255 did not:
 - create a reservation probe;
 - print or record any secret value, raw provider payload, raw provider ID, proxy credential, DSN, cookie, or file content.
 
-The launch decision remains NO-GO until the remaining blocked cases above are executed safely or a policy-allowed owner exception is recorded in docs 69 and 70. After T256, T257, and T258, the remaining provider-controlled runtime cases are rate limited, provider 5xx, and cancel/delete rejected; T258 does not close the rate-limit runtime case.
+The launch decision remains NO-GO until the remaining blocked cases above are executed safely or a policy-allowed owner exception is recorded in docs 69 and 70. After T256 through T259, the remaining provider-controlled runtime cases are rate limited, provider 5xx, and cancel/delete rejected; T259 does not close the rate-limit runtime case until the fixture is deployed and run.

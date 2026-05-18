@@ -27,6 +27,9 @@ func TestRunCloudminiErrorEvidenceWithRateLimitFixture(t *testing.T) {
 			if r.Header.Get("Authorization") != "Bearer secret-token" {
 				t.Fatalf("expected valid auth header")
 			}
+			if r.Header.Get("X-Cloudmini-Error-Fixture") != "rate_limited" {
+				t.Fatalf("expected rate-limit fixture header")
+			}
 			writeCloudminiErrorEvidenceEnvelope(t, w, http.StatusTooManyRequests, "RATE_LIMITED", "fixture rate limited secret detail", map[string]string{"provider_trace": "should-not-leak"})
 		default:
 			t.Fatalf("unexpected request %s %s auth=%q", r.Method, r.URL.Path, r.Header.Get("Authorization"))

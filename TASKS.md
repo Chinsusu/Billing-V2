@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-18` after T258 completion:
+Current board snapshot on `2026-05-18` after T259 claim:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 255
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T259 | [tasks/active/T259_cloudmini_provider_error_fixture.md](tasks/active/T259_cloudmini_provider_error_fixture.md) | IN_PROGRESS | Codex | codex/t259-cloudmini-provider-error-fixture | Add provider V3 error fixture path and collect Billing rate-limit evidence if deployed. |
 
 ## Blocked Task Files
 
