@@ -1,6 +1,6 @@
 # T257 - Cloudmini out-of-capacity runtime evidence
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t257-cloudmini-out-of-capacity
 PR: https://github.com/Chinsusu/Billing-V2/pull/546
@@ -42,3 +42,4 @@ Add and run guarded Cloudmini V3 out-of-capacity evidence using an exhausted-gro
 - 2026-05-18: Updated provider launch evidence docs with redacted runtime output; no token, raw group ID, raw provider payload, DSN, cookie, or proxy credential was recorded.
 - 2026-05-18: Validation passed: `make fmt`, `go test ./cmd/smoke -run 'CloudminiErrorEvidence'`, approved `go run ./cmd/smoke cloudmini-error-evidence`, `make test`, `make build`, `go run ./cmd/taskguard`, `git diff --check`, and diff secret-like scan excluding fake test fixtures.
 - 2026-05-18: Opened PR #546 and moved task to `REVIEW`.
+- 2026-05-18: PR #546 merged and task marked `DONE`.
