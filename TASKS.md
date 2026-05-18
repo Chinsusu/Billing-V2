@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-18` after T251 review:
+Current board snapshot on `2026-05-18` after T251 completion:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 247
+- `DONE` task files in `tasks/active/`: 248
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T251 | [tasks/active/T251_provider_test_stability.md](tasks/active/T251_provider_test_stability.md) | REVIEW | Codex | codex/t251-provider-test-stability | Stabilize Cloudmini provider hardening test timeout behavior. |
 
 ## Blocked Task Files
 
@@ -109,6 +108,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T248`
 - `T249`
 - `T250`
+- `T251`
 
 ## Removed Tasks
 
