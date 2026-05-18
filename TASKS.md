@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-18` after T249 completion:
+Current board snapshot on `2026-05-18` after T250 creation:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 246
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T250 | [tasks/active/T250_cloudmini_error_evidence.md](tasks/active/T250_cloudmini_error_evidence.md) | IN_PROGRESS | Codex | codex/t250-cloudmini-error-evidence | Capture safe redacted Cloudmini provider error evidence. |
 
 ## Blocked Task Files
 
