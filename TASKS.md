@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-18` after T253 completion:
+Current board snapshot on `2026-05-18` after T254 creation:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 250
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T254 | [tasks/active/T254_local_secret_store_rotation_proof.md](tasks/active/T254_local_secret_store_rotation_proof.md) | IN_PROGRESS | Codex | codex/t254-local-secret-store-proof | Record self-managed local secret-store rotation proof. |
 
 ## Blocked Task Files
 
