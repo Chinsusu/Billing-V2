@@ -21,8 +21,13 @@ type cloudminiErrorEvidenceConfig struct {
 	APIToken                  string
 	IncludeCreate             bool
 	IncludePermissionDenied   bool
+	IncludeOutOfCapacity      bool
 	PermissionKeyManagementOK string
 	PermissionKeyMaxCreate    string
+	OutOfCapacityApproved     string
+	OutOfCapacityMaxAttempts  string
+	OutOfCapacityKind         string
+	OutOfCapacityTTLSeconds   int
 }
 
 type cloudminiErrorEvidenceExample struct {
@@ -51,6 +56,12 @@ type cloudminiErrorEvidenceResult struct {
 	TemporaryKey           bool
 	TemporaryKeyRevoked    bool
 	ActiveKeyCountRestored bool
+	ReservationProbe       bool
+	ReservationCreated     bool
+	ReservationCleanedUp   bool
+	ExhaustedGroupSelected bool
+	ReservationMaxAttempts int
+	ReservationTTLSeconds  int
 }
 
 type cloudminiErrorEnvelope struct {
@@ -94,74 +105,16 @@ func runCloudminiErrorEvidenceSmokeWithWriter(timeout time.Duration, out io.Writ
 			return err
 		}
 	}
+	if config.IncludeOutOfCapacity {
+		result, err := runCloudminiOutOfCapacityEvidence(ctx, config)
+		results = append(results, result)
+		if err != nil {
+			printCloudminiErrorEvidenceSummary(out, config, results, "FAIL")
+			return err
+		}
+	}
 	printCloudminiErrorEvidenceSummary(out, config, results, "PASS")
 	return nil
-}
-
-func cloudminiErrorEvidenceConfigFromEnv() (cloudminiErrorEvidenceConfig, error) {
-	appEnv := strings.ToLower(strings.TrimSpace(os.Getenv("APP_ENV")))
-	if appEnv == "" {
-		return cloudminiErrorEvidenceConfig{}, fmt.Errorf("APP_ENV is required")
-	}
-	switch appEnv {
-	case "local", "dev", "staging", "sandbox":
-	case "prod", "production":
-		return cloudminiErrorEvidenceConfig{}, fmt.Errorf("refusing to run cloudmini error evidence with APP_ENV=%s", appEnv)
-	default:
-		return cloudminiErrorEvidenceConfig{}, fmt.Errorf("APP_ENV must be local, dev, staging, or sandbox")
-	}
-	if os.Getenv("BILLING_CLOUDMINI_ERROR_EVIDENCE_APPROVED") != "yes" {
-		return cloudminiErrorEvidenceConfig{}, fmt.Errorf("BILLING_CLOUDMINI_ERROR_EVIDENCE_APPROVED=yes is required")
-	}
-	for _, key := range []string{
-		"CLOUDMINI_SOURCE_ACCOUNT_OWNER",
-		"CLOUDMINI_ENGINEERING_OWNER",
-		"CLOUDMINI_OPS_OWNER",
-		"CLOUDMINI_SECURITY_OWNER",
-		"CLOUDMINI_CLEANUP_OWNER",
-		"CLOUDMINI_REVIEWER_SIGNOFF",
-		"CLOUDMINI_PILOT_STOP_CONDITION",
-		"CLOUDMINI_PILOT_READONLY_EVIDENCE_REF",
-	} {
-		if err := requireCloudminiEvidenceFilled(key); err != nil {
-			return cloudminiErrorEvidenceConfig{}, err
-		}
-	}
-	config := cloudminiErrorEvidenceConfig{
-		AppEnv:                    appEnv,
-		BaseURL:                   strings.TrimSpace(os.Getenv("CLOUDMINI_V3_BASE_URL")),
-		APIToken:                  strings.TrimSpace(os.Getenv("CLOUDMINI_V3_API_TOKEN")),
-		IncludeCreate:             os.Getenv("CLOUDMINI_ERROR_EVIDENCE_ALLOW_INVALID_CREATE") == "yes",
-		IncludePermissionDenied:   os.Getenv("CLOUDMINI_ERROR_EVIDENCE_ALLOW_PERMISSION_DENIED") == "yes",
-		PermissionKeyManagementOK: strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_PERMISSION_KEY_MANAGEMENT_APPROVED")),
-		PermissionKeyMaxCreate:    strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_PERMISSION_KEY_MAX_CREATE")),
-	}
-	if config.BaseURL == "" {
-		return cloudminiErrorEvidenceConfig{}, fmt.Errorf("CLOUDMINI_V3_BASE_URL is required")
-	}
-	if config.APIToken == "" {
-		return cloudminiErrorEvidenceConfig{}, fmt.Errorf("CLOUDMINI_V3_API_TOKEN is required")
-	}
-	if _, err := resolveCloudminiErrorEvidenceURL(config.BaseURL, "/api/v3/capabilities"); err != nil {
-		return cloudminiErrorEvidenceConfig{}, err
-	}
-	if config.IncludeCreate {
-		if strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_MUTATING_ROUTE_APPROVED")) != "yes" {
-			return cloudminiErrorEvidenceConfig{}, fmt.Errorf("CLOUDMINI_ERROR_EVIDENCE_MUTATING_ROUTE_APPROVED=yes is required for malformed create validation evidence")
-		}
-		if strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_MAX_CREATE_ATTEMPTS")) != "1" {
-			return cloudminiErrorEvidenceConfig{}, fmt.Errorf("CLOUDMINI_ERROR_EVIDENCE_MAX_CREATE_ATTEMPTS must be 1")
-		}
-	}
-	if config.IncludePermissionDenied {
-		if config.PermissionKeyManagementOK != "yes" {
-			return cloudminiErrorEvidenceConfig{}, fmt.Errorf("CLOUDMINI_ERROR_EVIDENCE_PERMISSION_KEY_MANAGEMENT_APPROVED=yes is required for permission-denied evidence")
-		}
-		if config.PermissionKeyMaxCreate != "1" {
-			return cloudminiErrorEvidenceConfig{}, fmt.Errorf("CLOUDMINI_ERROR_EVIDENCE_PERMISSION_KEY_MAX_CREATE must be 1")
-		}
-	}
-	return config, nil
 }
 
 func cloudminiErrorEvidenceExamples(includeCreate bool) []cloudminiErrorEvidenceExample {
