@@ -1,9 +1,9 @@
 # T248 - Cloudmini idempotency evidence
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t248-cloudmini-idempotency-evidence
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/528
 Risk: provider provisioning, idempotency, credentials, launch-readiness evidence
 Created: 2026-05-18
 Updated: 2026-05-18
@@ -37,3 +37,4 @@ Add a guarded evidence path for Cloudmini duplicate-create, timeout-after-send, 
 - 2026-05-18: Added local httptest coverage for duplicate-create redaction/cleanup, timeout-after-send manual-review mapping/cleanup, and missing approval refusal.
 - 2026-05-18: Updated provider readiness, Go/No-Go, launch evidence, controlled pilot, and validation command docs to record that T248 adds tooling only; live Cloudmini duplicate/timeout evidence remains missing until the command is run against an approved non-production provider account.
 - 2026-05-18: Local validation passed: `go test ./cmd/smoke -count=1`, `go test ./internal/modules/provider -count=1`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`, `make test`, `go run ./cmd/taskguard`, `git diff --check`, changed-file line counts under 500, and staged added-line secret-pattern scan.
+- 2026-05-18: Opened PR https://github.com/Chinsusu/Billing-V2/pull/528 for review.
