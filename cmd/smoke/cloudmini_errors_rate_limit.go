@@ -47,6 +47,7 @@ func runCloudminiRateLimitEvidence(ctx context.Context, config cloudminiErrorEvi
 	if err != nil {
 		return result, err
 	}
+	request.Header.Set("X-Cloudmini-Error-Fixture", "rate_limited")
 	response, err := http.DefaultClient.Do(request)
 	if err != nil {
 		return result, fmt.Errorf("rate-limit fixture request failed before response")
