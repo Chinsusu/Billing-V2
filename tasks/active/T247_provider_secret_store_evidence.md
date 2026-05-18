@@ -1,9 +1,9 @@
 # T247 - Provider secret-store evidence
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t247-provider-secret-store-evidence
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/526
 Risk: provider credential and launch-readiness documentation
 Created: 2026-05-18
 Updated: 2026-05-18
@@ -35,3 +35,4 @@ Record redacted Cloudmini target dev/test secret-store metadata and owner bounda
 - 2026-05-18: Rechecked approved target server metadata without reading secret file contents: app env file mode `640`, Cloudmini dev credential mode `600`, cloudflared token file mode `600`, cloudflared token-file active, no token in process arguments, `billing-api` and `billing-worker` active.
 - 2026-05-18: Updated provider and launch evidence docs to record the target dev/test local secret-file boundary while keeping production/shared secret-store and provider duplicate/timeout/error evidence as launch blockers.
 - 2026-05-18: Local validation passed: `go run ./cmd/taskguard`, `git diff --check`, changed-file line counts under 500, added-line secret-pattern scan, and new task-file secret-pattern scan.
+- 2026-05-18: Opened PR https://github.com/Chinsusu/Billing-V2/pull/526 for review.
