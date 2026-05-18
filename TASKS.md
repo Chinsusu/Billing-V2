@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-18` after T247 review:
+Current board snapshot on `2026-05-18` after T247 completion:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 243
+- `DONE` task files in `tasks/active/`: 244
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T247 | [tasks/active/T247_provider_secret_store_evidence.md](tasks/active/T247_provider_secret_store_evidence.md) | REVIEW | Codex | codex/t247-provider-secret-store-evidence | Record Cloudmini target dev/test secret-store metadata and owner boundary evidence. |
 
 ## Blocked Task Files
 
@@ -105,6 +104,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T244`
 - `T245`
 - `T246`
+- `T247`
 
 ## Removed Tasks
 
