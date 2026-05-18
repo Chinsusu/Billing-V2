@@ -62,7 +62,8 @@ func TestCloudminiV3AdapterProvisionRequiresUsableProxyStatus(t *testing.T) {
 		GroupID:  "group-1",
 		Protocol: "socks5",
 	})
-	adapter.pollTimeout = 3 * time.Millisecond
+	adapter.pollInterval = time.Millisecond
+	adapter.pollTimeout = 75 * time.Millisecond
 	result, err := adapter.Provision(context.Background(), validOperation(), ProvisionRequest{PlanKey: "proxy"})
 	var adapterErr AdapterError
 	if !errors.As(err, &adapterErr) || adapterErr.Code != ErrorPartialSuccess {
