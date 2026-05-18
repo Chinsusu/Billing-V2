@@ -241,6 +241,50 @@ func TestCloudminiV3AdapterTerminateUsesDeleteAndIdempotency(t *testing.T) {
 	}
 }
 
+func TestCloudminiV3AdapterTerminateFailedOperationRequiresManualReview(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assertCloudminiAuth(t, r)
+		switch {
+		case r.Method == http.MethodDelete && r.URL.Path == "/api/v3/proxies/proxy-1":
+			writeCloudminiSuccess(t, w, http.StatusAccepted, cloudminiV3ProxyMutationResponse{
+				Resource:  cloudminiV3Resource{ID: "proxy-1", Kind: "ipv4_dc", Status: "deleting"},
+				Operation: cloudminiV3Operation{ID: "op-delete-1", State: cloudminiV3OperationAccepted},
+			})
+		case r.Method == http.MethodGet && r.URL.Path == "/api/v3/operations/op-delete-1":
+			errorCode := "DELETE_FAILED"
+			errorMessage := "delete rejected by provider"
+			writeCloudminiSuccess(t, w, http.StatusOK, cloudminiV3Operation{
+				ID:           "op-delete-1",
+				ResourceID:   optionalString("proxy-1"),
+				State:        cloudminiV3OperationFailed,
+				ErrorCode:    &errorCode,
+				ErrorMessage: &errorMessage,
+			})
+		default:
+			t.Fatalf("unexpected request %s %s", r.Method, r.URL.Path)
+		}
+	}))
+	defer server.Close()
+
+	adapter := newTestCloudminiV3Adapter(t, server.URL, &cloudminiV3TestCipher{}, CloudminiV3SourceConfig{
+		Kind:     "ipv4_dc",
+		GroupID:  "group-1",
+		Protocol: "socks5",
+	})
+
+	result, err := adapter.Terminate(context.Background(), validOperation(), ResourceRequest{ExternalResourceID: "proxy-1"})
+	var adapterErr AdapterError
+	if !errors.As(err, &adapterErr) || adapterErr.Code != ErrorPartialSuccess {
+		t.Fatalf("expected partial-success error, got result=%+v err=%v", result, err)
+	}
+	if result.Status != OperationStatusPartialSuccess ||
+		result.RetrySafety != RetrySafetyManualReviewRequired ||
+		result.ExternalRequestID != "op-delete-1" ||
+		result.ExternalResourceID != "proxy-1" {
+		t.Fatalf("unexpected terminate failed-operation result: %+v", result)
+	}
+}
+
 func TestCloudminiV3AdapterTerminateTimeoutAfterAcceptedRequiresManualReview(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assertCloudminiAuth(t, r)

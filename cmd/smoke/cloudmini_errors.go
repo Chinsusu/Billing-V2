@@ -24,6 +24,7 @@ type cloudminiErrorEvidenceConfig struct {
 	IncludeOutOfCapacity      bool
 	IncludeRateLimited        bool
 	IncludeProvider5xx        bool
+	IncludeCancelDelete       bool
 	PermissionKeyManagementOK string
 	PermissionKeyMaxCreate    string
 	OutOfCapacityApproved     string
@@ -36,6 +37,9 @@ type cloudminiErrorEvidenceConfig struct {
 	Provider5xxApproved       string
 	Provider5xxMaxRequests    string
 	Provider5xxFixturePath    string
+	CancelDeleteApproved      string
+	CancelDeleteMaxRequests   string
+	CancelDeleteFixturePath   string
 }
 
 type cloudminiErrorEvidenceExample struct {
@@ -74,10 +78,14 @@ type cloudminiErrorEvidenceResult struct {
 	RateLimitMaxRequests   int
 	Provider5xxFixture     bool
 	Provider5xxMaxRequests int
+	CancelDeleteFixture    bool
+	CancelDeleteMaxRequest int
+	ProviderOperationState string
 }
 
 type cloudminiErrorEnvelope struct {
 	Success bool            `json:"success"`
+	Data    json.RawMessage `json:"data"`
 	Error   json.RawMessage `json:"error"`
 }
 
@@ -135,6 +143,14 @@ func runCloudminiErrorEvidenceSmokeWithWriter(timeout time.Duration, out io.Writ
 	}
 	if config.IncludeProvider5xx {
 		result, err := runCloudminiProvider5xxEvidence(ctx, config)
+		results = append(results, result)
+		if err != nil {
+			printCloudminiErrorEvidenceSummary(out, config, results, "FAIL")
+			return err
+		}
+	}
+	if config.IncludeCancelDelete {
+		result, err := runCloudminiCancelDeleteEvidence(ctx, config)
 		results = append(results, result)
 		if err != nil {
 			printCloudminiErrorEvidenceSummary(out, config, results, "FAIL")
@@ -289,6 +305,8 @@ func mapCloudminiErrorEvidenceCode(statusCode int, providerCode string) provider
 	switch providerCode {
 	case "CAPACITY_EXHAUSTED":
 		return provider.ErrorOutOfStock
+	case "ACTION_FAILED", "DELETE_FAILED":
+		return provider.ErrorPartialSuccess
 	case "IDEMPOTENCY_CONFLICT", "INVALID_STATE_TRANSITION", "OPERATION_NOT_FOUND", "PROXY_NOT_FOUND":
 		return provider.ErrorStateDrift
 	case "INVALID_ACTION":

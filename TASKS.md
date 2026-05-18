@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-18` after T261 completion:
+Current board snapshot on `2026-05-18` after T262 claim:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 258
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T262 | [tasks/active/T262_cloudmini_cancel_delete_rejected_runtime_evidence.md](tasks/active/T262_cloudmini_cancel_delete_rejected_runtime_evidence.md) | IN_PROGRESS | Codex | codex/t262-cloudmini-cancel-delete-runtime | Collect Cloudmini cancel/delete rejected runtime evidence safely. |
 
 ## Blocked Task Files
 

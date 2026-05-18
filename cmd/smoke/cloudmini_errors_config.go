@@ -45,6 +45,7 @@ func cloudminiErrorEvidenceConfigFromEnv() (cloudminiErrorEvidenceConfig, error)
 		IncludeOutOfCapacity:      os.Getenv("CLOUDMINI_ERROR_EVIDENCE_ALLOW_OUT_OF_CAPACITY") == "yes",
 		IncludeRateLimited:        os.Getenv("CLOUDMINI_ERROR_EVIDENCE_ALLOW_RATE_LIMITED") == "yes",
 		IncludeProvider5xx:        os.Getenv("CLOUDMINI_ERROR_EVIDENCE_ALLOW_PROVIDER_5XX") == "yes",
+		IncludeCancelDelete:       os.Getenv("CLOUDMINI_ERROR_EVIDENCE_ALLOW_CANCEL_DELETE_REJECTED") == "yes",
 		PermissionKeyManagementOK: strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_PERMISSION_KEY_MANAGEMENT_APPROVED")),
 		PermissionKeyMaxCreate:    strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_PERMISSION_KEY_MAX_CREATE")),
 		OutOfCapacityApproved:     strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_OUT_OF_CAPACITY_APPROVED")),
@@ -56,6 +57,9 @@ func cloudminiErrorEvidenceConfigFromEnv() (cloudminiErrorEvidenceConfig, error)
 		Provider5xxApproved:       strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_PROVIDER_5XX_APPROVED")),
 		Provider5xxMaxRequests:    strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_PROVIDER_5XX_MAX_REQUESTS")),
 		Provider5xxFixturePath:    strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_PROVIDER_5XX_FIXTURE_PATH")),
+		CancelDeleteApproved:      strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_CANCEL_DELETE_APPROVED")),
+		CancelDeleteMaxRequests:   strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_CANCEL_DELETE_MAX_REQUESTS")),
+		CancelDeleteFixturePath:   strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_CANCEL_DELETE_FIXTURE_PATH")),
 	}
 	if ttlRaw := strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_OUT_OF_CAPACITY_TTL_SECONDS")); ttlRaw != "" {
 		ttlSeconds, err := strconv.Atoi(ttlRaw)
@@ -122,6 +126,17 @@ func cloudminiErrorEvidenceConfigFromEnv() (cloudminiErrorEvidenceConfig, error)
 			return cloudminiErrorEvidenceConfig{}, fmt.Errorf("CLOUDMINI_ERROR_EVIDENCE_PROVIDER_5XX_MAX_REQUESTS must be 1")
 		}
 		if err := validateCloudminiProvider5xxFixturePath(config.Provider5xxFixturePath); err != nil {
+			return cloudminiErrorEvidenceConfig{}, err
+		}
+	}
+	if config.IncludeCancelDelete {
+		if config.CancelDeleteApproved != "yes" {
+			return cloudminiErrorEvidenceConfig{}, fmt.Errorf("CLOUDMINI_ERROR_EVIDENCE_CANCEL_DELETE_APPROVED=yes is required for cancel/delete rejected evidence")
+		}
+		if config.CancelDeleteMaxRequests != "1" {
+			return cloudminiErrorEvidenceConfig{}, fmt.Errorf("CLOUDMINI_ERROR_EVIDENCE_CANCEL_DELETE_MAX_REQUESTS must be 1")
+		}
+		if err := validateCloudminiCancelDeleteFixturePath(config.CancelDeleteFixturePath); err != nil {
 			return cloudminiErrorEvidenceConfig{}, err
 		}
 	}
