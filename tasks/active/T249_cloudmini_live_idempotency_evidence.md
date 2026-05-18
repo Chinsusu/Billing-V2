@@ -1,9 +1,9 @@
 # T249 - Cloudmini live idempotency evidence
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t249-cloudmini-live-idempotency-evidence
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/530
 Risk: provider provisioning, credentials, mutating Cloudmini routes, launch-readiness evidence
 Created: 2026-05-18
 Updated: 2026-05-18
@@ -43,3 +43,5 @@ Run the guarded T248 Cloudmini idempotency evidence smoke against the approved t
 - 2026-05-18: Target timeout-after-send evidence passed with `PROVIDER_TIMEOUT_REQUEST_KNOWN`, `manual_review_required`, raw cleanup ref mode `0600`, and cleanup success.
 - 2026-05-18: Confirmed target `billing-api` and `billing-worker` remained active after evidence; target app env and Cloudmini credential files kept restrictive metadata without reading contents.
 - 2026-05-18: Updated provider readiness, Go/No-Go, launch packet, and idempotency runbook docs with redacted T249 evidence while preserving remaining NO-GO blockers.
+- 2026-05-18: Local validation passed: `go test ./cmd/smoke -count=1`, `go test ./internal/modules/provider -count=1`, `go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`, `make test`, `go run ./cmd/taskguard`, `git diff --check`, changed-file line counts under 500, and staged added-line secret-pattern scan.
+- 2026-05-18: Opened PR https://github.com/Chinsusu/Billing-V2/pull/530 for review.
