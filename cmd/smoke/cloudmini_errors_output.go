@@ -62,6 +62,10 @@ func printCloudminiErrorEvidenceSummary(out io.Writer, config cloudminiErrorEvid
 			fmt.Fprintf(out, "example_%d_rate_limit_fixture_called=true\n", index+1)
 			fmt.Fprintf(out, "example_%d_rate_limit_max_requests=%d\n", index+1, item.RateLimitMaxRequests)
 		}
+		if item.Provider5xxFixture {
+			fmt.Fprintf(out, "example_%d_provider_5xx_fixture_called=true\n", index+1)
+			fmt.Fprintf(out, "example_%d_provider_5xx_max_requests=%d\n", index+1, item.Provider5xxMaxRequests)
+		}
 	}
 	fmt.Fprintln(out, "raw_response_body_printed=no")
 	fmt.Fprintln(out, "sensitive_values_printed=no")
@@ -79,6 +83,7 @@ func remainingCloudminiProviderControlledExamples(results []cloudminiErrorEviden
 	permissionDeniedClosed := false
 	outOfCapacityClosed := false
 	rateLimitedClosed := false
+	provider5xxClosed := false
 	for _, item := range results {
 		if item.Name == cloudminiPermissionDeniedExampleName {
 			permissionDeniedClosed = true
@@ -88,6 +93,9 @@ func remainingCloudminiProviderControlledExamples(results []cloudminiErrorEviden
 		}
 		if item.Name == cloudminiRateLimitExampleName {
 			rateLimitedClosed = true
+		}
+		if item.Name == cloudminiProvider5xxExampleName {
+			provider5xxClosed = true
 		}
 	}
 	remaining := make([]string, 0, 5)
@@ -100,6 +108,9 @@ func remainingCloudminiProviderControlledExamples(results []cloudminiErrorEviden
 	if !outOfCapacityClosed {
 		remaining = append(remaining, "out_of_capacity")
 	}
-	remaining = append(remaining, "provider_5xx", "cancel_rejected")
+	if !provider5xxClosed {
+		remaining = append(remaining, "provider_5xx")
+	}
+	remaining = append(remaining, "cancel_rejected")
 	return strings.Join(remaining, ",")
 }

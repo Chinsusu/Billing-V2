@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-18` after T260 completion:
+Current board snapshot on `2026-05-18` after T261 claim:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 257
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T261 | [tasks/active/T261_cloudmini_provider_5xx_runtime_evidence.md](tasks/active/T261_cloudmini_provider_5xx_runtime_evidence.md) | IN_PROGRESS | Codex | codex/t261-cloudmini-internal-error-runtime | Collect Cloudmini provider 5xx runtime evidence with a safe fixture. |
 
 ## Blocked Task Files
 
