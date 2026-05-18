@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-17
 **Scope:** Controlled pre-approval packet for the first Cloudmini V3 mutating pilot.
-**Decision:** One controlled dev create/delete pilot has passed. T229 fixes the repo-side non-usable-status and lifecycle-worker cleanup gaps, T230 proves that hardening deploys/builds on the approved test server, T231 proves non-mutating Cloudmini registry activation, T249 proves live duplicate/timeout behavior, and T254 proves selected-host self-managed secret-store handling after owner-confirmed key rotation. Broader pilot remains blocked until provider-controlled error examples and broader provider owner approval are complete.
+**Decision:** One controlled dev create/delete pilot has passed. T229 fixes the repo-side non-usable-status and lifecycle-worker cleanup gaps, T230 proves that hardening deploys/builds on the approved test server, T231 proves non-mutating Cloudmini registry activation, T249 proves live duplicate/timeout behavior, and T254 proves selected-host self-managed secret-store handling after owner-confirmed key rotation. T255 documents provider-controlled error source inspection and a safe execution plan, but does not execute the remaining cases. Broader pilot remains blocked until provider-controlled runtime examples and broader provider owner approval are complete.
 
 ## Current Safe State
 
@@ -467,4 +467,4 @@ Before broader pilot or multiple provider accounts:
 - T220 verifies the dev pilot mapping. Any broader staging or production-equivalent mapping still needs an approved target environment and owner sign-off before use.
 - T227 makes runtime configuration fail closed when the configured source id does not match the Billing provider source used by the provisioning job.
 - T228 proves one controlled dev create/delete pilot.
-- T229 resolves the repo-side lifecycle cleanup and terminal resource status residual risks with fail-closed code and tests. T249 proves live duplicate/timeout evidence, T253 records cleanup ownership, and T254 records selected-host secret-store proof. Broader pilot still needs provider-controlled error examples and broader provider owner approval.
+- T229 resolves the repo-side lifecycle cleanup and terminal resource status residual risks with fail-closed code and tests. T249 proves live duplicate/timeout evidence, T253 records cleanup ownership, T254 records selected-host secret-store proof, and T255 records the safe execution plan for provider-controlled errors. Broader pilot still needs executed provider-controlled runtime examples and broader provider owner approval.
