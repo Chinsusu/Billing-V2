@@ -1,9 +1,9 @@
 # T256 - Cloudmini permission-denied runtime evidence
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t256-cloudmini-permission-denied
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/544
 Risk: provider provisioning, credentials, launch-readiness evidence
 Created: 2026-05-18
 Updated: 2026-05-18
@@ -40,3 +40,4 @@ Add and run guarded Cloudmini V3 permission-denied evidence without proxy create
 - 2026-05-18: Ran approved dev/test Cloudmini permission-denied evidence; result `PASS`, `403` mapped to `PROVIDER_PERMISSION_DENIED`, temporary key revoked, active key count restored, and `mutating_routes_called=true` for API-key create/revoke support routes.
 - 2026-05-18: Updated provider launch evidence docs with redacted runtime output; no token, key, raw provider ID, raw provider payload, DSN, cookie, or proxy credential was recorded.
 - 2026-05-18: Validation passed: `make fmt`, `go test ./cmd/smoke -run 'CloudminiErrorEvidence'`, approved `go run ./cmd/smoke cloudmini-error-evidence`, `make test`, `make build`, `go run ./cmd/taskguard`, `git diff --check`, and diff secret-like scan excluding fake test fixtures.
+- 2026-05-18: Opened PR #544 and moved task to REVIEW.
