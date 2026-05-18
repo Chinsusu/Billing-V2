@@ -9,11 +9,15 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/Chinsusu/Billing-V2/internal/modules/provider"
 )
 
-const cloudminiPermissionDeniedExampleName = "permission_denied_proxy_list"
+const (
+	cloudminiPermissionDeniedExampleName    = "permission_denied_proxy_list"
+	cloudminiPermissionDeniedCleanupTimeout = 10 * time.Second
+)
 
 type cloudminiAPIKeyListResponse struct {
 	Success bool `json:"success"`
@@ -57,14 +61,16 @@ func runCloudminiPermissionDeniedEvidence(ctx context.Context, config cloudminiE
 	deniedResult, deniedErr := callCloudminiProxyListWithTemporaryKey(ctx, config, plainKey)
 	result = deniedResult
 
-	revokeErr := revokeCloudminiAPIKey(ctx, config, keyID)
+	cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), cloudminiPermissionDeniedCleanupTimeout)
+	defer cleanupCancel()
+	revokeErr := revokeCloudminiAPIKey(cleanupCtx, config, keyID)
 	if revokeErr == nil {
 		result.TemporaryKeyRevoked = true
 		result.SideEffectCreated = "cleaned_up"
 	}
 	result.MutatingRoute = true
 
-	activeAfter, countErr := countCloudminiActiveAPIKeys(ctx, config)
+	activeAfter, countErr := countCloudminiActiveAPIKeys(cleanupCtx, config)
 	if countErr == nil && activeAfter == activeBefore {
 		result.ActiveKeyCountRestored = true
 	}
