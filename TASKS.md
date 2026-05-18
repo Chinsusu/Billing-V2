@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-18` after T260 claim:
+Current board snapshot on `2026-05-18` after T260 review:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 256
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -66,7 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T260 | [tasks/active/T260_cloudmini_rate_limit_runtime_evidence.md](tasks/active/T260_cloudmini_rate_limit_runtime_evidence.md) | IN_PROGRESS | Codex | codex/t260-cloudmini-rate-limit-runtime | Collect Cloudmini rate-limit runtime evidence if the provider fixture is deployed. |
+| T260 | [tasks/active/T260_cloudmini_rate_limit_runtime_evidence.md](tasks/active/T260_cloudmini_rate_limit_runtime_evidence.md) | REVIEW | Codex | codex/t260-cloudmini-rate-limit-runtime | Collect Cloudmini rate-limit runtime evidence if the provider fixture is deployed. |
 
 ## Blocked Task Files
 
