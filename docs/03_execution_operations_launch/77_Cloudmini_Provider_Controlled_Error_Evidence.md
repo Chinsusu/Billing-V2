@@ -1,9 +1,9 @@
 # 77 - Cloudmini Provider-Controlled Error Evidence
 
-**Task:** T255  
-**Date:** 2026-05-18  
-**Scope:** Remaining Cloudmini V3 provider-controlled error cases for launch evidence.  
-**Decision:** not closed. T255 records source-inspection evidence and a safe execution plan only. No new provider create/delete run was performed.
+**Tasks:** T255, T256
+**Date:** 2026-05-18
+**Scope:** Remaining Cloudmini V3 provider-controlled error cases for launch evidence.
+**Decision:** partially closed. T255 records source-inspection evidence and a safe execution plan. T256 closes the permission-denied runtime case with a temporary low-scope key and same-run revoke. No provider proxy create/delete run was performed.
 
 ## Boundary
 
@@ -23,7 +23,7 @@ Provider source inspected from `/opt/proxy-cloudmini` without reading provider s
 | Provider behavior | Source-read evidence | Current evidence status |
 | --- | --- | --- |
 | V3 routes use `AuthMiddleware`; mutating and proxy read routes require `proxy_crud`. | `/opt/proxy-cloudmini/internal/api/router.go` defines `/api/v3` auth and `RequirePermission("proxy_crud")` on reservations, proxies, operations, and actions. | Supports a permission-denied test only with a valid low-scope API key. |
-| Missing `proxy_crud` returns HTTP `403`. | `/opt/proxy-cloudmini/internal/api/auth_handler.go` `RequirePermission` returns forbidden when permissions do not include the required permission or wildcard. | Needs temporary read-only API key evidence. |
+| Missing `proxy_crud` returns HTTP `403`. | `/opt/proxy-cloudmini/internal/api/auth_handler.go` `RequirePermission` returns forbidden when permissions do not include the required permission or wildcard. | T256 captured temporary low-scope API key runtime evidence and same-run revoke. |
 | Global V2/API limiter returns `RATE_LIMITED`; no V3-specific low-limit fixture was found. | `/opt/proxy-cloudmini/internal/api/router.go` has limiter responses with code `RATE_LIMITED`. | Do not induce this on the shared provider; needs isolated fixture or low-limit test config. |
 | Capacity exhaustion exists before reservation persistence. | `/opt/proxy-cloudmini/internal/api/handler/v3_handler.go` `CreateReservation` checks group inventory and returns `CAPACITY_EXHAUSTED` before creating a reservation when no allocatable units exist. | Needs owner-approved exhausted-group reservation probe or fixture. |
 | V3 returns `INTERNAL_ERROR` on repository/service failures. | `/opt/proxy-cloudmini/internal/api/handler/v3_handler.go` returns `INTERNAL_ERROR` for inventory, reservation, operation, create, delete, and action storage/service failures. | No safe shared-provider trigger; needs provider-side fixture. |
@@ -31,9 +31,9 @@ Provider source inspected from `/opt/proxy-cloudmini` without reading provider s
 
 ## Case Matrix
 
-| Case | Required Billing mapping | Safe evidence path | T255 status |
+| Case | Required Billing mapping | Safe evidence path | Current status |
 | --- | --- | --- | --- |
-| Permission denied | HTTP `403` -> `PROVIDER_PERMISSION_DENIED`, retry `do_not_retry`. | Create a temporary non-production API key with read-only permission, call a `proxy_crud` route such as `GET /api/v3/proxies`, record redacted `403`, then revoke and verify active key count returns to the previous value. | Blocked: no temporary low-scope key evidence was created in this task. |
+| Permission denied | HTTP `403` -> `PROVIDER_PERMISSION_DENIED`, retry `do_not_retry`. | Create a temporary non-production API key with read-only permission, call a `proxy_crud` route such as `GET /api/v3/proxies`, record redacted `403`, then revoke and verify active key count returns to the previous value. | Closed by T256: runtime `403`, normalized `PROVIDER_PERMISSION_DENIED`, `do_not_retry`, temporary key revoked, active key count restored. |
 | Rate limited | HTTP `429`/`RATE_LIMITED` -> `PROVIDER_RATE_LIMITED`, retry `safe_retry`. | Use provider-owned isolated low-limit fixture or test route. Do not trip the shared 1000 req/min limiter. | Blocked: no safe low-limit fixture exists in current Billing evidence. |
 | Out of capacity | `CAPACITY_EXHAUSTED` -> `PROVIDER_OUT_OF_STOCK`, retry `do_not_retry`. | Use an owner-approved exhausted group reservation probe with max attempt `1`, TTL no more than `60s`, and cleanup/verification if a reservation is unexpectedly created. | Blocked: no bounded reservation probe was run in this task. |
 | Provider 5xx | HTTP `5xx`/`INTERNAL_ERROR` -> `PROVIDER_TEMPORARY_ERROR`, retry `safe_retry`. | Use a provider-owned non-production fixture that returns the normal V3 error envelope without breaking the shared service. | Blocked: no safe fixture exists in current Billing evidence. |
@@ -41,9 +41,8 @@ Provider source inspected from `/opt/proxy-cloudmini` without reading provider s
 
 ## Provider-Side Support Needed
 
-Before the blocker can close, the provider owner must supply one of:
+Before the remaining blocker can close, the provider owner must supply one of:
 
-- temporary low-scope credentials plus revoke evidence for permission-denied;
 - a non-production error fixture that returns V3 envelopes for `RATE_LIMITED`, `INTERNAL_ERROR`, and delete/action failure without side effects;
 - an owner-approved exhausted-group reservation probe with hard bounds and cleanup verification.
 
@@ -67,6 +66,52 @@ sensitive_values_printed=no
 raw_provider_ids_printed=no
 ```
 
+## T256 Permission-Denied Runtime Evidence
+
+Approved dev/test command:
+
+```text
+APP_ENV=dev ... go run ./cmd/smoke cloudmini-error-evidence
+```
+
+The command sourced Cloudmini dev/test credentials from the protected local credential file without printing file contents or secret values. It enabled only the permission-denied guardrails:
+
+```text
+CLOUDMINI_ERROR_EVIDENCE_ALLOW_PERMISSION_DENIED=yes
+CLOUDMINI_ERROR_EVIDENCE_PERMISSION_KEY_MANAGEMENT_APPROVED=yes
+CLOUDMINI_ERROR_EVIDENCE_PERMISSION_KEY_MAX_CREATE=1
+```
+
+T256 redacted stdout excerpt:
+
+```text
+cloudmini_error_evidence result=PASS
+pilot_environment=dev
+approval_fields_present=yes
+owner_fields_present=yes
+example_count=4
+mutating_routes_called=true
+example_4_name=permission_denied_proxy_list
+example_4_http_status=403
+example_4_provider_error_code=none
+example_4_normalized_error_code=PROVIDER_PERMISSION_DENIED
+example_4_retry_safety=do_not_retry
+example_4_error_envelope_present=true
+example_4_error_message_field_present=true
+example_4_error_details_field_present=false
+example_4_side_effect_created=cleaned_up
+example_4_temporary_api_key_created=true
+example_4_temporary_api_key_revoked=true
+example_4_active_key_count_restored=true
+raw_response_body_printed=no
+sensitive_values_printed=no
+raw_provider_ids_printed=no
+provider_payloads_printed=no
+remaining_provider_controlled_examples=rate_limited,out_of_capacity,provider_5xx,cancel_rejected
+```
+
+This evidence called provider API-key management routes to create and revoke one temporary low-scope key. It did not call provider proxy create, proxy delete, proxy action, reservation, Billing checkout, Billing payment, or provisioning worker mutation routes.
+
 ## T255 Non-Actions
 
 T255 did not:
@@ -78,4 +123,4 @@ T255 did not:
 - create a reservation probe;
 - print or record any secret value, raw provider payload, raw provider ID, proxy credential, DSN, cookie, or file content.
 
-The launch decision remains NO-GO until the blocked cases above are executed safely or a policy-allowed owner exception is recorded in docs 69 and 70.
+The launch decision remains NO-GO until the remaining blocked cases above are executed safely or a policy-allowed owner exception is recorded in docs 69 and 70.

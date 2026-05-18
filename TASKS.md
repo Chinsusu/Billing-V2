@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-18` after T255 completion:
+Current board snapshot on `2026-05-18` after T256 creation:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 252
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T256 | [tasks/active/T256_cloudmini_permission_denied_evidence.md](tasks/active/T256_cloudmini_permission_denied_evidence.md) | IN_PROGRESS | Codex | codex/t256-cloudmini-permission-denied | Add and run Cloudmini permission-denied runtime evidence. |
 
 ## Blocked Task Files
 
