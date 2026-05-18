@@ -175,6 +175,16 @@ The preflight guard:
 
 Passing this preflight is not approval to run the mutating pilot by itself. It only proves the required fields are present and the mapped source is still ready.
 
+## T248 Idempotency And Timeout Evidence Smoke
+
+T248 adds a fail-closed smoke command for the remaining live Cloudmini retry/idempotency evidence:
+
+```bash
+go run ./cmd/smoke cloudmini-idempotency-evidence
+```
+
+Detailed run instructions live in `docs/03_execution_operations_launch/73_Cloudmini_Idempotency_Evidence_Runbook.md` to keep this pilot runbook focused. The command is not itself GO evidence until both scenarios are run against the approved target provider account, cleanup succeeds, raw cleanup references are retained outside git with restricted permissions, and the redacted outputs are recorded in doc 66/doc 70.
+
 ## T228 Controlled Dev Pilot Evidence
 
 Pilot ID: `T228-dev-20260517T004039Z`
