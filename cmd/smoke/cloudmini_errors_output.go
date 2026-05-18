@@ -50,6 +50,14 @@ func printCloudminiErrorEvidenceSummary(out io.Writer, config cloudminiErrorEvid
 			fmt.Fprintf(out, "example_%d_temporary_api_key_revoked=%t\n", index+1, item.TemporaryKeyRevoked)
 			fmt.Fprintf(out, "example_%d_active_key_count_restored=%t\n", index+1, item.ActiveKeyCountRestored)
 		}
+		if item.ReservationProbe {
+			fmt.Fprintf(out, "example_%d_reservation_probe_attempted=true\n", index+1)
+			fmt.Fprintf(out, "example_%d_exhausted_group_selected=%t\n", index+1, item.ExhaustedGroupSelected)
+			fmt.Fprintf(out, "example_%d_reservation_created=%t\n", index+1, item.ReservationCreated)
+			fmt.Fprintf(out, "example_%d_reservation_cleaned_up=%t\n", index+1, item.ReservationCleanedUp)
+			fmt.Fprintf(out, "example_%d_reservation_max_attempts=%d\n", index+1, item.ReservationMaxAttempts)
+			fmt.Fprintf(out, "example_%d_reservation_ttl_seconds=%d\n", index+1, item.ReservationTTLSeconds)
+		}
 	}
 	fmt.Fprintln(out, "raw_response_body_printed=no")
 	fmt.Fprintln(out, "sensitive_values_printed=no")
@@ -64,10 +72,24 @@ func hashCloudminiErrorEvidence(value string) string {
 }
 
 func remainingCloudminiProviderControlledExamples(results []cloudminiErrorEvidenceResult) string {
+	permissionDeniedClosed := false
+	outOfCapacityClosed := false
 	for _, item := range results {
 		if item.Name == cloudminiPermissionDeniedExampleName {
-			return "rate_limited,out_of_capacity,provider_5xx,cancel_rejected"
+			permissionDeniedClosed = true
+		}
+		if item.Name == cloudminiOutOfCapacityExampleName {
+			outOfCapacityClosed = true
 		}
 	}
-	return "permission_denied,rate_limited,out_of_capacity,provider_5xx,cancel_rejected"
+	remaining := make([]string, 0, 5)
+	if !permissionDeniedClosed {
+		remaining = append(remaining, "permission_denied")
+	}
+	remaining = append(remaining, "rate_limited")
+	if !outOfCapacityClosed {
+		remaining = append(remaining, "out_of_capacity")
+	}
+	remaining = append(remaining, "provider_5xx", "cancel_rejected")
+	return strings.Join(remaining, ",")
 }
