@@ -1,9 +1,9 @@
 # T258 - Cloudmini rate-limit runtime evidence
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t258-cloudmini-rate-limit-evidence
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/548
 Risk: provider provisioning, credentials, launch-readiness evidence
 Created: 2026-05-18
 Updated: 2026-05-18
@@ -41,3 +41,4 @@ Add or record safe Cloudmini V3 rate-limit runtime evidence without tripping the
 - 2026-05-18: Updated launch evidence docs to keep the live provider rate-limit case blocked until a provider-owned fixture is deployed.
 - 2026-05-18: Did not run live provider rate-limit evidence because the inspected provider source has no safe V3 fixture and inducing the shared limiter is prohibited.
 - 2026-05-18: Validation passed: `make fmt`, `go test ./cmd/smoke -run 'CloudminiErrorEvidence'`, `make test`, `make build`, `go run ./cmd/taskguard`, `git diff --check`, and targeted diff secret-value scan excluding fake test fixtures.
+- 2026-05-18: Opened PR #548 and moved task to `REVIEW`.
