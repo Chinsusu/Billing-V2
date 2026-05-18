@@ -1,6 +1,6 @@
 # T255 - Cloudmini provider-controlled error evidence
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t255-provider-controlled-errors
 PR: https://github.com/Chinsusu/Billing-V2/pull/542
@@ -39,3 +39,4 @@ Record safe, redacted evidence or owner-approved deferrals for remaining Cloudmi
 - 2026-05-18: Added doc 77 and updated provider launch evidence docs with a case-by-case safe execution plan; no new provider create/delete/reservation/API-key mutation was run.
 - 2026-05-18: Updated docs index/manifest so the new provider-controlled error evidence packet is discoverable.
 - 2026-05-18: Opened PR #542 and moved task to REVIEW after `go run ./cmd/taskguard`, `git diff --check`, line-count check, and secret-like diff scan passed.
+- 2026-05-18: PR #542 passed CI and merged; marking task DONE.
