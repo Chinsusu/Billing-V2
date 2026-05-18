@@ -71,8 +71,10 @@ func run(args []string) error {
 		return runDevTargetFinanceReconciliationSmoke(*dsn, *baseURL, *timeout)
 	case "cloudmini-idempotency-evidence":
 		return runCloudminiIdempotencyEvidenceSmoke(*timeout)
+	case "cloudmini-error-evidence":
+		return runCloudminiErrorEvidenceSmoke(*timeout)
 	default:
-		return fmt.Errorf("unknown command %q; use dev-db, dev-api, dev-billing, dev-topup-review, dev-target-auth-rbac, dev-target-credential-reveal, dev-target-finance-reconciliation, or cloudmini-idempotency-evidence", command)
+		return fmt.Errorf("unknown command %q; use dev-db, dev-api, dev-billing, dev-topup-review, dev-target-auth-rbac, dev-target-credential-reveal, dev-target-finance-reconciliation, cloudmini-idempotency-evidence, or cloudmini-error-evidence", command)
 	}
 }
 
