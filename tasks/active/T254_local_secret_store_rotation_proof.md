@@ -1,6 +1,6 @@
 # T254 - Local secret-store rotation proof
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t254-local-secret-store-proof
 PR: https://github.com/Chinsusu/Billing-V2/pull/540
@@ -40,3 +40,4 @@ Record self-managed local secret-store proof after owner-confirmed API key rotat
 - 2026-05-18: Replaced cloudflared token argv usage with token-file handling and verified the running process has `--token-file` and no exact `--token` arg.
 - 2026-05-18: Updated provider and launch evidence docs to close only selected-host self-managed secret-store proof while preserving NO-GO for provider-controlled errors and broader provider approval.
 - 2026-05-18: Opened PR #540 and moved task to REVIEW after `go run ./cmd/taskguard`, `git diff --check`, line-count check, and secret-like pattern scan passed.
+- 2026-05-18: PR #540 passed CI and merged; marking task DONE.
