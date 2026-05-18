@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-18` after T248 review:
+Current board snapshot on `2026-05-18` after T248 completion:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 244
+- `DONE` task files in `tasks/active/`: 245
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T248 | [tasks/active/T248_cloudmini_idempotency_evidence.md](tasks/active/T248_cloudmini_idempotency_evidence.md) | REVIEW | Codex | codex/t248-cloudmini-idempotency-evidence | Add guarded Cloudmini duplicate/timeout/error evidence path. |
 
 ## Blocked Task Files
 
@@ -106,6 +105,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T245`
 - `T246`
 - `T247`
+- `T248`
 
 ## Removed Tasks
 
