@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-18` after T255 creation:
+Current board snapshot on `2026-05-18` after T255 review:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 251
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -66,7 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T255 | [tasks/active/T255_provider_controlled_error_evidence.md](tasks/active/T255_provider_controlled_error_evidence.md) | IN_PROGRESS | Codex | codex/t255-provider-controlled-errors | Record Cloudmini provider-controlled error evidence. |
+| T255 | [tasks/active/T255_provider_controlled_error_evidence.md](tasks/active/T255_provider_controlled_error_evidence.md) | REVIEW | Codex | codex/t255-provider-controlled-errors | Record Cloudmini provider-controlled error evidence. |
 
 ## Blocked Task Files
 
