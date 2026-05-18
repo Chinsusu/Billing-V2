@@ -43,11 +43,15 @@ func cloudminiErrorEvidenceConfigFromEnv() (cloudminiErrorEvidenceConfig, error)
 		IncludeCreate:             os.Getenv("CLOUDMINI_ERROR_EVIDENCE_ALLOW_INVALID_CREATE") == "yes",
 		IncludePermissionDenied:   os.Getenv("CLOUDMINI_ERROR_EVIDENCE_ALLOW_PERMISSION_DENIED") == "yes",
 		IncludeOutOfCapacity:      os.Getenv("CLOUDMINI_ERROR_EVIDENCE_ALLOW_OUT_OF_CAPACITY") == "yes",
+		IncludeRateLimited:        os.Getenv("CLOUDMINI_ERROR_EVIDENCE_ALLOW_RATE_LIMITED") == "yes",
 		PermissionKeyManagementOK: strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_PERMISSION_KEY_MANAGEMENT_APPROVED")),
 		PermissionKeyMaxCreate:    strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_PERMISSION_KEY_MAX_CREATE")),
 		OutOfCapacityApproved:     strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_OUT_OF_CAPACITY_APPROVED")),
 		OutOfCapacityMaxAttempts:  strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_OUT_OF_CAPACITY_MAX_RESERVATIONS")),
 		OutOfCapacityKind:         strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_OUT_OF_CAPACITY_KIND")),
+		RateLimitApproved:         strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_RATE_LIMIT_APPROVED")),
+		RateLimitMaxRequests:      strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_RATE_LIMIT_MAX_REQUESTS")),
+		RateLimitFixturePath:      strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_RATE_LIMIT_FIXTURE_PATH")),
 	}
 	if ttlRaw := strings.TrimSpace(os.Getenv("CLOUDMINI_ERROR_EVIDENCE_OUT_OF_CAPACITY_TTL_SECONDS")); ttlRaw != "" {
 		ttlSeconds, err := strconv.Atoi(ttlRaw)
@@ -93,6 +97,17 @@ func cloudminiErrorEvidenceConfigFromEnv() (cloudminiErrorEvidenceConfig, error)
 		}
 		if config.OutOfCapacityTTLSeconds <= 0 || config.OutOfCapacityTTLSeconds > 60 {
 			return cloudminiErrorEvidenceConfig{}, fmt.Errorf("CLOUDMINI_ERROR_EVIDENCE_OUT_OF_CAPACITY_TTL_SECONDS must be between 1 and 60")
+		}
+	}
+	if config.IncludeRateLimited {
+		if config.RateLimitApproved != "yes" {
+			return cloudminiErrorEvidenceConfig{}, fmt.Errorf("CLOUDMINI_ERROR_EVIDENCE_RATE_LIMIT_APPROVED=yes is required for rate-limit evidence")
+		}
+		if config.RateLimitMaxRequests != "1" {
+			return cloudminiErrorEvidenceConfig{}, fmt.Errorf("CLOUDMINI_ERROR_EVIDENCE_RATE_LIMIT_MAX_REQUESTS must be 1")
+		}
+		if err := validateCloudminiRateLimitFixturePath(config.RateLimitFixturePath); err != nil {
+			return cloudminiErrorEvidenceConfig{}, err
 		}
 	}
 	return config, nil

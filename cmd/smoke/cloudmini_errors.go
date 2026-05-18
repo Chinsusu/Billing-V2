@@ -22,12 +22,16 @@ type cloudminiErrorEvidenceConfig struct {
 	IncludeCreate             bool
 	IncludePermissionDenied   bool
 	IncludeOutOfCapacity      bool
+	IncludeRateLimited        bool
 	PermissionKeyManagementOK string
 	PermissionKeyMaxCreate    string
 	OutOfCapacityApproved     string
 	OutOfCapacityMaxAttempts  string
 	OutOfCapacityKind         string
 	OutOfCapacityTTLSeconds   int
+	RateLimitApproved         string
+	RateLimitMaxRequests      string
+	RateLimitFixturePath      string
 }
 
 type cloudminiErrorEvidenceExample struct {
@@ -62,6 +66,8 @@ type cloudminiErrorEvidenceResult struct {
 	ExhaustedGroupSelected bool
 	ReservationMaxAttempts int
 	ReservationTTLSeconds  int
+	RateLimitFixture       bool
+	RateLimitMaxRequests   int
 }
 
 type cloudminiErrorEnvelope struct {
@@ -107,6 +113,14 @@ func runCloudminiErrorEvidenceSmokeWithWriter(timeout time.Duration, out io.Writ
 	}
 	if config.IncludeOutOfCapacity {
 		result, err := runCloudminiOutOfCapacityEvidence(ctx, config)
+		results = append(results, result)
+		if err != nil {
+			printCloudminiErrorEvidenceSummary(out, config, results, "FAIL")
+			return err
+		}
+	}
+	if config.IncludeRateLimited {
+		result, err := runCloudminiRateLimitEvidence(ctx, config)
 		results = append(results, result)
 		if err != nil {
 			printCloudminiErrorEvidenceSummary(out, config, results, "FAIL")
