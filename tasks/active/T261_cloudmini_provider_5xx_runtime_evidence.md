@@ -1,6 +1,6 @@
 # T261 - Cloudmini provider 5xx runtime evidence
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t261-cloudmini-internal-error-runtime
 Provider Branch: codex/v3-internal-error-fixture
@@ -43,3 +43,4 @@ Add and run a safe Cloudmini V3 provider `INTERNAL_ERROR` fixture so Billing can
 - 2026-05-18: Billing smoke returned PASS for `provider_5xx_fixture`: HTTP `500`, provider code `INTERNAL_ERROR`, normalized `PROVIDER_TEMPORARY_ERROR`, retry `safe_retry`, `mutating_routes_called=false`, one fixture request, and no raw secrets/provider payloads printed.
 - 2026-05-18: Billing validation passed: `GOFLAGS=-buildvcs=false make fmt`, `GOFLAGS=-buildvcs=false go test ./cmd/smoke -run 'CloudminiErrorEvidence'`, `GOFLAGS=-buildvcs=false make test`, `GOFLAGS=-buildvcs=false make build`, `GOFLAGS=-buildvcs=false go run ./cmd/taskguard`, `git diff --check`, diff secret scan, and touched-file line count check. Plain `make fmt` was attempted first but failed in the temporary worktree due Go VCS stamping, so it was rerun with `GOFLAGS=-buildvcs=false`.
 - 2026-05-18: Opened Billing PR #554 for review.
+- 2026-05-18: Billing PR #554 merged. Marking task DONE.

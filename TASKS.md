@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-18` after T261 PR open:
+Current board snapshot on `2026-05-18` after T261 completion:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 257
+- `DONE` task files in `tasks/active/`: 258
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T261 | [tasks/active/T261_cloudmini_provider_5xx_runtime_evidence.md](tasks/active/T261_cloudmini_provider_5xx_runtime_evidence.md) | REVIEW | Codex | codex/t261-cloudmini-internal-error-runtime | Collect Cloudmini provider 5xx runtime evidence with a safe fixture. |
 
 ## Blocked Task Files
 
@@ -119,6 +118,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T258`
 - `T259`
 - `T260`
+- `T261`
 
 ## Removed Tasks
 
