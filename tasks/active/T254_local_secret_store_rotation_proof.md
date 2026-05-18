@@ -1,9 +1,9 @@
 # T254 - Local secret-store rotation proof
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t254-local-secret-store-proof
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/540
 Risk: secrets, credentials, provider provisioning, launch-readiness evidence
 Created: 2026-05-18
 Updated: 2026-05-18
@@ -39,3 +39,4 @@ Record self-managed local secret-store proof after owner-confirmed API key rotat
 - 2026-05-18: Created `/etc/billing/secrets/cloudmini.env` from the protected rotated Cloudmini credential source without printing contents; verified directory/file metadata only.
 - 2026-05-18: Replaced cloudflared token argv usage with token-file handling and verified the running process has `--token-file` and no exact `--token` arg.
 - 2026-05-18: Updated provider and launch evidence docs to close only selected-host self-managed secret-store proof while preserving NO-GO for provider-controlled errors and broader provider approval.
+- 2026-05-18: Opened PR #540 and moved task to REVIEW after `go run ./cmd/taskguard`, `git diff --check`, line-count check, and secret-like pattern scan passed.
