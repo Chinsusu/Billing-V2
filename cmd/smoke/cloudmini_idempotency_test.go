@@ -123,6 +123,7 @@ func TestRunCloudminiIdempotencyEvidenceTimeoutAfterSend(t *testing.T) {
 				"operation": map[string]interface{}{"id": "op-timeout-delete-1", "state": "accepted"},
 			})
 		case r.Method == http.MethodGet && r.URL.Path == "/api/v3/operations/op-timeout-delete-1":
+			time.Sleep(10 * time.Millisecond)
 			writeCloudminiSmokeSuccess(t, w, http.StatusOK, map[string]interface{}{
 				"id":          "op-timeout-delete-1",
 				"resource_id": "proxy-timeout-1",

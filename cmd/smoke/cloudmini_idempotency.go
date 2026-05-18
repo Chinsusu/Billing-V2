@@ -25,21 +25,22 @@ const (
 )
 
 type cloudminiEvidenceConfig struct {
-	AppEnv        string
-	Scenario      string
-	PilotID       string
-	RawOutputPath string
-	BaseURL       string
-	APIToken      string
-	SourceID      string
-	Kind          string
-	GroupID       string
-	NodeID        string
-	Protocol      string
-	EncryptionKey string
-	PollInterval  time.Duration
-	PollTimeout   time.Duration
-	MaxCreates    int
+	AppEnv         string
+	Scenario       string
+	PilotID        string
+	RawOutputPath  string
+	BaseURL        string
+	APIToken       string
+	SourceID       string
+	Kind           string
+	GroupID        string
+	NodeID         string
+	Protocol       string
+	EncryptionKey  string
+	PollInterval   time.Duration
+	PollTimeout    time.Duration
+	CleanupTimeout time.Duration
+	MaxCreates     int
 }
 
 type cloudminiRawEvidence struct {
@@ -85,7 +86,11 @@ func runCloudminiIdempotencyEvidenceSmokeWithWriter(timeout time.Duration, out i
 		return err
 	}
 
-	cleanupResults, cleanupErr := cleanupCloudminiEvidenceResources(ctx, adapter, config, operation, resources)
+	cleanupAdapter, err := newCloudminiEvidenceAdapterWithTimeout(config, config.CleanupTimeout)
+	if err != nil {
+		return err
+	}
+	cleanupResults, cleanupErr := cleanupCloudminiEvidenceResources(ctx, cleanupAdapter, config, operation, resources)
 	duplicateSameResource := cloudminiDuplicateSameResource(config.Scenario, results, resources)
 	if cleanupErr != nil {
 		printCloudminiEvidenceSummary(out, config, operation, results, cleanupResults, resources, duplicateSameResource, "FAIL")
@@ -172,22 +177,33 @@ func cloudminiEvidenceConfigFromEnv() (cloudminiEvidenceConfig, error) {
 	if err != nil {
 		return cloudminiEvidenceConfig{}, err
 	}
+	cleanupTimeout := pollTimeout
+	if cleanupTimeout < 30*time.Second {
+		cleanupTimeout = 30 * time.Second
+	}
+	if value := strings.TrimSpace(os.Getenv("CLOUDMINI_V3_CLEANUP_POLL_TIMEOUT")); value != "" {
+		cleanupTimeout, err = optionalCloudminiDuration("CLOUDMINI_V3_CLEANUP_POLL_TIMEOUT", cleanupTimeout)
+		if err != nil {
+			return cloudminiEvidenceConfig{}, err
+		}
+	}
 	config := cloudminiEvidenceConfig{
-		AppEnv:        appEnv,
-		Scenario:      scenario,
-		PilotID:       strings.TrimSpace(os.Getenv("CLOUDMINI_IDEMPOTENCY_PILOT_ID")),
-		RawOutputPath: rawPath,
-		BaseURL:       strings.TrimSpace(os.Getenv("CLOUDMINI_V3_BASE_URL")),
-		APIToken:      strings.TrimSpace(os.Getenv("CLOUDMINI_V3_API_TOKEN")),
-		SourceID:      strings.TrimSpace(os.Getenv("CLOUDMINI_V3_SOURCE_ID")),
-		Kind:          strings.TrimSpace(os.Getenv("CLOUDMINI_V3_KIND")),
-		GroupID:       strings.TrimSpace(os.Getenv("CLOUDMINI_V3_GROUP_ID")),
-		NodeID:        strings.TrimSpace(os.Getenv("CLOUDMINI_V3_NODE_ID")),
-		Protocol:      strings.TrimSpace(os.Getenv("CLOUDMINI_V3_PROTOCOL")),
-		EncryptionKey: strings.TrimSpace(os.Getenv("ENCRYPTION_KEY")),
-		PollInterval:  pollInterval,
-		PollTimeout:   pollTimeout,
-		MaxCreates:    maxCreates,
+		AppEnv:         appEnv,
+		Scenario:       scenario,
+		PilotID:        strings.TrimSpace(os.Getenv("CLOUDMINI_IDEMPOTENCY_PILOT_ID")),
+		RawOutputPath:  rawPath,
+		BaseURL:        strings.TrimSpace(os.Getenv("CLOUDMINI_V3_BASE_URL")),
+		APIToken:       strings.TrimSpace(os.Getenv("CLOUDMINI_V3_API_TOKEN")),
+		SourceID:       strings.TrimSpace(os.Getenv("CLOUDMINI_V3_SOURCE_ID")),
+		Kind:           strings.TrimSpace(os.Getenv("CLOUDMINI_V3_KIND")),
+		GroupID:        strings.TrimSpace(os.Getenv("CLOUDMINI_V3_GROUP_ID")),
+		NodeID:         strings.TrimSpace(os.Getenv("CLOUDMINI_V3_NODE_ID")),
+		Protocol:       strings.TrimSpace(os.Getenv("CLOUDMINI_V3_PROTOCOL")),
+		EncryptionKey:  strings.TrimSpace(os.Getenv("ENCRYPTION_KEY")),
+		PollInterval:   pollInterval,
+		PollTimeout:    pollTimeout,
+		CleanupTimeout: cleanupTimeout,
+		MaxCreates:     maxCreates,
 	}
 	for key, value := range map[string]string{
 		"CLOUDMINI_V3_BASE_URL":  config.BaseURL,
@@ -253,6 +269,10 @@ func validateCloudminiRawEvidencePath(value string) (string, error) {
 }
 
 func newCloudminiEvidenceAdapter(config cloudminiEvidenceConfig) (*provider.CloudminiV3Adapter, error) {
+	return newCloudminiEvidenceAdapterWithTimeout(config, config.PollTimeout)
+}
+
+func newCloudminiEvidenceAdapterWithTimeout(config cloudminiEvidenceConfig, pollTimeout time.Duration) (*provider.CloudminiV3Adapter, error) {
 	cipher, err := secrets.NewAESGCMCipher(config.EncryptionKey)
 	if err != nil {
 		return nil, fmt.Errorf("ENCRYPTION_KEY is required for cloudmini evidence")
@@ -270,7 +290,7 @@ func newCloudminiEvidenceAdapter(config cloudminiEvidenceConfig) (*provider.Clou
 			},
 		},
 		PollInterval: config.PollInterval,
-		PollTimeout:  config.PollTimeout,
+		PollTimeout:  pollTimeout,
 	})
 }
 
