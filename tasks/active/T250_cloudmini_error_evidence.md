@@ -1,6 +1,6 @@
 # T250 - Cloudmini error evidence
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t250-cloudmini-error-evidence
 PR: https://github.com/Chinsusu/Billing-V2/pull/532
@@ -38,3 +38,4 @@ Capture safe redacted Cloudmini V3 provider error examples for launch-readiness 
 - 2026-05-18: Confirmed target `billing-api` and `billing-worker` remained active after evidence; target app env and Cloudmini credential files kept restrictive metadata without reading contents.
 - 2026-05-18: Updated provider readiness, Go/No-Go, launch packet, and validation matrix docs with redacted T250 stdout while preserving remaining NO-GO blockers for provider-controlled error examples, shared secret-store proof, usable-status sign-off, and broader owner approval.
 - 2026-05-18: Opened PR #532 for review after local and target validation passed.
+- 2026-05-18: PR #532 merged into `main`; marking task done.
