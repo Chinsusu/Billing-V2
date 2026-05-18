@@ -1,9 +1,9 @@
 # T250 - Cloudmini error evidence
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t250-cloudmini-error-evidence
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/532
 Risk: provider provisioning, credentials, provider error handling, launch-readiness evidence
 Created: 2026-05-18
 Updated: 2026-05-18
@@ -37,3 +37,4 @@ Capture safe redacted Cloudmini V3 provider error examples for launch-readiness 
 - 2026-05-18: Target dev/test evidence passed for auth missing, auth invalid, proxy not found, and malformed-create validation. The run printed no raw response body, token, provider ID, provider payload, proxy credential, cookie, or file contents.
 - 2026-05-18: Confirmed target `billing-api` and `billing-worker` remained active after evidence; target app env and Cloudmini credential files kept restrictive metadata without reading contents.
 - 2026-05-18: Updated provider readiness, Go/No-Go, launch packet, and validation matrix docs with redacted T250 stdout while preserving remaining NO-GO blockers for provider-controlled error examples, shared secret-store proof, usable-status sign-off, and broader owner approval.
+- 2026-05-18: Opened PR #532 for review after local and target validation passed.
