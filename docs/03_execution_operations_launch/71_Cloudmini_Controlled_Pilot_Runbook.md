@@ -446,6 +446,8 @@ Stop immediately and do not retry automatically if any of these occurs:
 
 Cleanup must happen in the same pilot session:
 
+Cleanup owner for selected pilot runs is `Admin` per T253. If cleanup cannot be confirmed, `Admin` owns source disable, residual-risk decision, and incident/follow-up creation before any further create attempt.
+
 1. Record the redacted external resource reference.
 2. Prefer the lifecycle worker provider-backed cleanup path when the service is eligible for lifecycle termination, with the Cloudmini provider registry configured.
 3. Poll provider operation status until terminal state.
