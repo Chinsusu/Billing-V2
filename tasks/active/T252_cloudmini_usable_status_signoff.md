@@ -1,9 +1,9 @@
 # T252 - Cloudmini usable-status sign-off
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t252-cloudmini-usable-status-signoff
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/536
 Risk: provider provisioning, launch-readiness evidence, owner sign-off
 Created: 2026-05-18
 Updated: 2026-05-18
@@ -36,3 +36,4 @@ Record owner-approved Cloudmini usable-status semantics for the approved pilot s
 - 2026-05-18: Task created and claimed by Codex on branch `codex/t252-cloudmini-usable-status-signoff`.
 - 2026-05-18: Added doc 74 to record Admin sign-off for fail-closed Cloudmini usable-status semantics: only `running`, `active`, `ready`, and `available` may activate a Billing service.
 - 2026-05-18: Updated provider readiness, Go/No-Go, and launch packet docs to remove only the usable-status sign-off blocker while preserving NO-GO for production/shared secret-store proof, provider-controlled error examples, cleanup owner evidence, and broader provider approval.
+- 2026-05-18: Opened PR #536 for review.
