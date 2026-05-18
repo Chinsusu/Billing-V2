@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-18` after T252 completion:
+Current board snapshot on `2026-05-18` after T253 creation:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 249
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T253 | [tasks/active/T253_cloudmini_cleanup_owner.md](tasks/active/T253_cloudmini_cleanup_owner.md) | IN_PROGRESS | Codex | codex/t253-cloudmini-cleanup-owner | Record Cloudmini cleanup owner and rollback procedure for pilot scope. |
 
 ## Blocked Task Files
 
