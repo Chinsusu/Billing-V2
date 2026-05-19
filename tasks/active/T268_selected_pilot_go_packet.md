@@ -1,9 +1,9 @@
 # T268 - Selected bounded pilot GO packet
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t268-selected-pilot-go-packet
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/567
 Risk: launch decision, auth, 2FA, RBAC, finance, support, provider scope
 Created: 2026-05-19
 Updated: 2026-05-19
@@ -39,3 +39,4 @@ Record the final selected bounded non-production pilot GO packet, including laun
 - 2026-05-19: Target Admin 2FA enrollment verified on the selected environment without printing TOTP secrets, TOTP codes, cookies, session tokens, DSNs, passwords, provider payloads, or credentials. Setup returned HTTP `201`, verify returned HTTP `200`, a 2FA-satisfied admin route returned HTTP `200`, and metadata changed from disabled/not enabled to enabled/TOTP-enabled.
 - 2026-05-19: `dev-target-auth-rbac` passed through `https://billing.resvn.net/backend` after Admin 2FA enrollment with no provider or money mutation routes called.
 - 2026-05-19: Recorded selected bounded non-production pilot GO packet with launch window `2026-05-19 18:00-20:00 Asia/Ho_Chi_Minh`, Admin direct escalation, and single-owner acceptance for selected scope only.
+- 2026-05-19: Opened PR #567. Local checks passed: `go run ./cmd/taskguard`, `git diff --check`, domain health checks, raw-secret pattern scan, changed-file line counts, and `dev-target-auth-rbac` against `https://billing.resvn.net/backend`.
