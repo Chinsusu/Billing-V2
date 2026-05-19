@@ -1,6 +1,6 @@
 # T277 - Notification local worker command
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t277-notification-local-worker
 PR: https://github.com/Chinsusu/Billing-V2/pull/585
@@ -45,3 +45,4 @@ Expose the existing notification local delivery runner through `cmd/worker` so l
 - 2026-05-19: Updated the notification fallback runbook to document local/dev command usage and explicitly state this is not production SMTP/Telegram delivery proof.
 - 2026-05-19: Validation passed: `go test ./cmd/worker`, `GOFLAGS=-buildvcs=false make test`, `GOFLAGS=-buildvcs=false go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`, `GOFLAGS=-buildvcs=false go run ./cmd/taskguard`, `git diff --check`, diff raw-secret pattern scan, and changed-file line-count check. Raw `make test`/`go build` without `GOFLAGS` hit Go VCS stamping errors in the worktree, so the documented no-VCS equivalent was used.
 - 2026-05-19: Opened PR #585.
+- 2026-05-19: PR #585 merged after GitHub checks passed. Marking T277 DONE in marker PR.
