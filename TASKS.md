@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-19` after T266 review handoff:
+Current board snapshot on `2026-05-19` after T266 done:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 262
+- `DONE` task files in `tasks/active/`: 263
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T266 | [tasks/active/T266_domain_backend_route_recovery.md](tasks/active/T266_domain_backend_route_recovery.md) | REVIEW | Codex | codex/t266-domain-backend-route-fix | Recover domain backend route and rerun auth/RBAC evidence. |
 
 ## Done Task Files
 
@@ -119,6 +118,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T263`
 - `T264`
 - `T265`
+- `T266`
 
 ## Removed Tasks
 
