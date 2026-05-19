@@ -1,9 +1,9 @@
 # T274 - Selected pilot support-extension checkpoint
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t274-support-extension-checkpoint
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/579
 Risk: launch decision, ops, support, finance, secret handling, target environment
 Created: 2026-05-19
 Updated: 2026-05-19
@@ -48,3 +48,4 @@ Record a selected bounded non-production pilot support-extension checkpoint afte
 - 2026-05-19: Read-only finance reconciliation smoke stayed `balanced` with wallets/invoices/payments checked `1/1/1`, zero mismatch counts, and no money or provider mutation routes called.
 - 2026-05-19: Read-only notification summary found launch-critical notification total `0`; no payloads, customer data, DSNs, tokens, provider payloads, or credentials were read or recorded.
 - 2026-05-19: Updated docs 69 and 70 with the selected support-extension checkpoint evidence and explicit note that final support-window closeout remains due after `22:00 Asia/Ho_Chi_Minh`.
+- 2026-05-19: Opened PR #579. Local checks passed: service/domain health, command-line secret-pattern checks, protected metadata checks, finance reconciliation smoke, read-only notification count query, `go run ./cmd/taskguard`, `git diff --cached --check`, staged raw-secret pattern scan, and changed-file line-count check.
