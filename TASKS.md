@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-19` after T276 done:
+Current board snapshot on `2026-05-19` with T277 in review:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 273
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T277 | [tasks/active/T277_notification_local_worker_command.md](tasks/active/T277_notification_local_worker_command.md) | REVIEW | Codex | codex/t277-notification-local-worker | Add local/dev notification delivery worker command without claiming production delivery proof. |
 
 ## Done Task Files
 

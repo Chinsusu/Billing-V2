@@ -13,12 +13,31 @@ T200 added the notification foundation:
 - local/dev delivery runner;
 - tests for notification creation and secret redaction.
 
+T277 exposes that local/dev runner through `cmd/worker notification-local-once` and `cmd/worker notification-local-loop`. These commands are intentionally limited to `APP_ENV=local` or `APP_ENV=dev` because local delivery only marks notification jobs as sent after the local handler runs; it does not send SMTP, Telegram, webhook, or customer-facing external messages.
+
 This is not production delivery proof. Before GO, launch evidence must show either:
 
 - production SMTP/Telegram delivery proof for launch-critical events; or
 - an approved manual fallback with owner, SLA, escalation path, and redacted evidence.
 
 T244 records the second path for the current pilot scope: Admin owns Support, Ops, and Security fallback decisions; fallback messages use the Admin direct launch channel; sample events are redacted dev/test evidence references; and no external production delivery channel is claimed.
+
+## Local/Dev Delivery Worker
+
+Use these commands only for local/dev notification job plumbing checks:
+
+```bash
+APP_ENV=dev go run ./cmd/worker notification-local-once -dsn <redacted-dsn> -worker-id notification-local-1
+APP_ENV=dev go run ./cmd/worker notification-local-loop -dsn <redacted-dsn> -worker-id notification-local-1
+```
+
+Required evidence for local/dev checks:
+
+- command used and environment name;
+- job summary counts only: claimed, succeeded, retried, manual review, terminal failed, cancelled;
+- no raw `payload_redacted`, credentials, tokens, DSNs, SMTP secrets, Telegram tokens, provider payloads, cookies, or customer data.
+
+Do not use these commands as proof of automated production notification delivery. Production SMTP/Telegram proof still requires real channel configuration, secret owner approval, a safe delivery target, redacted delivered-message evidence, failure/retry evidence, and owner sign-off.
 
 ## Launch-Critical Events
 
