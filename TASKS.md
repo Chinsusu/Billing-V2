@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-19` after T270 done:
+Current board snapshot on `2026-05-19` after T271 claim:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 267
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T271 | [tasks/active/T271_selected_pilot_support_window_checkpoint.md](tasks/active/T271_selected_pilot_support_window_checkpoint.md) | IN_PROGRESS | Codex | codex/t271-support-window-checkpoint | Record selected pilot support-window checkpoint evidence. |
 
 ## Done Task Files
 
