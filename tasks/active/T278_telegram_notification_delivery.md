@@ -1,9 +1,9 @@
 # T278 - Telegram notification delivery
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t278-telegram-delivery
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/587
 Risk: notifications, secrets, external delivery, launch readiness
 Created: 2026-05-19
 Updated: 2026-05-19
@@ -46,3 +46,4 @@ Add a Telegram notification delivery path so an owner-provided Telegram bot/chan
 - 2026-05-19: Updated `.env.example` and notification runbook with Telegram config keys and redaction/evidence rules.
 - 2026-05-19: Live Telegram preflight was attempted against current server env and failed closed with missing `TELEGRAM_BOT_TOKEN`; no token, chat ID, payload, DSN, provider payload, or customer data was printed.
 - 2026-05-19: Validation passed: `go test ./internal/modules/notification ./cmd/worker`, `GOFLAGS=-buildvcs=false make test`, `GOFLAGS=-buildvcs=false go build ./cmd/api ./cmd/migrate ./cmd/seed ./cmd/smoke ./cmd/worker`, `GOFLAGS=-buildvcs=false go run ./cmd/taskguard`, `git diff --check`, diff raw-secret pattern scan, and changed-file line-count check.
+- 2026-05-19: Opened PR #587.
