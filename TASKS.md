@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-19` with T273 in review:
+Current board snapshot on `2026-05-19` after T273 done:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 269
+- `DONE` task files in `tasks/active/`: 270
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T273 | [tasks/active/T273_selected_pilot_launch_window_end_checkpoint.md](tasks/active/T273_selected_pilot_launch_window_end_checkpoint.md) | REVIEW | Codex | codex/t273-launch-window-end-checkpoint | Record selected pilot launch-window end checkpoint before final support closeout. |
 
 ## Done Task Files
 
@@ -126,6 +125,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T270`
 - `T271`
 - `T272`
+- `T273`
 
 ## Removed Tasks
 
