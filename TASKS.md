@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-19` after T266 done:
+Current board snapshot on `2026-05-19` after T267 review handoff:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 263
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T267 | [tasks/active/T267_target_runtime_services.md](tasks/active/T267_target_runtime_services.md) | REVIEW | Codex | codex/t267-target-runtime-services | Promote selected target runtime from temporary processes to protected systemd services. |
 
 ## Done Task Files
 
