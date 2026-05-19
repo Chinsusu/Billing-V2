@@ -23,7 +23,7 @@ func NewLocalDeliveryRunner(store jobs.Store, deliveryStore DeliveryStore, worke
 		Handler:   NewLocalDeliveryHandler(deliveryStore),
 		WorkerID:  workerID,
 		BatchSize: 10,
-		Types:     []jobs.Type{DeliveryJobType},
+		Types:     []jobs.Type{DeliveryJobType, TelegramDeliveryJobType},
 	}
 }
 

@@ -39,6 +39,36 @@ Required evidence for local/dev checks:
 
 Do not use these commands as proof of automated production notification delivery. Production SMTP/Telegram proof still requires real channel configuration, secret owner approval, a safe delivery target, redacted delivered-message evidence, failure/retry evidence, and owner sign-off.
 
+## Telegram Delivery Worker
+
+T278 adds a Telegram delivery path for queued `telegram` notifications. It uses a channel-specific job type so the Telegram worker does not claim dashboard/email notification jobs.
+
+Required secret/config keys:
+
+```text
+TELEGRAM_BOT_TOKEN
+TELEGRAM_CHAT_ID
+TELEGRAM_API_BASE_URL optional; defaults to https://api.telegram.org
+BILLING_TELEGRAM_DELIVERY_PRODUCTION_APPROVED=yes required only for APP_ENV=production
+```
+
+Commands:
+
+```bash
+APP_ENV=staging go run ./cmd/worker notification-telegram-preflight
+APP_ENV=staging go run ./cmd/worker notification-telegram-once -dsn <redacted-dsn> -worker-id notification-telegram-1
+APP_ENV=staging go run ./cmd/worker notification-telegram-loop -dsn <redacted-dsn> -worker-id notification-telegram-1
+```
+
+Evidence may include only:
+
+- command name, environment, and timestamp;
+- preflight result fields: `telegram_api_called=yes`, `message_payload_redacted=yes`, `secrets_printed=no`;
+- worker summary counts;
+- notification display ID, event type, template key, and correlation ID if safe.
+
+Evidence must not include bot token, chat ID, raw Telegram request/response body, raw `payload_redacted`, credentials, reset tokens, DSNs, provider payloads, cookies, or customer data.
+
 ## Launch-Critical Events
 
 Treat these as launch-critical during pilot:

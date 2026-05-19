@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-19` after T277 done:
+Current board snapshot on `2026-05-19` after T278 claimed:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 274
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T278 | [tasks/active/T278_telegram_notification_delivery.md](tasks/active/T278_telegram_notification_delivery.md) | IN_PROGRESS | Codex | codex/t278-telegram-delivery | Add Telegram notification delivery path and redacted evidence flow. |
 
 ## Done Task Files
 

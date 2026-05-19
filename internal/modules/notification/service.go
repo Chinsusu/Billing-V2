@@ -9,8 +9,9 @@ import (
 )
 
 const (
-	DeliveryJobType       jobs.Type          = "notification.deliver"
-	DeliveryReferenceType jobs.ReferenceType = "notification"
+	DeliveryJobType         jobs.Type          = "notification.deliver"
+	TelegramDeliveryJobType jobs.Type          = "notification.deliver.telegram"
+	DeliveryReferenceType   jobs.ReferenceType = "notification"
 )
 
 type Service struct {
@@ -79,7 +80,7 @@ func deliveryJobInput(notification Notification) jobs.CreateJobInput {
 	payload := deliveryPayloadJSON(notification)
 	return jobs.CreateJobInput{
 		TenantID:       notification.TenantID,
-		Type:           DeliveryJobType,
+		Type:           deliveryJobType(notification.Channel),
 		ReferenceType:  DeliveryReferenceType,
 		ReferenceID:    jobs.ReferenceID(notification.ID),
 		PayloadJSON:    payload,
@@ -88,6 +89,13 @@ func deliveryJobInput(notification Notification) jobs.CreateJobInput {
 		MaxAttempts:    5,
 		CorrelationID:  jobs.CorrelationID(notification.CorrelationID),
 	}
+}
+
+func deliveryJobType(channel Channel) jobs.Type {
+	if channel == ChannelTelegram {
+		return TelegramDeliveryJobType
+	}
+	return DeliveryJobType
 }
 
 func deliveryPayloadJSON(notification Notification) json.RawMessage {
