@@ -1,6 +1,6 @@
 # T269 - Selected pilot finance reconciliation
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t269-launch-finance-reconciliation
 PR: https://github.com/Chinsusu/Billing-V2/pull/569
@@ -38,3 +38,4 @@ Run and record the selected bounded non-production pilot launch-window finance r
 - 2026-05-19: Ran `dev-target-finance-reconciliation` against `https://billing.resvn.net/backend` with the selected dev/test DB loaded from the protected runtime env file. Result PASS: daily status `balanced`, wallets/invoices/payments checked `1/1/1`, wallet mismatches `0`, invoice mismatches `0`, duplicate payment references `0`, and no money or provider mutation routes called. Output excluded raw IDs, session tokens, cookies, DSNs, provider payloads, and credentials.
 - 2026-05-19: Updated docs 69 and 70 with selected launch-window finance reconciliation evidence and continued daily reconciliation requirement.
 - 2026-05-19: Opened PR #569. Local checks passed: `dev-target-finance-reconciliation`, `go run ./cmd/taskguard`, `git diff --check`, raw-secret pattern scan, and changed-file line-count check.
+- 2026-05-19: PR #569 merged after GitHub checks passed. Marking task DONE in marker PR.
