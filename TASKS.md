@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-19` after T276 claimed:
+Current board snapshot on `2026-05-19` with T276 in review:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 272
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -66,7 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T276 | [tasks/active/T276_selected_pilot_final_support_window_closeout.md](tasks/active/T276_selected_pilot_final_support_window_closeout.md) | IN_PROGRESS | Codex | codex/t276-final-support-window-closeout | Record final selected-pilot support-window closeout after 22:00. |
+| T276 | [tasks/active/T276_selected_pilot_final_support_window_closeout.md](tasks/active/T276_selected_pilot_final_support_window_closeout.md) | REVIEW | Codex | codex/t276-final-support-window-closeout | Record final selected-pilot support-window closeout after 22:00. |
 
 ## Done Task Files
 
