@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-19` after T274 done:
+Current board snapshot on `2026-05-19` with T275 in review:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 271
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T275 | [tasks/active/T275_selected_pilot_support_extension_checkpoint_2.md](tasks/active/T275_selected_pilot_support_extension_checkpoint_2.md) | REVIEW | Codex | codex/t275-support-extension-checkpoint-2 | Record second selected pilot support-extension checkpoint before final closeout. |
 
 ## Done Task Files
 
