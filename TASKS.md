@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-19` with T274 in review:
+Current board snapshot on `2026-05-19` after T274 done:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 270
+- `DONE` task files in `tasks/active/`: 271
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T274 | [tasks/active/T274_selected_pilot_support_extension_checkpoint.md](tasks/active/T274_selected_pilot_support_extension_checkpoint.md) | REVIEW | Codex | codex/t274-support-extension-checkpoint | Record selected pilot support-extension checkpoint before final closeout. |
 
 ## Done Task Files
 
@@ -127,6 +126,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T271`
 - `T272`
 - `T273`
+- `T274`
 
 ## Removed Tasks
 
