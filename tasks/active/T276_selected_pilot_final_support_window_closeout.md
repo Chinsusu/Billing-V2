@@ -1,6 +1,6 @@
 # T276 - Selected pilot final support-window closeout
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t276-final-support-window-closeout
 PR: https://github.com/Chinsusu/Billing-V2/pull/583
@@ -49,3 +49,4 @@ Record final selected bounded non-production pilot support-window closeout after
 - 2026-05-19: Read-only notification summary found launch-critical notification total `0`; no payloads, customer data, DSNs, tokens, provider payloads, or credentials were read or recorded.
 - 2026-05-19: Updated docs 69 and 70 to record final support-window closeout as complete for the selected bounded non-production pilot.
 - 2026-05-19: Opened PR #583. Local checks passed: service/domain health, command-line secret-pattern checks, protected metadata checks, finance reconciliation smoke, read-only notification count query, `go run ./cmd/taskguard`, `git diff --check`, diff raw-secret pattern scan, and changed-file line-count check.
+- 2026-05-19: PR #583 merged after GitHub checks passed. Marking T276 DONE in marker PR.

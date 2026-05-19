@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-19` with T276 in review:
+Current board snapshot on `2026-05-19` after T276 done:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 272
+- `DONE` task files in `tasks/active/`: 273
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T276 | [tasks/active/T276_selected_pilot_final_support_window_closeout.md](tasks/active/T276_selected_pilot_final_support_window_closeout.md) | REVIEW | Codex | codex/t276-final-support-window-closeout | Record final selected-pilot support-window closeout after 22:00. |
 
 ## Done Task Files
 
@@ -129,6 +128,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T273`
 - `T274`
 - `T275`
+- `T276`
 
 ## Removed Tasks
 
