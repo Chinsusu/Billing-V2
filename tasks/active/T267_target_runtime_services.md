@@ -1,9 +1,9 @@
 # T267 - Target runtime systemd services
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t267-target-runtime-services
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/565
 Risk: deploy/runtime, auth, secrets, launch-readiness evidence
 Created: 2026-05-19
 Updated: 2026-05-19
@@ -41,3 +41,4 @@ Promote the selected target dev/staging-equivalent runtime from temporary T266 p
 - 2026-05-19: Started API from `/opt/Billing/bin/api` and frontend from `/opt/Billing/frontend/.next/standalone/server.js` under systemd. Both services are active and enabled, run as `billing-svc`, and command lines contain no raw DSN, token, cookie, password, provider payload, or credential.
 - 2026-05-19: Verified HTTP `200` for `https://billing.resvn.net/`, `https://billing.resvn.net/backend/healthz`, `https://billing.resvn.net/backend/readyz`, `https://client.resvn.net/`, and `https://reseller.resvn.net/`.
 - 2026-05-19: Reran `APP_ENV=dev GOFLAGS=-buildvcs=false go run ./cmd/smoke -base-url https://billing.resvn.net/backend -timeout 60s dev-target-auth-rbac`; result PASS for cookie-only client session, admin 2FA gate, invalid session denial, missing actor denial, tenant mismatch denial, and three RBAC denials. Smoke output states no provider or money mutation routes were called.
+- 2026-05-19: Opened PR #565 for review.
