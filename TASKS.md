@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-19` after T272 done:
+Current board snapshot on `2026-05-19` with T273 in progress:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 269
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T273 | [tasks/active/T273_selected_pilot_launch_window_end_checkpoint.md](tasks/active/T273_selected_pilot_launch_window_end_checkpoint.md) | IN_PROGRESS | Codex | codex/t273-launch-window-end-checkpoint | Record selected pilot launch-window end checkpoint before final support closeout. |
 
 ## Done Task Files
 
