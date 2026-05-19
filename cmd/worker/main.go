@@ -18,15 +18,18 @@ import (
 )
 
 const (
-	commandProvisionOnce         = "provision-once"
-	commandProvisionLoop         = "provision-loop"
-	commandLifecycleScheduleOnce = "lifecycle-schedule-once"
-	commandLifecycleOnce         = "lifecycle-once"
-	commandLifecycleLoop         = "lifecycle-loop"
-	commandNotificationLocalOnce = "notification-local-once"
-	commandNotificationLocalLoop = "notification-local-loop"
-	commandProviderRegistryCheck = "provider-registry-check"
-	defaultWorkerCommand         = commandProvisionOnce
+	commandProvisionOnce                 = "provision-once"
+	commandProvisionLoop                 = "provision-loop"
+	commandLifecycleScheduleOnce         = "lifecycle-schedule-once"
+	commandLifecycleOnce                 = "lifecycle-once"
+	commandLifecycleLoop                 = "lifecycle-loop"
+	commandNotificationLocalOnce         = "notification-local-once"
+	commandNotificationLocalLoop         = "notification-local-loop"
+	commandNotificationTelegramOnce      = "notification-telegram-once"
+	commandNotificationTelegramLoop      = "notification-telegram-loop"
+	commandNotificationTelegramPreflight = "notification-telegram-preflight"
+	commandProviderRegistryCheck         = "provider-registry-check"
+	defaultWorkerCommand                 = commandProvisionOnce
 )
 
 type workerConfig struct {
@@ -56,6 +59,7 @@ type workerDependencies struct {
 	newRunner             provisionRunnerFactory
 	newLifecycleRunner    provisionRunnerFactory
 	newNotificationRunner provisionRunnerFactory
+	newTelegramRunner     provisionRunnerFactory
 	newLifecycleScheduler lifecycleSchedulerFactory
 }
 
@@ -85,6 +89,9 @@ func runWithDependencies(args []string, deps workerDependencies) error {
 	}
 	if deps.newNotificationRunner == nil {
 		deps.newNotificationRunner = newNotificationLocalRunner
+	}
+	if deps.newTelegramRunner == nil {
+		deps.newTelegramRunner = newNotificationTelegramRunner
 	}
 	if deps.newLifecycleScheduler == nil {
 		deps.newLifecycleScheduler = newLifecycleScheduler
@@ -119,11 +126,17 @@ func runWithDependencies(args []string, deps workerDependencies) error {
 		return runNotificationLocalOnce(cfg, deps)
 	case commandNotificationLocalLoop:
 		return runNotificationLocalLoop(cfg, deps)
+	case commandNotificationTelegramOnce:
+		return runNotificationTelegramOnce(cfg, deps)
+	case commandNotificationTelegramLoop:
+		return runNotificationTelegramLoop(cfg, deps)
+	case commandNotificationTelegramPreflight:
+		return runNotificationTelegramPreflight(cfg, deps)
 	case commandProviderRegistryCheck:
 		return runProviderRegistryCheck(deps.stdout)
 	default:
 		return fmt.Errorf(
-			"unknown command %q; use %s, %s, %s, %s, %s, %s, %s, or %s",
+			"unknown command %q; use %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, or %s",
 			command,
 			commandProvisionOnce,
 			commandProvisionLoop,
@@ -132,6 +145,9 @@ func runWithDependencies(args []string, deps workerDependencies) error {
 			commandLifecycleLoop,
 			commandNotificationLocalOnce,
 			commandNotificationLocalLoop,
+			commandNotificationTelegramOnce,
+			commandNotificationTelegramLoop,
+			commandNotificationTelegramPreflight,
 			commandProviderRegistryCheck,
 		)
 	}

@@ -47,8 +47,12 @@ func TestLocalDeliveryHandlerFailsInvalidJobTerminally(t *testing.T) {
 }
 
 type fakeNotificationDeliveryStore struct {
-	sentID ID
-	sentAt time.Time
+	sentID             ID
+	sentAt             time.Time
+	failedID           ID
+	failedAt           time.Time
+	failedErrorCode    string
+	failedErrorMessage string
 }
 
 func (store *fakeNotificationDeliveryStore) MarkNotificationSent(ctx context.Context, id ID, sentAt time.Time) (Notification, error) {
@@ -58,5 +62,9 @@ func (store *fakeNotificationDeliveryStore) MarkNotificationSent(ctx context.Con
 }
 
 func (store *fakeNotificationDeliveryStore) MarkNotificationFailed(ctx context.Context, id ID, failedAt time.Time, errorCode string, errorMessageRedacted string) (Notification, error) {
+	store.failedID = id
+	store.failedAt = failedAt
+	store.failedErrorCode = errorCode
+	store.failedErrorMessage = errorMessageRedacted
 	return Notification{ID: id, Status: StatusFailed}, nil
 }

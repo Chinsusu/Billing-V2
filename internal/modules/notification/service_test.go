@@ -42,6 +42,33 @@ func TestServiceQueueCreatesRedactedNotificationAndDeliveryJob(t *testing.T) {
 	}
 }
 
+func TestServiceQueueUsesTelegramDeliveryJobTypeForTelegramChannel(t *testing.T) {
+	store := &fakeNotificationStore{}
+	queue := &fakeNotificationJobQueue{}
+	service := NewServiceWithJobs(store, queue)
+
+	_, err := service.Queue(context.Background(), QueueInput{
+		TenantID:       "11111111-1111-1111-1111-111111111111",
+		RecipientGroup: RecipientGroupAdminOps,
+		Channel:        ChannelTelegram,
+		TemplateKey:    EventProvisioningManualReview,
+		EventType:      EventProvisioningManualReview,
+		Priority:       PriorityCritical,
+		PayloadJSON:    json.RawMessage(`{"job_display_id":82001}`),
+		ReferenceType:  "job",
+		ReferenceID:    "33333333-3333-3333-3333-333333333333",
+	})
+	if err != nil {
+		t.Fatalf("expected queued telegram notification: %v", err)
+	}
+	if queue.input.Type != TelegramDeliveryJobType {
+		t.Fatalf("expected telegram delivery job type, got %+v", queue.input)
+	}
+	if queue.input.Priority != 10 {
+		t.Fatalf("expected critical telegram priority, got %+v", queue.input)
+	}
+}
+
 func TestServiceQueueRejectsInvalidPayload(t *testing.T) {
 	service := NewService(&fakeNotificationStore{})
 
