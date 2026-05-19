@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-19` after T269 done:
+Current board snapshot on `2026-05-19` after T270 review:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 266
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T270 | [tasks/active/T270_selected_pilot_ops_health.md](tasks/active/T270_selected_pilot_ops_health.md) | REVIEW | Codex | codex/t270-launch-ops-health | Record selected pilot launch-window ops health and fallback coverage evidence. |
 
 ## Done Task Files
 
