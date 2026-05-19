@@ -1,6 +1,6 @@
 # T268 - Selected bounded pilot GO packet
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t268-selected-pilot-go-packet
 PR: https://github.com/Chinsusu/Billing-V2/pull/567
@@ -40,3 +40,4 @@ Record the final selected bounded non-production pilot GO packet, including laun
 - 2026-05-19: `dev-target-auth-rbac` passed through `https://billing.resvn.net/backend` after Admin 2FA enrollment with no provider or money mutation routes called.
 - 2026-05-19: Recorded selected bounded non-production pilot GO packet with launch window `2026-05-19 18:00-20:00 Asia/Ho_Chi_Minh`, Admin direct escalation, and single-owner acceptance for selected scope only.
 - 2026-05-19: Opened PR #567. Local checks passed: `go run ./cmd/taskguard`, `git diff --check`, domain health checks, raw-secret pattern scan, changed-file line counts, and `dev-target-auth-rbac` against `https://billing.resvn.net/backend`.
+- 2026-05-19: PR #567 merged after GitHub checks passed. Marking task DONE in marker PR.
