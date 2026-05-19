@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-19` after T268 done:
+Current board snapshot on `2026-05-19` after T269 claim:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 265
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T269 | [tasks/active/T269_selected_pilot_finance_reconciliation.md](tasks/active/T269_selected_pilot_finance_reconciliation.md) | IN_PROGRESS | Codex | codex/t269-launch-finance-reconciliation | Record selected pilot launch-window finance reconciliation evidence. |
 
 ## Done Task Files
 
