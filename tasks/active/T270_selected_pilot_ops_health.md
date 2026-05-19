@@ -1,6 +1,6 @@
 # T270 - Selected pilot ops health
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t270-launch-ops-health
 PR: https://github.com/Chinsusu/Billing-V2/pull/571
@@ -44,3 +44,4 @@ Record selected bounded non-production pilot launch-window ops health and manual
 - 2026-05-19: Read-only notification summary found launch-critical notification total `0`; no payloads, customer data, DSNs, tokens, provider payloads, or credentials were read or recorded.
 - 2026-05-19: Updated docs 69 and 70 with selected launch-window ops health and manual fallback coverage evidence.
 - 2026-05-19: Opened PR #571. Local checks passed: service status, command-line secret-pattern checks, protected metadata checks, domain health/readiness checks, read-only notification count query, `go run ./cmd/taskguard`, `git diff --check`, raw-secret pattern scan, and changed-file line-count check.
+- 2026-05-19: PR #571 merged after GitHub checks passed. Marking task DONE in marker PR.
