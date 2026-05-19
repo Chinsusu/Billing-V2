@@ -1,6 +1,6 @@
 # T272 - Selected pilot support-window checkpoint 2
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t272-support-window-checkpoint-2
 PR: https://github.com/Chinsusu/Billing-V2/pull/575
@@ -48,3 +48,4 @@ Record a second selected bounded non-production pilot support-window checkpoint 
 - 2026-05-19: Read-only notification summary found launch-critical notification total `0`; no payloads, customer data, DSNs, tokens, provider payloads, or credentials were read or recorded.
 - 2026-05-19: Updated docs 69 and 70 with the second selected support-window checkpoint evidence and explicit note that final closeout remains due after `22:00 Asia/Ho_Chi_Minh`.
 - 2026-05-19: Opened PR #575. Local checks passed: service/domain health, command-line secret-pattern checks, protected metadata checks, finance reconciliation smoke, read-only notification count query, `go run ./cmd/taskguard`, `git diff --cached --check`, staged raw-secret pattern scan, and changed-file line-count check.
+- 2026-05-19: PR #575 merged after GitHub checks passed. Marking task DONE in marker PR.
