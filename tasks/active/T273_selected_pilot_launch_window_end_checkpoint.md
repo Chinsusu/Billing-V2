@@ -1,6 +1,6 @@
 # T273 - Selected pilot launch-window end checkpoint
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t273-launch-window-end-checkpoint
 PR: https://github.com/Chinsusu/Billing-V2/pull/577
@@ -48,3 +48,4 @@ Record the selected bounded non-production pilot checkpoint at the end of the la
 - 2026-05-19: Read-only notification summary found launch-critical notification total `0`; no payloads, customer data, DSNs, tokens, provider payloads, or credentials were read or recorded.
 - 2026-05-19: Updated docs 69 and 70 with the selected launch-window end checkpoint evidence and explicit note that final support-window closeout remains due after `22:00 Asia/Ho_Chi_Minh`.
 - 2026-05-19: Opened PR #577. Local checks passed: service/domain health, command-line secret-pattern checks, protected metadata checks, finance reconciliation smoke, read-only notification count query, `go run ./cmd/taskguard`, `git diff --cached --check`, staged raw-secret pattern scan, and changed-file line-count check.
+- 2026-05-19: PR #577 merged after GitHub checks passed. Marking task DONE in marker PR.
