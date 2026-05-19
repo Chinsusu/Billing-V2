@@ -1,9 +1,9 @@
 # T270 - Selected pilot ops health
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t270-launch-ops-health
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/571
 Risk: launch decision, ops, support, secret handling, target environment
 Created: 2026-05-19
 Updated: 2026-05-19
@@ -43,3 +43,4 @@ Record selected bounded non-production pilot launch-window ops health and manual
 - 2026-05-19: Domain checks returned HTTP `200` for `billing.resvn.net`, `/backend/healthz`, `/backend/readyz`, `client.resvn.net`, and `reseller.resvn.net`.
 - 2026-05-19: Read-only notification summary found launch-critical notification total `0`; no payloads, customer data, DSNs, tokens, provider payloads, or credentials were read or recorded.
 - 2026-05-19: Updated docs 69 and 70 with selected launch-window ops health and manual fallback coverage evidence.
+- 2026-05-19: Opened PR #571. Local checks passed: service status, command-line secret-pattern checks, protected metadata checks, domain health/readiness checks, read-only notification count query, `go run ./cmd/taskguard`, `git diff --check`, raw-secret pattern scan, and changed-file line-count check.
