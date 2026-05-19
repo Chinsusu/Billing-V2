@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-19` after T271 done:
+Current board snapshot on `2026-05-19` with T272 in progress:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 268
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T272 | [tasks/active/T272_selected_pilot_support_window_checkpoint_2.md](tasks/active/T272_selected_pilot_support_window_checkpoint_2.md) | IN_PROGRESS | Codex | codex/t272-support-window-checkpoint-2 | Record a second selected pilot support-window checkpoint before final closeout. |
 
 ## Done Task Files
 
