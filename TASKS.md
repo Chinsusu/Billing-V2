@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-19` after T267 done:
+Current board snapshot on `2026-05-19` after T268 claim:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 264
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T268 | [tasks/active/T268_selected_pilot_go_packet.md](tasks/active/T268_selected_pilot_go_packet.md) | IN_PROGRESS | Codex | codex/t268-selected-pilot-go-packet | Record selected bounded non-production pilot GO packet. |
 
 ## Done Task Files
 

@@ -1,16 +1,16 @@
 # 70 - Launch Evidence Completion Packet
 
-**Date:** 2026-05-18
-**Scope:** Single completion packet for the remaining launch blockers before reconsidering the pilot Go/No-Go decision.  
-**Decision:** NO-GO until every required evidence section below is complete, redacted, reviewed, and signed off.
+**Date:** 2026-05-19
+**Scope:** Single completion packet for the selected bounded non-production pilot Go/No-Go decision.
+**Decision:** GO for the selected bounded non-production pilot only. NO-GO for production, broader private beta, broader provider scope, production customer data, and real-provider production-like provisioning outside the approved selected Cloudmini scope.
 
 ## Purpose
 
 This packet is the final evidence checklist for the work that cannot be proven by repository code or local/dev smokes alone.
 
-The repository currently has strong local/dev evidence for core implementation, a T241 single-owner launch assignment to `Admin`, T242 target-server staging-equivalent backup/restore evidence, T243 target-server staging-equivalent full E2E evidence including T206 renewal, T244 owner-approved notification manual fallback evidence, T245 Admin sign-off for the completed target evidence gates, T247 target dev/test secret-file metadata recheck, T252 Cloudmini usable-status owner sign-off, T253 Cloudmini cleanup owner/procedure evidence, T254 selected-host self-managed secret-store proof after owner-confirmed key rotation, T255 source-inspection/runbook evidence for Cloudmini provider-controlled error cases, T256 permission-denied runtime evidence, T257 out-of-capacity runtime evidence, T258 Billing runner support for a future rate-limit fixture, T259 merged provider-side rate-limit fixture code, T260 rate-limit runtime evidence, T261 provider 5xx runtime evidence, T262 cancel/delete rejected runtime evidence, T263 selected Cloudmini provider-owner approval, T264 selected-pilot manual notification fallback approval, T266 selected-domain auth/RBAC smoke evidence, and T267 protected systemd runtime evidence. It still does not contain a final launch window, named production admin 2FA enrollment proof, or any approval for provider scope beyond the selected bounded non-production Cloudmini pilot. Automated production SMTP/Telegram delivery remains unproven for broader launch.
+The repository currently has strong local/dev evidence for core implementation, a T241 single-owner launch assignment to `Admin`, T242 target-server staging-equivalent backup/restore evidence, T243 target-server staging-equivalent full E2E evidence including T206 renewal, T244 owner-approved notification manual fallback evidence, T245 Admin sign-off for the completed target evidence gates, T247 target dev/test secret-file metadata recheck, T252 Cloudmini usable-status owner sign-off, T253 Cloudmini cleanup owner/procedure evidence, T254 selected-host self-managed secret-store proof after owner-confirmed key rotation, T255 source-inspection/runbook evidence for Cloudmini provider-controlled error cases, T256 permission-denied runtime evidence, T257 out-of-capacity runtime evidence, T258 Billing runner support for a future rate-limit fixture, T259 merged provider-side rate-limit fixture code, T260 rate-limit runtime evidence, T261 provider 5xx runtime evidence, T262 cancel/delete rejected runtime evidence, T263 selected Cloudmini provider-owner approval, T264 selected-pilot manual notification fallback approval, T266 selected-domain auth/RBAC smoke evidence, T267 protected systemd runtime evidence, and T268 selected launch-window, single-owner acceptance, and target Admin 2FA enrollment/enforcement evidence. It does not approve provider scope beyond the selected bounded non-production Cloudmini pilot. Automated production SMTP/Telegram delivery remains unproven for broader launch.
 
-Do not change the pilot decision to GO or CONDITIONAL GO by filling this packet with assumptions. Every row needs actual evidence or an explicit owner-approved exception.
+Do not broaden the pilot decision by filling this packet with assumptions. Every broader row needs actual evidence or an explicit owner-approved exception.
 
 ## Redaction Boundary
 
@@ -30,10 +30,10 @@ Use display IDs, redacted placeholders, dates, command names, check counts, and 
 | Shared staging backup/restore | Pass for target staging-equivalent scope. T203 proves local restore. T242 proves a target-server staging-equivalent clean source/restore drill with checksum, restore, smoke, and cleanup evidence. T245 records Admin/Ops/QA/Security acceptance of the staging-equivalent scope. The long-lived target app DB was not used as pass evidence because prior dev/test smoke mutations make strict seed-baseline `dev-db` smoke unsuitable. | Use the T242/T245 staging-equivalent exception for pilot, or run an additional approved clean shared staging app snapshot restore if the launch scope rejects that exception. | Ops Lead, QA Lead, Security Owner |
 | Staging/full E2E | Pass for target staging-equivalent scope. T204 proves local/dev full gate with fake provider. T243 extends the gate to include T206 renewal and passes it on the approved test server using a temporary target DB, local API, fake-provider fulfillment, and mocked frontend browser smoke. T245 records Admin/QA/Engineering/Product acceptance of this staging-equivalent scope. | Real provider work remains excluded unless the provider gate is complete. External browser/auth-session evidence remains separate if required for launch scope. | QA Lead, Engineering Lead, Product Owner |
 | Notification delivery or fallback | Accepted for selected bounded pilot via manual fallback. T200 provides local notification foundation, T222 defines the fallback packet, T244 records Admin-owned manual fallback SLA/escalation with redacted customer-facing and ops-facing sample events, and T264 selects that fallback as the notification path for the selected pilot. Production SMTP/Telegram delivery remains unproven for broader launch. | Use T244/T264 manual fallback for the selected pilot. Replace it with production SMTP/Telegram delivery proof before broader launch, or pause if Admin coverage or SLA cannot be met. | Admin as Ops Lead, Support Owner, and Security Owner for selected-pilot fallback |
-| Launch-day owners | Assigned with single-owner risk. T241 records the user-provided assignment that `Admin` owns Product, Engineering, QA, Ops, Finance, Security, Support, and Provider launch-day roles. | A launch window, escalation path, and explicit acceptance that one person owns all role decisions for the selected launch scope. | Product Owner, Engineering Lead |
-| Target-environment verification | Pass for completed local target dev/test evidence with T245 sign-off, selected-domain auth/RBAC evidence, and protected selected-runtime service evidence. T230-T254 prove target deploy/build, health checks, non-mutating registry activation, one Cloudmini lifecycle cleanup activation, target top-up review, local API auth/RBAC, credential reveal audit/redaction, balanced finance reconciliation, cloudflared token-file handling, and selected-host secret-store proof. T266 recovered the selected target route and passed `dev-target-auth-rbac` against `https://billing.resvn.net/backend` with no provider or money mutation routes called. T267 promotes that runtime to `billing-api` and `billing-frontend` systemd services using protected env files outside git. | Repeat T254/T267 secret-store proof for any new host/path or service configuration before launch use. | Security Owner, Finance Lead, QA Lead |
+| Launch-day owners | Complete for selected bounded non-production pilot with single-owner risk. T241 records the user-provided assignment that `Admin` owns Product, Engineering, QA, Ops, Finance, Security, Support, and Provider launch-day roles. T268 records the selected launch window, Admin direct escalation path, and explicit acceptance that one person owns all role decisions for the selected launch scope. | Repeat owner assignment and risk acceptance if the launch scope, window, coverage, owner, provider account, quota, customer-data classification, or notification path changes. | Admin as Product Owner and Engineering Lead |
+| Target-environment verification | Complete for selected bounded non-production pilot. T230-T254 prove target deploy/build, health checks, non-mutating registry activation, one Cloudmini lifecycle cleanup activation, target top-up review, local API auth/RBAC, credential reveal audit/redaction, balanced finance reconciliation, cloudflared token-file handling, and selected-host secret-store proof. T266 recovered the selected target route and passed `dev-target-auth-rbac` against `https://billing.resvn.net/backend` with no provider or money mutation routes called. T267 promotes that runtime to `billing-api` and `billing-frontend` systemd services using protected env files outside git. T268 enrolls the named selected target Admin 2FA, verifies a 2FA-satisfied admin route, and reruns domain auth/RBAC smoke successfully. | Repeat T254/T267/T268 proof for any new host/path, service configuration, admin user, or production scope before launch use. | Admin as Security Owner, Finance Lead, and QA Lead |
 
-Any missing required sign-off keeps the launch decision at NO-GO.
+Any missing required sign-off keeps the requested scope at NO-GO.
 
 ## Evidence Packet
 
@@ -41,12 +41,19 @@ Fill one packet per launch candidate. Store only redacted evidence in git.
 
 ```text
 Launch candidate ID:
+selected-bounded-nonprod-pilot-2026-05-19
 Date/time UTC:
+2026-05-19 11:00-13:00 UTC
 Pilot scope:
+Selected bounded non-production pilot only: approved test-server/domain runtime, one active Cloudmini dev/test resource maximum, manual notification fallback, no production customer data, no broader private beta, and no production-like provider provisioning.
 Environment:
+Selected target dev/test runtime behind billing.resvn.net, client.resvn.net, and reseller.resvn.net.
 Evidence collector:
+Codex
 Final reviewer:
-Decision requested: GO / CONDITIONAL GO / NO-GO
+Admin
+Decision requested:
+GO for selected bounded non-production pilot only; NO-GO for production, broader private beta, broader provider scope, production customer data, and real-provider production-like provisioning outside the approved selected Cloudmini scope.
 ```
 
 ### 1. Real Provider Sandbox
@@ -249,13 +256,13 @@ Admin
 Provider Owner:
 Admin
 Escalation channel:
-Admin direct launch channel; single-person escalation accepted by user statement on 2026-05-17.
+Admin direct launch channel; single-person escalation accepted by user statement on 2026-05-17 and selected-scope GO packet on 2026-05-19.
 Launch window:
-Not approved until remaining P0 evidence gates are complete.
+2026-05-19 18:00-20:00 Asia/Ho_Chi_Minh (2026-05-19 11:00-13:00 UTC). Support/Ops coverage for the selected pilot window plus two hours: 2026-05-19 18:00-22:00 Asia/Ho_Chi_Minh.
 Owner availability confirmed:
-Yes for owner assignment by user statement on 2026-05-17: "1 mình tao cân hết. Admin".
+Yes for owner assignment by user statement on 2026-05-17: "1 mình tao cân hết. Admin"; selected launch window and single-owner risk accepted in T268 on 2026-05-19.
 Single-owner risk:
-Accepted for owner assignment, T244/T264 selected-pilot notification manual fallback, T245 target evidence sign-off, T249 target dev/test duplicate/timeout evidence, T252 usable-status semantics, T253 cleanup owner/procedure, T254 selected-host secret-store proof, T256 permission-denied evidence, T257 out-of-capacity evidence, T260 rate-limit evidence, T261 provider 5xx evidence, T262 cancel/delete rejected evidence, and T263 selected provider-owner approval. This does not waive automated production notification delivery evidence for broader launch or approve provider scope beyond the selected bounded non-production Cloudmini pilot.
+Accepted for owner assignment, T244/T264 selected-pilot notification manual fallback, T245 target evidence sign-off, T249 target dev/test duplicate/timeout evidence, T252 usable-status semantics, T253 cleanup owner/procedure, T254 selected-host secret-store proof, T256 permission-denied evidence, T257 out-of-capacity evidence, T260 rate-limit evidence, T261 provider 5xx evidence, T262 cancel/delete rejected evidence, T263 selected provider-owner approval, and T268 selected launch-window/Admin 2FA GO packet. This does not waive automated production notification delivery evidence for broader launch or approve provider scope beyond the selected bounded non-production Cloudmini pilot.
 ```
 
 Pass criteria:
@@ -273,7 +280,9 @@ T265 domain check:
 Initial result was BLOCKED: `APP_ENV=dev go run ./cmd/smoke -base-url https://billing.resvn.net/backend -timeout 20s dev-target-auth-rbac` failed before auth assertions with `target auth login expected HTTP 200, got 500`. T266 recovered the selected dev/staging-equivalent target route by applying 25 migrations and idempotent dev seed to the empty `billing_smoke` database, starting the Billing API on `127.0.0.1:8080`, and serving frontend `/backend` proxy on `3000` using root-only `/run` env files. Follow-up health checks returned HTTP `200` for local API health, local frontend root, local `/backend/healthz`, domain root, and domain `/backend/healthz`. `APP_ENV=dev GOFLAGS=-buildvcs=false go run ./cmd/smoke -base-url https://billing.resvn.net/backend -timeout 60s dev-target-auth-rbac` then passed: client session cookie-only access, admin 2FA gate, invalid session denial, missing actor denial, tenant mismatch denial, and three low-permission RBAC denials. No raw cookies, session tokens, passwords, DSNs, provider payloads, or credentials were printed, and the smoke reported no provider or money mutation routes called.
 T267 runtime service check:
 PASS. `/opt/Billing` was updated to `origin/main` merge commit `87a6584`, `bin/api` and the Next.js standalone frontend bundle were built, and `billing-api.service` plus `billing-frontend.service` were installed, enabled, and active. Both services run as `billing-svc`; API `ExecStart` is `/opt/Billing/bin/api`; frontend `ExecStart` is `/usr/bin/node /opt/Billing/frontend/.next/standalone/server.js`; service command lines contain no raw DSN, token, cookie, password, provider payload, or credential. Protected env file metadata: `/etc/billing/secrets` mode `700` owner `root:root`; `/etc/billing/secrets/billing-api.env` mode `600` owner `root:root`; `/etc/billing/secrets/billing-frontend.env` mode `600` owner `root:root`. Domain checks returned HTTP `200` for `https://billing.resvn.net/`, `https://billing.resvn.net/backend/healthz`, `https://billing.resvn.net/backend/readyz`, `https://client.resvn.net/`, and `https://reseller.resvn.net/`. `APP_ENV=dev GOFLAGS=-buildvcs=false go run ./cmd/smoke -base-url https://billing.resvn.net/backend -timeout 60s dev-target-auth-rbac` passed after service promotion with no provider or money mutation routes called. No raw env file contents, DSNs, tokens, cookies, provider payloads, or credentials were printed.
-Admin 2FA enrollment/enforcement: T236 PASS for enforcement on the approved test server local API. Platform staff login returned an unsatisfied 2FA session, and cookie-only admin provider-readiness access returned `auth.2fa_required`. Enrollment of named production admins is still missing.
+Admin 2FA enrollment/enforcement:
+T236 PASS for enforcement on the approved test server local API. Platform staff login returned an unsatisfied 2FA session, and cookie-only admin provider-readiness access returned `auth.2fa_required`.
+T268 PASS for selected target Admin enrollment and enforcement. Before enrollment, redacted target metadata showed `admin@local.billing|platform_staff|active|disabled|totp_not_enabled`. The selected target API setup returned HTTP `201`, verify returned HTTP `200`, a 2FA-satisfied admin provider-readiness route returned HTTP `200`, and post-enrollment metadata showed `admin@local.billing|platform_staff|active|enabled|totp_enabled`. The temporary enrollment script was removed. `APP_ENV=dev GOFLAGS=-buildvcs=false go run ./cmd/smoke -base-url https://billing.resvn.net/backend -timeout 60s dev-target-auth-rbac` passed after enrollment: client session cookie-only access, admin 2FA gate, invalid session denial, missing actor denial, tenant mismatch denial, and three low-permission RBAC denials. No TOTP secret, TOTP code, cookie, session token, password, DSN, provider payload, or credential was printed or recorded.
 Credential reveal audit access:
 T237 PASS on the approved test server local API. The smoke created/refreshed one encrypted dev/test credential fixture for service display 43001, logged in as the seeded client, revealed through the client credential reveal route with only the HttpOnly session cookie, verified `Cache-Control: no-store` and `Pragma: no-cache`, verified `last_revealed_by` and rate-limit state, and recorded audit display 10017 for `credential.revealed`. The evidence excludes plaintext credentials, encrypted payloads, raw credential IDs, session tokens, cookies, DSNs, provider payloads, and provider credentials.
 Top-up review target check: T235 PASS on the approved test server. Approve top-up display 10003 posted ledger display 10005 and audit display 10015. Reject top-up display 10004 posted no ledger and audit display 10016. Wallet delta was 111 minor units. Provider side effects were none.
@@ -286,9 +295,9 @@ Domain cross-tenant negative check: T266 PASS through `https://billing.resvn.net
 Support coverage check:
 T244 PASS for owner-approved manual fallback readiness. T264 accepts this as the selected bounded pilot notification path. Admin owns Support/Ops/Security fallback decisions, coverage is the approved pilot window plus 2 hours, P0 acknowledgement SLA is 15 minutes, P0 customer-contact SLA is 30 minutes, and P1 customer-contact SLA is 4 business hours. Evidence samples include T235 top-up display 10003 and T232 provisioning manual-review evidence. Production SMTP/Telegram delivery remains unproven for broader launch.
 Residual risks:
-Single-person support/ops/security coverage; no automated production notification delivery for broader launch; live SLA has not started because no launch window is approved.
+Single-person support/ops/security coverage; no automated production notification delivery for broader launch; day-one finance reconciliation must run during the selected launch window and launch must pause on any mismatch.
 Security sign-off:
-Admin for T237/T240/T247 target dev/test evidence, T244/T264 selected-pilot manual fallback scope, and T254/T267 selected-host secret-store proof; repeat the proof for any new host/path before launch use.
+Admin for T237/T240/T247 target dev/test evidence, T244/T264 selected-pilot manual fallback scope, T254/T267 selected-host secret-store proof, and T268 selected target Admin 2FA enrollment/enforcement; repeat the proof for any new host/path, admin user, or launch scope before launch use.
 Finance sign-off:
 Admin for T239 balanced target reconciliation evidence; day-one reconciliation must still run during the approved launch window.
 QA sign-off:
@@ -305,11 +314,11 @@ Pass criteria:
 
 ## Final Decision Rule
 
-After all sections are complete:
+For any requested scope:
 
 1. Re-run `docs/03_execution_operations_launch/69_Pilot_Go_No_Go_Record.md`.
-2. Keep decision NO-GO if any P0 section is missing, unreviewed, or based on assumptions.
+2. Keep that scope at NO-GO if any P0 section is missing, unreviewed, or based on assumptions.
 3. Use CONDITIONAL GO only for non-P0 exceptions with a named owner, mitigation, expiry date, and rollback path.
 4. Use GO only when every P0 gate has passing evidence and required owner sign-off.
 
-Until then, this repository remains launch-ready for local/dev validation only, not for external private beta, pilot launch, or real-provider production-like provisioning.
+T268 satisfies this rule for the selected bounded non-production pilot only. Production, broader private beta, broader provider scope, production customer data, and real-provider production-like provisioning outside the approved selected Cloudmini scope remain NO-GO until separately proven and signed off.
