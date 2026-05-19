@@ -23,6 +23,8 @@ const (
 	commandLifecycleScheduleOnce = "lifecycle-schedule-once"
 	commandLifecycleOnce         = "lifecycle-once"
 	commandLifecycleLoop         = "lifecycle-loop"
+	commandNotificationLocalOnce = "notification-local-once"
+	commandNotificationLocalLoop = "notification-local-loop"
 	commandProviderRegistryCheck = "provider-registry-check"
 	defaultWorkerCommand         = commandProvisionOnce
 )
@@ -53,6 +55,7 @@ type workerDependencies struct {
 	stdout                io.Writer
 	newRunner             provisionRunnerFactory
 	newLifecycleRunner    provisionRunnerFactory
+	newNotificationRunner provisionRunnerFactory
 	newLifecycleScheduler lifecycleSchedulerFactory
 }
 
@@ -79,6 +82,9 @@ func runWithDependencies(args []string, deps workerDependencies) error {
 	}
 	if deps.newLifecycleRunner == nil {
 		deps.newLifecycleRunner = newLifecycleRunner
+	}
+	if deps.newNotificationRunner == nil {
+		deps.newNotificationRunner = newNotificationLocalRunner
 	}
 	if deps.newLifecycleScheduler == nil {
 		deps.newLifecycleScheduler = newLifecycleScheduler
@@ -109,17 +115,23 @@ func runWithDependencies(args []string, deps workerDependencies) error {
 		return runLifecycleOnce(cfg, deps)
 	case commandLifecycleLoop:
 		return runLifecycleLoop(cfg, deps)
+	case commandNotificationLocalOnce:
+		return runNotificationLocalOnce(cfg, deps)
+	case commandNotificationLocalLoop:
+		return runNotificationLocalLoop(cfg, deps)
 	case commandProviderRegistryCheck:
 		return runProviderRegistryCheck(deps.stdout)
 	default:
 		return fmt.Errorf(
-			"unknown command %q; use %s, %s, %s, %s, %s, or %s",
+			"unknown command %q; use %s, %s, %s, %s, %s, %s, %s, or %s",
 			command,
 			commandProvisionOnce,
 			commandProvisionLoop,
 			commandLifecycleScheduleOnce,
 			commandLifecycleOnce,
 			commandLifecycleLoop,
+			commandNotificationLocalOnce,
+			commandNotificationLocalLoop,
 			commandProviderRegistryCheck,
 		)
 	}

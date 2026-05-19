@@ -188,6 +188,97 @@ func TestRunLifecycleOnceUsesLifecycleRunner(t *testing.T) {
 	}
 }
 
+func TestRunNotificationLocalOnceUsesConfigAndPrintsSummary(t *testing.T) {
+	t.Setenv("APP_ENV", "dev")
+	var output bytes.Buffer
+	factory := &fakeRunnerFactory{
+		runner: fakeProvisionRunner{summary: jobs.RunSummary{
+			Claimed:   1,
+			Succeeded: 1,
+		}},
+	}
+
+	err := runWithDependencies([]string{
+		"notification-local-once",
+		"-dsn", "postgres://localhost:5432/billing?sslmode=disable",
+		"-worker-id", "notification-test",
+		"-batch-size", "3",
+	}, workerDependencies{stdout: &output, newNotificationRunner: factory.newRunner})
+	if err != nil {
+		t.Fatalf("expected notification local once success: %v", err)
+	}
+	if !factory.called || factory.cfg.WorkerID != "notification-test" || factory.cfg.BatchSize != 3 {
+		t.Fatalf("unexpected notification runner config: called=%v cfg=%+v", factory.called, factory.cfg)
+	}
+	if !strings.Contains(output.String(), "notification-local-once claimed=1 succeeded=1") {
+		t.Fatalf("unexpected output: %s", output.String())
+	}
+}
+
+func TestRunNotificationLocalLoopPrintsPassSummary(t *testing.T) {
+	t.Setenv("APP_ENV", "local")
+	var output bytes.Buffer
+	calls := 0
+	factory := &fakeRunnerFactory{
+		runner: fakeProvisionRunner{
+			summary: jobs.RunSummary{Claimed: 0},
+			calls:   &calls,
+		},
+	}
+
+	err := runWithDependencies([]string{
+		"notification-local-loop",
+		"-dsn", "postgres://localhost:5432/billing?sslmode=disable",
+		"-worker-id", "notification-loop-test",
+		"-timeout", "25ms",
+		"-interval", "100ms",
+	}, workerDependencies{stdout: &output, newNotificationRunner: factory.newRunner})
+	if err != nil {
+		t.Fatalf("expected notification local loop success: %v", err)
+	}
+	if !factory.called || factory.cfg.WorkerID != "notification-loop-test" {
+		t.Fatalf("expected notification runner factory call, got called=%v cfg=%+v", factory.called, factory.cfg)
+	}
+	if !strings.Contains(output.String(), "notification-local-loop pass=1 claimed=0") {
+		t.Fatalf("unexpected output: %s", output.String())
+	}
+	if calls != 1 {
+		t.Fatalf("expected one idle pass before timeout, got %d", calls)
+	}
+}
+
+func TestRunNotificationLocalRejectsStagingEnvironment(t *testing.T) {
+	t.Setenv("APP_ENV", "staging")
+	factory := &fakeRunnerFactory{runner: fakeProvisionRunner{}}
+
+	err := runWithDependencies([]string{
+		"notification-local-once",
+		"-dsn", "postgres://localhost:5432/billing?sslmode=disable",
+	}, workerDependencies{newNotificationRunner: factory.newRunner})
+	if err == nil || !strings.Contains(err.Error(), "refusing to run local notification worker with APP_ENV=staging") {
+		t.Fatalf("expected staging guard error, got %v", err)
+	}
+	if factory.called {
+		t.Fatal("notification runner factory should not be called after staging guard")
+	}
+}
+
+func TestRunNotificationLocalRejectsProductionEnvironment(t *testing.T) {
+	t.Setenv("APP_ENV", "production")
+	factory := &fakeRunnerFactory{runner: fakeProvisionRunner{}}
+
+	err := runWithDependencies([]string{
+		"notification-local-once",
+		"-dsn", "postgres://localhost:5432/billing?sslmode=disable",
+	}, workerDependencies{newNotificationRunner: factory.newRunner})
+	if err == nil || !strings.Contains(err.Error(), "refusing to run local notification worker with APP_ENV=production") {
+		t.Fatalf("expected production guard error, got %v", err)
+	}
+	if factory.called {
+		t.Fatal("notification runner factory should not be called after production guard")
+	}
+}
+
 func TestRunProviderRegistryCheckDoesNotRequireDSNAndRedactsConfig(t *testing.T) {
 	t.Setenv("APP_ENV", "local")
 	t.Setenv("DB_DSN", "")
