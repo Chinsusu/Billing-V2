@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-18` after T265 blocked:
+Current board snapshot on `2026-05-19` after T266 review handoff:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
-- `BLOCKED`: 1
-- `DONE` task files in `tasks/active/`: 261
+- `REVIEW`: 1
+- `BLOCKED`: 0
+- `DONE` task files in `tasks/active/`: 262
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,12 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-
-## Blocked Task Files
-
-| ID | Task File | Status | Owner | Branch | Summary |
-| --- | --- | --- | --- | --- | --- |
-| T265 | [tasks/active/T265_domain_auth_rbac_evidence.md](tasks/active/T265_domain_auth_rbac_evidence.md) | BLOCKED | Codex | codex/t265-domain-auth-rbac-evidence | Domain auth/RBAC smoke blocked by HTTP 500 on target route. |
+| T266 | [tasks/active/T266_domain_backend_route_recovery.md](tasks/active/T266_domain_backend_route_recovery.md) | REVIEW | Codex | codex/t266-domain-backend-route-fix | Recover domain backend route and rerun auth/RBAC evidence. |
 
 ## Done Task Files
 
@@ -123,6 +118,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T262`
 - `T263`
 - `T264`
+- `T265`
 
 ## Removed Tasks
 
