@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-20` with T280 in review:
+Current board snapshot on `2026-05-20` after T280 done:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 276
+- `DONE` task files in `tasks/active/`: 277
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T280 | [tasks/active/T280_telegram_queued_delivery_drill.md](tasks/active/T280_telegram_queued_delivery_drill.md) | REVIEW | Codex | codex/t280-telegram-queued-delivery-drill | Run a bounded queued Telegram notification delivery drill. |
 
 ## Done Task Files
 
@@ -133,6 +132,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T277`
 - `T278`
 - `T279`
+- `T280`
 
 ## Removed Tasks
 

@@ -1,6 +1,6 @@
 # T280 - Queued Telegram notification delivery drill
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t280-telegram-queued-delivery-drill
 PR: https://github.com/Chinsusu/Billing-V2/pull/592
@@ -51,3 +51,4 @@ Run a bounded selected-host drill that sends one queued `telegram` notification 
 - 2026-05-20: Process argv secret checks before and after worker reported `0` Telegram token/chat ID matches excluding the checker process; secrets and command lines were not printed.
 - 2026-05-20: Failure/retry behavior was not drilled in this task; Telegram primary-path promotion still requires a failure/retry drill or owner-signed exception.
 - 2026-05-20: Opened PR #592. Local validation passed: `GOFLAGS=-buildvcs=false go run ./cmd/taskguard`, `GOFLAGS=-buildvcs=false go test ./internal/modules/notification ./cmd/worker`, `git diff --check`, diff raw-secret pattern scan, and changed-file line-count check.
+- 2026-05-20: PR #592 merged after required GitHub checks passed; marking T280 `DONE` in the task marker branch.
