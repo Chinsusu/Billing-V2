@@ -1,9 +1,9 @@
 # T281 - Telegram failure/retry drill
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t281-telegram-failure-retry-drill
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/594
 Risk: notifications, secrets, DB/job mutation, external delivery
 Created: 2026-05-20
 Updated: 2026-05-20
@@ -39,3 +39,5 @@ Prove Telegram worker failure classification for retryable and terminal outcomes
 - 2026-05-20: Ran selected-host drill with a local fake Telegram API endpoint. HTTP 500 produced `retried=1`, notification `10001` failed with `telegram_http_500`, job `10001` `failed_retryable`, and one failed_retryable attempt row. HTTP 400 produced `terminal_failed=1`, notification `10002` failed with `telegram_http_400`, job `10002` `failed_terminal`, and one failed_terminal attempt row.
 - 2026-05-20: Cancelled the retryable drill artifact after evidence capture; post-cleanup claimable Telegram and generic notification jobs were `0`.
 - 2026-05-20: Verified process argv checks before and after the drill showed `0` Telegram token/chat ID/DB_DSN matches, excluding the checker process.
+- 2026-05-20: Validation passed: `GOFLAGS=-buildvcs=false go test ./internal/modules/notification ./cmd/worker`, `GOFLAGS=-buildvcs=false go run ./cmd/taskguard`, `git diff --check`, diff secret scan, `GOFLAGS=-buildvcs=false make test`, and `GOFLAGS=-buildvcs=false make build`.
+- 2026-05-20: Opened PR https://github.com/Chinsusu/Billing-V2/pull/594 and moved task to REVIEW.
