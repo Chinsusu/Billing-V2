@@ -1,6 +1,6 @@
 # T281 - Telegram failure/retry drill
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t281-telegram-failure-retry-drill
 PR: https://github.com/Chinsusu/Billing-V2/pull/594
@@ -41,3 +41,4 @@ Prove Telegram worker failure classification for retryable and terminal outcomes
 - 2026-05-20: Verified process argv checks before and after the drill showed `0` Telegram token/chat ID/DB_DSN matches, excluding the checker process.
 - 2026-05-20: Validation passed: `GOFLAGS=-buildvcs=false go test ./internal/modules/notification ./cmd/worker`, `GOFLAGS=-buildvcs=false go run ./cmd/taskguard`, `git diff --check`, diff secret scan, `GOFLAGS=-buildvcs=false make test`, and `GOFLAGS=-buildvcs=false make build`.
 - 2026-05-20: Opened PR https://github.com/Chinsusu/Billing-V2/pull/594 and moved task to REVIEW.
+- 2026-05-20: PR https://github.com/Chinsusu/Billing-V2/pull/594 merged after GitHub checks passed; task marked DONE.

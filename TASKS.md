@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-20` with T281 in review:
+Current board snapshot on `2026-05-20` after T281 done:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 277
+- `DONE` task files in `tasks/active/`: 278
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T281 | [tasks/active/T281_telegram_failure_retry_drill.md](tasks/active/T281_telegram_failure_retry_drill.md) | REVIEW | Codex | codex/t281-telegram-failure-retry-drill | Prove Telegram worker retryable and terminal failure classification with a local fake API endpoint. |
 
 ## Done Task Files
 
@@ -134,6 +133,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T278`
 - `T279`
 - `T280`
+- `T281`
 
 ## Removed Tasks
 
