@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-16
 **Scope:** Launch-critical notification delivery proof or approved manual fallback evidence.
-**Decision:** Manual fallback is launch-ready for an owner-approved pilot after T244, but production SMTP/Telegram delivery is still not proven.
+**Decision:** Manual fallback is launch-ready for an owner-approved pilot after T244. T279 adds selected-host Telegram preflight proof, but broader production notification delivery still needs scope-specific approval and queued event evidence.
 
 ## Current State
 
@@ -20,7 +20,7 @@ This is not production delivery proof. Before GO, launch evidence must show eith
 - production SMTP/Telegram delivery proof for launch-critical events; or
 - an approved manual fallback with owner, SLA, escalation path, and redacted evidence.
 
-T244 records the second path for the current pilot scope: Admin owns Support, Ops, and Security fallback decisions; fallback messages use the Admin direct launch channel; sample events are redacted dev/test evidence references; and no external production delivery channel is claimed.
+T244 records the second path for the current pilot scope: Admin owns Support, Ops, and Security fallback decisions; fallback messages use the Admin direct launch channel; sample events are redacted dev/test evidence references; and no external production delivery channel is claimed. T279 later proves the selected-host Telegram channel can receive a redacted preflight message, but it does not replace the selected-pilot manual fallback packet for historical pilot-window evidence.
 
 ## Local/Dev Delivery Worker
 
@@ -68,6 +68,41 @@ Evidence may include only:
 - notification display ID, event type, template key, and correlation ID if safe.
 
 Evidence must not include bot token, chat ID, raw Telegram request/response body, raw `payload_redacted`, credentials, reset tokens, DSNs, provider payloads, cookies, or customer data.
+
+## T279 Telegram Preflight Evidence
+
+```text
+Evidence ID:
+T279-telegram-preflight-20260520
+Date/time UTC:
+2026-05-20T00:20Z
+Environment:
+Selected host with APP_ENV=staging.
+Evidence collector:
+Codex
+Secret/config path:
+/etc/billing/secrets/telegram.env on the selected host; values redacted.
+Secret-file metadata:
+mode 600, owner root:root.
+Config keys verified:
+TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, TELEGRAM_API_BASE_URL.
+Command:
+notification-telegram-preflight
+Result:
+PASS
+Preflight fields:
+telegram_api_called=yes
+message_payload_redacted=yes
+secrets_printed=no
+Process argv secret check:
+0 matches excluding the checker process.
+Payload/customer data:
+No notification payload, customer data, DSN, provider payload, cookie, credential, token value, chat ID value, or raw Telegram response body was printed or recorded.
+Open exceptions:
+This is selected-host redacted preflight proof, not queued launch-critical event delivery proof. Broader production notification approval still requires owner-approved scope, runtime worker activation plan, queued event delivery evidence or a signed exception, and failure/retry handling evidence.
+Decision:
+PASS for selected-host Telegram preflight reachability and redaction boundary.
+```
 
 ## Launch-Critical Events
 
@@ -272,7 +307,7 @@ PASS for owner-approved SLA values; live SLA measurement starts only when an app
 Redacted evidence reference:
 T235 and T232 task logs plus this T244 packet; no payload, credential, token, DSN, provider ID, provider payload, cookie, reset token, or customer data is recorded.
 Open exceptions:
-Production SMTP/Telegram delivery remains unproven. If Admin is unavailable or misses SLA, pilot must pause and launch-critical events stay in manual review.
+Production SMTP delivery and queued Telegram launch-critical event delivery remain unproven. If Admin is unavailable or misses SLA, pilot must pause and launch-critical events stay in manual review.
 Support owner sign-off:
 Admin, by T241 owner assignment and T244 fallback acceptance.
 Ops owner sign-off:
@@ -280,7 +315,7 @@ Admin, by T241 owner assignment and T244 fallback acceptance.
 Security owner sign-off:
 Admin, by T241 owner assignment and T244 fallback acceptance.
 Decision:
-PASS for manual fallback readiness; not proof of production notification delivery.
+PASS for manual fallback readiness; T279 separately proves selected-host Telegram preflight reachability, but not queued launch-critical event delivery.
 ```
 
 Safe message samples approved for manual fallback:
