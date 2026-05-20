@@ -1,6 +1,6 @@
 # T279 - Telegram live delivery evidence
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t279-telegram-live-evidence
 PR: https://github.com/Chinsusu/Billing-V2/pull/589
@@ -38,3 +38,4 @@ Record the selected-host Telegram notification preflight evidence after the owne
 - 2026-05-20: Task created and claimed by Codex from Billing `origin/main`.
 - 2026-05-20: Verified redacted runtime evidence: Telegram preflight returned `PASS`; Telegram API was called; message payload was redacted; no secrets were printed; process argv secret match count excluding checker was `0`; `taskguard` passed.
 - 2026-05-20: Opened PR #589. Local validation passed: `GOFLAGS=-buildvcs=false go run ./cmd/taskguard`, `git diff --check`, diff raw-secret pattern scan, and changed-file line-count check.
+- 2026-05-20: PR #589 merged after required GitHub checks passed; marking T279 `DONE` in the task marker branch.
