@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-16
 **Scope:** Launch-critical notification delivery proof or approved manual fallback evidence.
-**Decision:** Manual fallback is launch-ready for an owner-approved pilot after T244. T279 adds selected-host Telegram preflight proof, but broader production notification delivery still needs scope-specific approval and queued event evidence.
+**Decision:** Manual fallback is launch-ready for an owner-approved pilot after T244. T279 adds selected-host Telegram preflight proof, T280 proves one queued Telegram delivery, and T281 proves controlled retryable/terminal Telegram worker classification. Broader production notification delivery still needs scope-specific owner approval before using Telegram as a sole primary path.
 
 ## Current State
 
@@ -20,7 +20,7 @@ This is not production delivery proof. Before GO, launch evidence must show eith
 - production SMTP/Telegram delivery proof for launch-critical events; or
 - an approved manual fallback with owner, SLA, escalation path, and redacted evidence.
 
-T244 records the second path for the current pilot scope: Admin owns Support, Ops, and Security fallback decisions; fallback messages use the Admin direct launch channel; sample events are redacted dev/test evidence references; and no external production delivery channel is claimed. T279 later proves the selected-host Telegram channel can receive a redacted preflight message, but it does not replace the selected-pilot manual fallback packet for historical pilot-window evidence. T280 later proves one selected-host queued Telegram notification can be delivered by the real worker. It still does not prove Telegram failure/retry handling for broader production use.
+T244 records the second path for the current pilot scope: Admin owns Support, Ops, and Security fallback decisions; fallback messages use the Admin direct launch channel; sample events are redacted dev/test evidence references; and no external production delivery channel is claimed. T279 later proves the selected-host Telegram channel can receive a redacted preflight message, but it does not replace the selected-pilot manual fallback packet for historical pilot-window evidence. T280 later proves one selected-host queued Telegram notification can be delivered by the real worker. T281 proves the worker classifies a controlled retryable Telegram API failure and a controlled terminal Telegram API failure correctly using a local fake API endpoint, without calling Telegram or printing secrets.
 
 ## Local/Dev Delivery Worker
 
@@ -162,9 +162,111 @@ No raw payload_redacted, customer data, DB DSN, provider payload, cookie, creden
 Artifact handling:
 The dev/test notification and job remain in the selected database as sent/succeeded drill evidence with safe display IDs and template/event labels.
 Open exceptions:
-Failure/retry behavior was not drilled. Telegram cannot be the sole broader production notification path until failure/retry behavior is proven or a named owner signs an exception.
+This is one selected-host queued success drill, not a failure/retry drill by itself. T281 separately proves controlled failure/retry classification using a local fake API endpoint.
 Decision:
 PASS for one selected-host queued Telegram delivery through the real worker; not enough by itself for broader production primary-path approval.
+```
+
+## T281 Telegram Failure/Retry Drill Evidence
+
+```text
+Evidence ID:
+T281-telegram-failure-retry-20260520
+Date/time UTC:
+2026-05-20T01:20Z
+Environment:
+Selected host with APP_ENV=staging, selected DB, and local fake Telegram API endpoint on 127.0.0.1.
+Evidence collector:
+Codex
+Secret/config path:
+/etc/billing/secrets/telegram.env on the selected host; values redacted.
+Secret-file metadata:
+mode 600, owner root:root.
+Config keys verified:
+TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, TELEGRAM_API_BASE_URL.
+DB access:
+Protected service-file handling from /etc/billing/secrets/billing-api.env; DB_DSN value was not printed or passed on worker argv.
+Telegram API boundary:
+No real Telegram API call was made. The worker used fake token/chat values and TELEGRAM_API_BASE_URL pointed to a local fake endpoint.
+Pre-run queue state:
+claimable_telegram_jobs=0
+claimable_generic_notification_jobs=0
+Retryable notification created:
+display_id=10001
+event_type=service.lifecycle
+template_key=t281.telegram.retryable_drill
+channel=telegram
+recipient_group=ops
+Retryable job created:
+display_id=10001
+job_type=notification.deliver.telegram
+status_before=queued
+Retryable fake API response:
+HTTP 500
+Retryable worker command:
+notification-telegram-once with worker-id t281-telegram-retryable, batch-size 1, timeout 60s.
+Retryable worker result:
+claimed=1
+succeeded=0
+retried=1
+manual_review=0
+terminal_failed=0
+cancelled=0
+Retryable pre-cleanup DB state:
+notification_status=failed
+notification_error_code=telegram_http_500
+job_status=failed_retryable
+job_error_code=telegram_http_500
+job_attempt_count=1
+attempt_rows_failed_retryable=1
+Terminal notification created:
+display_id=10002
+event_type=service.lifecycle
+template_key=t281.telegram.terminal_drill
+channel=telegram
+recipient_group=ops
+Terminal job created:
+display_id=10002
+job_type=notification.deliver.telegram
+status_before=queued
+Terminal fake API response:
+HTTP 400
+Terminal worker command:
+notification-telegram-once with worker-id t281-telegram-terminal, batch-size 1, timeout 60s.
+Terminal worker result:
+claimed=1
+succeeded=0
+retried=0
+manual_review=0
+terminal_failed=1
+cancelled=0
+Terminal post-run DB state:
+notification_status=failed
+notification_error_code=telegram_http_400
+job_status=failed_terminal
+job_error_code=telegram_http_400
+job_attempt_count=1
+attempt_rows_failed_terminal=1
+Cleanup result:
+retryable_cleanup_cancelled_jobs=1
+retryable_cleanup_cancelled_notifications=1
+retryable_post_cleanup_notification_status=cancelled
+retryable_post_cleanup_job_status=cancelled
+claimable_telegram_jobs_after_cleanup=0
+claimable_generic_notification_jobs_after_cleanup=0
+Fake API request counts:
+fake_api_status_500_calls=1
+fake_api_status_400_calls=1
+Process argv secret checks:
+0 Telegram token/chat ID/DB_DSN matches before and after the worker, excluding the checker process.
+Payload/customer data:
+No raw payload_redacted, customer data, DB DSN, provider payload, cookie, credential, reset token, Telegram token value, chat ID value, raw Telegram request/response body, tenant UUID, job UUID, notification UUID, or command line was printed or recorded.
+Artifact handling:
+The retryable dev/test artifact was cancelled after evidence capture so it cannot be claimed again. The terminal dev/test artifact remains failed_terminal as evidence and is not claimable.
+Open exceptions:
+This proves worker classification and cleanup hygiene with a controlled local fake API endpoint. It does not prove real Telegram outage behavior, production worker always-on operations, production support monitoring, or owner approval for Telegram as the sole broader production notification path.
+Decision:
+PASS for selected-host controlled Telegram worker failure classification: HTTP 500 maps to retryable, HTTP 400 maps to terminal, and retryable drill cleanup leaves no claimable Telegram jobs.
 ```
 
 ## Launch-Critical Events
@@ -378,7 +480,7 @@ Admin, by T241 owner assignment and T244 fallback acceptance.
 Security owner sign-off:
 Admin, by T241 owner assignment and T244 fallback acceptance.
 Decision:
-PASS for manual fallback readiness; T279 separately proves selected-host Telegram preflight reachability, and T280 proves one selected-host queued Telegram delivery, but failure/retry evidence remains open before broader primary-path approval.
+PASS for manual fallback readiness; T279 separately proves selected-host Telegram preflight reachability, T280 proves one selected-host queued Telegram delivery, and T281 proves controlled retryable/terminal Telegram worker classification. Broader primary-path approval still requires scope-specific owner approval.
 ```
 
 Safe message samples approved for manual fallback:
