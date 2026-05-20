@@ -20,7 +20,7 @@ This is not production delivery proof. Before GO, launch evidence must show eith
 - production SMTP/Telegram delivery proof for launch-critical events; or
 - an approved manual fallback with owner, SLA, escalation path, and redacted evidence.
 
-T244 records the second path for the current pilot scope: Admin owns Support, Ops, and Security fallback decisions; fallback messages use the Admin direct launch channel; sample events are redacted dev/test evidence references; and no external production delivery channel is claimed. T279 later proves the selected-host Telegram channel can receive a redacted preflight message, but it does not replace the selected-pilot manual fallback packet for historical pilot-window evidence.
+T244 records the second path for the current pilot scope: Admin owns Support, Ops, and Security fallback decisions; fallback messages use the Admin direct launch channel; sample events are redacted dev/test evidence references; and no external production delivery channel is claimed. T279 later proves the selected-host Telegram channel can receive a redacted preflight message, but it does not replace the selected-pilot manual fallback packet for historical pilot-window evidence. T280 later proves one selected-host queued Telegram notification can be delivered by the real worker. It still does not prove Telegram failure/retry handling for broader production use.
 
 ## Local/Dev Delivery Worker
 
@@ -102,6 +102,69 @@ Open exceptions:
 This is selected-host redacted preflight proof, not queued launch-critical event delivery proof. Broader production notification approval still requires owner-approved scope, runtime worker activation plan, queued event delivery evidence or a signed exception, and failure/retry handling evidence.
 Decision:
 PASS for selected-host Telegram preflight reachability and redaction boundary.
+```
+
+## T280 Queued Telegram Delivery Drill Evidence
+
+```text
+Evidence ID:
+T280-queued-telegram-delivery-20260520
+Date/time UTC:
+2026-05-20T00:51Z
+Environment:
+Selected host with APP_ENV=staging.
+Evidence collector:
+Codex
+Secret/config path:
+/etc/billing/secrets/telegram.env on the selected host; values redacted.
+Secret-file metadata:
+mode 600, owner root:root.
+Config keys verified:
+TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, TELEGRAM_API_BASE_URL.
+DB access:
+Protected service-file handling from /etc/billing/secrets/billing-api.env; DB_DSN value was not printed or passed on the worker argv.
+Pre-run queue state:
+claimable_telegram_jobs=0
+claimable_generic_notification_jobs=0
+Notification created:
+display_id=10000
+event_type=service.lifecycle
+template_key=t280.telegram.queued_drill
+channel=telegram
+recipient_group=ops
+correlation_id_present=yes
+Job created:
+display_id=10000
+job_type=notification.deliver.telegram
+status_before=queued
+Worker command:
+notification-telegram-once with worker-id t280-telegram-drill, batch-size 1, timeout 60s.
+Worker result:
+claimed=1
+succeeded=1
+retried=0
+manual_review=0
+terminal_failed=0
+cancelled=0
+Post-run DB state:
+notification_status=sent
+notification_sent_at_present=yes
+notification_error_code_present=no
+job_status=succeeded
+job_attempt_count=1
+attempt_rows_succeeded=1
+claimable_telegram_jobs_after=0
+claimable_generic_notification_jobs_after=0
+Process argv secret checks:
+0 Telegram token/chat ID matches before and after the worker, excluding the checker process.
+Payload/customer data:
+No raw payload_redacted, customer data, DB DSN, provider payload, cookie, credential, reset token, Telegram token value, chat ID value, raw Telegram request/response body, tenant UUID, job UUID, notification UUID, or command line was printed or recorded.
+Artifact handling:
+The dev/test notification and job remain in the selected database as sent/succeeded drill evidence with safe display IDs and template/event labels.
+Open exceptions:
+Failure/retry behavior was not drilled. Telegram cannot be the sole broader production notification path until failure/retry behavior is proven or a named owner signs an exception.
+Decision:
+PASS for one selected-host queued Telegram delivery through the real worker; not enough by itself for broader production primary-path approval.
 ```
 
 ## Launch-Critical Events
@@ -315,7 +378,7 @@ Admin, by T241 owner assignment and T244 fallback acceptance.
 Security owner sign-off:
 Admin, by T241 owner assignment and T244 fallback acceptance.
 Decision:
-PASS for manual fallback readiness; T279 separately proves selected-host Telegram preflight reachability, but not queued launch-critical event delivery.
+PASS for manual fallback readiness; T279 separately proves selected-host Telegram preflight reachability, and T280 proves one selected-host queued Telegram delivery, but failure/retry evidence remains open before broader primary-path approval.
 ```
 
 Safe message samples approved for manual fallback:
