@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-20` with T280 queued:
+Current board snapshot on `2026-05-20` with T280 in review:
 
-- `TODO`: 1
+- `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 276
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -61,12 +61,12 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Suggested Branch | Area | Summary |
 | --- | --- | --- | --- | --- |
-| T280 | [tasks/active/T280_telegram_queued_delivery_drill.md](tasks/active/T280_telegram_queued_delivery_drill.md) | codex/t280-telegram-queued-delivery-drill | notifications | Run a bounded queued Telegram notification delivery drill. |
 
 ## In-Flight Task Files
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T280 | [tasks/active/T280_telegram_queued_delivery_drill.md](tasks/active/T280_telegram_queued_delivery_drill.md) | REVIEW | Codex | codex/t280-telegram-queued-delivery-drill | Run a bounded queued Telegram notification delivery drill. |
 
 ## Done Task Files
 
