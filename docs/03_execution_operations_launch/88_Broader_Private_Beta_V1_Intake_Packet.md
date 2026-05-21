@@ -22,35 +22,35 @@ Packet ID: broader-private-beta-v1
 Requested decision: NO-GO review
 Requested launch type: broader private beta
 Requested launch window: TBD
-Customer list or data classification: TBD
-Production data present: no evidence recorded in this packet
-Target hosts and domains: billing.resvn.net, client.resvn.net, reseller.resvn.net are prior launch-candidate domains; exact broader-beta target approval is TBD
-Backend/API base URL: TBD for the broader-beta launch window
-Frontend base URLs: TBD for the broader-beta launch window
+Customer list or data classification: synthetic/internal test data only; no real customer data approved
+Production data present: no
+Target hosts and domains: billing.resvn.net, client.resvn.net, reseller.resvn.net
+Backend/API base URL: https://billing.resvn.net/backend for platform-admin API checks; service local base http://127.0.0.1:8080 on selected test server
+Frontend base URLs: https://billing.resvn.net, https://client.resvn.net, https://reseller.resvn.net
 Provider account scope: selected non-production Cloudmini scope exists; broader-beta provider account scope is TBD
 Provider quota/spend/concurrency limits: selected pilot was one bounded dev resource; broader-beta limits are TBD
 Notification path: selected Telegram/manual-fallback evidence exists; broader-beta primary or fallback path is TBD
 Rollback trigger: any pause criterion in doc 86, plus any broader-beta customer-impact trigger approved by owner
-Rollback owner: TBD
+Rollback owner: Admin
 Evidence storage reference: this packet plus scope-specific successor evidence docs
 ```
 
 ## Current Owner Fields
 
-The project has used an `Admin` single-owner model for selected non-production pilot decisions. This packet does not automatically extend that approval to broader private beta v1 because broader scope changes customer exposure, support load, provider quota, notification responsibility, and finance/security risk.
+The project uses an `Admin` single-owner model for broader private beta v1. Admin has stated that they are the sole project owner and have full authority for all required roles. This accepts the concentration-of-duty risk for this broader private beta v1 scope, but it does not approve real customer data, production data, production launch, broader provider quota, or notification primary-path operation.
 
 | Role | Current value | Status for broader private beta v1 |
 | --- | --- | --- |
-| Product Owner | Admin candidate | Needs explicit scope approval. |
-| Engineering Lead | Admin candidate | Needs explicit target/runtime approval. |
-| QA Lead | Admin candidate | Needs explicit UAT and E2E acceptance. |
-| Ops Lead | Admin candidate | Needs explicit service, tunnel, backup, restore, and rollback acceptance. |
-| Finance Lead | Admin candidate | Needs explicit wallet/ledger/payment reconciliation sign-off for the broader window. |
-| Security Owner | Admin candidate | Needs explicit data classification, secret-store, 2FA, RBAC, and credential-reveal acceptance. |
-| Support Owner | Admin candidate | Needs explicit support window, SLA, escalation channel, and pause authority. |
-| Provider Owner | Admin candidate | Needs explicit provider quota, cleanup, timeout/idempotency, and manual-review acceptance. |
-| Single-owner risk accepted | TBD | Must be accepted again for this broader scope if `Admin` owns all roles. |
-| Approval timestamp | TBD | Required before any `GO` or `CONDITIONAL GO`. |
+| Product Owner | Admin | Approved single-owner scope model in doc 91. |
+| Engineering Lead | Admin | Approved single-owner scope model in doc 91. |
+| QA Lead | Admin | Approved single-owner scope model in doc 91. |
+| Ops Lead | Admin | Approved single-owner scope model in doc 91. |
+| Finance Lead | Admin | Approved single-owner scope model in doc 91. |
+| Security Owner | Admin | Approved single-owner scope model in doc 91. |
+| Support Owner | Admin | Approved single-owner scope model in doc 91. |
+| Provider Owner | Admin | Approved single-owner scope model in doc 91. |
+| Single-owner risk accepted | yes | Accepted by Admin for broader private beta v1 in doc 91. |
+| Approval timestamp | 2026-05-21T10:22:30Z | Recorded in doc 91. |
 
 ## Evidence Reuse Boundary
 
@@ -65,6 +65,7 @@ The project has used an `Admin` single-owner model for selected non-production p
 | Notification evidence | Telegram/manual-fallback evidence exists for selected scope. | Needs broader-beta primary/fallback owner, SLA, escalation, and delivery or drill evidence. |
 | Target preflight evidence | Doc 89 records read-only health/runtime/process-secret/secret-file metadata evidence for current launch-candidate domains. | Use as current target evidence only; rerun if target, launch window, domains, services, or secret paths change. |
 | Auth/RBAC evidence | Doc 90 records domain-aware target auth/RBAC smoke evidence for the current launch-candidate domains. | Use as current auth/RBAC evidence only; rerun if target, launch window, user set, auth config, tenant mapping, or RBAC policy changes. |
+| Owner scope sign-off | Doc 91 records Admin as single owner for all required roles and accepts concentration-of-duty risk. | Covers owner role assignment only; does not replace runtime, E2E, finance, provider, notification, or final GO evidence. |
 
 ## Required Preflight Before Review
 
@@ -82,10 +83,10 @@ Run the matching checks from doc 87 and store only redacted outcomes. A broader 
 | Full E2E | Checkout, wallet debit, provisioning, renewal, credential reveal, audit, and finance reconciliation pass for the launch scope. | Pending broader-beta E2E run. |
 | Auth/RBAC | Client/admin/reseller domain auth, 2FA gate, tenant mismatch, and RBAC denials pass for broader-beta users. | Current client/admin domain-aware auth/RBAC smoke passed in doc 90; reseller-domain login and broader-beta user-set proof remain tied to UAT. |
 | Credential reveal | No-store reveal response, audit, redaction, and rate-limit proof pass on approved target. | Pending broader-beta target approval and rerun. |
-| Finance | Wallet, ledger, payment, and reconciliation report is balanced and accepted by Finance owner. | Pending broader-beta reconciliation sign-off. |
-| Provider | Mapping, quota, timeout/idempotency, cleanup, and error taxonomy proof match broader-beta provider scope. | Pending provider owner approval and evidence. |
-| Notification | Primary path or manual fallback has owner, SLA, escalation, delivery/drill, and failure evidence. | Pending notification owner approval and evidence. |
-| Support/Ops | Coverage window, escalation channel, rollback authority, and pause criteria are named. | Pending support and ops sign-off. |
+| Finance | Wallet, ledger, payment, and reconciliation report is balanced and accepted by Finance owner. | Admin is Finance owner in doc 91; broader-beta reconciliation evidence remains pending. |
+| Provider | Mapping, quota, timeout/idempotency, cleanup, and error taxonomy proof match broader-beta provider scope. | Admin is Provider owner in doc 91; broader-beta provider quota/evidence remains pending. |
+| Notification | Primary path or manual fallback has owner, SLA, escalation, delivery/drill, and failure evidence. | Admin is notification owner in doc 91; broader-beta notification path/SLA/evidence remains pending. |
+| Support/Ops | Coverage window, escalation channel, rollback authority, and pause criteria are named. | Admin owns Support/Ops in doc 91; launch window, SLA, escalation detail, and final pause review remain pending. |
 
 ## GO Criteria For This Scope
 
@@ -104,27 +105,27 @@ Do not change broader private beta v1 to `GO` unless all criteria below are comp
 
 ## Current Gaps
 
-- Customer list or data classification is not approved for broader private beta v1.
-- Launch window, target environment, API base URL, and frontend base URLs are not approved for broader private beta v1.
-- Owner sign-off is not complete for Product, Engineering, QA, Ops, Finance, Security, Support, and Provider in this broader scope.
-- Single-owner concentration risk is not accepted for this broader scope.
-- Target-environment health, runtime, process secrecy, secret-file metadata, and ingress checks passed for the current launch-candidate target in doc 89, but target/window owner approval remains incomplete.
+- Data classification is constrained to synthetic/internal test data only; real customer data and production data are not approved.
+- Launch window is not approved for broader private beta v1.
+- Owner sign-off is complete for Product, Engineering, QA, Ops, Finance, Security, Support, and Provider through the Admin single-owner model in doc 91.
+- Single-owner concentration risk is accepted for this broader scope in doc 91.
+- Target-environment health, runtime, process secrecy, secret-file metadata, and ingress checks passed for the current launch-candidate target in doc 89, but launch-window approval remains incomplete.
 - Backup/restore applicability has not been signed for this scope.
 - Full E2E, renewal, credential reveal, audit, and finance reconciliation have not been rerun for this scope; current client/admin auth/RBAC smoke passed in doc 90 but does not replace UAT.
-- Provider account, quota/spend/concurrency limits, SKU/group mapping, cleanup, timeout/idempotency, and manual-review rules are not approved for this scope.
-- Notification primary/fallback path, SLA, escalation, and delivery/drill evidence are not approved for this scope.
+- Provider quota/spend/concurrency limits, SKU/group mapping, cleanup, timeout/idempotency, manual-review rules, and evidence are not complete for this scope.
+- Notification primary/fallback path, SLA, escalation, and delivery/drill evidence are not complete for this scope.
 
 ## Decision Recommendation
 
 ```text
 Packet ID: broader-private-beta-v1
 Requested decision: NO-GO review
-Owner approvals complete: no
-Target-environment proof complete: no
-Customer/data classification complete: no
+Owner approvals complete: yes
+Target-environment proof complete: partial
+Customer/data classification complete: yes for synthetic/internal test data only
 Provider broader-scope proof complete: no
 Notification broader-scope proof complete: no
-Finance/security/support sign-off complete: no
+Finance/security/support evidence complete: no
 Pause criteria reviewed for this scope: no
 Decision recommendation: NO-GO
 ```
