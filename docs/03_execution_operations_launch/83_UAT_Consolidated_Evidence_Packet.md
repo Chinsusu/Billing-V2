@@ -128,8 +128,8 @@ Open P1 bugs: 0
 Production GO: not approved by this packet
 ```
 
-Next recommended step:
+Follow-up status:
 
 ```text
-Run dev-target-auth-rbac on the selected target with protected credential and domain overrides configured, then record a small follow-up evidence note if the selected target credentials differ from seed defaults.
+Completed by T290/T291: dev-target-auth-rbac now supports separate client/admin base URLs, and doc 85 records selected test-server split-domain target auth/RBAC smoke PASS with protected credential overrides and redacted evidence.
 ```
