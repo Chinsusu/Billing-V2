@@ -1,6 +1,6 @@
 # T292 - Refresh Go/No-Go domain auth evidence
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t292-refresh-go-no-go-docs
 PR: https://github.com/Chinsusu/Billing-V2/pull/616
@@ -35,3 +35,4 @@ Refresh launch Go/No-Go docs after T290/T291 proved domain-aware target auth/RBA
 - 2026-05-21: Refreshed Go/No-Go, launch completion, and UAT follow-up docs to reference T290/T291 split-domain target auth/RBAC evidence without broadening production approval.
 - 2026-05-21: Validation passed: `go run ./cmd/taskguard`, `git diff --check`, touched-file line count, added-line secret-pattern scan, and added-line docs/task UUID scan.
 - 2026-05-21: Opened PR #616 and moved task to `REVIEW`.
+- 2026-05-21: PR #616 merged into `main`; moved task to `DONE`.
