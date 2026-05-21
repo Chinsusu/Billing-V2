@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-21` with T284 in review:
+Current board snapshot on `2026-05-21` after T284 completion:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 280
+- `DONE` task files in `tasks/active/`: 281
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T284 | [tasks/active/T284_uat_runbook.md](tasks/active/T284_uat_runbook.md) | REVIEW | Codex | codex/t284-uat-runbook | Add UAT runbook for client, reseller, and admin non-production pilot. |
 
 ## Done Task Files
 
@@ -137,6 +136,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T281`
 - `T282`
 - `T283`
+- `T284`
 
 ## Removed Tasks
 
