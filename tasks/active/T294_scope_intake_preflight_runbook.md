@@ -1,6 +1,6 @@
 # T294 - Scope intake and preflight runbook
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t294-scope-intake-preflight
 PR: https://github.com/Chinsusu/Billing-V2/pull/620
@@ -35,3 +35,4 @@ Add a production/private-beta scope intake and preflight runbook so future GO re
 - 2026-05-21: Added scope intake/preflight runbook and linked it from doc 86 and docs index without approving broader launch.
 - 2026-05-21: Validation passed: `go run ./cmd/taskguard`, `git diff --check`, touched-file line count, added-line secret-pattern scan, and added-line docs/task UUID scan.
 - 2026-05-21: Opened PR #620 and moved task to `REVIEW`.
+- 2026-05-21: PR #620 merged into `main`; moved task to `DONE`.
