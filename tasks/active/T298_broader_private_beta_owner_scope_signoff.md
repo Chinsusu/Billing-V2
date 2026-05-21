@@ -1,6 +1,6 @@
 # T298 - Broader private beta owner scope sign-off
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t298-owner-scope-signoff
 PR: https://github.com/Chinsusu/Billing-V2/pull/628
@@ -36,3 +36,4 @@ Record the Admin single-owner approval model for broader private beta v1 and con
 - 2026-05-21: Recorded Admin single-owner sign-off and synthetic/internal test data constraint without approving broader private beta GO.
 - 2026-05-21: Validation passed: `go run ./cmd/taskguard`, `git diff --check`, touched-file line count, added-line secret-pattern scan, and added-line docs/task UUID scan.
 - 2026-05-21: Opened PR #628 and moved task to `REVIEW`.
+- 2026-05-21: PR #628 merged into `main`; moved task to `DONE`.
