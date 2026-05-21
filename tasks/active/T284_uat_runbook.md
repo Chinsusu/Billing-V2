@@ -1,6 +1,6 @@
 # T284 - UAT runbook
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t284-uat-runbook
 PR: https://github.com/Chinsusu/Billing-V2/pull/600
@@ -36,3 +36,4 @@ Add a UAT runbook for client, reseller, and admin flows in the selected non-prod
 - 2026-05-21: Added `docs/03_execution_operations_launch/79_UAT_Client_Reseller_Admin_Runbook.md` and linked it from `docs/00_README.md`.
 - 2026-05-21: Validation passed: `GOFLAGS=-buildvcs=false go run ./cmd/taskguard`, `git diff --check`, docs secret scan, and line-count check for touched files.
 - 2026-05-21: Opened PR https://github.com/Chinsusu/Billing-V2/pull/600 and moved task to REVIEW.
+- 2026-05-21: PR #600 merged into `main`; marked task DONE.
