@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-21` after T291 completion:
+Current board snapshot on `2026-05-21` after T292 creation:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 288
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T292 | [tasks/active/T292_go_no_go_domain_auth_refresh.md](tasks/active/T292_go_no_go_domain_auth_refresh.md) | IN_PROGRESS | Codex | codex/t292-refresh-go-no-go-docs | Refresh Go/No-Go docs with T290/T291 domain-aware auth smoke evidence. |
 
 ## Done Task Files
 
