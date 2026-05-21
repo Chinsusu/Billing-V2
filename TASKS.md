@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-21` after T288 review:
+Current board snapshot on `2026-05-21` after T288 completion:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 284
+- `DONE` task files in `tasks/active/`: 285
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T288 | [tasks/active/T288_uat_consolidation_auth_smoke.md](tasks/active/T288_uat_consolidation_auth_smoke.md) | REVIEW | Codex | codex/t288-uat-consolidation-auth-smoke | Consolidate UAT evidence and parameterize target auth smoke credentials. |
 
 ## Done Task Files
 
@@ -141,6 +140,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T285`
 - `T286`
 - `T287`
+- `T288`
 
 ## Removed Tasks
 

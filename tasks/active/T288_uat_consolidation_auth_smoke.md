@@ -1,6 +1,6 @@
 # T288 - UAT consolidation and auth smoke credential override
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t288-uat-consolidation-auth-smoke
 PR: https://github.com/Chinsusu/Billing-V2/pull/608
@@ -40,3 +40,4 @@ Consolidate client/reseller/admin UAT evidence and make the target auth/RBAC smo
 - 2026-05-21: Validation passed: `go test ./cmd/smoke`, `GOFLAGS=-buildvcs=false make fmt`, `GOFLAGS=-buildvcs=false make test`, `GOFLAGS=-buildvcs=false make build`, `go run ./cmd/taskguard`, `git diff --check`, touched-file line count, added-line secret scan, and added-line UUID scan for docs/task changes.
 - 2026-05-21: Did not run live `dev-target-auth-rbac`; protected target credential override variables are not configured in `/etc/billing/secrets/billing-api.env`, and fallback seed credentials are already known stale on the selected target.
 - 2026-05-21: Opened PR https://github.com/Chinsusu/Billing-V2/pull/608 and moved task to REVIEW.
+- 2026-05-21: PR #608 merged into `main`; marked task DONE.
