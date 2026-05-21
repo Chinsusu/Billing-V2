@@ -1,6 +1,6 @@
 # T291 - Domain-aware target auth deploy evidence
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t291-domain-auth-deploy-evidence
 PR: https://github.com/Chinsusu/Billing-V2/pull/614
@@ -35,3 +35,4 @@ Record post-T290 selected test-server deploy and remote binary evidence for the 
 - 2026-05-21: Recorded post-T290 selected test-server deploy, service health, redacted secret-handling metadata, and remote binary split-domain target auth smoke evidence.
 - 2026-05-21: Validation passed: `go run ./cmd/taskguard`, `git diff --check`, touched-file line count, added-line secret-pattern scan, and added-line docs/task UUID scan.
 - 2026-05-21: Opened PR #614 and moved task to `REVIEW`.
+- 2026-05-21: PR #614 merged into `main`; moved task to `DONE`.
