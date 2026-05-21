@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-21` after T294 completion:
+Current board snapshot on `2026-05-21` after T295 claim:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 291
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T295 | [tasks/active/T295_broader_private_beta_v1_intake.md](tasks/active/T295_broader_private_beta_v1_intake.md) | IN_PROGRESS | Codex | codex/t295-broader-beta-intake | Create broader private beta v1 intake packet and keep the decision NO-GO until scope evidence is complete. |
 
 ## Done Task Files
 
