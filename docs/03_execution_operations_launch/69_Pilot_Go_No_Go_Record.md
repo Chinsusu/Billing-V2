@@ -77,7 +77,7 @@ T241 records the user-provided owner assignment that `Admin` is the single accou
 
 ## Required Actions Before Broadening GO
 
-1. Complete a new or updated `docs/03_execution_operations_launch/70_Launch_Evidence_Completion_Packet.md` section with redacted proof and owner sign-off for any broader production, private-beta, provider, host, credential, notification, or customer-data scope.
+1. Complete a new or updated `docs/03_execution_operations_launch/86_Production_Private_Beta_Decision_Packet.md` section with redacted proof and owner sign-off for any broader production, private-beta, provider, host, credential, notification, or customer-data scope.
 2. Re-run this record and broaden the decision only if every P0 row for that broader scope has passing evidence or a documented owner-approved mitigation that does not weaken money, tenant isolation, provisioning safety, credentials, or incident ownership.
 
 ## Sign-Off

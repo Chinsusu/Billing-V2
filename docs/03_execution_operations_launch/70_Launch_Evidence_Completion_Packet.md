@@ -340,6 +340,7 @@ For any requested scope:
 1. Re-run `docs/03_execution_operations_launch/69_Pilot_Go_No_Go_Record.md`.
 2. Keep that scope at NO-GO if any P0 section is missing, unreviewed, or based on assumptions.
 3. Use CONDITIONAL GO only for non-P0 exceptions with a named owner, mitigation, expiry date, and rollback path.
-4. Use GO only when every P0 gate has passing evidence and required owner sign-off.
+4. Update `docs/03_execution_operations_launch/86_Production_Private_Beta_Decision_Packet.md` with the exact requested scope and evidence.
+5. Use GO only when every P0 gate has passing evidence and required owner sign-off.
 
 T268 satisfies this rule for the selected bounded non-production pilot only. Production, broader private beta, broader provider scope, production customer data, and real-provider production-like provisioning outside the approved selected Cloudmini scope remain NO-GO until separately proven and signed off.
