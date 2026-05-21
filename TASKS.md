@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-21` with T283 in review:
+Current board snapshot on `2026-05-21` after T283 done:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 279
+- `DONE` task files in `tasks/active/`: 280
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T283 | [tasks/active/T283_github_actions_node24.md](tasks/active/T283_github_actions_node24.md) | REVIEW | Codex | codex/t283-actions-node24 | Upgrade GitHub Actions wrappers to Node 24-compatible major versions. |
 
 ## Done Task Files
 
@@ -136,6 +135,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T280`
 - `T281`
 - `T282`
+- `T283`
 
 ## Removed Tasks
 
