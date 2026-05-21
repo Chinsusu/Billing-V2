@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-21` after T288 completion:
+Current board snapshot on `2026-05-21` after T289 review:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 285
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T289 | [tasks/active/T289_target_auth_deploy_evidence.md](tasks/active/T289_target_auth_deploy_evidence.md) | REVIEW | Codex | codex/t289-target-auth-deploy-evidence | Record target auth/RBAC deploy evidence for the selected test server. |
 
 ## Done Task Files
 
