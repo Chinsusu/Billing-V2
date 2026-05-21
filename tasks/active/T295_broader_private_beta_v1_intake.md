@@ -1,9 +1,9 @@
 # T295 - Broader private beta v1 intake packet
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t295-broader-beta-intake
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/622
 Risk: private beta scope, launch evidence, customer data, provider, notification, credentials
 Created: 2026-05-21
 Updated: 2026-05-21
@@ -32,3 +32,6 @@ Create a scoped intake packet for broader private beta v1 so the next launch dec
 ## Agent Log
 
 - 2026-05-21: Task created and claimed on `codex/t295-broader-beta-intake`.
+- 2026-05-21: Added broader private beta v1 intake packet and linked it from doc 86 and docs index without approving broader launch.
+- 2026-05-21: Validation passed: `go run ./cmd/taskguard`, `git diff --check`, touched-file line count, added-line secret-pattern scan, and added-line docs/task UUID scan.
+- 2026-05-21: Opened PR #622 and moved task to `REVIEW`.
