@@ -94,6 +94,7 @@ Bản v1.10 bổ sung local development runbook để dev mới có thể setup 
 - `03_execution_operations_launch/77_Cloudmini_Provider_Controlled_Error_Evidence.md`
 - `03_execution_operations_launch/78_Notification_Telegram_Evidence_Appendix.md`
 - `03_execution_operations_launch/79_UAT_Client_Reseller_Admin_Runbook.md`
+- `03_execution_operations_launch/80_Client_UAT_Evidence.md`
 
 ### Tài liệu architecture deep dive thêm ở bản v1.4
 - `04_architecture_deep_dive/37_Go_Backend_Architecture_And_Module_Boundaries.md`

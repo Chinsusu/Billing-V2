@@ -41,6 +41,7 @@ Start UAT only when all fields below are true or explicitly waived by the UAT ow
 Main branch CI status: pass
 Task board status: TODO=0, IN_PROGRESS=0, REVIEW=0
 Target health/readiness: pass
+Portal domain mapping: verified and active for each tested domain
 Admin 2FA enrolled and enforced: pass
 Test accounts created: client, reseller, admin
 Test wallet/top-up path ready: pass
