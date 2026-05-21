@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -9,6 +10,10 @@ import (
 )
 
 func TestLoginForTargetAuthSmokeExtractsHttpOnlyCookie(t *testing.T) {
+	const (
+		expectedEmail    = "client@example.test"
+		expectedPassword = "client-pw"
+	)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/auth/login" || r.Method != http.MethodPost {
 			t.Fatalf("unexpected request %s %s", r.Method, r.URL.Path)
@@ -16,18 +21,40 @@ func TestLoginForTargetAuthSmokeExtractsHttpOnlyCookie(t *testing.T) {
 		if r.Header.Get("X-Tenant-Id") != demoTenantID {
 			t.Fatalf("expected tenant header")
 		}
+		var request targetAuthLoginRequest
+		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+			t.Fatalf("decode request body: %v", err)
+		}
+		if request.Email != expectedEmail || request.Password != expectedPassword {
+			t.Fatalf("unexpected login request fields")
+		}
 		http.SetCookie(w, &http.Cookie{Name: "billing_session", Value: "session-token", HttpOnly: true})
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{"data":{"session_id":"session_1","user_id":"user_1","tenant_id":"tenant_1","actor_type":"client","two_factor_required":false,"two_factor_satisfied":false},"request_id":"req_test"}`))
 	}))
 	defer server.Close()
 
-	data, cookie, err := loginForTargetAuthSmoke(context.Background(), server.Client(), server.URL, "billing_session", demoTenantID, targetAuthSmokeClientEmail)
+	data, cookie, err := loginForTargetAuthSmoke(context.Background(), server.Client(), server.URL, "billing_session", demoTenantID, expectedEmail, expectedPassword)
 	if err != nil {
 		t.Fatalf("loginForTargetAuthSmoke returned error: %v", err)
 	}
 	if data.ActorType != "client" || cookie == nil || cookie.Name != "billing_session" || cookie.Value != "session-token" || !cookie.HttpOnly {
 		t.Fatalf("unexpected login result: data=%+v cookie=%+v", data, cookie)
+	}
+}
+
+func TestTargetAuthSmokeCredentialsFromEnvUsesOverrides(t *testing.T) {
+	t.Setenv(targetAuthSmokeClientEmailEnvName, "client@example.test")
+	t.Setenv(targetAuthSmokeClientPasswordEnvName, "client-pw")
+	t.Setenv(targetAuthSmokeAdminEmailEnvName, "admin@example.test")
+	t.Setenv(targetAuthSmokeAdminPasswordEnvName, "admin-pw")
+
+	credentials := targetAuthSmokeCredentialsFromEnv()
+	if credentials.ClientEmail != "client@example.test" || credentials.ClientPassword != "client-pw" {
+		t.Fatalf("unexpected client credential overrides")
+	}
+	if credentials.AdminEmail != "admin@example.test" || credentials.AdminPassword != "admin-pw" {
+		t.Fatalf("unexpected admin credential overrides")
 	}
 }
 

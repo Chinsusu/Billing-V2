@@ -13,10 +13,14 @@ import (
 )
 
 const (
-	platformTenantID             = "00000000-0000-0000-0000-000000000001"
-	targetAuthSmokeSeedPassword  = "admin123"
-	targetAuthSmokeClientEmail   = "customer@local.billing"
-	targetAuthSmokePlatformEmail = "admin@local.billing"
+	platformTenantID                     = "00000000-0000-0000-0000-000000000001"
+	targetAuthSmokePasswordDefault       = "admin123"
+	targetAuthSmokeClientEmailDefault    = "customer@local.billing"
+	targetAuthSmokePlatformEmailDefault  = "admin@local.billing"
+	targetAuthSmokeClientEmailEnvName    = "BILLING_TARGET_AUTH_SMOKE_CLIENT_EMAIL"
+	targetAuthSmokeClientPasswordEnvName = "BILLING_TARGET_AUTH_SMOKE_CLIENT_PASSWORD"
+	targetAuthSmokeAdminEmailEnvName     = "BILLING_TARGET_AUTH_SMOKE_ADMIN_EMAIL"
+	targetAuthSmokeAdminPasswordEnvName  = "BILLING_TARGET_AUTH_SMOKE_ADMIN_PASSWORD"
 )
 
 type targetAuthLoginRequest struct {
@@ -32,6 +36,22 @@ type targetAuthLoginResponse struct {
 	TwoFactorRequired      bool   `json:"two_factor_required"`
 	TwoFactorSatisfied     bool   `json:"two_factor_satisfied"`
 	TwoFactorSetupRequired bool   `json:"two_factor_setup_required"`
+}
+
+type targetAuthSmokeCredentials struct {
+	ClientEmail    string
+	ClientPassword string
+	AdminEmail     string
+	AdminPassword  string
+}
+
+func targetAuthSmokeCredentialsFromEnv() targetAuthSmokeCredentials {
+	return targetAuthSmokeCredentials{
+		ClientEmail:    envOrDefault(targetAuthSmokeClientEmailEnvName, targetAuthSmokeClientEmailDefault),
+		ClientPassword: envOrDefault(targetAuthSmokeClientPasswordEnvName, targetAuthSmokePasswordDefault),
+		AdminEmail:     envOrDefault(targetAuthSmokeAdminEmailEnvName, targetAuthSmokePlatformEmailDefault),
+		AdminPassword:  envOrDefault(targetAuthSmokeAdminPasswordEnvName, targetAuthSmokePasswordDefault),
+	}
 }
 
 func runDevTargetAuthRBACSmoke(baseURL string, timeout time.Duration) error {
@@ -51,8 +71,9 @@ func runDevTargetAuthRBACSmoke(baseURL string, timeout time.Duration) error {
 
 	client := &http.Client{Timeout: timeout}
 	cookieName := targetAuthSessionCookieName()
+	credentials := targetAuthSmokeCredentialsFromEnv()
 
-	clientLogin, clientCookie, err := loginForTargetAuthSmoke(ctx, client, baseURL, cookieName, demoTenantID, targetAuthSmokeClientEmail)
+	clientLogin, clientCookie, err := loginForTargetAuthSmoke(ctx, client, baseURL, cookieName, demoTenantID, credentials.ClientEmail, credentials.ClientPassword)
 	if err != nil {
 		return err
 	}
@@ -64,7 +85,7 @@ func runDevTargetAuthRBACSmoke(baseURL string, timeout time.Duration) error {
 		return err
 	}
 
-	adminLogin, adminCookie, err := loginForTargetAuthSmoke(ctx, client, baseURL, cookieName, platformTenantID, targetAuthSmokePlatformEmail)
+	adminLogin, adminCookie, err := loginForTargetAuthSmoke(ctx, client, baseURL, cookieName, platformTenantID, credentials.AdminEmail, credentials.AdminPassword)
 	if err != nil {
 		return err
 	}
@@ -104,13 +125,13 @@ func runDevTargetAuthRBACSmoke(baseURL string, timeout time.Duration) error {
 	return nil
 }
 
-func loginForTargetAuthSmoke(ctx context.Context, client *http.Client, baseURL string, cookieName string, tenantID string, email string) (targetAuthLoginResponse, *http.Cookie, error) {
+func loginForTargetAuthSmoke(ctx context.Context, client *http.Client, baseURL string, cookieName string, tenantID string, email string, password string) (targetAuthLoginResponse, *http.Cookie, error) {
 	var zero targetAuthLoginResponse
 	fullURL, err := normalizedAPIURL(baseURL, "/auth/login")
 	if err != nil {
 		return zero, nil, err
 	}
-	payload, err := json.Marshal(targetAuthLoginRequest{Email: email, Password: targetAuthSmokeSeedPassword})
+	payload, err := json.Marshal(targetAuthLoginRequest{Email: email, Password: password})
 	if err != nil {
 		return zero, nil, fmt.Errorf("marshal target auth login request: %w", err)
 	}
