@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-21` after T297 claim:
+Current board snapshot on `2026-05-21` after T297 review:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 293
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -66,7 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T297 | [tasks/active/T297_broader_private_beta_auth_rbac_evidence.md](tasks/active/T297_broader_private_beta_auth_rbac_evidence.md) | IN_PROGRESS | Codex | codex/t297-broader-beta-auth-rbac-evidence | Record domain-aware auth/RBAC smoke evidence for broader private beta launch-candidate target. |
+| T297 | [tasks/active/T297_broader_private_beta_auth_rbac_evidence.md](tasks/active/T297_broader_private_beta_auth_rbac_evidence.md) | REVIEW | Codex | codex/t297-broader-beta-auth-rbac-evidence | Record domain-aware auth/RBAC smoke evidence for broader private beta launch-candidate target. |
 
 ## Done Task Files
 
