@@ -94,7 +94,8 @@ func runDevTargetCredentialRevealSmoke(dsn string, baseURL string, timeout time.
 
 	client := &http.Client{Timeout: timeout}
 	cookieName := targetAuthSessionCookieName()
-	login, cookie, err := loginForTargetAuthSmoke(ctx, client, baseURL, cookieName, demoTenantID, targetAuthSmokeClientEmail)
+	credentials := targetAuthSmokeCredentialsFromEnv()
+	login, cookie, err := loginForTargetAuthSmoke(ctx, client, baseURL, cookieName, demoTenantID, credentials.ClientEmail, credentials.ClientPassword)
 	if err != nil {
 		return err
 	}
