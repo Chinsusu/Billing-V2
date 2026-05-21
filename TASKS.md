@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-21` with T285 in review:
+Current board snapshot on `2026-05-21` after T285 completion:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 281
+- `DONE` task files in `tasks/active/`: 282
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T285 | [tasks/active/T285_client_uat_evidence.md](tasks/active/T285_client_uat_evidence.md) | REVIEW | Codex | codex/t285-client-uat-evidence | Capture redacted client UAT evidence on the selected non-production test environment. |
 
 ## Done Task Files
 
@@ -138,6 +137,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T282`
 - `T283`
 - `T284`
+- `T285`
 
 ## Removed Tasks
 
