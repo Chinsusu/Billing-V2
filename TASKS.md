@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-21` after T290 completion:
+Current board snapshot on `2026-05-21` after T291 creation:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 287
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T291 | [tasks/active/T291_domain_auth_deploy_evidence.md](tasks/active/T291_domain_auth_deploy_evidence.md) | IN_PROGRESS | Codex | codex/t291-domain-auth-deploy-evidence | Record post-T290 selected test-server domain-aware auth smoke deploy evidence. |
 
 ## Done Task Files
 

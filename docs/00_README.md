@@ -99,6 +99,7 @@ Bản v1.10 bổ sung local development runbook để dev mới có thể setup 
 - `03_execution_operations_launch/82_Admin_UAT_Evidence.md`
 - `03_execution_operations_launch/83_UAT_Consolidated_Evidence_Packet.md`
 - `03_execution_operations_launch/84_Target_Auth_Deploy_Evidence.md`
+- `03_execution_operations_launch/85_Domain_Aware_Target_Auth_Smoke_Evidence.md`
 
 ### Tài liệu architecture deep dive thêm ở bản v1.4
 - `04_architecture_deep_dive/37_Go_Backend_Architecture_And_Module_Boundaries.md`
