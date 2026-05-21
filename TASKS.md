@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-21` with T282 in progress:
+Current board snapshot on `2026-05-21` with T282 in review:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 278
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -66,7 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T282 | [tasks/active/T282_notification_evidence_appendix.md](tasks/active/T282_notification_evidence_appendix.md) | IN_PROGRESS | Codex | codex/t282-notification-evidence-appendix | Move long Telegram evidence blocks out of notification runbook into a dedicated appendix. |
+| T282 | [tasks/active/T282_notification_evidence_appendix.md](tasks/active/T282_notification_evidence_appendix.md) | REVIEW | Codex | codex/t282-notification-evidence-appendix | Move long Telegram evidence blocks out of notification runbook into a dedicated appendix. |
 
 ## Done Task Files
 
