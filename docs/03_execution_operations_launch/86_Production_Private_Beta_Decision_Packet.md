@@ -83,3 +83,5 @@ Open P1 bugs for selected pilot evidence: 0
 This packet is intentionally conservative. To change any NO-GO row to GO, create a new scoped task, collect the missing evidence, run the required validation, obtain owner sign-off for that exact scope, and update the decision record through PR.
 
 Use `docs/03_execution_operations_launch/87_Scope_Intake_And_Preflight_Runbook.md` as the required intake and preflight procedure before changing any broader production, private-beta, provider, notification, customer-data, or target-environment row from `NO-GO` to `GO`.
+
+The first broader private beta v1 intake is tracked in `docs/03_execution_operations_launch/88_Broader_Private_Beta_V1_Intake_Packet.md`; it remains `NO-GO` until that packet is completed with scope-specific approvals and evidence.
