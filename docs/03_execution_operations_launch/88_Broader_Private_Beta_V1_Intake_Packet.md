@@ -64,6 +64,7 @@ The project has used an `Admin` single-owner model for selected non-production p
 | Provider evidence | Provider evidence exists for selected bounded Cloudmini scope. | Needs broader-beta account, quota, SKU/group mapping, timeout/idempotency, cleanup, and pilot evidence. |
 | Notification evidence | Telegram/manual-fallback evidence exists for selected scope. | Needs broader-beta primary/fallback owner, SLA, escalation, and delivery or drill evidence. |
 | Target preflight evidence | Doc 89 records read-only health/runtime/process-secret/secret-file metadata evidence for current launch-candidate domains. | Use as current target evidence only; rerun if target, launch window, domains, services, or secret paths change. |
+| Auth/RBAC evidence | Doc 90 records domain-aware target auth/RBAC smoke evidence for the current launch-candidate domains. | Use as current auth/RBAC evidence only; rerun if target, launch window, user set, auth config, tenant mapping, or RBAC policy changes. |
 
 ## Required Preflight Before Review
 
@@ -79,7 +80,7 @@ Run the matching checks from doc 87 and store only redacted outcomes. A broader 
 | Secret files | Launch-scope secret paths have restrictive owner/mode metadata and no committed secret values. | Current launch-candidate target metadata passed after remediation in doc 89. |
 | Backup/restore | Clean shared staging or production-equivalent restore proof applies to this scope. | Pending explicit applicability or rerun. |
 | Full E2E | Checkout, wallet debit, provisioning, renewal, credential reveal, audit, and finance reconciliation pass for the launch scope. | Pending broader-beta E2E run. |
-| Auth/RBAC | Client/admin/reseller domain auth, 2FA gate, tenant mismatch, and RBAC denials pass for broader-beta users. | Pending broader-beta user set and rerun. |
+| Auth/RBAC | Client/admin/reseller domain auth, 2FA gate, tenant mismatch, and RBAC denials pass for broader-beta users. | Current client/admin domain-aware auth/RBAC smoke passed in doc 90; reseller-domain login and broader-beta user-set proof remain tied to UAT. |
 | Credential reveal | No-store reveal response, audit, redaction, and rate-limit proof pass on approved target. | Pending broader-beta target approval and rerun. |
 | Finance | Wallet, ledger, payment, and reconciliation report is balanced and accepted by Finance owner. | Pending broader-beta reconciliation sign-off. |
 | Provider | Mapping, quota, timeout/idempotency, cleanup, and error taxonomy proof match broader-beta provider scope. | Pending provider owner approval and evidence. |
@@ -109,7 +110,7 @@ Do not change broader private beta v1 to `GO` unless all criteria below are comp
 - Single-owner concentration risk is not accepted for this broader scope.
 - Target-environment health, runtime, process secrecy, secret-file metadata, and ingress checks passed for the current launch-candidate target in doc 89, but target/window owner approval remains incomplete.
 - Backup/restore applicability has not been signed for this scope.
-- Full E2E, renewal, auth/RBAC, credential reveal, audit, and finance reconciliation have not been rerun for this scope.
+- Full E2E, renewal, credential reveal, audit, and finance reconciliation have not been rerun for this scope; current client/admin auth/RBAC smoke passed in doc 90 but does not replace UAT.
 - Provider account, quota/spend/concurrency limits, SKU/group mapping, cleanup, timeout/idempotency, and manual-review rules are not approved for this scope.
 - Notification primary/fallback path, SLA, escalation, and delivery/drill evidence are not approved for this scope.
 
