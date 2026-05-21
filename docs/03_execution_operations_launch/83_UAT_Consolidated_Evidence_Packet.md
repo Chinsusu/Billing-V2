@@ -93,6 +93,8 @@ The generic `dev-target-auth-rbac` smoke supports protected environment override
 Supported override names:
 
 ```text
+BILLING_TARGET_AUTH_SMOKE_CLIENT_BASE_URL
+BILLING_TARGET_AUTH_SMOKE_ADMIN_BASE_URL
 BILLING_TARGET_AUTH_SMOKE_CLIENT_EMAIL
 BILLING_TARGET_AUTH_SMOKE_CLIENT_PASSWORD
 BILLING_TARGET_AUTH_SMOKE_ADMIN_EMAIL
@@ -105,6 +107,7 @@ Rules:
 - Do not commit the values to docs, task files, scripts, shell history, or PR text.
 - The smoke output must continue to exclude passwords, cookies, session tokens, DSNs, provider payloads, and credentials.
 - When overrides are absent, the smoke falls back to the original dev seed defaults for local developer environments.
+- For public-domain evidence, set separate client and admin base URLs when tenant resolution is domain-first.
 
 ## Not Verified
 
@@ -128,5 +131,5 @@ Production GO: not approved by this packet
 Next recommended step:
 
 ```text
-Run dev-target-auth-rbac on the selected target with protected credential overrides configured, then record a small follow-up evidence note if the selected target credentials differ from seed defaults.
+Run dev-target-auth-rbac on the selected target with protected credential and domain overrides configured, then record a small follow-up evidence note if the selected target credentials differ from seed defaults.
 ```

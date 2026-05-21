@@ -21,6 +21,8 @@ const (
 	targetAuthSmokeClientPasswordEnvName = "BILLING_TARGET_AUTH_SMOKE_CLIENT_PASSWORD"
 	targetAuthSmokeAdminEmailEnvName     = "BILLING_TARGET_AUTH_SMOKE_ADMIN_EMAIL"
 	targetAuthSmokeAdminPasswordEnvName  = "BILLING_TARGET_AUTH_SMOKE_ADMIN_PASSWORD"
+	targetAuthSmokeClientBaseURLEnvName  = "BILLING_TARGET_AUTH_SMOKE_CLIENT_BASE_URL"
+	targetAuthSmokeAdminBaseURLEnvName   = "BILLING_TARGET_AUTH_SMOKE_ADMIN_BASE_URL"
 )
 
 type targetAuthLoginRequest struct {
@@ -54,15 +56,36 @@ func targetAuthSmokeCredentialsFromEnv() targetAuthSmokeCredentials {
 	}
 }
 
-func runDevTargetAuthRBACSmoke(baseURL string, timeout time.Duration) error {
+type targetAuthSmokeBaseURLs struct {
+	Client string
+	Admin  string
+}
+
+func targetAuthSmokeBaseURLsFromInputs(baseURL string, clientBaseURL string, adminBaseURL string) targetAuthSmokeBaseURLs {
+	baseURL = strings.TrimSpace(baseURL)
+	clientBaseURL = strings.TrimSpace(clientBaseURL)
+	adminBaseURL = strings.TrimSpace(adminBaseURL)
+	if clientBaseURL == "" {
+		clientBaseURL = baseURL
+	}
+	if adminBaseURL == "" {
+		adminBaseURL = baseURL
+	}
+	return targetAuthSmokeBaseURLs{Client: clientBaseURL, Admin: adminBaseURL}
+}
+
+func runDevTargetAuthRBACSmoke(baseURL string, clientBaseURL string, adminBaseURL string, timeout time.Duration) error {
 	if err := guardDevEnvironment(); err != nil {
 		return err
 	}
-	baseURL = strings.TrimSpace(baseURL)
-	if baseURL == "" {
+	baseURLs := targetAuthSmokeBaseURLsFromInputs(baseURL, clientBaseURL, adminBaseURL)
+	if baseURLs.Client == "" || baseURLs.Admin == "" {
 		return fmt.Errorf("API_BASE_URL or -base-url is required for dev-target-auth-rbac smoke")
 	}
-	if _, err := normalizedAPIURL(baseURL, "/healthz"); err != nil {
+	if _, err := normalizedAPIURL(baseURLs.Client, "/healthz"); err != nil {
+		return err
+	}
+	if _, err := normalizedAPIURL(baseURLs.Admin, "/healthz"); err != nil {
 		return err
 	}
 
@@ -73,27 +96,27 @@ func runDevTargetAuthRBACSmoke(baseURL string, timeout time.Duration) error {
 	cookieName := targetAuthSessionCookieName()
 	credentials := targetAuthSmokeCredentialsFromEnv()
 
-	clientLogin, clientCookie, err := loginForTargetAuthSmoke(ctx, client, baseURL, cookieName, demoTenantID, credentials.ClientEmail, credentials.ClientPassword)
+	clientLogin, clientCookie, err := loginForTargetAuthSmoke(ctx, client, baseURLs.Client, cookieName, demoTenantID, credentials.ClientEmail, credentials.ClientPassword)
 	if err != nil {
 		return err
 	}
-	defer func() { _ = logoutTargetAuthSmoke(context.Background(), client, baseURL, clientCookie) }()
+	defer func() { _ = logoutTargetAuthSmoke(context.Background(), client, baseURLs.Client, clientCookie) }()
 	if clientLogin.ActorType != "client" || clientLogin.TwoFactorRequired || clientLogin.TwoFactorSatisfied {
 		return fmt.Errorf("expected client login without 2FA requirement")
 	}
-	if err := runTargetSessionGETCheck(ctx, client, baseURL, "client cookie-only catalog", "/client/catalog", clientCookie); err != nil {
+	if err := runTargetSessionGETCheck(ctx, client, baseURLs.Client, "client cookie-only catalog", "/client/catalog", clientCookie); err != nil {
 		return err
 	}
 
-	adminLogin, adminCookie, err := loginForTargetAuthSmoke(ctx, client, baseURL, cookieName, platformTenantID, credentials.AdminEmail, credentials.AdminPassword)
+	adminLogin, adminCookie, err := loginForTargetAuthSmoke(ctx, client, baseURLs.Admin, cookieName, platformTenantID, credentials.AdminEmail, credentials.AdminPassword)
 	if err != nil {
 		return err
 	}
-	defer func() { _ = logoutTargetAuthSmoke(context.Background(), client, baseURL, adminCookie) }()
+	defer func() { _ = logoutTargetAuthSmoke(context.Background(), client, baseURLs.Admin, adminCookie) }()
 	if adminLogin.ActorType != "platform_staff" || !adminLogin.TwoFactorRequired || adminLogin.TwoFactorSatisfied {
 		return fmt.Errorf("expected platform staff login to require unsatisfied 2FA")
 	}
-	if err := runAPIRBACNegativeCheck(ctx, client, baseURL, apiRBACNegativeCheck{
+	if err := runAPIRBACNegativeCheck(ctx, client, baseURLs.Admin, apiRBACNegativeCheck{
 		Name:        "deny unsatisfied admin 2FA session",
 		Method:      http.MethodGet,
 		Path:        "/admin/catalog/provider-readiness?status=active&limit=1",
@@ -107,18 +130,18 @@ func runDevTargetAuthRBACSmoke(baseURL string, timeout time.Duration) error {
 
 	negativeChecks := targetAuthRBACNegativeChecks(cookieName)
 	for _, check := range negativeChecks {
-		if err := runAPIRBACNegativeCheck(ctx, client, baseURL, check); err != nil {
+		if err := runAPIRBACNegativeCheck(ctx, client, baseURLs.Client, check); err != nil {
 			return err
 		}
 	}
 	rbacChecks := apiRBACNegativeChecks()
 	for _, check := range rbacChecks {
-		if err := runAPIRBACNegativeCheck(ctx, client, baseURL, check); err != nil {
+		if err := runAPIRBACNegativeCheck(ctx, client, baseURLs.Admin, check); err != nil {
 			return err
 		}
 	}
 
-	fmt.Printf("target auth RBAC smoke passed: client_session_cookie_only=pass admin_2fa_gate=pass invalid_session_denied=pass actor_required_denied=pass tenant_mismatch_denied=pass rbac_denials=%d provider_mutation_routes_called=no money_mutation_routes_called=no\n",
+	fmt.Printf("target auth RBAC smoke passed: client_session_cookie_only=pass admin_2fa_gate=pass invalid_session_denied=pass actor_required_denied=pass tenant_mismatch_denied=pass rbac_denials=%d domain_aware_base_urls=pass provider_mutation_routes_called=no money_mutation_routes_called=no\n",
 		len(rbacChecks),
 	)
 	fmt.Println("Target auth RBAC smoke output intentionally excludes raw session tokens, cookies, passwords, DSNs, provider payloads, and credentials.")

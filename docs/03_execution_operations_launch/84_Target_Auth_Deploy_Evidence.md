@@ -143,5 +143,5 @@ Production GO: not approved by this evidence
 Recommended follow-up:
 
 ```text
-Add a domain-aware target auth smoke mode that accepts separate client and admin public base URLs, or document that `dev-target-auth-rbac` should use the local API base URL for mixed client/admin login checks.
+Use the domain-aware target auth smoke mode with separate client and admin public base URLs for future public-domain target auth evidence.
 ```
