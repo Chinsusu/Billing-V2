@@ -92,6 +92,7 @@ Bản v1.10 bổ sung local development runbook để dev mới có thể setup 
 - `03_execution_operations_launch/75_Cloudmini_Cleanup_Owner_And_Rollback.md`
 - `03_execution_operations_launch/76_Self_Managed_Secret_Store_Rotation_Evidence.md`
 - `03_execution_operations_launch/77_Cloudmini_Provider_Controlled_Error_Evidence.md`
+- `03_execution_operations_launch/78_Notification_Telegram_Evidence_Appendix.md`
 
 ### Tài liệu architecture deep dive thêm ở bản v1.4
 - `04_architecture_deep_dive/37_Go_Backend_Architecture_And_Module_Boundaries.md`
