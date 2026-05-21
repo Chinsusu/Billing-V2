@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-21` after T287 review:
+Current board snapshot on `2026-05-21` after T287 completion:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 283
+- `DONE` task files in `tasks/active/`: 284
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T287 | [tasks/active/T287_admin_uat_evidence.md](tasks/active/T287_admin_uat_evidence.md) | REVIEW | Codex | codex/t287-admin-uat-evidence | Capture redacted admin UAT evidence on the selected non-production test environment. |
 
 ## Done Task Files
 
@@ -140,6 +139,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T284`
 - `T285`
 - `T286`
+- `T287`
 
 ## Removed Tasks
 
