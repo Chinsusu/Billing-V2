@@ -30,13 +30,13 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-21` after T293 review:
+Current board snapshot on `2026-05-21` after T293 completion:
 
 - `TODO`: 0
 - `IN_PROGRESS`: 0
-- `REVIEW`: 1
+- `REVIEW`: 0
 - `BLOCKED`: 0
-- `DONE` task files in `tasks/active/`: 289
+- `DONE` task files in `tasks/active/`: 290
 - `REMOVED` task files in `tasks/removed/`: 2
 
 ## Conflict-Safe Rules
@@ -66,7 +66,6 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T293 | [tasks/active/T293_production_private_beta_decision_packet.md](tasks/active/T293_production_private_beta_decision_packet.md) | REVIEW | Codex | codex/t293-production-decision-packet | Add final production/private-beta decision packet from current evidence. |
 
 ## Done Task Files
 
@@ -146,6 +145,7 @@ The following task files under `tasks/active/` are already `DONE` and should not
 - `T290`
 - `T291`
 - `T292`
+- `T293`
 
 ## Removed Tasks
 
