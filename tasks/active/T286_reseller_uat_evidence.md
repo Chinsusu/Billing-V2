@@ -1,6 +1,6 @@
 # T286 - Reseller UAT evidence
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t286-reseller-uat-evidence
 PR: https://github.com/Chinsusu/Billing-V2/pull/604
@@ -38,3 +38,4 @@ Capture redacted reseller-portal UAT evidence against the selected non-productio
 - 2026-05-21: Reseller UAT automated evidence passed: browser login/logout scope check, reseller session API read checks, admin/client negative access checks, reseller UI navigation, and finance reconciliation read smoke.
 - 2026-05-21: Added `docs/03_execution_operations_launch/81_Reseller_UAT_Evidence.md` and linked the evidence doc from docs index files.
 - 2026-05-21: Opened PR https://github.com/Chinsusu/Billing-V2/pull/604 and moved task to REVIEW.
+- 2026-05-21: PR #604 merged into `main`; marked task DONE.
