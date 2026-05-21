@@ -3,7 +3,7 @@
 Status: REVIEW
 Owner: Codex
 Branch: codex/t289-target-auth-deploy-evidence
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/610
 Risk: deploy, auth/RBAC, credential handling, tunnel routing, launch evidence
 Created: 2026-05-21
 Updated: 2026-05-21
@@ -36,4 +36,4 @@ Record selected test-server deploy and target auth/RBAC evidence after T288 adde
 - 2026-05-21: Task created and claimed on `codex/t289-target-auth-deploy-evidence`.
 - 2026-05-21: Recorded deploy, tunnel routing, frontend rewrite, direct target auth smoke, and domain-aware public auth probe evidence.
 - 2026-05-21: Validation passed: `go run ./cmd/taskguard`, `git diff --check`, touched-file line-count check, docs/task added-line secret scan, and docs/task added-line UUID scan.
-- 2026-05-21: Moved task to REVIEW pending PR.
+- 2026-05-21: Opened PR https://github.com/Chinsusu/Billing-V2/pull/610 and moved task to REVIEW.
