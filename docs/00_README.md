@@ -105,6 +105,7 @@ Bản v1.10 bổ sung local development runbook để dev mới có thể setup 
 - `03_execution_operations_launch/88_Broader_Private_Beta_V1_Intake_Packet.md`
 - `03_execution_operations_launch/89_Broader_Private_Beta_Target_Preflight_Evidence.md`
 - `03_execution_operations_launch/90_Broader_Private_Beta_Auth_RBAC_Evidence.md`
+- `03_execution_operations_launch/91_Broader_Private_Beta_Owner_Scope_Signoff.md`
 
 ### Tài liệu architecture deep dive thêm ở bản v1.4
 - `04_architecture_deep_dive/37_Go_Backend_Architecture_And_Module_Boundaries.md`
