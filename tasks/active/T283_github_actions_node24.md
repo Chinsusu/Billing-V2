@@ -1,6 +1,6 @@
 # T283 - GitHub Actions Node 24 runtime
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t283-actions-node24
 PR: https://github.com/Chinsusu/Billing-V2/pull/598
@@ -34,3 +34,4 @@ Upgrade official GitHub Actions wrappers used by CI to Node 24-compatible major 
 - 2026-05-21: Updated CI action wrappers to `actions/checkout@v5`, `actions/setup-go@v6`, and `actions/setup-node@v5`; kept frontend `node-version: "20"` unchanged.
 - 2026-05-21: Validation passed: `GOFLAGS=-buildvcs=false go run ./cmd/taskguard`, `git diff --check`, workflow action version check, line-count check, `GOFLAGS=-buildvcs=false make test`, `GOFLAGS=-buildvcs=false make contract-guard`, `GOFLAGS=-buildvcs=false make error-code-guard`, `GOFLAGS=-buildvcs=false make build`, `npm ci`, `npm audit --omit=dev`, `npm run check:sensitive-text`, `npm run lint`, `npm run build`, and `npm run smoke:admin:ci`.
 - 2026-05-21: Opened PR https://github.com/Chinsusu/Billing-V2/pull/598 and moved task to REVIEW.
+- 2026-05-21: PR https://github.com/Chinsusu/Billing-V2/pull/598 merged after GitHub checks passed and log scan found no Node 20 action-runtime deprecation annotation; task marked DONE.
