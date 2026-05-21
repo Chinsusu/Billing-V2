@@ -1,9 +1,9 @@
 # T296 - Broader private beta target preflight evidence
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t296-broader-beta-target-preflight
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/624
 Risk: target environment, secrets, ingress, private beta scope
 Created: 2026-05-21
 Updated: 2026-05-21
@@ -32,3 +32,6 @@ Record read-only target preflight evidence for the current broader private beta 
 ## Agent Log
 
 - 2026-05-21: Task created and claimed on `codex/t296-broader-beta-target-preflight`.
+- 2026-05-21: Recorded current launch-candidate target preflight evidence and secret metadata remediation without approving broader private beta.
+- 2026-05-21: Validation passed: `go run ./cmd/taskguard`, `git diff --check`, touched-file line count, added-line secret-pattern scan, and added-line docs/task UUID scan.
+- 2026-05-21: Opened PR #624 and moved task to `REVIEW`.

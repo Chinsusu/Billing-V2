@@ -30,11 +30,11 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-21` after T296 claim:
+Current board snapshot on `2026-05-21` after T296 review:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 1
-- `REVIEW`: 0
+- `IN_PROGRESS`: 0
+- `REVIEW`: 1
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 292
 - `REMOVED` task files in `tasks/removed/`: 2
@@ -66,7 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
-| T296 | [tasks/active/T296_broader_private_beta_target_preflight.md](tasks/active/T296_broader_private_beta_target_preflight.md) | IN_PROGRESS | Codex | codex/t296-broader-beta-target-preflight | Record read-only target preflight evidence for broader private beta launch-candidate domains. |
+| T296 | [tasks/active/T296_broader_private_beta_target_preflight.md](tasks/active/T296_broader_private_beta_target_preflight.md) | REVIEW | Codex | codex/t296-broader-beta-target-preflight | Record read-only target preflight evidence for broader private beta launch-candidate domains. |
 
 ## Done Task Files
 
