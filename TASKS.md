@@ -30,10 +30,10 @@ REMOVED      archived by user decision and no longer part of the board
 
 ## Board Snapshot
 
-Current board snapshot on `2026-05-21` after T282 done:
+Current board snapshot on `2026-05-21` with T283 in progress:
 
 - `TODO`: 0
-- `IN_PROGRESS`: 0
+- `IN_PROGRESS`: 1
 - `REVIEW`: 0
 - `BLOCKED`: 0
 - `DONE` task files in `tasks/active/`: 279
@@ -66,6 +66,7 @@ Only `TODO` rows belong here. Do not claim tasks listed under done, removed, or 
 
 | ID | Task File | Status | Owner | Branch | Summary |
 | --- | --- | --- | --- | --- | --- |
+| T283 | [tasks/active/T283_github_actions_node24.md](tasks/active/T283_github_actions_node24.md) | IN_PROGRESS | Codex | codex/t283-actions-node24 | Upgrade GitHub Actions wrappers to Node 24-compatible major versions. |
 
 ## Done Task Files
 
