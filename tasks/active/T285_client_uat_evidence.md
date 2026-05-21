@@ -1,9 +1,9 @@
 # T285 - Client UAT evidence
 
-Status: IN_PROGRESS
+Status: REVIEW
 Owner: Codex
 Branch: codex/t285-client-uat-evidence
-PR: -
+PR: https://github.com/Chinsusu/Billing-V2/pull/602
 Risk: UAT, tenant/RBAC, wallet, credential, provisioning, audit
 Created: 2026-05-21
 Updated: 2026-05-21
@@ -38,3 +38,4 @@ Capture redacted client-portal UAT evidence against the selected non-production 
 - 2026-05-21: Found and fixed selected target DB domain mapping gap for `billing.resvn.net`, `client.resvn.net`, and `reseller.resvn.net` using verified/active `tenant_domains` rows with public display IDs only.
 - 2026-05-21: Client UAT automated evidence passed: auth/RBAC smoke, billing mutation smoke, credential reveal smoke, finance reconciliation smoke, and client browser login/logout scope check.
 - 2026-05-21: Added `docs/03_execution_operations_launch/80_Client_UAT_Evidence.md`, updated the UAT runbook entry criteria, and linked the evidence doc from docs index files.
+- 2026-05-21: Opened PR https://github.com/Chinsusu/Billing-V2/pull/602 and moved task to REVIEW.
