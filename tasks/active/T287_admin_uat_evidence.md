@@ -1,6 +1,6 @@
 # T287 - Admin UAT evidence
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t287-admin-uat-evidence
 PR: https://github.com/Chinsusu/Billing-V2/pull/606
@@ -39,3 +39,4 @@ Capture redacted admin-portal UAT evidence against the selected non-production t
 - 2026-05-21: Admin UAT automated evidence passed: browser 2FA gate, admin read probes, client/low-permission negative checks, admin top-up approve/reject probe, finance reconciliation after mutation, and cleanup/status checks.
 - 2026-05-21: Added `docs/03_execution_operations_launch/82_Admin_UAT_Evidence.md` and linked the evidence doc from docs index files.
 - 2026-05-21: Opened PR https://github.com/Chinsusu/Billing-V2/pull/606 and moved task to REVIEW.
+- 2026-05-21: PR #606 merged into `main`; marked task DONE.
