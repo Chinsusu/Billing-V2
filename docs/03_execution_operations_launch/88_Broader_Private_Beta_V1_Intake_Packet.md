@@ -63,6 +63,7 @@ The project has used an `Admin` single-owner model for selected non-production p
 | UAT evidence | Docs 79 to 83 record client, reseller, and admin UAT evidence. | Must be tied to the broader-beta customer list, data classification, and support window. |
 | Provider evidence | Provider evidence exists for selected bounded Cloudmini scope. | Needs broader-beta account, quota, SKU/group mapping, timeout/idempotency, cleanup, and pilot evidence. |
 | Notification evidence | Telegram/manual-fallback evidence exists for selected scope. | Needs broader-beta primary/fallback owner, SLA, escalation, and delivery or drill evidence. |
+| Target preflight evidence | Doc 89 records read-only health/runtime/process-secret/secret-file metadata evidence for current launch-candidate domains. | Use as current target evidence only; rerun if target, launch window, domains, services, or secret paths change. |
 
 ## Required Preflight Before Review
 
@@ -72,10 +73,10 @@ Run the matching checks from doc 87 and store only redacted outcomes. A broader 
 | --- | --- | --- |
 | Task board | No conflicting launch tasks and taskguard passes. | Pending for the final review window. |
 | Repo state | Diff reviewed, no whitespace errors, no committed secrets/customer data. | Pending for the final review window. |
-| Target health | API, frontend, and public domains return expected health/readiness. | Pending broader-beta target approval and rerun. |
-| Runtime services | API, frontend, worker, tunnel, and database services are active on the approved target. | Pending broader-beta target approval and rerun. |
-| Process secrecy | Process argv has no DSN/token/password/credential patterns. | Pending broader-beta target approval and rerun. |
-| Secret files | Launch-scope secret paths have restrictive owner/mode metadata and no committed secret values. | Pending broader-beta target approval and rerun. |
+| Target health | API, frontend, and public domains return expected health/readiness. | Current launch-candidate target passed in doc 89; rerun if scope target changes. |
+| Runtime services | API, frontend, worker, tunnel, and database services are active on the approved target. | Current launch-candidate target passed applicable API, frontend, tunnel, and database checks in doc 89; worker-specific proof remains tied to E2E/notification/provider runs. |
+| Process secrecy | Process argv has no DSN/token/password/credential patterns. | Current launch-candidate target strict secret-value scan passed in doc 89. |
+| Secret files | Launch-scope secret paths have restrictive owner/mode metadata and no committed secret values. | Current launch-candidate target metadata passed after remediation in doc 89. |
 | Backup/restore | Clean shared staging or production-equivalent restore proof applies to this scope. | Pending explicit applicability or rerun. |
 | Full E2E | Checkout, wallet debit, provisioning, renewal, credential reveal, audit, and finance reconciliation pass for the launch scope. | Pending broader-beta E2E run. |
 | Auth/RBAC | Client/admin/reseller domain auth, 2FA gate, tenant mismatch, and RBAC denials pass for broader-beta users. | Pending broader-beta user set and rerun. |
@@ -106,7 +107,7 @@ Do not change broader private beta v1 to `GO` unless all criteria below are comp
 - Launch window, target environment, API base URL, and frontend base URLs are not approved for broader private beta v1.
 - Owner sign-off is not complete for Product, Engineering, QA, Ops, Finance, Security, Support, and Provider in this broader scope.
 - Single-owner concentration risk is not accepted for this broader scope.
-- Target-environment health, runtime, process secrecy, secret-file metadata, and ingress checks have not been rerun for this scope.
+- Target-environment health, runtime, process secrecy, secret-file metadata, and ingress checks passed for the current launch-candidate target in doc 89, but target/window owner approval remains incomplete.
 - Backup/restore applicability has not been signed for this scope.
 - Full E2E, renewal, auth/RBAC, credential reveal, audit, and finance reconciliation have not been rerun for this scope.
 - Provider account, quota/spend/concurrency limits, SKU/group mapping, cleanup, timeout/idempotency, and manual-review rules are not approved for this scope.
