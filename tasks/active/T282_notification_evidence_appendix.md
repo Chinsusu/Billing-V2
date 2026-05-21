@@ -1,6 +1,6 @@
 # T282 - Notification evidence appendix
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t282-notification-evidence-appendix
 PR: https://github.com/Chinsusu/Billing-V2/pull/596
@@ -36,3 +36,4 @@ Move long Telegram evidence blocks out of the notification runbook into a dedica
 - 2026-05-21: Moved T279-T281 Telegram evidence into `docs/03_execution_operations_launch/78_Notification_Telegram_Evidence_Appendix.md` and replaced the long runbook blocks with references.
 - 2026-05-21: Validation passed: `GOFLAGS=-buildvcs=false go run ./cmd/taskguard`, `git diff --check`, docs secret scan, and line-count check for touched files.
 - 2026-05-21: Opened PR https://github.com/Chinsusu/Billing-V2/pull/596 and moved task to REVIEW.
+- 2026-05-21: PR https://github.com/Chinsusu/Billing-V2/pull/596 merged after GitHub checks passed; task marked DONE.
