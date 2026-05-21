@@ -1,6 +1,6 @@
 # T285 - Client UAT evidence
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t285-client-uat-evidence
 PR: https://github.com/Chinsusu/Billing-V2/pull/602
@@ -39,3 +39,4 @@ Capture redacted client-portal UAT evidence against the selected non-production 
 - 2026-05-21: Client UAT automated evidence passed: auth/RBAC smoke, billing mutation smoke, credential reveal smoke, finance reconciliation smoke, and client browser login/logout scope check.
 - 2026-05-21: Added `docs/03_execution_operations_launch/80_Client_UAT_Evidence.md`, updated the UAT runbook entry criteria, and linked the evidence doc from docs index files.
 - 2026-05-21: Opened PR https://github.com/Chinsusu/Billing-V2/pull/602 and moved task to REVIEW.
+- 2026-05-21: PR #602 merged into `main`; marked task DONE.
