@@ -1,6 +1,6 @@
 # T297 - Broader private beta auth RBAC evidence
 
-Status: REVIEW
+Status: DONE
 Owner: Codex
 Branch: codex/t297-broader-beta-auth-rbac-evidence
 PR: https://github.com/Chinsusu/Billing-V2/pull/626
@@ -35,3 +35,4 @@ Record domain-aware auth/RBAC smoke evidence for the current broader private bet
 - 2026-05-21: Ran domain-aware target auth/RBAC smoke on the selected test server and recorded redacted PASS evidence without approving broader private beta.
 - 2026-05-21: Validation passed: `go run ./cmd/taskguard`, `git diff --check`, touched-file line count, added-line secret-pattern scan, and added-line docs/task UUID scan.
 - 2026-05-21: Opened PR #626 and moved task to `REVIEW`.
+- 2026-05-21: PR #626 merged into `main`; moved task to `DONE`.
