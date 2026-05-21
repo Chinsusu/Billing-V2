@@ -44,6 +44,8 @@ func run(args []string) error {
 	dir := flags.String("dir", "migrations", "migration directory")
 	dsn := flags.String("dsn", os.Getenv("DB_DSN"), "PostgreSQL DSN")
 	baseURL := flags.String("base-url", envOrDefault("API_BASE_URL", "http://localhost:8080"), "API base URL")
+	targetAuthClientBaseURL := flags.String("target-auth-client-base-url", os.Getenv(targetAuthSmokeClientBaseURLEnvName), "client API base URL for dev-target-auth-rbac; defaults to -base-url")
+	targetAuthAdminBaseURL := flags.String("target-auth-admin-base-url", os.Getenv(targetAuthSmokeAdminBaseURLEnvName), "admin API base URL for dev-target-auth-rbac; defaults to -base-url")
 	timeout := flags.Duration("timeout", 60*time.Second, "smoke command timeout")
 	if err := flags.Parse(args); err != nil {
 		return err
@@ -64,7 +66,7 @@ func run(args []string) error {
 	case "dev-topup-review":
 		return runDevTopupReviewSmoke(*dsn, *baseURL, *timeout)
 	case "dev-target-auth-rbac":
-		return runDevTargetAuthRBACSmoke(*baseURL, *timeout)
+		return runDevTargetAuthRBACSmoke(*baseURL, *targetAuthClientBaseURL, *targetAuthAdminBaseURL, *timeout)
 	case "dev-target-credential-reveal":
 		return runDevTargetCredentialRevealSmoke(*dsn, *baseURL, *timeout)
 	case "dev-target-finance-reconciliation":
